@@ -183,7 +183,7 @@
 .consensus-workbench-step-group {
 	margin-top: 0.35em;
 	color: var(--text-faint);
-	font-size: var(--font-ui-smaller);
+	font-size: 0.8em; /* em, not --font-ui-smaller: scales with the user's font size */
 	font-variant: small-caps;
 	letter-spacing: 0.04em;
 }
@@ -192,7 +192,7 @@
 }
 .consensus-workbench-step-row {
 	display: flex;
-	align-items: flex-start;
+	align-items: center; /* description centres on the button instead of hanging high */
 	gap: 0.6em;
 }
 .consensus-workbench-step-row .consensus-workbench-action {
@@ -202,12 +202,11 @@
 }
 .consensus-workbench-step-desc {
 	color: var(--text-muted);
-	font-size: var(--font-ui-smaller);
+	font-size: 0.85em; /* em, not --font-ui-smaller: scales with the user's font size */
 	line-height: 1.35;
-	padding-top: 0.15em;
 }
 .consensus-workbench-action {
-	font-size: var(--font-ui-smaller);
+	font-size: 0.85em; /* em, not --font-ui-smaller: scales with the user's font size */
 	padding: 0.2em 0.6em;
 	cursor: pointer;
 }
@@ -231,7 +230,7 @@
 .consensus-workbench-more summary {
 	cursor: pointer;
 	color: var(--text-muted);
-	font-size: var(--font-ui-smaller);
+	font-size: 0.85em; /* em — scales with the user's font size */
 }
 .consensus-workbench-more .consensus-workbench-steps {
 	margin-top: 0.4em;

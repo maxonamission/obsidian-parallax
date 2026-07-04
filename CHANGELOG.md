@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.1]
+
+Polish on the new Steps sidebar, from first-use feedback:
+
+- Buttons, explanations and group labels now scale with your font size.
+- Explanations align vertically with their buttons.
+- The "More" commands carry the same step labels where one applies (Theory / Evidence); register views and exports sit under a neutral "Register & exports" group.
+- The alternative next step now has a hover hint, like the recommended one.
+
 ## [0.3.0]
 
 **A clearer sidebar.** The action buttons ("Next step", "All steps" and "More") are now one integrated **Steps** list: every action on its own row with a short explanation of what it does, grouped in the same order as the workflow strip at the top (Explore → Frame → Theory → Challenge → Evidence → Design). The recommended next step is highlighted in place — with a context-aware explanation — instead of living in a separate section, and the "More" commands got the same row layout with explanations.

@@ -5774,22 +5774,26 @@ function moreActions() {
     {
       commandId: "build-framework",
       label: "Build theoretical framework",
-      description: "Only the framework step: construct, working definition and the dimensions that steer sub-questions."
+      description: "Only the framework step: construct, working definition and the dimensions that steer sub-questions.",
+      step: "theory"
     },
     {
       commandId: "ask-research-question",
       label: "Quick search (single provider)",
-      description: "Insert references from one provider \u2014 keyless, no AI, the fastest way to real sources."
+      description: "Insert references from one provider \u2014 keyless, no AI, the fastest way to real sources.",
+      step: "evidence"
     },
     {
       commandId: "research-question-cross-sector",
       label: "Ask a question \u2014 force cross-sector evidence",
-      description: "Full research run that always adds analogous evidence from other sectors, labelled separately."
+      description: "Full research run that always adds analogous evidence from other sectors, labelled separately.",
+      step: "evidence"
     },
     {
       commandId: "deepen-finding",
       label: "Deepen selected finding(s)",
-      description: "Expand the selected finding(s) with detail from their sources \u2014 open-access full texts included."
+      description: "Expand the selected finding(s) with detail from their sources \u2014 open-access full texts included.",
+      step: "evidence"
     },
     {
       commandId: "register-bibliography-project",
@@ -7969,7 +7973,7 @@ function deriveSourceProvenance(notePath, record, register) {
 
 // src/workbench-view.ts
 var WORKBENCH_VIEW_TYPE = "consensus-research-workbench";
-var WorkbenchView = class extends import_obsidian9.ItemView {
+var _WorkbenchView = class _WorkbenchView extends import_obsidian9.ItemView {
   constructor(leaf, plugin) {
     super(leaf);
     /** Path the panel was last rendered for — guards against re-rendering on every focus change (E69). */
@@ -8296,28 +8300,13 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
     const base = (_a = path.split("/").pop()) != null ? _a : path;
     return base.replace(/\.md$/i, "");
   }
-  /**
-   * The integral "Steps" list (AU_E94_S1, supersedes the separate "Next step" + "All steps"
-   * sections): every workflow action as a row — button + one-line explanation — grouped under
-   * small step labels in the same order as the workflow strip above. The live recommendation is
-   * folded in: its row carries the CTA styling (and the alternative a subtle outline) plus the
-   * contextual why-text, so "what should I do next" and "what can I do" are one list.
-   */
   renderSteps(root, state, recommended) {
-    const stepLabel = {
-      explore: "Explore",
-      frame: "Frame",
-      theory: "Theory",
-      challenge: "Challenge",
-      evidence: "Evidence",
-      design: "Design"
-    };
     root.createEl("h4", { text: "Steps" });
     const wrap = root.createEl("div", { cls: "consensus-workbench-steps" });
     let lastStep = null;
     for (const a of stepActions(state, recommended)) {
       if (a.step !== lastStep) {
-        wrap.createEl("div", { text: stepLabel[a.step], cls: "consensus-workbench-step-group" });
+        wrap.createEl("div", { text: _WorkbenchView.STEP_LABEL[a.step], cls: "consensus-workbench-step-group" });
         lastStep = a.step;
       }
       this.renderActionRow(wrap, a);
@@ -8332,6 +8321,7 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
       btn.setAttr("aria-label", "Recommended next step");
     } else if (a.recommended === "alternative") {
       btn.addClass("consensus-workbench-action-alt");
+      btn.setAttr("aria-label", "Alternative next step");
     }
     btn.addEventListener("click", () => this.run(a.commandId));
     row.createEl("div", { text: a.description, cls: "consensus-workbench-step-desc" });
@@ -8346,7 +8336,15 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
     const details = root.createEl("details", { cls: "consensus-workbench-more" });
     details.createEl("summary", { text: "More" });
     const wrap = details.createEl("div", { cls: "consensus-workbench-steps" });
-    for (const a of moreActions()) this.renderActionRow(wrap, a);
+    let lastGroup = null;
+    for (const a of moreActions()) {
+      const group = a.step ? _WorkbenchView.STEP_LABEL[a.step] : "Register & exports";
+      if (group !== lastGroup) {
+        wrap.createEl("div", { text: group, cls: "consensus-workbench-step-group" });
+        lastGroup = group;
+      }
+      this.renderActionRow(wrap, a);
+    }
   }
   /** Artefacts — which sections exist; present ones are click-to-jump to their `##` section (E55). */
   renderArtifacts(root, session, body, file) {
@@ -8379,6 +8377,22 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
     this.contentEl.empty();
   }
 };
+/**
+ * The integral "Steps" list (AU_E94_S1, supersedes the separate "Next step" + "All steps"
+ * sections): every workflow action as a row — button + one-line explanation — grouped under
+ * small step labels in the same order as the workflow strip above. The live recommendation is
+ * folded in: its row carries the CTA styling (and the alternative a subtle outline) plus the
+ * contextual why-text, so "what should I do next" and "what can I do" are one list.
+ */
+_WorkbenchView.STEP_LABEL = {
+  explore: "Explore",
+  frame: "Frame",
+  theory: "Theory",
+  challenge: "Challenge",
+  evidence: "Evidence",
+  design: "Design"
+};
+var WorkbenchView = _WorkbenchView;
 async function revealWorkbench(plugin) {
   var _a;
   const { workspace } = plugin.app;

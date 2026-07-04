@@ -27,6 +27,2928 @@ var import_obsidian18 = require("obsidian");
 
 // src/settings-tab.ts
 var import_obsidian = require("obsidian");
+
+// src/i18n/en.ts
+var en = {
+  headings: {
+    synthesis: "Synthesis",
+    exploration: "Problem exploration",
+    lenses: "Theoretical lenses",
+    challenge: "Challenge",
+    agenda: "Research agenda",
+    logbook: "Logbook",
+    searchstrategy: "Search strategy",
+    objective: "Objective",
+    context: "Context",
+    beliefs: "Beliefs"
+  },
+  exploration: {
+    chosenFraming: "Chosen framing:",
+    assumptions: "Implicit assumptions",
+    counterAssumptions: "Possible counter-assumptions",
+    reformulations: "Reformulations",
+    disciplines: "Disciplines / theoretical traditions",
+    definitions: "Competing definitions",
+    directions: "Promising research directions",
+    facetTheoreticalBasis: "theoretical basis",
+    facetSearchability: "searchability",
+    facetLiteratureStrength: "likelihood of strong literature (estimate)",
+    facetOriginality: "originality",
+    chosenSearchTerms: "Search terms (chosen)",
+    initialBeliefs: "Initial beliefs"
+  },
+  theory: {
+    sameMechanism: "Same mechanism, different name",
+    strikinglyAbsent: "Strikingly absent",
+    competing: "Competing explanations",
+    crossDomain: "Cross-domain connections",
+    chosenLenses: "Chosen lenses"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Conceptual",
+      methodologisch: "Methodological",
+      theoretisch: "Theoretical",
+      empirisch: "Empirical",
+      praktisch: "Practical"
+    },
+    actionLabel: "action",
+    inversion: "If your hypothesis is wrong\u2026"
+  },
+  beliefs: {
+    none: "_(no beliefs recorded yet)_",
+    statusLabels: {
+      open: "open",
+      ondersteund: "supported",
+      weersproken: "contradicted"
+    },
+    confidenceLabels: {
+      laag: "low",
+      midden: "medium",
+      hoog: "high"
+    },
+    confidence: "confidence"
+  },
+  synthesis: {
+    findings: "Findings",
+    evidenceInline: "evidence: {strength}{tier}",
+    strengthLabels: {
+      sterk: "strong",
+      gemengd: "mixed",
+      beperkt: "limited"
+    },
+    contradictions: "Contradictions / it depends",
+    practical: "Practical translation",
+    followUps: "Hypothesis-generating follow-up directions & open questions",
+    evidenceAndGaps: "Evidence strength & gaps",
+    scopeCaveat: "\u26A0 Scope: the evidence is mostly about {note} \u2014 not specifically about the question as asked. Generalise with caution.",
+    abstractsDisclosure: "The evidence grading above is based on abstracts, not full texts \u2014 abstracts often omit moderators, confidence intervals and null results.",
+    fulltextNuanceSingular: " By now 1 source rests on the full text (see the deepening).",
+    fulltextNuancePlural: " By now {n} sources rest on the full text (see the deepening).",
+    unanswered: "Cannot be answered with this evidence",
+    reasonNotInvestigated: "not investigated in the sources found",
+    reasonDesignInsufficient: "cannot be established with the evidence found (design insufficient, e.g. cross-sectional)",
+    designNeeded: " Would require a {design}.",
+    readingRecommendations: "Recommended to read in full",
+    readingRecommendationsNote: "(based on the abstracts; often paywalled \u2014 you fetch the full text yourself)"
+  },
+  evidenceTier: {
+    strong: "review/meta-analysis",
+    moderate: "RCT",
+    limited: "hypothesis-generating"
+  },
+  oa: {
+    paywalled: "likely paywalled",
+    available: "OA available",
+    availablePdf: "OA available (pdf)"
+  },
+  sources: {
+    frameworkSource: "framework source",
+    analogous: "analogous ({sector})",
+    otherSector: "other sector",
+    evidenceTag: "evidence: {label}",
+    notVerifiedDoi: "not verified (DOI not resolvable)",
+    notCheckedConnection: "not checked (no connection)",
+    notVerifiedNoId: "not verified (no DOI/ISBN)",
+    noteMissingId: "no DOI/ISBN",
+    noteDoiUnresolved: "DOI not resolvable",
+    noteNoConnection: "no connection",
+    transferEvidenceSector: "[analogous evidence from sector: {sector}]",
+    transferEvidenceGeneric: "[analogous evidence from another sector]"
+  },
+  decompose: {
+    frameworkHeading: "Theoretical framework",
+    dimensionsIntro: "Dimensions (steer the sub-questions):",
+    keySources: "Key sources",
+    subQuestions: "Sub-questions",
+    subQuestionsNote: "(how the question was split; numbers point to the sources each sub-question yielded)",
+    subQuestionsNoteWithHypotheses: "(how the question was split; numbers point to the sources each sub-question yielded, followed by the hypothesis per sub-question)",
+    hypothesisLabel: "Hypothesis"
+  },
+  searchStrategy: {
+    sources: "Sources",
+    none: "(none)",
+    terms: "Search terms",
+    termsCounted: "Search terms ({n})",
+    resumedLine: "Resumed on previously found (cached) sources \u2014 no new search round executed.",
+    additionalTerms: "Additional search terms (from exploration/lenses)",
+    selectionCriteria: "Selection criteria",
+    rerankLine: "Relevance reranking (embedding blend) over the fused candidates{tested}.",
+    testedAgainstSubQuestions: ", tested against the sub-questions",
+    abstractsOnlyLine: "Assessment based on titles and abstracts, not full texts.",
+    limitedToTop: "Limited to the top {n} best-scoring sources.",
+    crossSectorLine: "Cross-sector transfer evidence added{sectors}, labelled separately and kept out of the synthesis.",
+    sectorsSuffix: " (sectors: {sectors})",
+    funnel: "Counts (funnel)",
+    fusedCount: "Fused: {n} unique source(s)",
+    afterRerank: "After reranking: {n}",
+    keptCount: "Shown/kept: {n}",
+    failuresHeading: "Search failures per source",
+    failureLine: "{label}: {failed}/{total} search(es) failed (rate limit or network error)."
+  },
+  account: {
+    title: "Methodological account",
+    provenanceDerived: "Derived, reproducible document \u2014 assembled automatically from the research session.",
+    provenanceScope: "It describes the **methodological choices** around the research, not the model's internal reasoning.",
+    sourceLabel: "Source",
+    researchQuestion: "Research question",
+    notRecorded: "_Not recorded \u2014 this step has not been executed (yet)._",
+    chosenFraming: "Chosen reformulation (framing)",
+    alternativesNote: "The alternative formulations considered are listed under *{section}*.",
+    unchangedQuestion: "_The original question was kept unchanged._",
+    chosenLensesLabel: "Chosen lenses",
+    openQuestions: "Open questions and follow-up research"
+  },
+  agenda: {
+    gaps: "Knowledge gaps",
+    limitations: "Recurring methodological limitations",
+    newQuestions: "New research questions",
+    designs: "Fitting research designs",
+    data: "Required data / measurement instruments"
+  },
+  graph: {
+    gapNoSubquestions: 'Question not yet split into sub-questions: "{label}"',
+    gapNoFindings: 'Question has no synthesis findings yet: "{label}"',
+    gapNoSources: 'Question has no literature in the register yet: "{label}"',
+    gapFindingNoSource: 'Finding without a source reference (unproven claim): "{label}"',
+    gapOpenHypothesis: 'Open hypothesis, still to be tested: "{label}"',
+    gapSourceUnused: 'Source not yet used in a finding: "{label}"',
+    severityHigh: "\u{1F534} High \u2014 unproven claims",
+    severityMedium: "\u{1F7E0} Medium \u2014 missing steps",
+    severityInfo: "\u{1F535} Info \u2014 open threads",
+    reportTitle: "Knowledge graph (spike) \u2014 {project}",
+    reportIntro: "_Read-only projection from the existing artefacts (front matter + rendered synthesis + citation register). Disposable: do not edit by hand \u2014 regenerate._",
+    sizeHeading: "Size",
+    nodesEdgesLine: "**{nodes}** nodes, **{edges}** edges",
+    gapsHeading: "Gaps",
+    noGaps: "_No gaps detected._",
+    nodesPerType: "Nodes per type",
+    nodeTypeLabels: {
+      vraag: "question",
+      deelvraag: "sub-question",
+      hypothese: "hypothesis",
+      bevinding: "finding",
+      bron: "source",
+      lens: "lens"
+    },
+    provenanceHeading: "Provenance",
+    provenanceWithEdges: "This graph uses **edges-at-generation** (E68): `source\u2192finding` (`onderbouwt`) comes from the recorded records, so finding\u2192specific-source is reliable. Notes without a record (old runs / prose fallback) only count the *number* of `[n]` references.",
+    provenanceWithoutEdges: "No edges-at-generation (E68 records) found for this project yet \u2014 the findings come from the rendered synthesis, where the `[n]` numbers have no persistent mapping to citation keys. We therefore only count whether a finding carries *a* reference. Run a new synthesis to get reliable `source\u2192finding` edges."
+  },
+  exportBundle: {
+    accountFileName: "methodological-account.md",
+    bibFileName: "sources.bib",
+    stubUnavailable: "_Could not be assembled automatically for this export._",
+    stubMissingLabel: "Missing:",
+    stubMissingAccount: "the methodological account",
+    stubNoFrontmatter: "methodological account (no session front matter found on this note)",
+    noSessions: "_No sessions found for this project._",
+    artefactsPresent: "{present}/{total} artefacts present"
+  },
+  project: {
+    objectivePlaceholder: "_(still to be formulated \u2014 what should this project ultimately answer?)_",
+    overviewHeading: "Overview",
+    overviewBody: "_Each research question is its own session note in this folder; open the Parallax sidebar for the overview and to add a new question._"
+  },
+  logbook: {
+    stepBeliefs: "Beliefs",
+    stepResearch: "Research",
+    stepAccount: "Account",
+    framingChosen: 'framing chosen: "{framing}"',
+    alternativesConsidered: "; {n} alternative formulation(s) considered",
+    challengesSummary: "{n} challenge(s)",
+    challengesAdopted: "; {n} recorded as belief",
+    lensesChosen: "{n} lens(es) chosen",
+    lensesEliminated: "; {n} eliminated",
+    synthesisOver: "synthesis over {n} source(s)",
+    searchTerms: "; {n} search term(s)",
+    beliefsUpdated: "{n} belief(s) updated after confrontation with the synthesis",
+    newQuestionsProposed: "{n} new research question(s)",
+    sessionStarted: "; new session started",
+    accountGenerated: "methodological account generated"
+  }
+};
+
+// src/i18n/nl.ts
+var nl = {
+  headings: {
+    synthesis: "Synthese",
+    exploration: "Probleemverkenning",
+    lenses: "Theoretische lenzen",
+    challenge: "Challenge",
+    agenda: "Onderzoeksagenda",
+    logbook: "Logboek",
+    searchstrategy: "Zoekstrategie",
+    objective: "Doelstelling",
+    context: "Context",
+    beliefs: "Overtuigingen"
+  },
+  exploration: {
+    chosenFraming: "Gekozen framing:",
+    assumptions: "Impliciete aannames",
+    counterAssumptions: "Mogelijke tegenaannames",
+    reformulations: "Herformuleringen",
+    disciplines: "Disciplines / theoretische tradities",
+    definitions: "Concurrerende definities",
+    directions: "Kansrijke onderzoeksrichtingen",
+    facetTheoreticalBasis: "theoretische basis",
+    facetSearchability: "zoekbaarheid",
+    facetLiteratureStrength: "kans op sterke literatuur (inschatting)",
+    facetOriginality: "originaliteit",
+    chosenSearchTerms: "Zoektermen (gekozen)",
+    initialBeliefs: "Eerste overtuigingen"
+  },
+  theory: {
+    sameMechanism: "Zelfde mechanisme, andere naam",
+    strikinglyAbsent: "Opvallend afwezig",
+    competing: "Concurrerende verklaringen",
+    crossDomain: "Cross-domein verbindingen",
+    chosenLenses: "Gekozen lenzen"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Conceptueel",
+      methodologisch: "Methodologisch",
+      theoretisch: "Theoretisch",
+      empirisch: "Empirisch",
+      praktisch: "Praktisch"
+    },
+    actionLabel: "actie",
+    inversion: "Als je hypothese onjuist is\u2026"
+  },
+  beliefs: {
+    none: "_(nog geen overtuigingen vastgelegd)_",
+    statusLabels: {
+      open: "open",
+      ondersteund: "ondersteund",
+      weersproken: "weersproken"
+    },
+    confidenceLabels: {
+      laag: "laag",
+      midden: "midden",
+      hoog: "hoog"
+    },
+    confidence: "vertrouwen"
+  },
+  synthesis: {
+    findings: "Bevindingen",
+    evidenceInline: "bewijs: {strength}{tier}",
+    strengthLabels: {
+      sterk: "sterk",
+      gemengd: "gemengd",
+      beperkt: "beperkt"
+    },
+    contradictions: "Tegenspraak / het hangt af van",
+    practical: "Praktische vertaling",
+    followUps: "Hypothesevormende vervolgrichtingen & open vragen",
+    evidenceAndGaps: "Bewijskracht & lacunes",
+    scopeCaveat: "\u26A0 Bereik: het bewijs gaat vooral over {note} \u2014 niet specifiek over de vraag zoals gesteld. Generaliseer met voorzichtigheid.",
+    abstractsDisclosure: "De bewijskracht hierboven is gebaseerd op abstracts, niet op volledige teksten \u2014 abstracts laten vaak moderatoren, betrouwbaarheidsintervallen en null-resultaten weg.",
+    fulltextNuanceSingular: " Inmiddels 1 bron rust op de volledige tekst (zie de verdieping).",
+    fulltextNuancePlural: " Inmiddels {n} bronnen rusten op de volledige tekst (zie de verdieping).",
+    unanswered: "Niet te beantwoorden met dit bewijs",
+    reasonNotInvestigated: "niet onderzocht in de gevonden bronnen",
+    reasonDesignInsufficient: "niet vast te stellen met het gevonden bewijs (ontwerp ontoereikend, bv. cross-sectioneel)",
+    designNeeded: " Zou een {design} vergen.",
+    readingRecommendations: "Aanrader om volledig te lezen",
+    readingRecommendationsNote: "(op basis van de abstracts; vaak achter een paywall \u2014 jij haalt de volledige tekst erbij)"
+  },
+  evidenceTier: {
+    strong: "review/meta-analyse",
+    moderate: "RCT",
+    limited: "hypothesevormend"
+  },
+  oa: {
+    paywalled: "waarschijnlijk achter een paywall",
+    available: "OA beschikbaar",
+    availablePdf: "OA beschikbaar (pdf)"
+  },
+  sources: {
+    frameworkSource: "kaderbron",
+    analogous: "analoog ({sector})",
+    otherSector: "andere sector",
+    evidenceTag: "bewijs: {label}",
+    notVerifiedDoi: "niet geverifieerd (DOI niet vindbaar)",
+    notCheckedConnection: "niet gecontroleerd (geen verbinding)",
+    notVerifiedNoId: "niet geverifieerd (geen DOI/ISBN)",
+    noteMissingId: "geen DOI/ISBN",
+    noteDoiUnresolved: "DOI niet vindbaar",
+    noteNoConnection: "geen verbinding",
+    transferEvidenceSector: "[analoog bewijs uit sector: {sector}]",
+    transferEvidenceGeneric: "[analoog bewijs uit andere sector]"
+  },
+  decompose: {
+    frameworkHeading: "Theoretisch kader",
+    dimensionsIntro: "Dimensies (sturen de deelvragen):",
+    keySources: "Sleutelbronnen",
+    subQuestions: "Deelvragen",
+    subQuestionsNote: "(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde)",
+    subQuestionsNoteWithHypotheses: "(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde, gevolgd door de hypothese per deelvraag)",
+    hypothesisLabel: "Hypothese"
+  },
+  searchStrategy: {
+    sources: "Bronnen",
+    none: "(geen)",
+    terms: "Zoektermen",
+    termsCounted: "Zoektermen ({n})",
+    resumedLine: "Hervat op eerder gevonden (gecachte) bronnen \u2014 geen nieuwe zoekronde uitgevoerd.",
+    additionalTerms: "Aanvullende zoektermen (uit verkenning/lenzen)",
+    selectionCriteria: "Selectiecriteria",
+    rerankLine: "Relevantie-herordening (embedding-blend) over de gefuseerde kandidaten{tested}.",
+    testedAgainstSubQuestions: ", getoetst tegen de deelvragen",
+    abstractsOnlyLine: "Beoordeling op basis van titels en abstracts, niet van volledige teksten.",
+    limitedToTop: "Beperkt tot de top {n} best scorende bronnen.",
+    crossSectorLine: "Cross-sector transferbewijs toegevoegd{sectors}, apart gelabeld en buiten de synthese gehouden.",
+    sectorsSuffix: " (sectoren: {sectors})",
+    funnel: "Aantallen (trechter)",
+    fusedCount: "Gefuseerd: {n} unieke bron(nen)",
+    afterRerank: "Na herordening: {n}",
+    keptCount: "Getoond/behouden: {n}",
+    failuresHeading: "Zoekfouten per bron",
+    failureLine: "{label}: {failed}/{total} zoekactie(s) mislukt (rate limit of netwerkfout)."
+  },
+  account: {
+    title: "Methodologische verantwoording",
+    provenanceDerived: "Afgeleid, reproduceerbaar document \u2014 automatisch samengesteld uit de onderzoekssessie.",
+    provenanceScope: "Het beschrijft de **methodologische keuzes** rond het onderzoek, niet het interne redeneren van het model.",
+    sourceLabel: "Bron",
+    researchQuestion: "Onderzoeksvraag",
+    notRecorded: "_Niet vastgelegd \u2014 deze stap is (nog) niet uitgevoerd._",
+    chosenFraming: "Gekozen herformulering (framing)",
+    alternativesNote: "De overwogen alternatieve formuleringen staan onder *{section}*.",
+    unchangedQuestion: "_De oorspronkelijke vraag is ongewijzigd aangehouden._",
+    chosenLensesLabel: "Gekozen lenzen",
+    openQuestions: "Open vragen en vervolgonderzoek"
+  },
+  agenda: {
+    gaps: "Kennislacunes",
+    limitations: "Terugkerende methodologische beperkingen",
+    newQuestions: "Nieuwe onderzoeksvragen",
+    designs: "Passende onderzoeksdesigns",
+    data: "Benodigde data / meetinstrumenten"
+  },
+  graph: {
+    gapNoSubquestions: 'Vraag nog niet opgesplitst in deelvragen: "{label}"',
+    gapNoFindings: 'Vraag heeft nog geen synthese-bevindingen: "{label}"',
+    gapNoSources: 'Vraag heeft nog geen literatuur in het register: "{label}"',
+    gapFindingNoSource: 'Bevinding zonder bronverwijzing (onbewezen claim): "{label}"',
+    gapOpenHypothesis: 'Open hypothese, nog te toetsen: "{label}"',
+    gapSourceUnused: 'Bron nog niet gebruikt in een bevinding: "{label}"',
+    severityHigh: "\u{1F534} Hoog \u2014 onbewezen claims",
+    severityMedium: "\u{1F7E0} Midden \u2014 ontbrekende stappen",
+    severityInfo: "\u{1F535} Info \u2014 open draden",
+    reportTitle: "Kennisgraph (spike) \u2014 {project}",
+    reportIntro: "_Read-only projectie uit de bestaande artefacten (front-matter + gerenderde synthese + citatie-register). Wegwerp: niet met de hand bijwerken \u2014 opnieuw genereren._",
+    sizeHeading: "Omvang",
+    nodesEdgesLine: "**{nodes}** nodes, **{edges}** edges",
+    gapsHeading: "Gaten",
+    noGaps: "_Geen gaten gedetecteerd._",
+    nodesPerType: "Nodes per type",
+    nodeTypeLabels: {
+      vraag: "vraag",
+      deelvraag: "deelvraag",
+      hypothese: "hypothese",
+      bevinding: "bevinding",
+      bron: "bron",
+      lens: "lens"
+    },
+    provenanceHeading: "Provenance",
+    provenanceWithEdges: "Deze graph gebruikt **edges-bij-generatie** (E68): `bron\u2192bevinding` (`onderbouwt`) komt uit de vastgelegde records, dus bevinding\u2192specifieke-bron is betrouwbaar. Notities zonder record (oude runs / proza-fallback) tellen alleen het *aantal* `[n]`-verwijzingen.",
+    provenanceWithoutEdges: "Nog **geen** edges-bij-generatie (E68-records) gevonden voor dit project \u2014 de bevindingen komen uit de gerenderde synthese, waar de `[n]`-nummers geen persistente mapping naar citatie-keys hebben. We tellen daarom alleen of een bevinding *een* verwijzing draagt. Draai een nieuwe synthese om betrouwbare `bron\u2192bevinding`-edges te krijgen."
+  },
+  exportBundle: {
+    accountFileName: "verantwoording.md",
+    bibFileName: "bronnen.bib",
+    stubUnavailable: "_Kon niet automatisch worden samengesteld voor deze export._",
+    stubMissingLabel: "Ontbrekend:",
+    stubMissingAccount: "de methodologische verantwoording",
+    stubNoFrontmatter: "methodologische verantwoording (geen sessie-front-matter gevonden op deze notitie)",
+    noSessions: "_Geen sessies gevonden voor dit project._",
+    artefactsPresent: "{present}/{total} artefacten aanwezig"
+  },
+  project: {
+    objectivePlaceholder: "_(nog te formuleren \u2014 waar wil dit project uiteindelijk antwoord op geven?)_",
+    overviewHeading: "Overzicht",
+    overviewBody: "_Elke onderzoeksvraag is een eigen sessie-notitie in deze map; open de Research Workbench-zijbalk voor het overzicht en om een nieuwe vraag toe te voegen._"
+  },
+  logbook: {
+    stepBeliefs: "Beliefs",
+    stepResearch: "Onderzoek",
+    stepAccount: "Verantwoording",
+    framingChosen: 'framing gekozen: "{framing}"',
+    alternativesConsidered: "; {n} alternatieve formulering(en) overwogen",
+    challengesSummary: "{n} uitdaging(en)",
+    challengesAdopted: "; {n} als overtuiging vastgelegd",
+    lensesChosen: "{n} lens(en) gekozen",
+    lensesEliminated: "; {n} ge\xEBlimineerd",
+    synthesisOver: "synthese over {n} bron(nen)",
+    searchTerms: "; {n} zoekterm(en)",
+    beliefsUpdated: "{n} overtuiging(en) bijgewerkt na toetsing aan de synthese",
+    newQuestionsProposed: "{n} nieuwe onderzoeksvraag/vragen",
+    sessionStarted: "; nieuwe sessie gestart",
+    accountGenerated: "methodologische verantwoording gegenereerd"
+  }
+};
+
+// src/i18n/fr.ts
+var fr = {
+  headings: {
+    synthesis: "Synth\xE8se",
+    exploration: "Exploration du probl\xE8me",
+    lenses: "Lentilles th\xE9oriques",
+    challenge: "Mise \xE0 l'\xE9preuve",
+    agenda: "Agenda de recherche",
+    logbook: "Journal de bord",
+    searchstrategy: "Strat\xE9gie de recherche documentaire",
+    objective: "Objectif",
+    context: "Contexte",
+    beliefs: "Convictions"
+  },
+  exploration: {
+    chosenFraming: "Cadrage retenu :",
+    assumptions: "Pr\xE9suppos\xE9s implicites",
+    counterAssumptions: "Contre-pr\xE9suppos\xE9s possibles",
+    reformulations: "Reformulations",
+    disciplines: "Disciplines / traditions th\xE9oriques",
+    definitions: "D\xE9finitions concurrentes",
+    directions: "Pistes de recherche prometteuses",
+    facetTheoreticalBasis: "base th\xE9orique",
+    facetSearchability: "cherchabilit\xE9",
+    facetLiteratureStrength: "probabilit\xE9 d'une litt\xE9rature solide (estimation)",
+    facetOriginality: "originalit\xE9",
+    chosenSearchTerms: "Termes de recherche (retenus)",
+    initialBeliefs: "Convictions initiales"
+  },
+  theory: {
+    sameMechanism: "M\xEAme m\xE9canisme, autre nom",
+    strikinglyAbsent: "Absences frappantes",
+    competing: "Explications concurrentes",
+    crossDomain: "Connexions interdomaines",
+    chosenLenses: "Lentilles retenues"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Conceptuel",
+      methodologisch: "M\xE9thodologique",
+      theoretisch: "Th\xE9orique",
+      empirisch: "Empirique",
+      praktisch: "Pratique"
+    },
+    actionLabel: "action",
+    inversion: "Si votre hypoth\xE8se est fausse\u2026"
+  },
+  beliefs: {
+    none: "_(aucune conviction consign\xE9e pour l'instant)_",
+    statusLabels: {
+      open: "ouverte",
+      ondersteund: "\xE9tay\xE9e",
+      weersproken: "contredite"
+    },
+    confidenceLabels: {
+      laag: "faible",
+      midden: "moyenne",
+      hoog: "\xE9lev\xE9e"
+    },
+    confidence: "confiance"
+  },
+  synthesis: {
+    findings: "Constats",
+    evidenceInline: "preuve : {strength}{tier}",
+    strengthLabels: {
+      sterk: "solide",
+      gemengd: "mitig\xE9e",
+      beperkt: "limit\xE9e"
+    },
+    contradictions: "Contradictions / cela d\xE9pend",
+    practical: "Traduction pratique",
+    followUps: "Pistes de suivi g\xE9n\xE9ratrices d'hypoth\xE8ses & questions ouvertes",
+    evidenceAndGaps: "Force des preuves & lacunes",
+    scopeCaveat: "\u26A0 Port\xE9e : les preuves portent surtout sur {note} \u2014 pas sp\xE9cifiquement sur la question telle que pos\xE9e. G\xE9n\xE9ralisez avec prudence.",
+    abstractsDisclosure: "La gradation des preuves ci-dessus repose sur les r\xE9sum\xE9s (abstracts), pas sur les textes int\xE9graux \u2014 les r\xE9sum\xE9s omettent souvent les mod\xE9rateurs, les intervalles de confiance et les r\xE9sultats nuls.",
+    fulltextNuanceSingular: " D\xE9sormais, 1 source repose sur le texte int\xE9gral (voir l'approfondissement).",
+    fulltextNuancePlural: " D\xE9sormais, {n} sources reposent sur le texte int\xE9gral (voir l'approfondissement).",
+    unanswered: "Sans r\xE9ponse possible avec ces preuves",
+    reasonNotInvestigated: "non \xE9tudi\xE9 dans les sources trouv\xE9es",
+    reasonDesignInsufficient: "impossible \xE0 \xE9tablir avec les preuves trouv\xE9es (sch\xE9ma d'\xE9tude insuffisant, p. ex. transversal)",
+    designNeeded: " N\xE9cessiterait : {design}.",
+    readingRecommendations: "Lectures int\xE9grales recommand\xE9es",
+    readingRecommendationsNote: "(sur la base des r\xE9sum\xE9s ; souvent en acc\xE8s payant \u2014 \xE0 vous de r\xE9cup\xE9rer le texte int\xE9gral)"
+  },
+  evidenceTier: {
+    strong: "revue/m\xE9ta-analyse",
+    moderate: "ECR",
+    limited: "g\xE9n\xE9rateur d'hypoth\xE8ses"
+  },
+  oa: {
+    paywalled: "probablement en acc\xE8s payant",
+    available: "OA disponible",
+    availablePdf: "OA disponible (pdf)"
+  },
+  sources: {
+    frameworkSource: "source du cadre",
+    analogous: "analogue ({sector})",
+    otherSector: "autre secteur",
+    evidenceTag: "preuve : {label}",
+    notVerifiedDoi: "non v\xE9rifi\xE9 (DOI introuvable)",
+    notCheckedConnection: "non contr\xF4l\xE9 (pas de connexion)",
+    notVerifiedNoId: "non v\xE9rifi\xE9 (pas de DOI/ISBN)",
+    noteMissingId: "pas de DOI/ISBN",
+    noteDoiUnresolved: "DOI introuvable",
+    noteNoConnection: "pas de connexion",
+    transferEvidenceSector: "[preuves analogues issues du secteur : {sector}]",
+    transferEvidenceGeneric: "[preuves analogues issues d'un autre secteur]"
+  },
+  decompose: {
+    frameworkHeading: "Cadre th\xE9orique",
+    dimensionsIntro: "Dimensions (orientent les sous-questions) :",
+    keySources: "Sources cl\xE9s",
+    subQuestions: "Sous-questions",
+    subQuestionsNote: "(d\xE9coupage de la question ; les num\xE9ros renvoient aux sources produites par chaque sous-question)",
+    subQuestionsNoteWithHypotheses: "(d\xE9coupage de la question ; les num\xE9ros renvoient aux sources produites par chaque sous-question, suivis de l'hypoth\xE8se par sous-question)",
+    hypothesisLabel: "Hypoth\xE8se"
+  },
+  searchStrategy: {
+    sources: "Sources",
+    none: "(n\xE9ant)",
+    terms: "Termes de recherche",
+    termsCounted: "Termes de recherche ({n})",
+    resumedLine: "Reprise sur des sources d\xE9j\xE0 trouv\xE9es (en cache) \u2014 aucune nouvelle vague de recherche ex\xE9cut\xE9e.",
+    additionalTerms: "Termes de recherche suppl\xE9mentaires (issus de l'exploration/des lentilles)",
+    selectionCriteria: "Crit\xE8res de s\xE9lection",
+    rerankLine: "Reclassement par pertinence (m\xE9lange d'embeddings) sur les candidats fusionn\xE9s{tested}.",
+    testedAgainstSubQuestions: ", confront\xE9 aux sous-questions",
+    abstractsOnlyLine: "\xC9valuation fond\xE9e sur les titres et les r\xE9sum\xE9s, pas sur les textes int\xE9graux.",
+    limitedToTop: "Limit\xE9 aux {n} sources les mieux class\xE9es.",
+    crossSectorLine: "Preuves de transfert intersectorielles ajout\xE9es{sectors}, \xE9tiquet\xE9es \xE0 part et tenues hors de la synth\xE8se.",
+    sectorsSuffix: " (secteurs : {sectors})",
+    funnel: "D\xE9comptes (entonnoir)",
+    fusedCount: "Fusionn\xE9 : {n} source(s) unique(s)",
+    afterRerank: "Apr\xE8s reclassement : {n}",
+    keptCount: "Affich\xE9/conserv\xE9 : {n}",
+    failuresHeading: "\xC9checs de recherche par source",
+    failureLine: "{label} : {failed}/{total} recherche(s) \xE9chou\xE9e(s) (limite de d\xE9bit ou erreur r\xE9seau)."
+  },
+  account: {
+    title: "Justification m\xE9thodologique",
+    provenanceDerived: "Document d\xE9riv\xE9 et reproductible \u2014 assembl\xE9 automatiquement \xE0 partir de la session de recherche.",
+    provenanceScope: "Il d\xE9crit les **choix m\xE9thodologiques** entourant la recherche, pas le raisonnement interne du mod\xE8le.",
+    sourceLabel: "Source",
+    researchQuestion: "Question de recherche",
+    notRecorded: "_Non consign\xE9 \u2014 cette \xE9tape n'a pas (encore) \xE9t\xE9 ex\xE9cut\xE9e._",
+    chosenFraming: "Reformulation retenue (cadrage)",
+    alternativesNote: "Les formulations alternatives envisag\xE9es figurent sous *{section}*.",
+    unchangedQuestion: "_La question d'origine a \xE9t\xE9 conserv\xE9e telle quelle._",
+    chosenLensesLabel: "Lentilles retenues",
+    openQuestions: "Questions ouvertes et recherches futures"
+  },
+  agenda: {
+    gaps: "Lacunes dans les connaissances",
+    limitations: "Limites m\xE9thodologiques r\xE9currentes",
+    newQuestions: "Nouvelles questions de recherche",
+    designs: "Sch\xE9mas d'\xE9tude adapt\xE9s",
+    data: "Donn\xE9es / instruments de mesure requis"
+  },
+  graph: {
+    gapNoSubquestions: 'Question pas encore d\xE9coup\xE9e en sous-questions : "{label}"',
+    gapNoFindings: 'Question sans constats de synth\xE8se pour le moment : "{label}"',
+    gapNoSources: 'Question sans litt\xE9rature dans le registre pour le moment : "{label}"',
+    gapFindingNoSource: 'Constat sans r\xE9f\xE9rence de source (affirmation non prouv\xE9e) : "{label}"',
+    gapOpenHypothesis: 'Hypoth\xE8se ouverte, encore \xE0 tester : "{label}"',
+    gapSourceUnused: 'Source pas encore utilis\xE9e dans un constat : "{label}"',
+    severityHigh: "\u{1F534} \xC9lev\xE9 \u2014 affirmations non prouv\xE9es",
+    severityMedium: "\u{1F7E0} Moyen \u2014 \xE9tapes manquantes",
+    severityInfo: "\u{1F535} Info \u2014 fils en suspens",
+    reportTitle: "Graphe de connaissances (spike) \u2014 {project}",
+    reportIntro: "_Projection en lecture seule des artefacts existants (front matter + synth\xE8se rendue + registre de citations). Jetable : ne pas modifier \xE0 la main \u2014 r\xE9g\xE9n\xE9rer._",
+    sizeHeading: "Taille",
+    nodesEdgesLine: "**{nodes}** n\u0153uds, **{edges}** ar\xEAtes",
+    gapsHeading: "Lacunes",
+    noGaps: "_Aucune lacune d\xE9tect\xE9e._",
+    nodesPerType: "N\u0153uds par type",
+    nodeTypeLabels: {
+      vraag: "question",
+      deelvraag: "sous-question",
+      hypothese: "hypoth\xE8se",
+      bevinding: "constat",
+      bron: "source",
+      lens: "lentille"
+    },
+    provenanceHeading: "Provenance",
+    provenanceWithEdges: "Ce graphe utilise des **ar\xEAtes \xE0 la g\xE9n\xE9ration** (E68) : `source\u2192constat` (`onderbouwt`) provient des enregistrements consign\xE9s, donc le lien constat\u2192source pr\xE9cise est fiable. Les notes sans enregistrement (anciennes ex\xE9cutions / repli en prose) ne comptent que le *nombre* de r\xE9f\xE9rences `[n]`.",
+    provenanceWithoutEdges: "Aucune ar\xEAte \xE0 la g\xE9n\xE9ration (enregistrements E68) trouv\xE9e pour ce projet pour l'instant \u2014 les constats proviennent de la synth\xE8se rendue, o\xF9 les num\xE9ros `[n]` n'ont pas de correspondance persistante avec les cl\xE9s de citation. Nous ne comptons donc que si un constat porte *une* r\xE9f\xE9rence. Lancez une nouvelle synth\xE8se pour obtenir des ar\xEAtes `source\u2192constat` fiables."
+  },
+  exportBundle: {
+    accountFileName: "justification-methodologique.md",
+    bibFileName: "sources.bib",
+    stubUnavailable: "_N'a pas pu \xEAtre assembl\xE9 automatiquement pour cette exportation._",
+    stubMissingLabel: "Manquant :",
+    stubMissingAccount: "la justification m\xE9thodologique",
+    stubNoFrontmatter: "justification m\xE9thodologique (aucun front matter de session trouv\xE9 sur cette note)",
+    noSessions: "_Aucune session trouv\xE9e pour ce projet._",
+    artefactsPresent: "{present}/{total} artefacts pr\xE9sents"
+  },
+  project: {
+    objectivePlaceholder: "_(encore \xE0 formuler \u2014 \xE0 quoi ce projet doit-il r\xE9pondre en d\xE9finitive ?)_",
+    overviewHeading: "Vue d'ensemble",
+    overviewBody: "_Chaque question de recherche est une note de session \xE0 part dans ce dossier ; ouvrez la barre lat\xE9rale de Parallax pour la vue d'ensemble et pour ajouter une nouvelle question._"
+  },
+  logbook: {
+    stepBeliefs: "Convictions",
+    stepResearch: "Recherche",
+    stepAccount: "Justification",
+    framingChosen: 'cadrage retenu : "{framing}"',
+    alternativesConsidered: "; {n} formulation(s) alternative(s) envisag\xE9e(s)",
+    challengesSummary: "{n} objection(s)",
+    challengesAdopted: "; {n} consign\xE9e(s) comme conviction",
+    lensesChosen: "{n} lentille(s) retenue(s)",
+    lensesEliminated: "; {n} \xE9limin\xE9e(s)",
+    synthesisOver: "synth\xE8se sur {n} source(s)",
+    searchTerms: "; {n} terme(s) de recherche",
+    beliefsUpdated: "{n} conviction(s) mise(s) \xE0 jour apr\xE8s confrontation avec la synth\xE8se",
+    newQuestionsProposed: "{n} nouvelle(s) question(s) de recherche",
+    sessionStarted: "; nouvelle session d\xE9marr\xE9e",
+    accountGenerated: "justification m\xE9thodologique g\xE9n\xE9r\xE9e"
+  }
+};
+
+// src/i18n/de.ts
+var de = {
+  headings: {
+    synthesis: "Synthese",
+    exploration: "Problemerkundung",
+    lenses: "Theoretische Linsen",
+    challenge: "Challenge",
+    agenda: "Forschungsagenda",
+    logbook: "Logbuch",
+    searchstrategy: "Suchstrategie",
+    objective: "Zielsetzung",
+    context: "Kontext",
+    beliefs: "\xDCberzeugungen"
+  },
+  exploration: {
+    chosenFraming: "Gew\xE4hltes Framing:",
+    assumptions: "Implizite Annahmen",
+    counterAssumptions: "M\xF6gliche Gegenannahmen",
+    reformulations: "Umformulierungen",
+    disciplines: "Disziplinen / theoretische Traditionen",
+    definitions: "Konkurrierende Definitionen",
+    directions: "Vielversprechende Forschungsrichtungen",
+    facetTheoreticalBasis: "theoretische Basis",
+    facetSearchability: "Suchbarkeit",
+    facetLiteratureStrength: "Wahrscheinlichkeit starker Literatur (Einsch\xE4tzung)",
+    facetOriginality: "Originalit\xE4t",
+    chosenSearchTerms: "Suchbegriffe (gew\xE4hlt)",
+    initialBeliefs: "Anf\xE4ngliche \xDCberzeugungen"
+  },
+  theory: {
+    sameMechanism: "Gleicher Mechanismus, anderer Name",
+    strikinglyAbsent: "Auff\xE4llig abwesend",
+    competing: "Konkurrierende Erkl\xE4rungen",
+    crossDomain: "Dom\xE4nen\xFCbergreifende Verbindungen",
+    chosenLenses: "Gew\xE4hlte Linsen"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Konzeptionell",
+      methodologisch: "Methodologisch",
+      theoretisch: "Theoretisch",
+      empirisch: "Empirisch",
+      praktisch: "Praktisch"
+    },
+    actionLabel: "Aktion",
+    inversion: "Falls deine Hypothese falsch ist\u2026"
+  },
+  beliefs: {
+    none: "_(noch keine \xDCberzeugungen festgehalten)_",
+    statusLabels: {
+      open: "offen",
+      ondersteund: "gest\xFCtzt",
+      weersproken: "widersprochen"
+    },
+    confidenceLabels: {
+      laag: "niedrig",
+      midden: "mittel",
+      hoog: "hoch"
+    },
+    confidence: "Konfidenz"
+  },
+  synthesis: {
+    findings: "Befunde",
+    evidenceInline: "Evidenz: {strength}{tier}",
+    strengthLabels: {
+      sterk: "stark",
+      gemengd: "gemischt",
+      beperkt: "begrenzt"
+    },
+    contradictions: "Widerspr\xFCche / es kommt darauf an",
+    practical: "Praktische \xDCbersetzung",
+    followUps: "Hypothesengenerierende Anschlussrichtungen & offene Fragen",
+    evidenceAndGaps: "Evidenzst\xE4rke & L\xFCcken",
+    scopeCaveat: "\u26A0 Geltungsbereich: Die Evidenz bezieht sich \xFCberwiegend auf {note} \u2014 nicht spezifisch auf die Frage, wie sie gestellt wurde. Mit Vorsicht generalisieren.",
+    abstractsDisclosure: "Die obige Evidenzgraduierung beruht auf Abstracts, nicht auf Volltexten \u2014 Abstracts lassen h\xE4ufig Moderatoren, Konfidenzintervalle und Nullergebnisse weg.",
+    fulltextNuanceSingular: " Inzwischen st\xFCtzt sich 1 Quelle auf den Volltext (siehe die Vertiefung).",
+    fulltextNuancePlural: " Inzwischen st\xFCtzen sich {n} Quellen auf den Volltext (siehe die Vertiefung).",
+    unanswered: "Mit dieser Evidenz nicht zu beantworten",
+    reasonNotInvestigated: "in den gefundenen Quellen nicht untersucht",
+    reasonDesignInsufficient: "mit der gefundenen Evidenz nicht feststellbar (Design unzureichend, z. B. querschnittlich)",
+    designNeeded: " W\xFCrde eine {design} erfordern.",
+    readingRecommendations: "Empfohlen zur vollst\xE4ndigen Lekt\xFCre",
+    readingRecommendationsNote: "(auf Basis der Abstracts; oft hinter einer Paywall \u2014 den Volltext beschaffst du selbst)"
+  },
+  evidenceTier: {
+    strong: "Review/Metaanalyse",
+    moderate: "RCT",
+    limited: "hypothesengenerierend"
+  },
+  oa: {
+    paywalled: "vermutlich hinter einer Paywall",
+    available: "OA verf\xFCgbar",
+    availablePdf: "OA verf\xFCgbar (pdf)"
+  },
+  sources: {
+    frameworkSource: "Rahmenwerkquelle",
+    analogous: "analog ({sector})",
+    otherSector: "anderer Sektor",
+    evidenceTag: "Evidenz: {label}",
+    notVerifiedDoi: "nicht verifiziert (DOI nicht aufl\xF6sbar)",
+    notCheckedConnection: "nicht gepr\xFCft (keine Verbindung)",
+    notVerifiedNoId: "nicht verifiziert (keine DOI/ISBN)",
+    noteMissingId: "keine DOI/ISBN",
+    noteDoiUnresolved: "DOI nicht aufl\xF6sbar",
+    noteNoConnection: "keine Verbindung",
+    transferEvidenceSector: "[analoge Evidenz aus Sektor: {sector}]",
+    transferEvidenceGeneric: "[analoge Evidenz aus einem anderen Sektor]"
+  },
+  decompose: {
+    frameworkHeading: "Theoretischer Rahmen",
+    dimensionsIntro: "Dimensionen (steuern die Teilfragen):",
+    keySources: "Schl\xFCsselquellen",
+    subQuestions: "Teilfragen",
+    subQuestionsNote: "(so wurde die Frage aufgeteilt; Nummern verweisen auf die Quellen, die jede Teilfrage ergab)",
+    subQuestionsNoteWithHypotheses: "(so wurde die Frage aufgeteilt; Nummern verweisen auf die Quellen, die jede Teilfrage ergab, gefolgt von der Hypothese je Teilfrage)",
+    hypothesisLabel: "Hypothese"
+  },
+  searchStrategy: {
+    sources: "Quellen",
+    none: "(keine)",
+    terms: "Suchbegriffe",
+    termsCounted: "Suchbegriffe ({n})",
+    resumedLine: "Fortgesetzt auf zuvor gefundenen (gecachten) Quellen \u2014 keine neue Suchrunde ausgef\xFChrt.",
+    additionalTerms: "Zus\xE4tzliche Suchbegriffe (aus Erkundung/Linsen)",
+    selectionCriteria: "Auswahlkriterien",
+    rerankLine: "Relevanz-Neuordnung (Embedding-Blend) \xFCber die fusionierten Kandidaten{tested}.",
+    testedAgainstSubQuestions: ", gepr\xFCft gegen die Teilfragen",
+    abstractsOnlyLine: "Beurteilung auf Basis von Titeln und Abstracts, nicht von Volltexten.",
+    limitedToTop: "Begrenzt auf die {n} bestbewerteten Quellen.",
+    crossSectorLine: "Sektor\xFCbergreifende Transferevidenz hinzugef\xFCgt{sectors}, separat gekennzeichnet und aus der Synthese herausgehalten.",
+    sectorsSuffix: " (Sektoren: {sectors})",
+    funnel: "Zahlen (Trichter)",
+    fusedCount: "Fusioniert: {n} eindeutige Quelle(n)",
+    afterRerank: "Nach Neuordnung: {n}",
+    keptCount: "Gezeigt/behalten: {n}",
+    failuresHeading: "Suchfehler je Quelle",
+    failureLine: "{label}: {failed}/{total} Suchvorgang/-vorg\xE4nge fehlgeschlagen (Rate-Limit oder Netzwerkfehler)."
+  },
+  account: {
+    title: "Methodologische Rechenschaft",
+    provenanceDerived: "Abgeleitetes, reproduzierbares Dokument \u2014 automatisch aus der Forschungssession zusammengestellt.",
+    provenanceScope: "Es beschreibt die **methodologischen Entscheidungen** rund um die Forschung, nicht das interne Schlussfolgern des Modells.",
+    sourceLabel: "Quelle",
+    researchQuestion: "Forschungsfrage",
+    notRecorded: "_Nicht festgehalten \u2014 dieser Schritt wurde (noch) nicht ausgef\xFChrt._",
+    chosenFraming: "Gew\xE4hlte Umformulierung (Framing)",
+    alternativesNote: "Die erwogenen alternativen Formulierungen stehen unter *{section}*.",
+    unchangedQuestion: "_Die urspr\xFCngliche Frage wurde unver\xE4ndert beibehalten._",
+    chosenLensesLabel: "Gew\xE4hlte Linsen",
+    openQuestions: "Offene Fragen und Anschlussforschung"
+  },
+  agenda: {
+    gaps: "Wissensl\xFCcken",
+    limitations: "Wiederkehrende methodologische Limitationen",
+    newQuestions: "Neue Forschungsfragen",
+    designs: "Passende Forschungsdesigns",
+    data: "Ben\xF6tigte Daten / Messinstrumente"
+  },
+  graph: {
+    gapNoSubquestions: 'Frage noch nicht in Teilfragen aufgeteilt: "{label}"',
+    gapNoFindings: 'Frage hat noch keine Synthese-Befunde: "{label}"',
+    gapNoSources: 'Frage hat noch keine Literatur im Register: "{label}"',
+    gapFindingNoSource: 'Befund ohne Quellenverweis (unbelegte Behauptung): "{label}"',
+    gapOpenHypothesis: 'Offene Hypothese, noch zu pr\xFCfen: "{label}"',
+    gapSourceUnused: 'Quelle noch nicht in einem Befund verwendet: "{label}"',
+    severityHigh: "\u{1F534} Hoch \u2014 unbelegte Behauptungen",
+    severityMedium: "\u{1F7E0} Mittel \u2014 fehlende Schritte",
+    severityInfo: "\u{1F535} Info \u2014 offene F\xE4den",
+    reportTitle: "Wissensgraph (Spike) \u2014 {project}",
+    reportIntro: "_Schreibgesch\xFCtzte Projektion aus den vorhandenen Artefakten (Front-Matter + gerenderte Synthese + Zitationsregister). Wegwerfartefakt: nicht von Hand bearbeiten \u2014 neu generieren._",
+    sizeHeading: "Umfang",
+    nodesEdgesLine: "**{nodes}** Knoten, **{edges}** Kanten",
+    gapsHeading: "L\xFCcken",
+    noGaps: "_Keine L\xFCcken erkannt._",
+    nodesPerType: "Knoten je Typ",
+    nodeTypeLabels: {
+      vraag: "Frage",
+      deelvraag: "Teilfrage",
+      hypothese: "Hypothese",
+      bevinding: "Befund",
+      bron: "Quelle",
+      lens: "Linse"
+    },
+    provenanceHeading: "Provenienz",
+    provenanceWithEdges: "Dieser Graph nutzt **Kanten-bei-Generierung** (E68): `Quelle\u2192Befund` (`onderbouwt`) stammt aus den festgehaltenen Records, daher ist Befund\u2192spezifische-Quelle verl\xE4sslich. Notizen ohne Record (alte L\xE4ufe / Prosa-Fallback) z\xE4hlen nur die *Anzahl* der `[n]`-Verweise.",
+    provenanceWithoutEdges: "F\xFCr dieses Projekt wurden noch **keine** Kanten-bei-Generierung (E68-Records) gefunden \u2014 die Befunde stammen aus der gerenderten Synthese, in der die `[n]`-Nummern keine persistente Zuordnung zu Zitations-Keys haben. Wir z\xE4hlen daher nur, ob ein Befund *einen* Verweis tr\xE4gt. F\xFChre eine neue Synthese aus, um verl\xE4ssliche `Quelle\u2192Befund`-Kanten zu erhalten."
+  },
+  exportBundle: {
+    accountFileName: "methodologische-rechenschaft.md",
+    bibFileName: "quellen.bib",
+    stubUnavailable: "_Konnte f\xFCr diesen Export nicht automatisch zusammengestellt werden._",
+    stubMissingLabel: "Fehlend:",
+    stubMissingAccount: "die methodologische Rechenschaft",
+    stubNoFrontmatter: "methodologische Rechenschaft (kein Session-Front-Matter auf dieser Notiz gefunden)",
+    noSessions: "_Keine Sessions f\xFCr dieses Projekt gefunden._",
+    artefactsPresent: "{present}/{total} Artefakte vorhanden"
+  },
+  project: {
+    objectivePlaceholder: "_(noch zu formulieren \u2014 was soll dieses Projekt letztlich beantworten?)_",
+    overviewHeading: "\xDCbersicht",
+    overviewBody: "_Jede Forschungsfrage ist eine eigene Session-Notiz in diesem Ordner; \xF6ffne die Parallax-Seitenleiste f\xFCr die \xDCbersicht und um eine neue Frage hinzuzuf\xFCgen._"
+  },
+  logbook: {
+    stepBeliefs: "\xDCberzeugungen",
+    stepResearch: "Recherche",
+    stepAccount: "Rechenschaft",
+    framingChosen: 'Framing gew\xE4hlt: "{framing}"',
+    alternativesConsidered: "; {n} alternative Formulierung(en) erwogen",
+    challengesSummary: "{n} Challenge(s)",
+    challengesAdopted: "; {n} als \xDCberzeugung festgehalten",
+    lensesChosen: "{n} Linse(n) gew\xE4hlt",
+    lensesEliminated: "; {n} eliminiert",
+    synthesisOver: "Synthese \xFCber {n} Quelle(n)",
+    searchTerms: "; {n} Suchbegriff(e)",
+    beliefsUpdated: "{n} \xDCberzeugung(en) nach Abgleich mit der Synthese aktualisiert",
+    newQuestionsProposed: "{n} neue Forschungsfrage(n)",
+    sessionStarted: "; neue Session gestartet",
+    accountGenerated: "methodologische Rechenschaft generiert"
+  }
+};
+
+// src/i18n/es.ts
+var es = {
+  headings: {
+    synthesis: "S\xEDntesis",
+    exploration: "Exploraci\xF3n del problema",
+    lenses: "Lentes te\xF3ricas",
+    challenge: "Cuestionamiento",
+    agenda: "Agenda de investigaci\xF3n",
+    logbook: "Bit\xE1cora",
+    searchstrategy: "Estrategia de b\xFAsqueda",
+    objective: "Objetivo",
+    context: "Contexto",
+    beliefs: "Convicciones"
+  },
+  exploration: {
+    chosenFraming: "Encuadre elegido:",
+    assumptions: "Supuestos impl\xEDcitos",
+    counterAssumptions: "Posibles contrasupuestos",
+    reformulations: "Reformulaciones",
+    disciplines: "Disciplinas / tradiciones te\xF3ricas",
+    definitions: "Definiciones en competencia",
+    directions: "Direcciones de investigaci\xF3n prometedoras",
+    facetTheoreticalBasis: "base te\xF3rica",
+    facetSearchability: "facilidad de b\xFAsqueda",
+    facetLiteratureStrength: "probabilidad de literatura s\xF3lida (estimaci\xF3n)",
+    facetOriginality: "originalidad",
+    chosenSearchTerms: "T\xE9rminos de b\xFAsqueda (elegidos)",
+    initialBeliefs: "Convicciones iniciales"
+  },
+  theory: {
+    sameMechanism: "Mismo mecanismo, distinto nombre",
+    strikinglyAbsent: "Llamativamente ausente",
+    competing: "Explicaciones en competencia",
+    crossDomain: "Conexiones entre dominios",
+    chosenLenses: "Lentes elegidas"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Conceptual",
+      methodologisch: "Metodol\xF3gica",
+      theoretisch: "Te\xF3rica",
+      empirisch: "Emp\xEDrica",
+      praktisch: "Pr\xE1ctica"
+    },
+    actionLabel: "acci\xF3n",
+    inversion: "Si tu hip\xF3tesis es err\xF3nea\u2026"
+  },
+  beliefs: {
+    none: "_(a\xFAn no hay convicciones registradas)_",
+    statusLabels: {
+      open: "abierta",
+      ondersteund: "respaldada",
+      weersproken: "contradicha"
+    },
+    confidenceLabels: {
+      laag: "baja",
+      midden: "media",
+      hoog: "alta"
+    },
+    confidence: "confianza"
+  },
+  synthesis: {
+    findings: "Hallazgos",
+    evidenceInline: "evidencia: {strength}{tier}",
+    strengthLabels: {
+      sterk: "s\xF3lida",
+      gemengd: "mixta",
+      beperkt: "limitada"
+    },
+    contradictions: "Contradicciones / depende",
+    practical: "Traducci\xF3n pr\xE1ctica",
+    followUps: "Direcciones de seguimiento generadoras de hip\xF3tesis y preguntas abiertas",
+    evidenceAndGaps: "Solidez de la evidencia y lagunas",
+    scopeCaveat: "\u26A0 Alcance: la evidencia trata sobre todo de {note} \u2014 no espec\xEDficamente de la pregunta tal como se plante\xF3. Generaliza con cautela.",
+    abstractsDisclosure: "La gradaci\xF3n de la evidencia anterior se basa en res\xFAmenes (abstracts), no en textos completos \u2014 los res\xFAmenes suelen omitir moderadores, intervalos de confianza y resultados nulos.",
+    fulltextNuanceSingular: " A estas alturas, 1 fuente se apoya en el texto completo (v\xE9ase la profundizaci\xF3n).",
+    fulltextNuancePlural: " A estas alturas, {n} fuentes se apoyan en el texto completo (v\xE9ase la profundizaci\xF3n).",
+    unanswered: "No puede responderse con esta evidencia",
+    reasonNotInvestigated: "no investigado en las fuentes encontradas",
+    reasonDesignInsufficient: "no puede establecerse con la evidencia encontrada (dise\xF1o insuficiente, p. ej. transversal)",
+    designNeeded: " Requerir\xEDa un {design}.",
+    readingRecommendations: "Recomendado leer en su totalidad",
+    readingRecommendationsNote: "(basado en los res\xFAmenes; a menudo tras un muro de pago \u2014 el texto completo lo obtienes t\xFA)"
+  },
+  evidenceTier: {
+    strong: "revisi\xF3n/metaan\xE1lisis",
+    moderate: "ECA",
+    limited: "generador de hip\xF3tesis"
+  },
+  oa: {
+    paywalled: "probablemente tras un muro de pago",
+    available: "OA disponible",
+    availablePdf: "OA disponible (pdf)"
+  },
+  sources: {
+    frameworkSource: "fuente del marco",
+    analogous: "an\xE1loga ({sector})",
+    otherSector: "otro sector",
+    evidenceTag: "evidencia: {label}",
+    notVerifiedDoi: "no verificada (DOI no resoluble)",
+    notCheckedConnection: "no comprobada (sin conexi\xF3n)",
+    notVerifiedNoId: "no verificada (sin DOI/ISBN)",
+    noteMissingId: "sin DOI/ISBN",
+    noteDoiUnresolved: "DOI no resoluble",
+    noteNoConnection: "sin conexi\xF3n",
+    transferEvidenceSector: "[evidencia an\xE1loga del sector: {sector}]",
+    transferEvidenceGeneric: "[evidencia an\xE1loga de otro sector]"
+  },
+  decompose: {
+    frameworkHeading: "Marco te\xF3rico",
+    dimensionsIntro: "Dimensiones (gu\xEDan las subpreguntas):",
+    keySources: "Fuentes clave",
+    subQuestions: "Subpreguntas",
+    subQuestionsNote: "(as\xED se dividi\xF3 la pregunta; los n\xFAmeros remiten a las fuentes que aport\xF3 cada subpregunta)",
+    subQuestionsNoteWithHypotheses: "(as\xED se dividi\xF3 la pregunta; los n\xFAmeros remiten a las fuentes que aport\xF3 cada subpregunta, seguidas de la hip\xF3tesis por subpregunta)",
+    hypothesisLabel: "Hip\xF3tesis"
+  },
+  searchStrategy: {
+    sources: "Fuentes",
+    none: "(ninguna)",
+    terms: "T\xE9rminos de b\xFAsqueda",
+    termsCounted: "T\xE9rminos de b\xFAsqueda ({n})",
+    resumedLine: "Reanudado sobre fuentes ya encontradas (en cach\xE9) \u2014 no se ejecut\xF3 una nueva ronda de b\xFAsqueda.",
+    additionalTerms: "T\xE9rminos de b\xFAsqueda adicionales (de la exploraci\xF3n/las lentes)",
+    selectionCriteria: "Criterios de selecci\xF3n",
+    rerankLine: "Reordenaci\xF3n por relevancia (mezcla de embeddings) sobre los candidatos fusionados{tested}.",
+    testedAgainstSubQuestions: ", contrastados con las subpreguntas",
+    abstractsOnlyLine: "Evaluaci\xF3n basada en t\xEDtulos y res\xFAmenes, no en textos completos.",
+    limitedToTop: "Limitado a las {n} fuentes con mejor puntuaci\xF3n.",
+    crossSectorLine: "Evidencia de transferencia intersectorial a\xF1adida{sectors}, etiquetada por separado y mantenida fuera de la s\xEDntesis.",
+    sectorsSuffix: " (sectores: {sectors})",
+    funnel: "Recuentos (embudo)",
+    fusedCount: "Fusionadas: {n} fuente(s) \xFAnica(s)",
+    afterRerank: "Tras la reordenaci\xF3n: {n}",
+    keptCount: "Mostradas/conservadas: {n}",
+    failuresHeading: "Fallos de b\xFAsqueda por fuente",
+    failureLine: "{label}: {failed}/{total} b\xFAsqueda(s) fallida(s) (l\xEDmite de tasa o error de red)."
+  },
+  account: {
+    title: "Justificaci\xF3n metodol\xF3gica",
+    provenanceDerived: "Documento derivado y reproducible \u2014 ensamblado autom\xE1ticamente a partir de la sesi\xF3n de investigaci\xF3n.",
+    provenanceScope: "Describe las **decisiones metodol\xF3gicas** en torno a la investigaci\xF3n, no el razonamiento interno del modelo.",
+    sourceLabel: "Fuente",
+    researchQuestion: "Pregunta de investigaci\xF3n",
+    notRecorded: "_No registrado \u2014 este paso no se ha ejecutado (todav\xEDa)._",
+    chosenFraming: "Reformulaci\xF3n elegida (encuadre)",
+    alternativesNote: "Las formulaciones alternativas consideradas figuran en *{section}*.",
+    unchangedQuestion: "_La pregunta original se mantuvo sin cambios._",
+    chosenLensesLabel: "Lentes elegidas",
+    openQuestions: "Preguntas abiertas e investigaci\xF3n de seguimiento"
+  },
+  agenda: {
+    gaps: "Lagunas de conocimiento",
+    limitations: "Limitaciones metodol\xF3gicas recurrentes",
+    newQuestions: "Nuevas preguntas de investigaci\xF3n",
+    designs: "Dise\xF1os de investigaci\xF3n adecuados",
+    data: "Datos / instrumentos de medici\xF3n necesarios"
+  },
+  graph: {
+    gapNoSubquestions: 'Pregunta a\xFAn no dividida en subpreguntas: "{label}"',
+    gapNoFindings: 'La pregunta a\xFAn no tiene hallazgos de s\xEDntesis: "{label}"',
+    gapNoSources: 'La pregunta a\xFAn no tiene literatura en el registro: "{label}"',
+    gapFindingNoSource: 'Hallazgo sin referencia a una fuente (afirmaci\xF3n no probada): "{label}"',
+    gapOpenHypothesis: 'Hip\xF3tesis abierta, pendiente de contrastar: "{label}"',
+    gapSourceUnused: 'Fuente a\xFAn no utilizada en ning\xFAn hallazgo: "{label}"',
+    severityHigh: "\u{1F534} Alta \u2014 afirmaciones no probadas",
+    severityMedium: "\u{1F7E0} Media \u2014 pasos ausentes",
+    severityInfo: "\u{1F535} Info \u2014 hilos abiertos",
+    reportTitle: "Grafo de conocimiento (spike) \u2014 {project}",
+    reportIntro: "_Proyecci\xF3n de solo lectura a partir de los artefactos existentes (front matter + s\xEDntesis renderizada + registro de citas). Desechable: no editar a mano \u2014 regenerar._",
+    sizeHeading: "Tama\xF1o",
+    nodesEdgesLine: "**{nodes}** nodos, **{edges}** aristas",
+    gapsHeading: "Lagunas",
+    noGaps: "_No se detectaron lagunas._",
+    nodesPerType: "Nodos por tipo",
+    nodeTypeLabels: {
+      vraag: "pregunta",
+      deelvraag: "subpregunta",
+      hypothese: "hip\xF3tesis",
+      bevinding: "hallazgo",
+      bron: "fuente",
+      lens: "lente"
+    },
+    provenanceHeading: "Procedencia",
+    provenanceWithEdges: "Este grafo usa **aristas-en-generaci\xF3n** (E68): `fuente\u2192hallazgo` (`onderbouwt`) proviene de los registros guardados, por lo que hallazgo\u2192fuente-espec\xEDfica es fiable. Las notas sin registro (ejecuciones antiguas / respaldo en prosa) solo cuentan el *n\xFAmero* de referencias `[n]`.",
+    provenanceWithoutEdges: "A\xFAn no se han encontrado aristas-en-generaci\xF3n (registros E68) para este proyecto \u2014 los hallazgos provienen de la s\xEDntesis renderizada, donde los n\xFAmeros `[n]` no tienen un mapeo persistente a claves de cita. Por tanto, solo contamos si un hallazgo lleva *alguna* referencia. Ejecuta una nueva s\xEDntesis para obtener aristas `fuente\u2192hallazgo` fiables."
+  },
+  exportBundle: {
+    accountFileName: "justificaci\xF3n-metodol\xF3gica.md",
+    bibFileName: "fuentes.bib",
+    stubUnavailable: "_No pudo ensamblarse autom\xE1ticamente para esta exportaci\xF3n._",
+    stubMissingLabel: "Falta:",
+    stubMissingAccount: "la justificaci\xF3n metodol\xF3gica",
+    stubNoFrontmatter: "justificaci\xF3n metodol\xF3gica (no se encontr\xF3 front matter de sesi\xF3n en esta nota)",
+    noSessions: "_No se encontraron sesiones para este proyecto._",
+    artefactsPresent: "{present}/{total} artefactos presentes"
+  },
+  project: {
+    objectivePlaceholder: "_(pendiente de formular \u2014 \xBFqu\xE9 deber\xEDa responder en \xFAltima instancia este proyecto?)_",
+    overviewHeading: "Panorama general",
+    overviewBody: "_Cada pregunta de investigaci\xF3n es su propia nota de sesi\xF3n en esta carpeta; abre la barra lateral de Parallax para ver el panorama general y a\xF1adir una nueva pregunta._"
+  },
+  logbook: {
+    stepBeliefs: "Convicciones",
+    stepResearch: "Investigaci\xF3n",
+    stepAccount: "Justificaci\xF3n",
+    framingChosen: 'encuadre elegido: "{framing}"',
+    alternativesConsidered: "; {n} formulaci\xF3n(es) alternativa(s) considerada(s)",
+    challengesSummary: "{n} cuestionamiento(s)",
+    challengesAdopted: "; {n} registrado(s) como convicci\xF3n",
+    lensesChosen: "{n} lente(s) elegida(s)",
+    lensesEliminated: "; {n} eliminada(s)",
+    synthesisOver: "s\xEDntesis sobre {n} fuente(s)",
+    searchTerms: "; {n} t\xE9rmino(s) de b\xFAsqueda",
+    beliefsUpdated: "{n} convicci\xF3n(es) actualizada(s) tras el contraste con la s\xEDntesis",
+    newQuestionsProposed: "{n} nueva(s) pregunta(s) de investigaci\xF3n",
+    sessionStarted: "; nueva sesi\xF3n iniciada",
+    accountGenerated: "justificaci\xF3n metodol\xF3gica generada"
+  }
+};
+
+// src/i18n/pt.ts
+var pt = {
+  headings: {
+    synthesis: "S\xEDntese",
+    exploration: "Explora\xE7\xE3o do problema",
+    lenses: "Lentes te\xF3ricas",
+    challenge: "Desafio",
+    agenda: "Agenda de pesquisa",
+    logbook: "Di\xE1rio de bordo",
+    searchstrategy: "Estrat\xE9gia de busca",
+    objective: "Objetivo",
+    context: "Contexto",
+    beliefs: "Cren\xE7as"
+  },
+  exploration: {
+    chosenFraming: "Enquadramento escolhido:",
+    assumptions: "Pressupostos impl\xEDcitos",
+    counterAssumptions: "Poss\xEDveis contrapressupostos",
+    reformulations: "Reformula\xE7\xF5es",
+    disciplines: "Disciplinas / tradi\xE7\xF5es te\xF3ricas",
+    definitions: "Defini\xE7\xF5es concorrentes",
+    directions: "Dire\xE7\xF5es de pesquisa promissoras",
+    facetTheoreticalBasis: "base te\xF3rica",
+    facetSearchability: "facilidade de busca",
+    facetLiteratureStrength: "probabilidade de literatura s\xF3lida (estimativa)",
+    facetOriginality: "originalidade",
+    chosenSearchTerms: "Termos de busca (escolhidos)",
+    initialBeliefs: "Cren\xE7as iniciais"
+  },
+  theory: {
+    sameMechanism: "Mesmo mecanismo, outro nome",
+    strikinglyAbsent: "Notavelmente ausente",
+    competing: "Explica\xE7\xF5es concorrentes",
+    crossDomain: "Conex\xF5es entre dom\xEDnios",
+    chosenLenses: "Lentes escolhidas"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Conceitual",
+      methodologisch: "Metodol\xF3gico",
+      theoretisch: "Te\xF3rico",
+      empirisch: "Emp\xEDrico",
+      praktisch: "Pr\xE1tico"
+    },
+    actionLabel: "a\xE7\xE3o",
+    inversion: "Se a sua hip\xF3tese estiver errada\u2026"
+  },
+  beliefs: {
+    none: "_(ainda n\xE3o h\xE1 cren\xE7as documentadas)_",
+    statusLabels: {
+      open: "em aberto",
+      ondersteund: "sustentada",
+      weersproken: "contrariada"
+    },
+    confidenceLabels: {
+      laag: "baixa",
+      midden: "m\xE9dia",
+      hoog: "alta"
+    },
+    confidence: "confian\xE7a"
+  },
+  synthesis: {
+    findings: "Achados",
+    evidenceInline: "evid\xEAncia: {strength}{tier}",
+    strengthLabels: {
+      sterk: "forte",
+      gemengd: "mista",
+      beperkt: "limitada"
+    },
+    contradictions: "Contradi\xE7\xF5es / depende",
+    practical: "Tradu\xE7\xE3o pr\xE1tica",
+    followUps: "Dire\xE7\xF5es de continua\xE7\xE3o geradoras de hip\xF3teses & quest\xF5es em aberto",
+    evidenceAndGaps: "For\xE7a da evid\xEAncia & lacunas",
+    scopeCaveat: "\u26A0 Alcance: a evid\xEAncia trata sobretudo de {note} \u2014 n\xE3o especificamente da quest\xE3o tal como foi formulada. Generalize com cautela.",
+    abstractsDisclosure: "A gradua\xE7\xE3o da evid\xEAncia acima baseia-se em resumos (abstracts), n\xE3o em textos integrais \u2014 os resumos frequentemente omitem moderadores, intervalos de confian\xE7a e resultados nulos.",
+    fulltextNuanceSingular: " Atualmente, 1 fonte baseia-se no texto integral (ver o aprofundamento).",
+    fulltextNuancePlural: " Atualmente, {n} fontes baseiam-se no texto integral (ver o aprofundamento).",
+    unanswered: "N\xE3o \xE9 poss\xEDvel responder com esta evid\xEAncia",
+    reasonNotInvestigated: "n\xE3o investigado nas fontes encontradas",
+    reasonDesignInsufficient: "n\xE3o pode ser estabelecido com a evid\xEAncia encontrada (desenho insuficiente, p. ex. transversal)",
+    designNeeded: " Exigiria um {design}.",
+    readingRecommendations: "Recomendado ler na \xEDntegra",
+    readingRecommendationsNote: "(com base nos resumos; frequentemente atr\xE1s de paywall \u2014 a obten\xE7\xE3o do texto integral fica por sua conta)"
+  },
+  evidenceTier: {
+    strong: "revis\xE3o/meta-an\xE1lise",
+    moderate: "ECR",
+    limited: "gerador de hip\xF3teses"
+  },
+  oa: {
+    paywalled: "provavelmente atr\xE1s de paywall",
+    available: "acesso aberto dispon\xEDvel",
+    availablePdf: "acesso aberto dispon\xEDvel (pdf)"
+  },
+  sources: {
+    frameworkSource: "fonte de enquadramento",
+    analogous: "an\xE1logo ({sector})",
+    otherSector: "outro setor",
+    evidenceTag: "evid\xEAncia: {label}",
+    notVerifiedDoi: "n\xE3o verificado (DOI n\xE3o resolv\xEDvel)",
+    notCheckedConnection: "n\xE3o conferido (sem conex\xE3o)",
+    notVerifiedNoId: "n\xE3o verificado (sem DOI/ISBN)",
+    noteMissingId: "sem DOI/ISBN",
+    noteDoiUnresolved: "DOI n\xE3o resolv\xEDvel",
+    noteNoConnection: "sem conex\xE3o",
+    transferEvidenceSector: "[evid\xEAncia an\xE1loga do setor: {sector}]",
+    transferEvidenceGeneric: "[evid\xEAncia an\xE1loga de outro setor]"
+  },
+  decompose: {
+    frameworkHeading: "Quadro te\xF3rico",
+    dimensionsIntro: "Dimens\xF5es (orientam as subquest\xF5es):",
+    keySources: "Fontes-chave",
+    subQuestions: "Subquest\xF5es",
+    subQuestionsNote: "(como a quest\xE3o foi dividida; os n\xFAmeros remetem \xE0s fontes que cada subquest\xE3o rendeu)",
+    subQuestionsNoteWithHypotheses: "(como a quest\xE3o foi dividida; os n\xFAmeros remetem \xE0s fontes que cada subquest\xE3o rendeu, seguidos da hip\xF3tese por subquest\xE3o)",
+    hypothesisLabel: "Hip\xF3tese"
+  },
+  searchStrategy: {
+    sources: "Fontes",
+    none: "(nenhuma)",
+    terms: "Termos de busca",
+    termsCounted: "Termos de busca ({n})",
+    resumedLine: "Retomado sobre fontes encontradas anteriormente (em cache) \u2014 nenhum novo ciclo de busca foi executado.",
+    additionalTerms: "Termos de busca adicionais (da explora\xE7\xE3o/lentes)",
+    selectionCriteria: "Crit\xE9rios de sele\xE7\xE3o",
+    rerankLine: "Reordena\xE7\xE3o por relev\xE2ncia (mistura de embeddings) sobre os candidatos fundidos{tested}.",
+    testedAgainstSubQuestions: ", confrontados com as subquest\xF5es",
+    abstractsOnlyLine: "Avalia\xE7\xE3o com base em t\xEDtulos e resumos, n\xE3o em textos integrais.",
+    limitedToTop: "Limitado \xE0s {n} fontes com melhor pontua\xE7\xE3o.",
+    crossSectorLine: "Evid\xEAncia de transfer\xEAncia entre setores adicionada{sectors}, rotulada \xE0 parte e mantida fora da s\xEDntese.",
+    sectorsSuffix: " (setores: {sectors})",
+    funnel: "Contagens (funil)",
+    fusedCount: "Fundidas: {n} fonte(s) \xFAnica(s)",
+    afterRerank: "Ap\xF3s a reordena\xE7\xE3o: {n}",
+    keptCount: "Mostradas/mantidas: {n}",
+    failuresHeading: "Falhas de busca por fonte",
+    failureLine: "{label}: {failed}/{total} busca(s) com falha (rate limit ou erro de rede)."
+  },
+  account: {
+    title: "Relato metodol\xF3gico",
+    provenanceDerived: "Documento derivado e reproduz\xEDvel \u2014 montado automaticamente a partir da sess\xE3o de pesquisa.",
+    provenanceScope: "Descreve as **escolhas metodol\xF3gicas** em torno da pesquisa, n\xE3o o racioc\xEDnio interno do modelo.",
+    sourceLabel: "Fonte",
+    researchQuestion: "Quest\xE3o de pesquisa",
+    notRecorded: "_N\xE3o documentado \u2014 esta etapa (ainda) n\xE3o foi executada._",
+    chosenFraming: "Reformula\xE7\xE3o escolhida (enquadramento)",
+    alternativesNote: "As formula\xE7\xF5es alternativas consideradas est\xE3o listadas em *{section}*.",
+    unchangedQuestion: "_A quest\xE3o original foi mantida sem altera\xE7\xF5es._",
+    chosenLensesLabel: "Lentes escolhidas",
+    openQuestions: "Quest\xF5es em aberto e pesquisa futura"
+  },
+  agenda: {
+    gaps: "Lacunas de conhecimento",
+    limitations: "Limita\xE7\xF5es metodol\xF3gicas recorrentes",
+    newQuestions: "Novas quest\xF5es de pesquisa",
+    designs: "Desenhos de pesquisa adequados",
+    data: "Dados / instrumentos de medi\xE7\xE3o necess\xE1rios"
+  },
+  graph: {
+    gapNoSubquestions: 'Quest\xE3o ainda n\xE3o dividida em subquest\xF5es: "{label}"',
+    gapNoFindings: 'A quest\xE3o ainda n\xE3o tem achados de s\xEDntese: "{label}"',
+    gapNoSources: 'A quest\xE3o ainda n\xE3o tem literatura no \xEDndice: "{label}"',
+    gapFindingNoSource: 'Achado sem refer\xEAncia a fonte (afirma\xE7\xE3o n\xE3o comprovada): "{label}"',
+    gapOpenHypothesis: 'Hip\xF3tese em aberto, ainda por testar: "{label}"',
+    gapSourceUnused: 'Fonte ainda n\xE3o usada em nenhum achado: "{label}"',
+    severityHigh: "\u{1F534} Alto \u2014 afirma\xE7\xF5es n\xE3o comprovadas",
+    severityMedium: "\u{1F7E0} M\xE9dio \u2014 etapas ausentes",
+    severityInfo: "\u{1F535} Info \u2014 pontas soltas",
+    reportTitle: "Grafo de conhecimento (spike) \u2014 {project}",
+    reportIntro: "_Proje\xE7\xE3o apenas de leitura a partir dos artefatos existentes (front matter + s\xEDntese renderizada + \xEDndice de cita\xE7\xF5es). Descart\xE1vel: n\xE3o editar \xE0 m\xE3o \u2014 regenerar._",
+    sizeHeading: "Tamanho",
+    nodesEdgesLine: "**{nodes}** n\xF3s, **{edges}** arestas",
+    gapsHeading: "Lacunas",
+    noGaps: "_Nenhuma lacuna encontrada._",
+    nodesPerType: "N\xF3s por tipo",
+    nodeTypeLabels: {
+      vraag: "quest\xE3o",
+      deelvraag: "subquest\xE3o",
+      hypothese: "hip\xF3tese",
+      bevinding: "achado",
+      bron: "fonte",
+      lens: "lente"
+    },
+    provenanceHeading: "Proveni\xEAncia",
+    provenanceWithEdges: "Este grafo usa **arestas na gera\xE7\xE3o** (E68): `fonte\u2192achado` (`onderbouwt`) prov\xE9m dos dados gravados, portanto achado\u2192fonte-espec\xEDfica \xE9 confi\xE1vel. Notas sem esses dados (execu\xE7\xF5es antigas / fallback em prosa) contam apenas o *n\xFAmero* de refer\xEAncias `[n]`.",
+    provenanceWithoutEdges: "Ainda n\xE3o foram encontradas arestas na gera\xE7\xE3o (dados E68) para este projeto \u2014 os achados prov\xEAm da s\xEDntese renderizada, onde os n\xFAmeros `[n]` n\xE3o t\xEAm mapeamento persistente para as chaves de cita\xE7\xE3o. Contamos, portanto, apenas se um achado carrega *uma* refer\xEAncia. Execute uma nova s\xEDntese para obter arestas `fonte\u2192achado` confi\xE1veis."
+  },
+  exportBundle: {
+    accountFileName: "relato-metodologico.md",
+    bibFileName: "fontes.bib",
+    stubUnavailable: "_N\xE3o foi poss\xEDvel montar automaticamente para esta exporta\xE7\xE3o._",
+    stubMissingLabel: "Em falta:",
+    stubMissingAccount: "o relato metodol\xF3gico",
+    stubNoFrontmatter: "relato metodol\xF3gico (nenhum front matter de sess\xE3o encontrado nesta nota)",
+    noSessions: "_Nenhuma sess\xE3o encontrada para este projeto._",
+    artefactsPresent: "{present}/{total} artefactos presentes"
+  },
+  project: {
+    objectivePlaceholder: "_(ainda por formular \u2014 o que este projeto deve, em \xFAltima an\xE1lise, responder?)_",
+    overviewHeading: "Vis\xE3o geral",
+    overviewBody: "_Cada quest\xE3o de pesquisa \xE9 uma nota de sess\xE3o pr\xF3pria nesta pasta; abra a barra lateral do Parallax para ver a vis\xE3o geral e adicionar uma nova quest\xE3o._"
+  },
+  logbook: {
+    stepBeliefs: "Cren\xE7as",
+    stepResearch: "Pesquisa",
+    stepAccount: "Relato",
+    framingChosen: 'enquadramento escolhido: "{framing}"',
+    alternativesConsidered: "; {n} formula\xE7\xE3o(\xF5es) alternativa(s) considerada(s)",
+    challengesSummary: "{n} desafio(s)",
+    challengesAdopted: "; {n} documentado(s) como cren\xE7a",
+    lensesChosen: "{n} lente(s) escolhida(s)",
+    lensesEliminated: "; {n} eliminada(s)",
+    synthesisOver: "s\xEDntese sobre {n} fonte(s)",
+    searchTerms: "; {n} termo(s) de busca",
+    beliefsUpdated: "{n} cren\xE7a(s) atualizada(s) ap\xF3s confronto com a s\xEDntese",
+    newQuestionsProposed: "{n} nova(s) quest\xE3o(\xF5es) de pesquisa",
+    sessionStarted: "; nova sess\xE3o iniciada",
+    accountGenerated: "relato metodol\xF3gico gerado"
+  }
+};
+
+// src/i18n/it.ts
+var it = {
+  headings: {
+    synthesis: "Sintesi",
+    exploration: "Esplorazione del problema",
+    lenses: "Lenti teoriche",
+    challenge: "Challenge",
+    agenda: "Agenda di ricerca",
+    logbook: "Diario di bordo",
+    searchstrategy: "Strategia di ricerca",
+    objective: "Obiettivo",
+    context: "Contesto",
+    beliefs: "Convinzioni"
+  },
+  exploration: {
+    chosenFraming: "Inquadramento scelto:",
+    assumptions: "Assunti impliciti",
+    counterAssumptions: "Possibili contro-assunti",
+    reformulations: "Riformulazioni",
+    disciplines: "Discipline / tradizioni teoriche",
+    definitions: "Definizioni concorrenti",
+    directions: "Direzioni di ricerca promettenti",
+    facetTheoreticalBasis: "base teorica",
+    facetSearchability: "ricercabilit\xE0",
+    facetLiteratureStrength: "probabilit\xE0 di una letteratura solida (stima)",
+    facetOriginality: "originalit\xE0",
+    chosenSearchTerms: "Termini di ricerca (scelti)",
+    initialBeliefs: "Convinzioni iniziali"
+  },
+  theory: {
+    sameMechanism: "Stesso meccanismo, nome diverso",
+    strikinglyAbsent: "Sorprendentemente assente",
+    competing: "Spiegazioni concorrenti",
+    crossDomain: "Connessioni interdisciplinari",
+    chosenLenses: "Lenti scelte"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "Concettuale",
+      methodologisch: "Metodologico",
+      theoretisch: "Teorico",
+      empirisch: "Empirico",
+      praktisch: "Pratico"
+    },
+    actionLabel: "azione",
+    inversion: "Se la tua ipotesi \xE8 sbagliata\u2026"
+  },
+  beliefs: {
+    none: "_(nessuna convinzione ancora registrata)_",
+    statusLabels: {
+      open: "aperta",
+      ondersteund: "supportata",
+      weersproken: "contraddetta"
+    },
+    confidenceLabels: {
+      laag: "bassa",
+      midden: "media",
+      hoog: "alta"
+    },
+    confidence: "fiducia"
+  },
+  synthesis: {
+    findings: "Risultati",
+    evidenceInline: "evidenza: {strength}{tier}",
+    strengthLabels: {
+      sterk: "forte",
+      gemengd: "mista",
+      beperkt: "limitata"
+    },
+    contradictions: "Contraddizioni / dipende",
+    practical: "Traduzione pratica",
+    followUps: "Direzioni di approfondimento generatrici di ipotesi & questioni aperte",
+    evidenceAndGaps: "Forza dell'evidenza & lacune",
+    scopeCaveat: "\u26A0 Ambito: l'evidenza riguarda soprattutto {note} \u2014 non specificamente la domanda cos\xEC come \xE8 stata posta. Generalizzare con cautela.",
+    abstractsDisclosure: "La gradazione dell'evidenza qui sopra si basa sugli abstract, non sui testi integrali \u2014 gli abstract spesso omettono moderatori, intervalli di confidenza e risultati nulli.",
+    fulltextNuanceSingular: " Nel frattempo 1 fonte si basa sul testo integrale (vedi l'approfondimento).",
+    fulltextNuancePlural: " Nel frattempo {n} fonti si basano sul testo integrale (vedi l'approfondimento).",
+    unanswered: "Non rispondibile con questa evidenza",
+    reasonNotInvestigated: "non indagato nelle fonti trovate",
+    reasonDesignInsufficient: "non accertabile con l'evidenza trovata (disegno insufficiente, ad es. trasversale)",
+    designNeeded: " Richiederebbe un {design}.",
+    readingRecommendations: "Consigliati per la lettura integrale",
+    readingRecommendationsNote: "(sulla base degli abstract; spesso dietro paywall \u2014 il testo integrale lo recuperi tu)"
+  },
+  evidenceTier: {
+    strong: "review/meta-analisi",
+    moderate: "RCT",
+    limited: "generatore di ipotesi"
+  },
+  oa: {
+    paywalled: "probabilmente dietro paywall",
+    available: "OA disponibile",
+    availablePdf: "OA disponibile (pdf)"
+  },
+  sources: {
+    frameworkSource: "fonte del quadro teorico",
+    analogous: "analogo ({sector})",
+    otherSector: "altro settore",
+    evidenceTag: "evidenza: {label}",
+    notVerifiedDoi: "non verificato (DOI non risolvibile)",
+    notCheckedConnection: "non controllato (nessuna connessione)",
+    notVerifiedNoId: "non verificato (nessun DOI/ISBN)",
+    noteMissingId: "nessun DOI/ISBN",
+    noteDoiUnresolved: "DOI non risolvibile",
+    noteNoConnection: "nessuna connessione",
+    transferEvidenceSector: "[evidenza analoga dal settore: {sector}]",
+    transferEvidenceGeneric: "[evidenza analoga da un altro settore]"
+  },
+  decompose: {
+    frameworkHeading: "Quadro teorico",
+    dimensionsIntro: "Dimensioni (orientano le sotto-domande):",
+    keySources: "Fonti chiave",
+    subQuestions: "Sotto-domande",
+    subQuestionsNote: "(come \xE8 stata suddivisa la domanda; i numeri rimandano alle fonti prodotte da ciascuna sotto-domanda)",
+    subQuestionsNoteWithHypotheses: "(come \xE8 stata suddivisa la domanda; i numeri rimandano alle fonti prodotte da ciascuna sotto-domanda, seguite dall'ipotesi per sotto-domanda)",
+    hypothesisLabel: "Ipotesi"
+  },
+  searchStrategy: {
+    sources: "Fonti",
+    none: "(nessuna)",
+    terms: "Termini di ricerca",
+    termsCounted: "Termini di ricerca ({n})",
+    resumedLine: "Ripreso su fonti gi\xE0 trovate (in cache) \u2014 nessun nuovo ciclo di ricerca eseguito.",
+    additionalTerms: "Termini di ricerca aggiuntivi (da esplorazione/lenti)",
+    selectionCriteria: "Criteri di selezione",
+    rerankLine: "Riordinamento per rilevanza (embedding blend) sui candidati fusi{tested}.",
+    testedAgainstSubQuestions: ", verificati rispetto alle sotto-domande",
+    abstractsOnlyLine: "Valutazione basata su titoli e abstract, non sui testi integrali.",
+    limitedToTop: "Limitato alle {n} fonti con il punteggio migliore.",
+    crossSectorLine: "Evidenza di trasferimento intersettoriale aggiunta{sectors}, etichettata separatamente e tenuta fuori dalla sintesi.",
+    sectorsSuffix: " (settori: {sectors})",
+    funnel: "Conteggi (imbuto)",
+    fusedCount: "Fuse: {n} fonte/i unica/che",
+    afterRerank: "Dopo il riordinamento: {n}",
+    keptCount: "Mostrate/mantenute: {n}",
+    failuresHeading: "Ricerche fallite per fonte",
+    failureLine: "{label}: {failed}/{total} ricerca/che fallita/e (rate limit o errore di rete)."
+  },
+  account: {
+    title: "Resoconto metodologico",
+    provenanceDerived: "Documento derivato e riproducibile \u2014 assemblato automaticamente dalla sessione di ricerca.",
+    provenanceScope: "Descrive le **scelte metodologiche** intorno alla ricerca, non il ragionamento interno del modello.",
+    sourceLabel: "Fonte",
+    researchQuestion: "Domanda di ricerca",
+    notRecorded: "_Non registrato \u2014 questo passaggio non \xE8 (ancora) stato eseguito._",
+    chosenFraming: "Riformulazione scelta (inquadramento)",
+    alternativesNote: "Le formulazioni alternative considerate sono elencate sotto *{section}*.",
+    unchangedQuestion: "_La domanda originale \xE8 stata mantenuta invariata._",
+    chosenLensesLabel: "Lenti scelte",
+    openQuestions: "Questioni aperte e ricerca futura"
+  },
+  agenda: {
+    gaps: "Lacune conoscitive",
+    limitations: "Limiti metodologici ricorrenti",
+    newQuestions: "Nuove domande di ricerca",
+    designs: "Disegni di ricerca adeguati",
+    data: "Dati / strumenti di misurazione necessari"
+  },
+  graph: {
+    gapNoSubquestions: 'Domanda non ancora suddivisa in sotto-domande: "{label}"',
+    gapNoFindings: 'La domanda non ha ancora risultati di sintesi: "{label}"',
+    gapNoSources: 'La domanda non ha ancora letteratura nel registro: "{label}"',
+    gapFindingNoSource: 'Risultato senza riferimento a una fonte (affermazione non provata): "{label}"',
+    gapOpenHypothesis: 'Ipotesi aperta, ancora da verificare: "{label}"',
+    gapSourceUnused: 'Fonte non ancora usata in un risultato: "{label}"',
+    severityHigh: "\u{1F534} Alta \u2014 affermazioni non provate",
+    severityMedium: "\u{1F7E0} Media \u2014 passaggi mancanti",
+    severityInfo: "\u{1F535} Info \u2014 fili aperti",
+    reportTitle: "Grafo della conoscenza (spike) \u2014 {project}",
+    reportIntro: "_Proiezione in sola lettura dagli artefatti esistenti (front matter + sintesi renderizzata + registro delle citazioni). Usa e getta: non modificare a mano \u2014 rigenerare._",
+    sizeHeading: "Dimensioni",
+    nodesEdgesLine: "**{nodes}** nodi, **{edges}** archi",
+    gapsHeading: "Lacune",
+    noGaps: "_Nessuna lacuna rilevata._",
+    nodesPerType: "Nodi per tipo",
+    nodeTypeLabels: {
+      vraag: "domanda",
+      deelvraag: "sotto-domanda",
+      hypothese: "ipotesi",
+      bevinding: "risultato",
+      bron: "fonte",
+      lens: "lente"
+    },
+    provenanceHeading: "Provenienza",
+    provenanceWithEdges: "Questo grafo usa **archi-alla-generazione** (E68): `fonte\u2192risultato` (`onderbouwt`) proviene dai record registrati, quindi risultato\u2192fonte-specifica \xE8 affidabile. Le note senza record (esecuzioni vecchie / fallback in prosa) contano solo il *numero* di riferimenti `[n]`.",
+    provenanceWithoutEdges: "Nessun arco-alla-generazione (record E68) trovato ancora per questo progetto \u2014 i risultati provengono dalla sintesi renderizzata, dove i numeri `[n]` non hanno una mappatura persistente verso le chiavi di citazione. Contiamo quindi solo se un risultato porta *un* riferimento. Esegui una nuova sintesi per ottenere archi `fonte\u2192risultato` affidabili."
+  },
+  exportBundle: {
+    accountFileName: "resoconto-metodologico.md",
+    bibFileName: "fonti.bib",
+    stubUnavailable: "_Non \xE8 stato possibile assemblarlo automaticamente per questa esportazione._",
+    stubMissingLabel: "Mancante:",
+    stubMissingAccount: "il resoconto metodologico",
+    stubNoFrontmatter: "resoconto metodologico (nessun front matter di sessione trovato su questa nota)",
+    noSessions: "_Nessuna sessione trovata per questo progetto._",
+    artefactsPresent: "{present}/{total} artefatti presenti"
+  },
+  project: {
+    objectivePlaceholder: "_(ancora da formulare \u2014 a cosa dovrebbe rispondere, in ultima analisi, questo progetto?)_",
+    overviewHeading: "Panoramica",
+    overviewBody: "_Ogni domanda di ricerca \xE8 una nota di sessione a s\xE9 in questa cartella; apri la barra laterale di Parallax per la panoramica e per aggiungere una nuova domanda._"
+  },
+  logbook: {
+    stepBeliefs: "Convinzioni",
+    stepResearch: "Ricerca",
+    stepAccount: "Resoconto",
+    framingChosen: 'inquadramento scelto: "{framing}"',
+    alternativesConsidered: "; {n} formulazione/i alternativa/e considerata/e",
+    challengesSummary: "{n} challenge",
+    challengesAdopted: "; {n} registrata/e come convinzione",
+    lensesChosen: "{n} lente/i scelta/e",
+    lensesEliminated: "; {n} eliminata/e",
+    synthesisOver: "sintesi su {n} fonte/i",
+    searchTerms: "; {n} termine/i di ricerca",
+    beliefsUpdated: "{n} convinzione/i aggiornata/e dopo il confronto con la sintesi",
+    newQuestionsProposed: "{n} nuova/e domanda/e di ricerca",
+    sessionStarted: "; nuova sessione avviata",
+    accountGenerated: "resoconto metodologico generato"
+  }
+};
+
+// src/i18n/ru.ts
+var ru = {
+  headings: {
+    synthesis: "\u0421\u0438\u043D\u0442\u0435\u0437",
+    exploration: "\u0410\u043D\u0430\u043B\u0438\u0437 \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u044B",
+    lenses: "\u0422\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u043B\u0438\u043D\u0437\u044B",
+    challenge: "\u041A\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0430",
+    agenda: "\u0418\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0430\u044F \u043F\u0440\u043E\u0433\u0440\u0430\u043C\u043C\u0430",
+    logbook: "\u0416\u0443\u0440\u043D\u0430\u043B",
+    searchstrategy: "\u0421\u0442\u0440\u0430\u0442\u0435\u0433\u0438\u044F \u043F\u043E\u0438\u0441\u043A\u0430",
+    objective: "\u0426\u0435\u043B\u044C",
+    context: "\u041A\u043E\u043D\u0442\u0435\u043A\u0441\u0442",
+    beliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F"
+  },
+  exploration: {
+    chosenFraming: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u0444\u0440\u0435\u0439\u043C\u0438\u043D\u0433:",
+    assumptions: "\u0418\u043C\u043F\u043B\u0438\u0446\u0438\u0442\u043D\u044B\u0435 \u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F",
+    counterAssumptions: "\u0412\u043E\u0437\u043C\u043E\u0436\u043D\u044B\u0435 \u043A\u043E\u043D\u0442\u0440\u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F",
+    reformulations: "\u041F\u0435\u0440\u0435\u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u043A\u0438",
+    disciplines: "\u0414\u0438\u0441\u0446\u0438\u043F\u043B\u0438\u043D\u044B / \u0442\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0442\u0440\u0430\u0434\u0438\u0446\u0438\u0438",
+    definitions: "\u041A\u043E\u043D\u043A\u0443\u0440\u0438\u0440\u0443\u044E\u0449\u0438\u0435 \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0435\u043D\u0438\u044F",
+    directions: "\u041F\u0435\u0440\u0441\u043F\u0435\u043A\u0442\u0438\u0432\u043D\u044B\u0435 \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F",
+    facetTheoreticalBasis: "\u0442\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0431\u0430\u0437\u0430",
+    facetSearchability: "\u043D\u0430\u0445\u043E\u0434\u0438\u043C\u043E\u0441\u0442\u044C \u0432 \u043F\u043E\u0438\u0441\u043A\u0435",
+    facetLiteratureStrength: "\u0432\u0435\u0440\u043E\u044F\u0442\u043D\u043E\u0441\u0442\u044C \u0441\u0438\u043B\u044C\u043D\u043E\u0439 \u043B\u0438\u0442\u0435\u0440\u0430\u0442\u0443\u0440\u044B (\u043E\u0446\u0435\u043D\u043A\u0430)",
+    facetOriginality: "\u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u044C\u043D\u043E\u0441\u0442\u044C",
+    chosenSearchTerms: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0442\u0435\u0440\u043C\u0438\u043D\u044B (\u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435)",
+    initialBeliefs: "\u0418\u0441\u0445\u043E\u0434\u043D\u044B\u0435 \u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F"
+  },
+  theory: {
+    sameMechanism: "\u0422\u043E\u0442 \u0436\u0435 \u043C\u0435\u0445\u0430\u043D\u0438\u0437\u043C, \u0434\u0440\u0443\u0433\u043E\u0435 \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435",
+    strikinglyAbsent: "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u043D\u043E \u043E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442",
+    competing: "\u041A\u043E\u043D\u043A\u0443\u0440\u0438\u0440\u0443\u044E\u0449\u0438\u0435 \u043E\u0431\u044A\u044F\u0441\u043D\u0435\u043D\u0438\u044F",
+    crossDomain: "\u041C\u0435\u0436\u0434\u043E\u043C\u0435\u043D\u043D\u044B\u0435 \u0441\u0432\u044F\u0437\u0438",
+    chosenLenses: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043B\u0438\u043D\u0437\u044B"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "\u041A\u043E\u043D\u0446\u0435\u043F\u0442\u0443\u0430\u043B\u044C\u043D\u043E\u0435",
+      methodologisch: "\u041C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435",
+      theoretisch: "\u0422\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u0435",
+      empirisch: "\u042D\u043C\u043F\u0438\u0440\u0438\u0447\u0435\u0441\u043A\u043E\u0435",
+      praktisch: "\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u0435"
+    },
+    actionLabel: "\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0435",
+    inversion: "\u0415\u0441\u043B\u0438 \u0432\u0430\u0448\u0430 \u0433\u0438\u043F\u043E\u0442\u0435\u0437\u0430 \u043D\u0435\u0432\u0435\u0440\u043D\u0430\u2026"
+  },
+  beliefs: {
+    none: "_(\u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F \u0435\u0449\u0451 \u043D\u0435 \u0437\u0430\u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u044B)_",
+    statusLabels: {
+      open: "\u043E\u0442\u043A\u0440\u044B\u0442\u043E",
+      ondersteund: "\u043F\u043E\u0434\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043D\u043E",
+      weersproken: "\u043E\u043F\u0440\u043E\u0432\u0435\u0440\u0433\u043D\u0443\u0442\u043E"
+    },
+    confidenceLabels: {
+      laag: "\u043D\u0438\u0437\u043A\u0430\u044F",
+      midden: "\u0441\u0440\u0435\u0434\u043D\u044F\u044F",
+      hoog: "\u0432\u044B\u0441\u043E\u043A\u0430\u044F"
+    },
+    confidence: "\u0443\u0432\u0435\u0440\u0435\u043D\u043D\u043E\u0441\u0442\u044C"
+  },
+  synthesis: {
+    findings: "\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B",
+    evidenceInline: "\u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430: {strength}{tier}",
+    strengthLabels: {
+      sterk: "\u0441\u0438\u043B\u044C\u043D\u044B\u0435",
+      gemengd: "\u0441\u043C\u0435\u0448\u0430\u043D\u043D\u044B\u0435",
+      beperkt: "\u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u043D\u044B\u0435"
+    },
+    contradictions: "\u041F\u0440\u043E\u0442\u0438\u0432\u043E\u0440\u0435\u0447\u0438\u044F / \u0437\u0430\u0432\u0438\u0441\u0438\u0442 \u043E\u0442 \u0443\u0441\u043B\u043E\u0432\u0438\u0439",
+    practical: "\u041F\u0440\u0430\u043A\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043F\u0440\u0438\u043C\u0435\u043D\u0435\u043D\u0438\u0435",
+    followUps: "\u0413\u0438\u043F\u043E\u0442\u0435\u0437\u043E\u043E\u0431\u0440\u0430\u0437\u0443\u044E\u0449\u0438\u0435 \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u0434\u043E\u043B\u0436\u0435\u043D\u0438\u044F \u0438 \u043E\u0442\u043A\u0440\u044B\u0442\u044B\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B",
+    evidenceAndGaps: "\u0421\u0438\u043B\u0430 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432 \u0438 \u043F\u0440\u043E\u0431\u0435\u043B\u044B",
+    scopeCaveat: "\u26A0 \u041E\u0445\u0432\u0430\u0442: \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430 \u043A\u0430\u0441\u0430\u044E\u0442\u0441\u044F \u0432 \u043E\u0441\u043D\u043E\u0432\u043D\u043E\u043C {note} \u2014 \u043D\u0435 \u0438\u043C\u0435\u043D\u043D\u043E \u0432\u043E\u043F\u0440\u043E\u0441\u0430 \u0432 \u0435\u0433\u043E \u0438\u0441\u0445\u043E\u0434\u043D\u043E\u0439 \u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u043A\u0435. \u041E\u0431\u043E\u0431\u0449\u0430\u0439\u0442\u0435 \u0441 \u043E\u0441\u0442\u043E\u0440\u043E\u0436\u043D\u043E\u0441\u0442\u044C\u044E.",
+    abstractsDisclosure: "\u041F\u0440\u0438\u0432\u0435\u0434\u0451\u043D\u043D\u0430\u044F \u0432\u044B\u0448\u0435 \u0433\u0440\u0430\u0434\u0430\u0446\u0438\u044F \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432 \u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0430 \u043D\u0430 \u0430\u043D\u043D\u043E\u0442\u0430\u0446\u0438\u044F\u0445, \u0430 \u043D\u0435 \u043D\u0430 \u043F\u043E\u043B\u043D\u044B\u0445 \u0442\u0435\u043A\u0441\u0442\u0430\u0445 \u2014 \u0432 \u0430\u043D\u043D\u043E\u0442\u0430\u0446\u0438\u044F\u0445 \u0447\u0430\u0441\u0442\u043E \u043E\u043F\u0443\u0441\u043A\u0430\u044E\u0442\u0441\u044F \u043C\u043E\u0434\u0435\u0440\u0430\u0442\u043E\u0440\u044B, \u0434\u043E\u0432\u0435\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0438\u043D\u0442\u0435\u0440\u0432\u0430\u043B\u044B \u0438 \u043D\u0443\u043B\u0435\u0432\u044B\u0435 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B.",
+    fulltextNuanceSingular: " \u041A \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u043C\u0443 \u043C\u043E\u043C\u0435\u043D\u0442\u0443 1 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043E\u043F\u0438\u0440\u0430\u0435\u0442\u0441\u044F \u043D\u0430 \u043F\u043E\u043B\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 (\u0441\u043C. \u0443\u0433\u043B\u0443\u0431\u043B\u0451\u043D\u043D\u044B\u0439 \u0430\u043D\u0430\u043B\u0438\u0437).",
+    fulltextNuancePlural: " \u041A \u043D\u0430\u0441\u0442\u043E\u044F\u0449\u0435\u043C\u0443 \u043C\u043E\u043C\u0435\u043D\u0442\u0443 {n} \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A(\u043E\u0432) \u043E\u043F\u0438\u0440\u0430\u044E\u0442\u0441\u044F \u043D\u0430 \u043F\u043E\u043B\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 (\u0441\u043C. \u0443\u0433\u043B\u0443\u0431\u043B\u0451\u043D\u043D\u044B\u0439 \u0430\u043D\u0430\u043B\u0438\u0437).",
+    unanswered: "\u041D\u0435\u0432\u043E\u0437\u043C\u043E\u0436\u043D\u043E \u043E\u0442\u0432\u0435\u0442\u0438\u0442\u044C \u043D\u0430 \u043E\u0441\u043D\u043E\u0432\u0435 \u044D\u0442\u0438\u0445 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432",
+    reasonNotInvestigated: "\u043D\u0435 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u043E \u0432 \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0445 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430\u0445",
+    reasonDesignInsufficient: "\u043D\u0435 \u043C\u043E\u0436\u0435\u0442 \u0431\u044B\u0442\u044C \u0443\u0441\u0442\u0430\u043D\u043E\u0432\u043B\u0435\u043D\u043E \u043D\u0430 \u043E\u0441\u043D\u043E\u0432\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0445 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432 (\u0434\u0438\u0437\u0430\u0439\u043D \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u0442\u043E\u0447\u0435\u043D, \u043D\u0430\u043F\u0440. \u043F\u043E\u043F\u0435\u0440\u0435\u0447\u043D\u043E\u0435 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u0435)",
+    designNeeded: " \u041F\u043E\u0442\u0440\u0435\u0431\u043E\u0432\u0430\u043B\u043E\u0441\u044C \u0431\u044B: {design}.",
+    readingRecommendations: "\u0420\u0435\u043A\u043E\u043C\u0435\u043D\u0434\u0443\u0435\u0442\u0441\u044F \u043F\u0440\u043E\u0447\u0438\u0442\u0430\u0442\u044C \u043F\u043E\u043B\u043D\u043E\u0441\u0442\u044C\u044E",
+    readingRecommendationsNote: "(\u043D\u0430 \u043E\u0441\u043D\u043E\u0432\u0435 \u0430\u043D\u043D\u043E\u0442\u0430\u0446\u0438\u0439; \u0447\u0430\u0441\u0442\u043E \u0437\u0430 \u043F\u0435\u0439\u0432\u043E\u043B\u043E\u043C \u2014 \u043F\u043E\u043B\u043D\u044B\u0439 \u0442\u0435\u043A\u0441\u0442 \u0432\u044B \u043D\u0430\u0445\u043E\u0434\u0438\u0442\u0435 \u0441\u0430\u043C\u043E\u0441\u0442\u043E\u044F\u0442\u0435\u043B\u044C\u043D\u043E)"
+  },
+  evidenceTier: {
+    strong: "\u043E\u0431\u0437\u043E\u0440/\u043C\u0435\u0442\u0430\u0430\u043D\u0430\u043B\u0438\u0437",
+    moderate: "\u0420\u041A\u0418",
+    limited: "\u0433\u0438\u043F\u043E\u0442\u0435\u0437\u043E\u043E\u0431\u0440\u0430\u0437\u0443\u044E\u0449\u0435\u0435"
+  },
+  oa: {
+    paywalled: "\u0432\u0435\u0440\u043E\u044F\u0442\u043D\u043E, \u0437\u0430 \u043F\u0435\u0439\u0432\u043E\u043B\u043E\u043C",
+    available: "\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D OA",
+    availablePdf: "\u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D OA (pdf)"
+  },
+  sources: {
+    frameworkSource: "\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0442\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u043E\u0439 \u0440\u0430\u043C\u043A\u0438",
+    analogous: "\u0430\u043D\u0430\u043B\u043E\u0433\u0438\u0447\u043D\u044B\u0439 ({sector})",
+    otherSector: "\u0434\u0440\u0443\u0433\u043E\u0439 \u0441\u0435\u043A\u0442\u043E\u0440",
+    evidenceTag: "\u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430: {label}",
+    notVerifiedDoi: "\u043D\u0435 \u0432\u0435\u0440\u0438\u0444\u0438\u0446\u0438\u0440\u043E\u0432\u0430\u043D\u043E (DOI \u043D\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0435\u0442\u0441\u044F)",
+    notCheckedConnection: "\u043D\u0435 \u043F\u0440\u043E\u0432\u0435\u0440\u0435\u043D\u043E (\u043D\u0435\u0442 \u0441\u043E\u0435\u0434\u0438\u043D\u0435\u043D\u0438\u044F)",
+    notVerifiedNoId: "\u043D\u0435 \u0432\u0435\u0440\u0438\u0444\u0438\u0446\u0438\u0440\u043E\u0432\u0430\u043D\u043E (\u043D\u0435\u0442 DOI/ISBN)",
+    noteMissingId: "\u043D\u0435\u0442 DOI/ISBN",
+    noteDoiUnresolved: "DOI \u043D\u0435 \u0440\u0430\u0437\u0440\u0435\u0448\u0430\u0435\u0442\u0441\u044F",
+    noteNoConnection: "\u043D\u0435\u0442 \u0441\u043E\u0435\u0434\u0438\u043D\u0435\u043D\u0438\u044F",
+    transferEvidenceSector: "[\u0430\u043D\u0430\u043B\u043E\u0433\u0438\u0447\u043D\u044B\u0435 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430 \u0438\u0437 \u0441\u0435\u043A\u0442\u043E\u0440\u0430: {sector}]",
+    transferEvidenceGeneric: "[\u0430\u043D\u0430\u043B\u043E\u0433\u0438\u0447\u043D\u044B\u0435 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430 \u0438\u0437 \u0434\u0440\u0443\u0433\u043E\u0433\u043E \u0441\u0435\u043A\u0442\u043E\u0440\u0430]"
+  },
+  decompose: {
+    frameworkHeading: "\u0422\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043C\u043A\u0430",
+    dimensionsIntro: "\u0418\u0437\u043C\u0435\u0440\u0435\u043D\u0438\u044F (\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u044F\u044E\u0442 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u044B):",
+    keySources: "\u041A\u043B\u044E\u0447\u0435\u0432\u044B\u0435 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438",
+    subQuestions: "\u041F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u044B",
+    subQuestionsNote: "(\u0442\u0430\u043A \u0431\u044B\u043B \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u0432\u043E\u043F\u0440\u043E\u0441; \u043D\u043E\u043C\u0435\u0440\u0430 \u0443\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u043D\u0430 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438, \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0435 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443)",
+    subQuestionsNoteWithHypotheses: "(\u0442\u0430\u043A \u0431\u044B\u043B \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u0432\u043E\u043F\u0440\u043E\u0441; \u043D\u043E\u043C\u0435\u0440\u0430 \u0443\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u043D\u0430 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438, \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0435 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443, \u0434\u0430\u043B\u0435\u0435 \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u0433\u0438\u043F\u043E\u0442\u0435\u0437\u0430 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443)",
+    hypothesisLabel: "\u0413\u0438\u043F\u043E\u0442\u0435\u0437\u0430"
+  },
+  searchStrategy: {
+    sources: "\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438",
+    none: "(\u043D\u0435\u0442)",
+    terms: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0442\u0435\u0440\u043C\u0438\u043D\u044B",
+    termsCounted: "\u041F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0442\u0435\u0440\u043C\u0438\u043D\u044B ({n})",
+    resumedLine: "\u0412\u043E\u0437\u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u043E \u043D\u0430 \u0440\u0430\u043D\u0435\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0445 (\u043A\u044D\u0448\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0445) \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430\u0445 \u2014 \u043D\u043E\u0432\u044B\u0439 \u0440\u0430\u0443\u043D\u0434 \u043F\u043E\u0438\u0441\u043A\u0430 \u043D\u0435 \u0432\u044B\u043F\u043E\u043B\u043D\u044F\u043B\u0441\u044F.",
+    additionalTerms: "\u0414\u043E\u043F\u043E\u043B\u043D\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u043F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0442\u0435\u0440\u043C\u0438\u043D\u044B (\u0438\u0437 \u0430\u043D\u0430\u043B\u0438\u0437\u0430 \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u044B/\u043B\u0438\u043D\u0437)",
+    selectionCriteria: "\u041A\u0440\u0438\u0442\u0435\u0440\u0438\u0438 \u043E\u0442\u0431\u043E\u0440\u0430",
+    rerankLine: "\u041F\u0435\u0440\u0435\u0440\u0430\u043D\u0436\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0435 \u043F\u043E \u0440\u0435\u043B\u0435\u0432\u0430\u043D\u0442\u043D\u043E\u0441\u0442\u0438 (\u0441\u043C\u0435\u0448\u0435\u043D\u0438\u0435 \u044D\u043C\u0431\u0435\u0434\u0434\u0438\u043D\u0433\u043E\u0432) \u043F\u043E \u043E\u0431\u044A\u0435\u0434\u0438\u043D\u0451\u043D\u043D\u044B\u043C \u043A\u0430\u043D\u0434\u0438\u0434\u0430\u0442\u0430\u043C{tested}.",
+    testedAgainstSubQuestions: ", \u0441 \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u043E\u0439 \u043E\u0442\u043D\u043E\u0441\u0438\u0442\u0435\u043B\u044C\u043D\u043E \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u043E\u0432",
+    abstractsOnlyLine: "\u041E\u0446\u0435\u043D\u043A\u0430 \u043D\u0430 \u043E\u0441\u043D\u043E\u0432\u0435 \u0437\u0430\u0433\u043E\u043B\u043E\u0432\u043A\u043E\u0432 \u0438 \u0430\u043D\u043D\u043E\u0442\u0430\u0446\u0438\u0439, \u0430 \u043D\u0435 \u043F\u043E\u043B\u043D\u044B\u0445 \u0442\u0435\u043A\u0441\u0442\u043E\u0432.",
+    limitedToTop: "\u041E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u043E \u0442\u043E\u043F-{n} \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430\u043C\u0438 \u0441 \u043D\u0430\u0438\u043B\u0443\u0447\u0448\u0438\u043C\u0438 \u043E\u0446\u0435\u043D\u043A\u0430\u043C\u0438.",
+    crossSectorLine: "\u0414\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B \u043C\u0435\u0436\u0441\u0435\u043A\u0442\u043E\u0440\u043D\u044B\u0435 \u0442\u0440\u0430\u043D\u0441\u0444\u0435\u0440\u043D\u044B\u0435 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430{sectors}, \u043F\u043E\u043C\u0435\u0447\u0435\u043D\u043D\u044B\u0435 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u043E \u0438 \u043D\u0435 \u0432\u043A\u043B\u044E\u0447\u0451\u043D\u043D\u044B\u0435 \u0432 \u0441\u0438\u043D\u0442\u0435\u0437.",
+    sectorsSuffix: " (\u0441\u0435\u043A\u0442\u043E\u0440\u044B: {sectors})",
+    funnel: "\u041A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u0430 (\u0432\u043E\u0440\u043E\u043D\u043A\u0430)",
+    fusedCount: "\u041E\u0431\u044A\u0435\u0434\u0438\u043D\u0435\u043D\u043E: {n} \u0443\u043D\u0438\u043A\u0430\u043B\u044C\u043D\u044B\u0445 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u043E\u0432",
+    afterRerank: "\u041F\u043E\u0441\u043B\u0435 \u043F\u0435\u0440\u0435\u0440\u0430\u043D\u0436\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F: {n}",
+    keptCount: "\u041F\u043E\u043A\u0430\u0437\u0430\u043D\u043E/\u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u043E: {n}",
+    failuresHeading: "\u0421\u0431\u043E\u0438 \u043F\u043E\u0438\u0441\u043A\u0430 \u043F\u043E \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430\u043C",
+    failureLine: "{label}: {failed}/{total} \u043F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0445 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432 \u043D\u0435 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u043E (\u043B\u0438\u043C\u0438\u0442 \u0437\u0430\u043F\u0440\u043E\u0441\u043E\u0432 \u0438\u043B\u0438 \u0441\u0435\u0442\u0435\u0432\u0430\u044F \u043E\u0448\u0438\u0431\u043A\u0430)."
+  },
+  account: {
+    title: "\u041C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435",
+    provenanceDerived: "\u041F\u0440\u043E\u0438\u0437\u0432\u043E\u0434\u043D\u044B\u0439, \u0432\u043E\u0441\u043F\u0440\u043E\u0438\u0437\u0432\u043E\u0434\u0438\u043C\u044B\u0439 \u0434\u043E\u043A\u0443\u043C\u0435\u043D\u0442 \u2014 \u0441\u043E\u0431\u0440\u0430\u043D \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0438\u0437 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u043E\u0439 \u0441\u0435\u0441\u0441\u0438\u0438.",
+    provenanceScope: "\u041E\u043D \u043E\u043F\u0438\u0441\u044B\u0432\u0430\u0435\u0442 **\u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u0440\u0435\u0448\u0435\u043D\u0438\u044F** \u0432\u043E\u043A\u0440\u0443\u0433 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F, \u0430 \u043D\u0435 \u0432\u043D\u0443\u0442\u0440\u0435\u043D\u043D\u0438\u0435 \u0440\u0430\u0441\u0441\u0443\u0436\u0434\u0435\u043D\u0438\u044F \u043C\u043E\u0434\u0435\u043B\u0438.",
+    sourceLabel: "\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A",
+    researchQuestion: "\u0418\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0439 \u0432\u043E\u043F\u0440\u043E\u0441",
+    notRecorded: "_\u041D\u0435 \u0437\u0430\u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043E \u2014 \u044D\u0442\u043E\u0442 \u0448\u0430\u0433 (\u043F\u043E\u043A\u0430) \u043D\u0435 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D._",
+    chosenFraming: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u0430\u044F \u043F\u0435\u0440\u0435\u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u043A\u0430 (\u0444\u0440\u0435\u0439\u043C\u0438\u043D\u0433)",
+    alternativesNote: "\u0420\u0430\u0441\u0441\u043C\u043E\u0442\u0440\u0435\u043D\u043D\u044B\u0435 \u0430\u043B\u044C\u0442\u0435\u0440\u043D\u0430\u0442\u0438\u0432\u043D\u044B\u0435 \u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u043A\u0438 \u043F\u0440\u0438\u0432\u0435\u0434\u0435\u043D\u044B \u0432 \u0440\u0430\u0437\u0434\u0435\u043B\u0435 *{section}*.",
+    unchangedQuestion: "_\u0418\u0441\u0445\u043E\u0434\u043D\u044B\u0439 \u0432\u043E\u043F\u0440\u043E\u0441 \u0441\u043E\u0445\u0440\u0430\u043D\u0451\u043D \u0431\u0435\u0437 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u0439._",
+    chosenLensesLabel: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043B\u0438\u043D\u0437\u044B",
+    openQuestions: "\u041E\u0442\u043A\u0440\u044B\u0442\u044B\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B \u0438 \u0434\u0430\u043B\u044C\u043D\u0435\u0439\u0448\u0438\u0435 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F"
+  },
+  agenda: {
+    gaps: "\u041F\u0440\u043E\u0431\u0435\u043B\u044B \u0432 \u0437\u043D\u0430\u043D\u0438\u044F\u0445",
+    limitations: "\u041F\u043E\u0432\u0442\u043E\u0440\u044F\u044E\u0449\u0438\u0435\u0441\u044F \u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u043E\u0433\u0440\u0430\u043D\u0438\u0447\u0435\u043D\u0438\u044F",
+    newQuestions: "\u041D\u043E\u0432\u044B\u0435 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B",
+    designs: "\u041F\u043E\u0434\u0445\u043E\u0434\u044F\u0449\u0438\u0435 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0435 \u0434\u0438\u0437\u0430\u0439\u043D\u044B",
+    data: "\u041D\u0435\u043E\u0431\u0445\u043E\u0434\u0438\u043C\u044B\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 / \u0438\u0437\u043C\u0435\u0440\u0438\u0442\u0435\u043B\u044C\u043D\u044B\u0435 \u0438\u043D\u0441\u0442\u0440\u0443\u043C\u0435\u043D\u0442\u044B"
+  },
+  graph: {
+    gapNoSubquestions: '\u0412\u043E\u043F\u0440\u043E\u0441 \u0435\u0449\u0451 \u043D\u0435 \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u043D\u0430 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u044B: "{label}"',
+    gapNoFindings: '\u0423 \u0432\u043E\u043F\u0440\u043E\u0441\u0430 \u0435\u0449\u0451 \u043D\u0435\u0442 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u043E\u0432 \u0441\u0438\u043D\u0442\u0435\u0437\u0430: "{label}"',
+    gapNoSources: '\u0423 \u0432\u043E\u043F\u0440\u043E\u0441\u0430 \u0435\u0449\u0451 \u043D\u0435\u0442 \u043B\u0438\u0442\u0435\u0440\u0430\u0442\u0443\u0440\u044B \u0432 \u0440\u0435\u0435\u0441\u0442\u0440\u0435: "{label}"',
+    gapFindingNoSource: '\u0420\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442 \u0431\u0435\u0437 \u0441\u0441\u044B\u043B\u043A\u0438 \u043D\u0430 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A (\u043D\u0435\u0434\u043E\u043A\u0430\u0437\u0430\u043D\u043D\u043E\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043D\u0438\u0435): "{label}"',
+    gapOpenHypothesis: '\u041E\u0442\u043A\u0440\u044B\u0442\u0430\u044F \u0433\u0438\u043F\u043E\u0442\u0435\u0437\u0430, \u0435\u0449\u0451 \u043D\u0435 \u043F\u0440\u043E\u0432\u0435\u0440\u0435\u043D\u0430: "{label}"',
+    gapSourceUnused: '\u0418\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u0435\u0449\u0451 \u043D\u0435 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D \u043D\u0438 \u0432 \u043E\u0434\u043D\u043E\u043C \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u0435: "{label}"',
+    severityHigh: "\u{1F534} \u0412\u044B\u0441\u043E\u043A\u0438\u0439 \u2014 \u043D\u0435\u0434\u043E\u043A\u0430\u0437\u0430\u043D\u043D\u044B\u0435 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043D\u0438\u044F",
+    severityMedium: "\u{1F7E0} \u0421\u0440\u0435\u0434\u043D\u0438\u0439 \u2014 \u043D\u0435\u0434\u043E\u0441\u0442\u0430\u044E\u0449\u0438\u0435 \u0448\u0430\u0433\u0438",
+    severityInfo: "\u{1F535} \u0418\u043D\u0444\u043E \u2014 \u043E\u0442\u043A\u0440\u044B\u0442\u044B\u0435 \u043D\u0438\u0442\u0438",
+    reportTitle: "\u0413\u0440\u0430\u0444 \u0437\u043D\u0430\u043D\u0438\u0439 (\u0441\u043F\u0430\u0439\u043A) \u2014 {project}",
+    reportIntro: "_\u041F\u0440\u043E\u0435\u043A\u0446\u0438\u044F \u0442\u043E\u043B\u044C\u043A\u043E \u0434\u043B\u044F \u0447\u0442\u0435\u043D\u0438\u044F \u0438\u0437 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u044E\u0449\u0438\u0445 \u0430\u0440\u0442\u0435\u0444\u0430\u043A\u0442\u043E\u0432 (front matter + \u043E\u0442\u0440\u0435\u043D\u0434\u0435\u0440\u0435\u043D\u043D\u044B\u0439 \u0441\u0438\u043D\u0442\u0435\u0437 + \u0440\u0435\u0435\u0441\u0442\u0440 \u0446\u0438\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u0439). \u041E\u0434\u043D\u043E\u0440\u0430\u0437\u043E\u0432\u0430\u044F: \u043D\u0435 \u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u0443\u0439\u0442\u0435 \u0432\u0440\u0443\u0447\u043D\u0443\u044E \u2014 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u0443\u0439\u0442\u0435 \u0437\u0430\u043D\u043E\u0432\u043E._",
+    sizeHeading: "\u0420\u0430\u0437\u043C\u0435\u0440",
+    nodesEdgesLine: "**{nodes}** \u0443\u0437\u043B\u043E\u0432, **{edges}** \u0440\u0451\u0431\u0435\u0440",
+    gapsHeading: "\u041F\u0440\u043E\u0431\u0435\u043B\u044B",
+    noGaps: "_\u041F\u0440\u043E\u0431\u0435\u043B\u043E\u0432 \u043D\u0435 \u043E\u0431\u043D\u0430\u0440\u0443\u0436\u0435\u043D\u043E._",
+    nodesPerType: "\u0423\u0437\u043B\u044B \u043F\u043E \u0442\u0438\u043F\u0430\u043C",
+    nodeTypeLabels: {
+      vraag: "\u0432\u043E\u043F\u0440\u043E\u0441",
+      deelvraag: "\u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441",
+      hypothese: "\u0433\u0438\u043F\u043E\u0442\u0435\u0437\u0430",
+      bevinding: "\u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442",
+      bron: "\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A",
+      lens: "\u043B\u0438\u043D\u0437\u0430"
+    },
+    provenanceHeading: "\u041F\u0440\u043E\u0438\u0441\u0445\u043E\u0436\u0434\u0435\u043D\u0438\u0435",
+    provenanceWithEdges: "\u042D\u0442\u043E\u0442 \u0433\u0440\u0430\u0444 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u0443\u0435\u0442 **\u0440\u0451\u0431\u0440\u0430, \u0437\u0430\u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u0438 \u0433\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u0438** (E68): `\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u2192\u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442` (`onderbouwt`) \u0431\u0435\u0440\u0451\u0442\u0441\u044F \u0438\u0437 \u0441\u043E\u0445\u0440\u0430\u043D\u0451\u043D\u043D\u044B\u0445 \u0437\u0430\u043F\u0438\u0441\u0435\u0439, \u043F\u043E\u044D\u0442\u043E\u043C\u0443 \u0441\u0432\u044F\u0437\u044C \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u2192\u043A\u043E\u043D\u043A\u0440\u0435\u0442\u043D\u044B\u0439 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A \u043D\u0430\u0434\u0451\u0436\u043D\u0430. \u0417\u0430\u043C\u0435\u0442\u043A\u0438 \u0431\u0435\u0437 \u0437\u0430\u043F\u0438\u0441\u0438 (\u0441\u0442\u0430\u0440\u044B\u0435 \u0437\u0430\u043F\u0443\u0441\u043A\u0438 / \u043F\u0440\u043E\u0437\u0430\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0444\u043E\u043B\u0431\u044D\u043A) \u0443\u0447\u0438\u0442\u044B\u0432\u0430\u044E\u0442 \u0442\u043E\u043B\u044C\u043A\u043E *\u0447\u0438\u0441\u043B\u043E* \u0441\u0441\u044B\u043B\u043E\u043A `[n]`.",
+    provenanceWithoutEdges: "\u0414\u043B\u044F \u044D\u0442\u043E\u0433\u043E \u043F\u0440\u043E\u0435\u043A\u0442\u0430 \u043F\u043E\u043A\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u043E \u0440\u0451\u0431\u0435\u0440, \u0437\u0430\u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0445 \u043F\u0440\u0438 \u0433\u0435\u043D\u0435\u0440\u0430\u0446\u0438\u0438 (\u0437\u0430\u043F\u0438\u0441\u0435\u0439 E68) \u2014 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B \u0431\u0435\u0440\u0443\u0442\u0441\u044F \u0438\u0437 \u043E\u0442\u0440\u0435\u043D\u0434\u0435\u0440\u0435\u043D\u043D\u043E\u0433\u043E \u0441\u0438\u043D\u0442\u0435\u0437\u0430, \u0433\u0434\u0435 \u043D\u043E\u043C\u0435\u0440\u0430 `[n]` \u043D\u0435 \u0438\u043C\u0435\u044E\u0442 \u043F\u0435\u0440\u0441\u0438\u0441\u0442\u0435\u043D\u0442\u043D\u043E\u0433\u043E \u0441\u043E\u043E\u0442\u0432\u0435\u0442\u0441\u0442\u0432\u0438\u044F \u043A\u043B\u044E\u0447\u0430\u043C \u0446\u0438\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u0438\u044F. \u041F\u043E\u044D\u0442\u043E\u043C\u0443 \u043C\u044B \u0443\u0447\u0438\u0442\u044B\u0432\u0430\u0435\u043C \u043B\u0438\u0448\u044C \u0442\u043E, \u043D\u0435\u0441\u0451\u0442 \u043B\u0438 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442 *\u043A\u0430\u043A\u0443\u044E-\u043B\u0438\u0431\u043E* \u0441\u0441\u044B\u043B\u043A\u0443. \u0417\u0430\u043F\u0443\u0441\u0442\u0438\u0442\u0435 \u043D\u043E\u0432\u044B\u0439 \u0441\u0438\u043D\u0442\u0435\u0437, \u0447\u0442\u043E\u0431\u044B \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u043D\u0430\u0434\u0451\u0436\u043D\u044B\u0435 \u0440\u0451\u0431\u0440\u0430 `\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u2192\u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442`."
+  },
+  exportBundle: {
+    accountFileName: "\u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435.md",
+    bibFileName: "\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438.bib",
+    stubUnavailable: "_\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0431\u0440\u0430\u0442\u044C \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0434\u043B\u044F \u044D\u0442\u043E\u0433\u043E \u044D\u043A\u0441\u043F\u043E\u0440\u0442\u0430._",
+    stubMissingLabel: "\u041E\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442:",
+    stubMissingAccount: "\u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435",
+    stubNoFrontmatter: "\u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435 (\u0432 \u044D\u0442\u043E\u0439 \u0437\u0430\u043C\u0435\u0442\u043A\u0435 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D front matter \u0441\u0435\u0441\u0441\u0438\u0438)",
+    noSessions: "_\u0421\u0435\u0441\u0441\u0438\u0438 \u0434\u043B\u044F \u044D\u0442\u043E\u0433\u043E \u043F\u0440\u043E\u0435\u043A\u0442\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B._",
+    artefactsPresent: "{present}/{total} \u0430\u0440\u0442\u0435\u0444\u0430\u043A\u0442\u043E\u0432 \u043F\u0440\u0438\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442"
+  },
+  project: {
+    objectivePlaceholder: "_(\u0435\u0449\u0451 \u043F\u0440\u0435\u0434\u0441\u0442\u043E\u0438\u0442 \u0441\u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u2014 \u043D\u0430 \u043A\u0430\u043A\u043E\u0439 \u0432\u043E\u043F\u0440\u043E\u0441 \u044D\u0442\u043E\u0442 \u043F\u0440\u043E\u0435\u043A\u0442 \u0432 \u0438\u0442\u043E\u0433\u0435 \u0434\u043E\u043B\u0436\u0435\u043D \u043E\u0442\u0432\u0435\u0442\u0438\u0442\u044C?)_",
+    overviewHeading: "\u041E\u0431\u0437\u043E\u0440",
+    overviewBody: "_\u041A\u0430\u0436\u0434\u044B\u0439 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0439 \u0432\u043E\u043F\u0440\u043E\u0441 \u2014 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u0430\u044F \u0437\u0430\u043C\u0435\u0442\u043A\u0430-\u0441\u0435\u0441\u0441\u0438\u044F \u0432 \u044D\u0442\u043E\u0439 \u043F\u0430\u043F\u043A\u0435; \u043E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u0431\u043E\u043A\u043E\u0432\u0443\u044E \u043F\u0430\u043D\u0435\u043B\u044C Parallax \u0434\u043B\u044F \u043E\u0431\u0437\u043E\u0440\u0430 \u0438 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043D\u043E\u0432\u043E\u0433\u043E \u0432\u043E\u043F\u0440\u043E\u0441\u0430._"
+  },
+  logbook: {
+    stepBeliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F",
+    stepResearch: "\u0418\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u0435",
+    stepAccount: "\u041E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435",
+    framingChosen: '\u0432\u044B\u0431\u0440\u0430\u043D \u0444\u0440\u0435\u0439\u043C\u0438\u043D\u0433: "{framing}"',
+    alternativesConsidered: "; \u0440\u0430\u0441\u0441\u043C\u043E\u0442\u0440\u0435\u043D\u043E \u0430\u043B\u044C\u0442\u0435\u0440\u043D\u0430\u0442\u0438\u0432\u043D\u044B\u0445 \u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u043E\u043A: {n}",
+    challengesSummary: "\u043A\u0440\u0438\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0445 \u043F\u0440\u043E\u0432\u0435\u0440\u043E\u043A: {n}",
+    challengesAdopted: "; \u0437\u0430\u0444\u0438\u043A\u0441\u0438\u0440\u043E\u0432\u0430\u043D\u043E \u043A\u0430\u043A \u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u0435: {n}",
+    lensesChosen: "\u0432\u044B\u0431\u0440\u0430\u043D\u043E \u043B\u0438\u043D\u0437: {n}",
+    lensesEliminated: "; \u0438\u0441\u043A\u043B\u044E\u0447\u0435\u043D\u043E: {n}",
+    synthesisOver: "\u0441\u0438\u043D\u0442\u0435\u0437 \u043F\u043E {n} \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0430\u043C",
+    searchTerms: "; \u043F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0445 \u0442\u0435\u0440\u043C\u0438\u043D\u043E\u0432: {n}",
+    beliefsUpdated: "\u043E\u0431\u043D\u043E\u0432\u043B\u0435\u043D\u043E \u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u0439 \u043F\u043E\u0441\u043B\u0435 \u0441\u0432\u0435\u0440\u043A\u0438 \u0441 \u0441\u0438\u043D\u0442\u0435\u0437\u043E\u043C: {n}",
+    newQuestionsProposed: "\u043D\u043E\u0432\u044B\u0445 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0445 \u0432\u043E\u043F\u0440\u043E\u0441\u043E\u0432: {n}",
+    sessionStarted: "; \u043D\u0430\u0447\u0430\u0442\u0430 \u043D\u043E\u0432\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F",
+    accountGenerated: "\u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043E \u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435"
+  }
+};
+
+// src/i18n/zh.ts
+var zh = {
+  headings: {
+    synthesis: "\u7EFC\u5408",
+    exploration: "\u95EE\u9898\u63A2\u7D22",
+    lenses: "\u7406\u8BBA\u89C6\u89D2",
+    challenge: "\u8D28\u7591",
+    agenda: "\u7814\u7A76\u8BAE\u7A0B",
+    logbook: "\u65E5\u5FD7",
+    searchstrategy: "\u68C0\u7D22\u7B56\u7565",
+    objective: "\u76EE\u6807",
+    context: "\u80CC\u666F",
+    beliefs: "\u4FE1\u5FF5"
+  },
+  exploration: {
+    chosenFraming: "\u9009\u5B9A\u7684\u6846\u67B6\uFF1A",
+    assumptions: "\u9690\u542B\u5047\u8BBE",
+    counterAssumptions: "\u53EF\u80FD\u7684\u53CD\u5047\u8BBE",
+    reformulations: "\u91CD\u65B0\u8868\u8FF0",
+    disciplines: "\u5B66\u79D1 / \u7406\u8BBA\u4F20\u7EDF",
+    definitions: "\u76F8\u4E92\u7ADE\u4E89\u7684\u5B9A\u4E49",
+    directions: "\u6709\u524D\u666F\u7684\u7814\u7A76\u65B9\u5411",
+    facetTheoreticalBasis: "\u7406\u8BBA\u57FA\u7840",
+    facetSearchability: "\u53EF\u68C0\u7D22\u6027",
+    facetLiteratureStrength: "\u83B7\u5F97\u6709\u529B\u6587\u732E\u7684\u53EF\u80FD\u6027\uFF08\u4F30\u8BA1\uFF09",
+    facetOriginality: "\u539F\u521B\u6027",
+    chosenSearchTerms: "\u68C0\u7D22\u8BCD\uFF08\u9009\u5B9A\uFF09",
+    initialBeliefs: "\u521D\u59CB\u4FE1\u5FF5"
+  },
+  theory: {
+    sameMechanism: "\u540C\u4E00\u673A\u5236\uFF0C\u4E0D\u540C\u540D\u79F0",
+    strikinglyAbsent: "\u660E\u663E\u7F3A\u5931",
+    competing: "\u76F8\u4E92\u7ADE\u4E89\u7684\u89E3\u91CA",
+    crossDomain: "\u8DE8\u9886\u57DF\u8054\u7CFB",
+    chosenLenses: "\u9009\u5B9A\u7684\u89C6\u89D2"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "\u6982\u5FF5",
+      methodologisch: "\u65B9\u6CD5\u8BBA",
+      theoretisch: "\u7406\u8BBA",
+      empirisch: "\u5B9E\u8BC1",
+      praktisch: "\u5B9E\u8DF5"
+    },
+    actionLabel: "\u884C\u52A8",
+    inversion: "\u5982\u679C\u4F60\u7684\u5047\u8BBE\u662F\u9519\u8BEF\u7684\u2026\u2026"
+  },
+  beliefs: {
+    none: "_\uFF08\u5C1A\u672A\u8BB0\u5F55\u4EFB\u4F55\u4FE1\u5FF5\uFF09_",
+    statusLabels: {
+      open: "\u672A\u51B3",
+      ondersteund: "\u5F97\u5230\u652F\u6301",
+      weersproken: "\u88AB\u53CD\u9A73"
+    },
+    confidenceLabels: {
+      laag: "\u4F4E",
+      midden: "\u4E2D",
+      hoog: "\u9AD8"
+    },
+    confidence: "\u7F6E\u4FE1\u5EA6"
+  },
+  synthesis: {
+    findings: "\u53D1\u73B0",
+    evidenceInline: "\u8BC1\u636E\uFF1A{strength}{tier}",
+    strengthLabels: {
+      sterk: "\u5F3A",
+      gemengd: "\u6DF7\u5408",
+      beperkt: "\u6709\u9650"
+    },
+    contradictions: "\u77DB\u76FE\u4E4B\u5904 / \u89C6\u60C5\u51B5\u800C\u5B9A",
+    practical: "\u5B9E\u8DF5\u8F6C\u5316",
+    followUps: "\u751F\u6210\u5047\u8BBE\u7684\u540E\u7EED\u65B9\u5411\u4E0E\u5F00\u653E\u95EE\u9898",
+    evidenceAndGaps: "\u8BC1\u636E\u5F3A\u5EA6\u4E0E\u7F3A\u53E3",
+    scopeCaveat: "\u26A0 \u9002\u7528\u8303\u56F4\uFF1A\u8BC1\u636E\u4E3B\u8981\u6D89\u53CA{note}\u2014\u2014\u5E76\u975E\u4E13\u95E8\u9488\u5BF9\u6240\u63D0\u51FA\u7684\u95EE\u9898\u3002\u5916\u63A8\u65F6\u987B\u8C28\u614E\u3002",
+    abstractsDisclosure: "\u4E0A\u8FF0\u8BC1\u636E\u5206\u7EA7\u57FA\u4E8E\u6458\u8981\u800C\u975E\u5168\u6587\u2014\u2014\u6458\u8981\u5F80\u5F80\u7701\u7565\u8C03\u8282\u53D8\u91CF\u3001\u7F6E\u4FE1\u533A\u95F4\u548C\u65E0\u6548\u7ED3\u679C\u3002",
+    fulltextNuanceSingular: " \u76EE\u524D\u5DF2\u6709 1 \u7BC7\u6587\u732E\u4F9D\u636E\u5168\u6587\uFF08\u89C1\u6DF1\u5165\u5206\u6790\uFF09\u3002",
+    fulltextNuancePlural: " \u76EE\u524D\u5DF2\u6709 {n} \u7BC7\u6587\u732E\u4F9D\u636E\u5168\u6587\uFF08\u89C1\u6DF1\u5165\u5206\u6790\uFF09\u3002",
+    unanswered: "\u51ED\u73B0\u6709\u8BC1\u636E\u65E0\u6CD5\u56DE\u7B54",
+    reasonNotInvestigated: "\u5728\u5DF2\u627E\u5230\u7684\u6587\u732E\u4E2D\u672A\u4F5C\u7814\u7A76",
+    reasonDesignInsufficient: "\u51ED\u5DF2\u627E\u5230\u7684\u8BC1\u636E\u65E0\u6CD5\u786E\u5B9A\uFF08\u7814\u7A76\u8BBE\u8BA1\u4E0D\u8DB3\uFF0C\u4F8B\u5982\u6A2A\u65AD\u9762\u7814\u7A76\uFF09",
+    designNeeded: " \u9700\u8981{design}\u3002",
+    readingRecommendations: "\u63A8\u8350\u9605\u8BFB\u5168\u6587",
+    readingRecommendationsNote: "\uFF08\u57FA\u4E8E\u6458\u8981\uFF1B\u901A\u5E38\u6709\u4ED8\u8D39\u5899\u2014\u2014\u5168\u6587\u9700\u81EA\u884C\u83B7\u53D6\uFF09"
+  },
+  evidenceTier: {
+    strong: "\u7EFC\u8FF0/\u5143\u5206\u6790",
+    moderate: "RCT",
+    limited: "\u5047\u8BBE\u751F\u6210\u578B"
+  },
+  oa: {
+    paywalled: "\u53EF\u80FD\u6709\u4ED8\u8D39\u5899",
+    available: "OA \u53EF\u83B7\u53D6",
+    availablePdf: "OA \u53EF\u83B7\u53D6\uFF08pdf\uFF09"
+  },
+  sources: {
+    frameworkSource: "\u6846\u67B6\u6765\u6E90",
+    analogous: "\u7C7B\u6BD4\uFF08{sector}\uFF09",
+    otherSector: "\u5176\u4ED6\u884C\u4E1A",
+    evidenceTag: "\u8BC1\u636E\uFF1A{label}",
+    notVerifiedDoi: "\u672A\u9A8C\u8BC1\uFF08DOI \u65E0\u6CD5\u89E3\u6790\uFF09",
+    notCheckedConnection: "\u672A\u68C0\u67E5\uFF08\u65E0\u7F51\u7EDC\u8FDE\u63A5\uFF09",
+    notVerifiedNoId: "\u672A\u9A8C\u8BC1\uFF08\u65E0 DOI/ISBN\uFF09",
+    noteMissingId: "\u65E0 DOI/ISBN",
+    noteDoiUnresolved: "DOI \u65E0\u6CD5\u89E3\u6790",
+    noteNoConnection: "\u65E0\u7F51\u7EDC\u8FDE\u63A5",
+    transferEvidenceSector: "[\u7C7B\u6BD4\u8BC1\u636E\uFF0C\u6765\u6E90\u884C\u4E1A\uFF1A{sector}]",
+    transferEvidenceGeneric: "[\u6765\u81EA\u5176\u4ED6\u884C\u4E1A\u7684\u7C7B\u6BD4\u8BC1\u636E]"
+  },
+  decompose: {
+    frameworkHeading: "\u7406\u8BBA\u6846\u67B6",
+    dimensionsIntro: "\u7EF4\u5EA6\uFF08\u5F15\u5BFC\u5B50\u95EE\u9898\uFF09\uFF1A",
+    keySources: "\u5173\u952E\u6587\u732E",
+    subQuestions: "\u5B50\u95EE\u9898",
+    subQuestionsNote: "\uFF08\u95EE\u9898\u7684\u62C6\u5206\u65B9\u5F0F\uFF1B\u7F16\u53F7\u6307\u5411\u5404\u5B50\u95EE\u9898\u6240\u5F97\u7684\u6587\u732E\uFF09",
+    subQuestionsNoteWithHypotheses: "\uFF08\u95EE\u9898\u7684\u62C6\u5206\u65B9\u5F0F\uFF1B\u7F16\u53F7\u6307\u5411\u5404\u5B50\u95EE\u9898\u6240\u5F97\u7684\u6587\u732E\uFF0C\u968F\u540E\u662F\u5404\u5B50\u95EE\u9898\u5BF9\u5E94\u7684\u5047\u8BBE\uFF09",
+    hypothesisLabel: "\u5047\u8BBE"
+  },
+  searchStrategy: {
+    sources: "\u6765\u6E90",
+    none: "\uFF08\u65E0\uFF09",
+    terms: "\u68C0\u7D22\u8BCD",
+    termsCounted: "\u68C0\u7D22\u8BCD\uFF08{n}\uFF09",
+    resumedLine: "\u57FA\u4E8E\u5148\u524D\u627E\u5230\uFF08\u5DF2\u7F13\u5B58\uFF09\u7684\u6587\u732E\u7EE7\u7EED\u2014\u2014\u672A\u6267\u884C\u65B0\u7684\u68C0\u7D22\u8F6E\u6B21\u3002",
+    additionalTerms: "\u8865\u5145\u68C0\u7D22\u8BCD\uFF08\u6765\u81EA\u95EE\u9898\u63A2\u7D22/\u7406\u8BBA\u89C6\u89D2\uFF09",
+    selectionCriteria: "\u7B5B\u9009\u6807\u51C6",
+    rerankLine: "\u5BF9\u878D\u5408\u540E\u7684\u5019\u9009\u6587\u732E\u8FDB\u884C\u76F8\u5173\u6027\u91CD\u6392\uFF08\u5D4C\u5165\u6DF7\u5408\uFF09{tested}\u3002",
+    testedAgainstSubQuestions: "\uFF0C\u5E76\u5BF9\u7167\u5B50\u95EE\u9898\u8FDB\u884C\u4E86\u68C0\u9A8C",
+    abstractsOnlyLine: "\u8BC4\u4F30\u57FA\u4E8E\u6807\u9898\u548C\u6458\u8981\uFF0C\u800C\u975E\u5168\u6587\u3002",
+    limitedToTop: "\u4EC5\u4FDD\u7559\u5F97\u5206\u6700\u9AD8\u7684\u524D {n} \u6761\u6587\u732E\u3002",
+    crossSectorLine: "\u5DF2\u8865\u5145\u8DE8\u884C\u4E1A\u8FC1\u79FB\u8BC1\u636E{sectors}\uFF0C\u5355\u72EC\u6807\u6CE8\u5E76\u6392\u9664\u5728\u7EFC\u5408\u4E4B\u5916\u3002",
+    sectorsSuffix: "\uFF08\u884C\u4E1A\uFF1A{sectors}\uFF09",
+    funnel: "\u6570\u91CF\uFF08\u6F0F\u6597\uFF09",
+    fusedCount: "\u878D\u5408\u540E\uFF1A{n} \u6761\u552F\u4E00\u6587\u732E",
+    afterRerank: "\u91CD\u6392\u540E\uFF1A{n}",
+    keptCount: "\u5C55\u793A/\u4FDD\u7559\uFF1A{n}",
+    failuresHeading: "\u5404\u6765\u6E90\u7684\u68C0\u7D22\u5931\u8D25\u60C5\u51B5",
+    failureLine: "{label}\uFF1A{failed}/{total} \u6B21\u68C0\u7D22\u5931\u8D25\uFF08\u901F\u7387\u9650\u5236\u6216\u7F51\u7EDC\u9519\u8BEF\uFF09\u3002"
+  },
+  account: {
+    title: "\u65B9\u6CD5\u8BBA\u8BF4\u660E",
+    provenanceDerived: "\u6D3E\u751F\u7684\u53EF\u590D\u73B0\u6587\u6863\u2014\u2014\u7531\u7814\u7A76\u4F1A\u8BDD\u81EA\u52A8\u6C47\u7F16\u800C\u6210\u3002",
+    provenanceScope: "\u5B83\u63CF\u8FF0\u56F4\u7ED5\u7814\u7A76\u6240\u505A\u7684**\u65B9\u6CD5\u8BBA\u9009\u62E9**\uFF0C\u800C\u975E\u6A21\u578B\u7684\u5185\u90E8\u63A8\u7406\u3002",
+    sourceLabel: "\u6765\u6E90",
+    researchQuestion: "\u7814\u7A76\u95EE\u9898",
+    notRecorded: "_\u672A\u8BB0\u5F55\u2014\u2014\u6B64\u6B65\u9AA4\u5C1A\u672A\u6267\u884C\u3002_",
+    chosenFraming: "\u9009\u5B9A\u7684\u91CD\u65B0\u8868\u8FF0\uFF08\u6846\u67B6\uFF09",
+    alternativesNote: "\u66FE\u8003\u8651\u7684\u5907\u9009\u8868\u8FF0\u5217\u4E8E *{section}* \u4E4B\u4E0B\u3002",
+    unchangedQuestion: "_\u539F\u59CB\u95EE\u9898\u4FDD\u6301\u4E0D\u53D8\u3002_",
+    chosenLensesLabel: "\u9009\u5B9A\u7684\u89C6\u89D2",
+    openQuestions: "\u5F00\u653E\u95EE\u9898\u4E0E\u540E\u7EED\u7814\u7A76"
+  },
+  agenda: {
+    gaps: "\u77E5\u8BC6\u7F3A\u53E3",
+    limitations: "\u53CD\u590D\u51FA\u73B0\u7684\u65B9\u6CD5\u8BBA\u5C40\u9650",
+    newQuestions: "\u65B0\u7684\u7814\u7A76\u95EE\u9898",
+    designs: "\u9002\u7528\u7684\u7814\u7A76\u8BBE\u8BA1",
+    data: "\u6240\u9700\u6570\u636E / \u6D4B\u91CF\u5DE5\u5177"
+  },
+  graph: {
+    gapNoSubquestions: '\u95EE\u9898\u5C1A\u672A\u62C6\u5206\u4E3A\u5B50\u95EE\u9898\uFF1A"{label}"',
+    gapNoFindings: '\u95EE\u9898\u5C1A\u65E0\u7EFC\u5408\u53D1\u73B0\uFF1A"{label}"',
+    gapNoSources: '\u95EE\u9898\u5728\u6587\u732E\u767B\u8BB0\u4E2D\u5C1A\u65E0\u6587\u732E\uFF1A"{label}"',
+    gapFindingNoSource: '\u53D1\u73B0\u7F3A\u5C11\u6587\u732E\u5F15\u7528\uFF08\u672A\u7ECF\u8BC1\u5B9E\u7684\u8BBA\u65AD\uFF09\uFF1A"{label}"',
+    gapOpenHypothesis: '\u5047\u8BBE\u672A\u51B3\uFF0C\u5C1A\u5F85\u68C0\u9A8C\uFF1A"{label}"',
+    gapSourceUnused: '\u6587\u732E\u5C1A\u672A\u7528\u4E8E\u4EFB\u4F55\u53D1\u73B0\uFF1A"{label}"',
+    severityHigh: "\u{1F534} \u9AD8\u2014\u2014\u672A\u7ECF\u8BC1\u5B9E\u7684\u8BBA\u65AD",
+    severityMedium: "\u{1F7E0} \u4E2D\u2014\u2014\u7F3A\u5931\u7684\u6B65\u9AA4",
+    severityInfo: "\u{1F535} \u4FE1\u606F\u2014\u2014\u672A\u7ED3\u7684\u7EBF\u7D22",
+    reportTitle: "\u77E5\u8BC6\u56FE\u8C31\uFF08spike\uFF09\u2014 {project}",
+    reportIntro: "_\u7531\u73B0\u6709\u6784\u4EF6\uFF08front matter + \u6E32\u67D3\u540E\u7684\u7EFC\u5408 + \u5F15\u6587\u767B\u8BB0\uFF09\u751F\u6210\u7684\u53EA\u8BFB\u6295\u5F71\u3002\u53EF\u968F\u65F6\u4E22\u5F03\uFF1A\u8BF7\u52FF\u624B\u5DE5\u7F16\u8F91\u2014\u2014\u91CD\u65B0\u751F\u6210\u5373\u53EF\u3002_",
+    sizeHeading: "\u89C4\u6A21",
+    nodesEdgesLine: "**{nodes}** \u4E2A\u8282\u70B9\uFF0C**{edges}** \u6761\u8FB9",
+    gapsHeading: "\u7F3A\u53E3",
+    noGaps: "_\u672A\u68C0\u6D4B\u5230\u7F3A\u53E3\u3002_",
+    nodesPerType: "\u5404\u7C7B\u578B\u8282\u70B9\u6570",
+    nodeTypeLabels: {
+      vraag: "\u95EE\u9898",
+      deelvraag: "\u5B50\u95EE\u9898",
+      hypothese: "\u5047\u8BBE",
+      bevinding: "\u53D1\u73B0",
+      bron: "\u6587\u732E",
+      lens: "\u89C6\u89D2"
+    },
+    provenanceHeading: "\u6EAF\u6E90",
+    provenanceWithEdges: "\u672C\u56FE\u8C31\u4F7F\u7528**\u751F\u6210\u65F6\u8BB0\u5F55\u7684\u8FB9**\uFF08E68\uFF09\uFF1A`source\u2192finding`\uFF08`onderbouwt`\uFF09\u6765\u81EA\u5DF2\u4FDD\u5B58\u7684\u8BB0\u5F55\uFF0C\u56E0\u6B64\u53D1\u73B0\u2192\u5177\u4F53\u6765\u6E90\u662F\u53EF\u9760\u7684\u3002\u6CA1\u6709\u8BB0\u5F55\u7684\u7B14\u8BB0\uFF08\u65E7\u8FD0\u884C / \u6563\u6587\u56DE\u9000\uFF09\u53EA\u7EDF\u8BA1 `[n]` \u5F15\u7528\u7684*\u6570\u91CF*\u3002",
+    provenanceWithoutEdges: "\u672C\u9879\u76EE\u5C1A\u672A\u627E\u5230\u751F\u6210\u65F6\u8BB0\u5F55\u7684\u8FB9\uFF08E68 \u8BB0\u5F55\uFF09\u2014\u2014\u8FD9\u4E9B\u53D1\u73B0\u6765\u81EA\u6E32\u67D3\u540E\u7684\u7EFC\u5408\uFF0C\u5176\u4E2D\u7684 `[n]` \u7F16\u53F7\u4E0E\u5F15\u6587\u952E\u4E4B\u95F4\u6CA1\u6709\u6301\u4E45\u6620\u5C04\u3002\u56E0\u6B64\u6211\u4EEC\u53EA\u7EDF\u8BA1\u4E00\u6761\u53D1\u73B0\u662F\u5426\u5E26\u6709*\u4EFB\u4E00*\u5F15\u7528\u3002\u8FD0\u884C\u4E00\u6B21\u65B0\u7684\u7EFC\u5408\u5373\u53EF\u83B7\u5F97\u53EF\u9760\u7684 `source\u2192finding` \u8FB9\u3002"
+  },
+  exportBundle: {
+    accountFileName: "\u65B9\u6CD5\u8BBA\u8BF4\u660E.md",
+    bibFileName: "\u6587\u732E.bib",
+    stubUnavailable: "_\u672C\u6B21\u5BFC\u51FA\u65E0\u6CD5\u81EA\u52A8\u6C47\u7F16\u3002_",
+    stubMissingLabel: "\u7F3A\u5931\uFF1A",
+    stubMissingAccount: "\u65B9\u6CD5\u8BBA\u8BF4\u660E",
+    stubNoFrontmatter: "\u65B9\u6CD5\u8BBA\u8BF4\u660E\uFF08\u6B64\u7B14\u8BB0\u4E0A\u672A\u627E\u5230\u4F1A\u8BDD front matter\uFF09",
+    noSessions: "_\u672A\u627E\u5230\u6B64\u9879\u76EE\u7684\u4EFB\u4F55\u4F1A\u8BDD\u3002_",
+    artefactsPresent: "{present}/{total} \u4E2A\u5DE5\u4EF6\u5DF2\u751F\u6210"
+  },
+  project: {
+    objectivePlaceholder: "_\uFF08\u5F85\u62DF\u5B9A\u2014\u2014\u672C\u9879\u76EE\u6700\u7EC8\u8981\u56DE\u7B54\u4EC0\u4E48\u95EE\u9898\uFF1F\uFF09_",
+    overviewHeading: "\u6982\u89C8",
+    overviewBody: "_\u6BCF\u4E2A\u7814\u7A76\u95EE\u9898\u90FD\u662F\u6B64\u6587\u4EF6\u5939\u4E2D\u4E00\u6761\u72EC\u7ACB\u7684\u4F1A\u8BDD\u7B14\u8BB0\uFF1B\u6253\u5F00 Parallax \u4FA7\u8FB9\u680F\u53EF\u67E5\u770B\u6982\u89C8\u5E76\u6DFB\u52A0\u65B0\u95EE\u9898\u3002_"
+  },
+  logbook: {
+    stepBeliefs: "\u4FE1\u5FF5",
+    stepResearch: "\u7814\u7A76",
+    stepAccount: "\u65B9\u6CD5\u8BBA\u8BF4\u660E",
+    framingChosen: '\u9009\u5B9A\u6846\u67B6\uFF1A"{framing}"',
+    alternativesConsidered: "; \u8003\u8651\u4E86 {n} \u4E2A\u5907\u9009\u8868\u8FF0",
+    challengesSummary: "{n} \u9879\u8D28\u7591",
+    challengesAdopted: "; \u5176\u4E2D {n} \u9879\u8BB0\u5F55\u4E3A\u4FE1\u5FF5",
+    lensesChosen: "\u9009\u5B9A {n} \u4E2A\u89C6\u89D2",
+    lensesEliminated: "; \u6392\u9664 {n} \u4E2A",
+    synthesisOver: "\u5BF9 {n} \u6761\u6587\u732E\u8FDB\u884C\u7EFC\u5408",
+    searchTerms: "; {n} \u4E2A\u68C0\u7D22\u8BCD",
+    beliefsUpdated: "\u4E0E\u7EFC\u5408\u5BF9\u7167\u540E\u66F4\u65B0\u4E86 {n} \u6761\u4FE1\u5FF5",
+    newQuestionsProposed: "{n} \u4E2A\u65B0\u7814\u7A76\u95EE\u9898",
+    sessionStarted: "; \u5DF2\u5F00\u59CB\u65B0\u4F1A\u8BDD",
+    accountGenerated: "\u5DF2\u751F\u6210\u65B9\u6CD5\u8BBA\u8BF4\u660E"
+  }
+};
+
+// src/i18n/hi.ts
+var hi = {
+  headings: {
+    synthesis: "\u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923",
+    exploration: "\u0938\u092E\u0938\u094D\u092F\u093E-\u0905\u0928\u094D\u0935\u0947\u0937\u0923",
+    lenses: "\u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u0932\u0947\u0902\u0938",
+    challenge: "\u091A\u0941\u0928\u094C\u0924\u0940",
+    agenda: "\u0936\u094B\u0927 \u090F\u091C\u0947\u0902\u0921\u093E",
+    logbook: "\u0932\u0949\u0917\u092C\u0941\u0915",
+    searchstrategy: "\u0916\u094B\u091C-\u0930\u0923\u0928\u0940\u0924\u093F",
+    objective: "\u0909\u0926\u094D\u0926\u0947\u0936\u094D\u092F",
+    context: "\u0938\u0902\u0926\u0930\u094D\u092D",
+    beliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901"
+  },
+  exploration: {
+    chosenFraming: "\u091A\u0941\u0928\u0940 \u0917\u0908 \u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917:",
+    assumptions: "\u0905\u0902\u0924\u0930\u094D\u0928\u093F\u0939\u093F\u0924 \u092A\u0942\u0930\u094D\u0935\u0927\u093E\u0930\u0923\u093E\u090F\u0901",
+    counterAssumptions: "\u0938\u0902\u092D\u093E\u0935\u093F\u0924 \u092A\u094D\u0930\u0924\u093F-\u092A\u0942\u0930\u094D\u0935\u0927\u093E\u0930\u0923\u093E\u090F\u0901",
+    reformulations: "\u092A\u0941\u0928\u0930\u094D\u0938\u0902\u0930\u0942\u092A\u0923",
+    disciplines: "\u0935\u093F\u0937\u092F-\u0915\u094D\u0937\u0947\u0924\u094D\u0930 / \u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u092A\u0930\u0902\u092A\u0930\u093E\u090F\u0901",
+    definitions: "\u092A\u094D\u0930\u0924\u093F\u0938\u094D\u092A\u0930\u094D\u0927\u0940 \u092A\u0930\u093F\u092D\u093E\u0937\u093E\u090F\u0901",
+    directions: "\u0906\u0936\u093E\u091C\u0928\u0915 \u0936\u094B\u0927-\u0926\u093F\u0936\u093E\u090F\u0901",
+    facetTheoreticalBasis: "\u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u0906\u0927\u093E\u0930",
+    facetSearchability: "\u0916\u094B\u091C-\u092F\u094B\u0917\u094D\u092F\u0924\u093E",
+    facetLiteratureStrength: "\u0938\u0936\u0915\u094D\u0924 \u0938\u093E\u0939\u093F\u0924\u094D\u092F \u092E\u093F\u0932\u0928\u0947 \u0915\u0940 \u0938\u0902\u092D\u093E\u0935\u0928\u093E (\u0905\u0928\u0941\u092E\u093E\u0928)",
+    facetOriginality: "\u092E\u094C\u0932\u093F\u0915\u0924\u093E",
+    chosenSearchTerms: "\u0916\u094B\u091C-\u0936\u092C\u094D\u0926 (\u091A\u0941\u0928\u0947 \u0917\u090F)",
+    initialBeliefs: "\u092A\u094D\u0930\u093E\u0930\u0902\u092D\u093F\u0915 \u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901"
+  },
+  theory: {
+    sameMechanism: "\u090F\u0915 \u0939\u0940 \u0924\u0902\u0924\u094D\u0930, \u0905\u0932\u0917 \u0928\u093E\u092E",
+    strikinglyAbsent: "\u0909\u0932\u094D\u0932\u0947\u0916\u0928\u0940\u092F \u0930\u0942\u092A \u0938\u0947 \u0905\u0928\u0941\u092A\u0938\u094D\u0925\u093F\u0924",
+    competing: "\u092A\u094D\u0930\u0924\u093F\u0938\u094D\u092A\u0930\u094D\u0927\u0940 \u0935\u094D\u092F\u093E\u0916\u094D\u092F\u093E\u090F\u0901",
+    crossDomain: "\u0905\u0902\u0924\u0930-\u0915\u094D\u0937\u0947\u0924\u094D\u0930\u0940\u092F \u0938\u0902\u092C\u0902\u0927",
+    chosenLenses: "\u091A\u0941\u0928\u0947 \u0917\u090F \u0932\u0947\u0902\u0938"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "\u0938\u0902\u0915\u0932\u094D\u092A\u0928\u093E\u0924\u094D\u092E\u0915",
+      methodologisch: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924",
+      theoretisch: "\u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915",
+      empirisch: "\u0906\u0928\u0941\u092D\u0935\u093F\u0915",
+      praktisch: "\u0935\u094D\u092F\u093E\u0935\u0939\u093E\u0930\u093F\u0915"
+    },
+    actionLabel: "\u0915\u093E\u0930\u094D\u0930\u0935\u093E\u0908",
+    inversion: "\u092F\u0926\u093F \u0906\u092A\u0915\u0940 \u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E \u0917\u0932\u0924 \u0939\u0948\u2026"
+  },
+  beliefs: {
+    none: "_(\u0905\u092D\u0940 \u0924\u0915 \u0915\u094B\u0908 \u092E\u093E\u0928\u094D\u092F\u0924\u093E \u0926\u0930\u094D\u091C \u0928\u0939\u0940\u0902)_",
+    statusLabels: {
+      open: "\u0916\u0941\u0932\u0940",
+      ondersteund: "\u0938\u092E\u0930\u094D\u0925\u093F\u0924",
+      weersproken: "\u0916\u0902\u0921\u093F\u0924"
+    },
+    confidenceLabels: {
+      laag: "\u0915\u092E",
+      midden: "\u092E\u0927\u094D\u092F\u092E",
+      hoog: "\u0909\u091A\u094D\u091A"
+    },
+    confidence: "\u0935\u093F\u0936\u094D\u0935\u093E\u0938-\u0938\u094D\u0924\u0930"
+  },
+  synthesis: {
+    findings: "\u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937",
+    evidenceInline: "\u0938\u093E\u0915\u094D\u0937\u094D\u092F: {strength}{tier}",
+    strengthLabels: {
+      sterk: "\u0938\u0936\u0915\u094D\u0924",
+      gemengd: "\u092E\u093F\u0936\u094D\u0930\u093F\u0924",
+      beperkt: "\u0938\u0940\u092E\u093F\u0924"
+    },
+    contradictions: "\u0905\u0902\u0924\u0930\u094D\u0935\u093F\u0930\u094B\u0927 / \u092A\u0930\u093F\u0938\u094D\u0925\u093F\u0924\u093F \u092A\u0930 \u0928\u093F\u0930\u094D\u092D\u0930",
+    practical: "\u0935\u094D\u092F\u093E\u0935\u0939\u093E\u0930\u093F\u0915 \u0905\u0928\u0941\u0935\u093E\u0926",
+    followUps: "\u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E-\u091C\u0928\u0915 \u0905\u0928\u0941\u0935\u0930\u094D\u0924\u0940 \u0926\u093F\u0936\u093E\u090F\u0901 \u0914\u0930 \u0916\u0941\u0932\u0947 \u092A\u094D\u0930\u0936\u094D\u0928",
+    evidenceAndGaps: "\u0938\u093E\u0915\u094D\u0937\u094D\u092F-\u092C\u0932 \u0914\u0930 \u0905\u0902\u0924\u0930\u093E\u0932",
+    scopeCaveat: "\u26A0 \u0926\u093E\u092F\u0930\u093E: \u0938\u093E\u0915\u094D\u0937\u094D\u092F \u092E\u0941\u0916\u094D\u092F\u0924\u0903 {note} \u0915\u0947 \u092C\u093E\u0930\u0947 \u092E\u0947\u0902 \u0939\u0948 \u2014 \u092A\u0942\u091B\u0947 \u0917\u090F \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u0947 \u092C\u093E\u0930\u0947 \u092E\u0947\u0902 \u0935\u093F\u0936\u0947\u0937 \u0930\u0942\u092A \u0938\u0947 \u0928\u0939\u0940\u0902\u0964 \u0938\u093E\u092E\u093E\u0928\u094D\u092F\u0940\u0915\u0930\u0923 \u0938\u093E\u0935\u0927\u093E\u0928\u0940 \u0938\u0947 \u0915\u0930\u0947\u0902\u0964",
+    abstractsDisclosure: "\u090A\u092A\u0930 \u0926\u0940 \u0917\u0908 \u0938\u093E\u0915\u094D\u0937\u094D\u092F-\u0917\u094D\u0930\u0947\u0921\u093F\u0902\u0917 \u0938\u093E\u0930\u093E\u0902\u0936\u094B\u0902 (abstracts) \u092A\u0930 \u0906\u0927\u093E\u0930\u093F\u0924 \u0939\u0948, \u092A\u0942\u0930\u094D\u0923 \u092A\u093E\u0920\u094B\u0902 \u092A\u0930 \u0928\u0939\u0940\u0902 \u2014 \u0938\u093E\u0930\u093E\u0902\u0936\u094B\u0902 \u092E\u0947\u0902 \u092A\u094D\u0930\u093E\u092F\u0903 \u092E\u0949\u0921\u0930\u0947\u091F\u0930, \u0935\u093F\u0936\u094D\u0935\u093E\u0938-\u0905\u0902\u0924\u0930\u093E\u0932 \u0914\u0930 \u0936\u0942\u0928\u094D\u092F-\u092A\u0930\u093F\u0923\u093E\u092E \u091B\u0942\u091F \u091C\u093E\u0924\u0947 \u0939\u0948\u0902\u0964",
+    fulltextNuanceSingular: " \u0905\u092C \u0924\u0915 1 \u0938\u094D\u0930\u094B\u0924 \u092A\u0942\u0930\u094D\u0923 \u092A\u093E\u0920 \u092A\u0930 \u0906\u0927\u093E\u0930\u093F\u0924 \u0939\u0948 (\u0917\u0939\u0928 \u0935\u093F\u0936\u094D\u0932\u0947\u0937\u0923 \u0926\u0947\u0916\u0947\u0902)\u0964",
+    fulltextNuancePlural: " \u0905\u092C \u0924\u0915 {n} \u0938\u094D\u0930\u094B\u0924 \u092A\u0942\u0930\u094D\u0923 \u092A\u093E\u0920 \u092A\u0930 \u0906\u0927\u093E\u0930\u093F\u0924 \u0939\u0948\u0902 (\u0917\u0939\u0928 \u0935\u093F\u0936\u094D\u0932\u0947\u0937\u0923 \u0926\u0947\u0916\u0947\u0902)\u0964",
+    unanswered: "\u0907\u0938 \u0938\u093E\u0915\u094D\u0937\u094D\u092F \u0938\u0947 \u0909\u0924\u094D\u0924\u0930 \u0928\u0939\u0940\u0902 \u0926\u093F\u092F\u093E \u091C\u093E \u0938\u0915\u0924\u093E",
+    reasonNotInvestigated: "\u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u092E\u0947\u0902 \u0907\u0938\u0915\u0940 \u091C\u093E\u0901\u091A \u0928\u0939\u0940\u0902 \u0939\u0941\u0908",
+    reasonDesignInsufficient: "\u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u093E\u0915\u094D\u0937\u094D\u092F \u0938\u0947 \u0938\u094D\u0925\u093E\u092A\u093F\u0924 \u0928\u0939\u0940\u0902 \u0915\u093F\u092F\u093E \u091C\u093E \u0938\u0915\u0924\u093E (\u0921\u093F\u091C\u093C\u093E\u0907\u0928 \u0905\u092A\u0930\u094D\u092F\u093E\u092A\u094D\u0924, \u091C\u0948\u0938\u0947 cross-sectional)",
+    designNeeded: " \u0907\u0938\u0915\u0947 \u0932\u093F\u090F {design} \u0915\u0940 \u0906\u0935\u0936\u094D\u092F\u0915\u0924\u093E \u0939\u094B\u0917\u0940\u0964",
+    readingRecommendations: "\u092A\u0942\u0930\u094D\u0923 \u0930\u0942\u092A \u0938\u0947 \u092A\u0922\u093C\u0928\u0947 \u0915\u0940 \u0905\u0928\u0941\u0936\u0902\u0938\u093E",
+    readingRecommendationsNote: "(\u0938\u093E\u0930\u093E\u0902\u0936\u094B\u0902 \u0915\u0947 \u0906\u0927\u093E\u0930 \u092A\u0930; \u092A\u094D\u0930\u093E\u092F\u0903 \u092A\u0947\u0935\u0949\u0932 \u0915\u0947 \u092A\u0940\u091B\u0947 \u2014 \u092A\u0942\u0930\u094D\u0923 \u092A\u093E\u0920 \u0906\u092A \u0938\u094D\u0935\u092F\u0902 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0915\u0930\u0947\u0902)"
+  },
+  evidenceTier: {
+    strong: "review/meta-analysis",
+    moderate: "RCT",
+    limited: "\u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E-\u091C\u0928\u0915"
+  },
+  oa: {
+    paywalled: "\u0938\u0902\u092D\u0935\u0924\u0903 \u092A\u0947\u0935\u0949\u0932 \u0915\u0947 \u092A\u0940\u091B\u0947",
+    available: "OA \u0909\u092A\u0932\u092C\u094D\u0927",
+    availablePdf: "OA \u0909\u092A\u0932\u092C\u094D\u0927 (pdf)"
+  },
+  sources: {
+    frameworkSource: "\u092B\u093C\u094D\u0930\u0947\u092E\u0935\u0930\u094D\u0915-\u0938\u094D\u0930\u094B\u0924",
+    analogous: "\u0938\u093E\u0926\u0943\u0936\u094D\u092F ({sector})",
+    otherSector: "\u0905\u0928\u094D\u092F \u0915\u094D\u0937\u0947\u0924\u094D\u0930",
+    evidenceTag: "\u0938\u093E\u0915\u094D\u0937\u094D\u092F: {label}",
+    notVerifiedDoi: "\u0938\u0924\u094D\u092F\u093E\u092A\u093F\u0924 \u0928\u0939\u0940\u0902 (DOI \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E)",
+    notCheckedConnection: "\u091C\u093E\u0901\u091A\u093E \u0928\u0939\u0940\u0902 \u0917\u092F\u093E (\u0915\u094B\u0908 \u0915\u0928\u0947\u0915\u094D\u0936\u0928 \u0928\u0939\u0940\u0902)",
+    notVerifiedNoId: "\u0938\u0924\u094D\u092F\u093E\u092A\u093F\u0924 \u0928\u0939\u0940\u0902 (DOI/ISBN \u0928\u0939\u0940\u0902)",
+    noteMissingId: "DOI/ISBN \u0928\u0939\u0940\u0902",
+    noteDoiUnresolved: "DOI \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E",
+    noteNoConnection: "\u0915\u094B\u0908 \u0915\u0928\u0947\u0915\u094D\u0936\u0928 \u0928\u0939\u0940\u0902",
+    transferEvidenceSector: "[\u0915\u094D\u0937\u0947\u0924\u094D\u0930 \u0938\u0947 \u0938\u093E\u0926\u0943\u0936\u094D\u092F \u0938\u093E\u0915\u094D\u0937\u094D\u092F: {sector}]",
+    transferEvidenceGeneric: "[\u0905\u0928\u094D\u092F \u0915\u094D\u0937\u0947\u0924\u094D\u0930 \u0938\u0947 \u0938\u093E\u0926\u0943\u0936\u094D\u092F \u0938\u093E\u0915\u094D\u0937\u094D\u092F]"
+  },
+  decompose: {
+    frameworkHeading: "\u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u0922\u093E\u0901\u091A\u093E",
+    dimensionsIntro: "\u0906\u092F\u093E\u092E (\u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928\u094B\u0902 \u0915\u093E \u092E\u093E\u0930\u094D\u0917\u0926\u0930\u094D\u0936\u0928 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902):",
+    keySources: "\u092A\u094D\u0930\u092E\u0941\u0916 \u0938\u094D\u0930\u094B\u0924",
+    subQuestions: "\u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928",
+    subQuestionsNote: "(\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0907\u0938 \u092A\u094D\u0930\u0915\u093E\u0930 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0915\u093F\u092F\u093E \u0917\u092F\u093E; \u0938\u0902\u0916\u094D\u092F\u093E\u090F\u0901 \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u0947 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0915\u0940 \u0913\u0930 \u0938\u0902\u0915\u0947\u0924 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902)",
+    subQuestionsNoteWithHypotheses: "(\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0907\u0938 \u092A\u094D\u0930\u0915\u093E\u0930 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0915\u093F\u092F\u093E \u0917\u092F\u093E; \u0938\u0902\u0916\u094D\u092F\u093E\u090F\u0901 \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u0947 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0915\u0940 \u0913\u0930 \u0938\u0902\u0915\u0947\u0924 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902, \u0907\u0938\u0915\u0947 \u092C\u093E\u0926 \u092A\u094D\u0930\u0924\u093F \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E \u0926\u0940 \u0917\u0908 \u0939\u0948)",
+    hypothesisLabel: "\u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E"
+  },
+  searchStrategy: {
+    sources: "\u0938\u094D\u0930\u094B\u0924",
+    none: "(\u0915\u094B\u0908 \u0928\u0939\u0940\u0902)",
+    terms: "\u0916\u094B\u091C-\u0936\u092C\u094D\u0926",
+    termsCounted: "\u0916\u094B\u091C-\u0936\u092C\u094D\u0926 ({n})",
+    resumedLine: "\u092A\u0939\u0932\u0947 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 (\u0915\u0948\u0936 \u0915\u093F\u090F \u0917\u090F) \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0938\u0947 \u0906\u0917\u0947 \u092C\u0922\u093C\u093E\u092F\u093E \u0917\u092F\u093E \u2014 \u0915\u094B\u0908 \u0928\u092F\u093E \u0916\u094B\u091C-\u0926\u094C\u0930 \u0928\u0939\u0940\u0902 \u091A\u0932\u093E\u092F\u093E \u0917\u092F\u093E\u0964",
+    additionalTerms: "\u0905\u0924\u093F\u0930\u093F\u0915\u094D\u0924 \u0916\u094B\u091C-\u0936\u092C\u094D\u0926 (\u0905\u0928\u094D\u0935\u0947\u0937\u0923/\u0932\u0947\u0902\u0938 \u0938\u0947)",
+    selectionCriteria: "\u091A\u092F\u0928-\u092E\u093E\u0928\u0926\u0902\u0921",
+    rerankLine: "\u0938\u0902\u0932\u092F\u093F\u0924 \u0909\u092E\u094D\u092E\u0940\u0926\u0935\u093E\u0930\u094B\u0902 \u092A\u0930 \u092A\u094D\u0930\u093E\u0938\u0902\u0917\u093F\u0915\u0924\u093E-\u092A\u0941\u0928\u0930\u094D\u0915\u094D\u0930\u092E\u0923 (embedding blend){tested}\u0964",
+    testedAgainstSubQuestions: ", \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928\u094B\u0902 \u0915\u0947 \u0935\u093F\u0930\u0941\u0926\u094D\u0927 \u092A\u0930\u0916\u093E \u0917\u092F\u093E",
+    abstractsOnlyLine: "\u092E\u0942\u0932\u094D\u092F\u093E\u0902\u0915\u0928 \u0936\u0940\u0930\u094D\u0937\u0915\u094B\u0902 \u0914\u0930 \u0938\u093E\u0930\u093E\u0902\u0936\u094B\u0902 \u0915\u0947 \u0906\u0927\u093E\u0930 \u092A\u0930, \u092A\u0942\u0930\u094D\u0923 \u092A\u093E\u0920\u094B\u0902 \u0915\u0947 \u0906\u0927\u093E\u0930 \u092A\u0930 \u0928\u0939\u0940\u0902\u0964",
+    limitedToTop: "\u0938\u0930\u094D\u0935\u094B\u091A\u094D\u091A \u0938\u094D\u0915\u094B\u0930 \u0935\u093E\u0932\u0947 \u0936\u0940\u0930\u094D\u0937 {n} \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0924\u0915 \u0938\u0940\u092E\u093F\u0924\u0964",
+    crossSectorLine: "\u0905\u0902\u0924\u0930-\u0915\u094D\u0937\u0947\u0924\u094D\u0930\u0940\u092F \u0938\u094D\u0925\u093E\u0928\u093E\u0902\u0924\u0930\u0923-\u0938\u093E\u0915\u094D\u0937\u094D\u092F \u091C\u094B\u0921\u093C\u093E \u0917\u092F\u093E{sectors}, \u0905\u0932\u0917 \u0938\u0947 \u0932\u0947\u092C\u0932 \u0915\u093F\u092F\u093E \u0917\u092F\u093E \u0914\u0930 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 \u0938\u0947 \u092C\u093E\u0939\u0930 \u0930\u0916\u093E \u0917\u092F\u093E\u0964",
+    sectorsSuffix: " (\u0915\u094D\u0937\u0947\u0924\u094D\u0930: {sectors})",
+    funnel: "\u0938\u0902\u0916\u094D\u092F\u093E\u090F\u0901 (\u092B\u093C\u0928\u0932)",
+    fusedCount: "\u0938\u0902\u0932\u092F\u093F\u0924: {n} \u0905\u0926\u094D\u0935\u093F\u0924\u0940\u092F \u0938\u094D\u0930\u094B\u0924",
+    afterRerank: "\u092A\u0941\u0928\u0930\u094D\u0915\u094D\u0930\u092E\u0923 \u0915\u0947 \u092C\u093E\u0926: {n}",
+    keptCount: "\u0926\u093F\u0916\u093E\u090F \u0917\u090F/\u0930\u0916\u0947 \u0917\u090F: {n}",
+    failuresHeading: "\u092A\u094D\u0930\u0924\u093F \u0938\u094D\u0930\u094B\u0924 \u0916\u094B\u091C-\u0935\u093F\u092B\u0932\u0924\u093E\u090F\u0901",
+    failureLine: "{label}: {failed}/{total} \u0916\u094B\u091C(\u0947\u0902) \u0935\u093F\u092B\u0932 (rate limit \u092F\u093E \u0928\u0947\u091F\u0935\u0930\u094D\u0915 \u0924\u094D\u0930\u0941\u091F\u093F)\u0964"
+  },
+  account: {
+    title: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0935\u093F\u0935\u0930\u0923",
+    provenanceDerived: "\u0935\u094D\u092F\u0941\u0924\u094D\u092A\u0928\u094D\u0928, \u092A\u0941\u0928\u0930\u0941\u0924\u094D\u092A\u093E\u0926\u0928\u0940\u092F \u0926\u0938\u094D\u0924\u093E\u0935\u0947\u091C\u093C \u2014 \u0936\u094B\u0927-\u0938\u0924\u094D\u0930 \u0938\u0947 \u0938\u094D\u0935\u091A\u093E\u0932\u093F\u0924 \u0930\u0942\u092A \u0938\u0947 \u0938\u0902\u0915\u0932\u093F\u0924\u0964",
+    provenanceScope: "\u092F\u0939 \u0936\u094B\u0927 \u0938\u0947 \u091C\u0941\u0921\u093C\u0947 **\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0928\u093F\u0930\u094D\u0923\u092F\u094B\u0902** \u0915\u093E \u0935\u0930\u094D\u0923\u0928 \u0915\u0930\u0924\u093E \u0939\u0948, \u092E\u0949\u0921\u0932 \u0915\u0947 \u0906\u0902\u0924\u0930\u093F\u0915 \u0924\u0930\u094D\u0915 \u0915\u093E \u0928\u0939\u0940\u0902\u0964",
+    sourceLabel: "\u0938\u094D\u0930\u094B\u0924",
+    researchQuestion: "\u0936\u094B\u0927-\u092A\u094D\u0930\u0936\u094D\u0928",
+    notRecorded: "_\u0926\u0930\u094D\u091C \u0928\u0939\u0940\u0902 \u2014 \u092F\u0939 \u091A\u0930\u0923 (\u0905\u092D\u0940 \u0924\u0915) \u0928\u093F\u0937\u094D\u092A\u093E\u0926\u093F\u0924 \u0928\u0939\u0940\u0902 \u0939\u0941\u0906 \u0939\u0948\u0964_",
+    chosenFraming: "\u091A\u0941\u0928\u093E \u0917\u092F\u093E \u092A\u0941\u0928\u0930\u094D\u0938\u0902\u0930\u0942\u092A\u0923 (\u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917)",
+    alternativesNote: "\u0935\u093F\u091A\u093E\u0930 \u0915\u093F\u090F \u0917\u090F \u0935\u0948\u0915\u0932\u094D\u092A\u093F\u0915 \u0938\u0902\u0930\u0942\u092A\u0923 *{section}* \u0915\u0947 \u0905\u0902\u0924\u0930\u094D\u0917\u0924 \u0938\u0942\u091A\u0940\u092C\u0926\u094D\u0927 \u0939\u0948\u0902\u0964",
+    unchangedQuestion: "_\u092E\u0942\u0932 \u092A\u094D\u0930\u0936\u094D\u0928 \u0905\u092A\u0930\u093F\u0935\u0930\u094D\u0924\u093F\u0924 \u0930\u0916\u093E \u0917\u092F\u093E\u0964_",
+    chosenLensesLabel: "\u091A\u0941\u0928\u0947 \u0917\u090F \u0932\u0947\u0902\u0938",
+    openQuestions: "\u0916\u0941\u0932\u0947 \u092A\u094D\u0930\u0936\u094D\u0928 \u0914\u0930 \u0905\u0928\u0941\u0935\u0930\u094D\u0924\u0940 \u0936\u094B\u0927"
+  },
+  agenda: {
+    gaps: "\u091C\u094D\u091E\u093E\u0928-\u0905\u0902\u0924\u0930\u093E\u0932",
+    limitations: "\u092C\u093E\u0930-\u092C\u093E\u0930 \u0938\u093E\u092E\u0928\u0947 \u0906\u0928\u0947 \u0935\u093E\u0932\u0940 \u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0938\u0940\u092E\u093E\u090F\u0901",
+    newQuestions: "\u0928\u090F \u0936\u094B\u0927-\u092A\u094D\u0930\u0936\u094D\u0928",
+    designs: "\u0909\u092A\u092F\u0941\u0915\u094D\u0924 \u0936\u094B\u0927-\u0921\u093F\u091C\u093C\u093E\u0907\u0928",
+    data: "\u0906\u0935\u0936\u094D\u092F\u0915 \u0921\u0947\u091F\u093E / \u092E\u093E\u092A\u0928-\u0909\u092A\u0915\u0930\u0923"
+  },
+  graph: {
+    gapNoSubquestions: '\u092A\u094D\u0930\u0936\u094D\u0928 \u0905\u092D\u0940 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928\u094B\u0902 \u092E\u0947\u0902 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0928\u0939\u0940\u0902 \u0939\u0941\u0906: "{label}"',
+    gapNoFindings: '\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u0947 \u0932\u093F\u090F \u0905\u092D\u0940 \u0915\u094B\u0908 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923-\u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937 \u0928\u0939\u0940\u0902: "{label}"',
+    gapNoSources: '\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u0947 \u0932\u093F\u090F \u0930\u091C\u093F\u0938\u094D\u091F\u0930 \u092E\u0947\u0902 \u0905\u092D\u0940 \u0915\u094B\u0908 \u0938\u093E\u0939\u093F\u0924\u094D\u092F \u0928\u0939\u0940\u0902: "{label}"',
+    gapFindingNoSource: '\u0938\u094D\u0930\u094B\u0924-\u0938\u0902\u0926\u0930\u094D\u092D \u0930\u0939\u093F\u0924 \u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937 (\u0905\u092A\u094D\u0930\u092E\u093E\u0923\u093F\u0924 \u0926\u093E\u0935\u093E): "{label}"',
+    gapOpenHypothesis: '\u0916\u0941\u0932\u0940 \u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E, \u092A\u0930\u0940\u0915\u094D\u0937\u0923 \u0936\u0947\u0937: "{label}"',
+    gapSourceUnused: '\u0938\u094D\u0930\u094B\u0924 \u0905\u092D\u0940 \u0915\u093F\u0938\u0940 \u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937 \u092E\u0947\u0902 \u092A\u094D\u0930\u092F\u0941\u0915\u094D\u0924 \u0928\u0939\u0940\u0902: "{label}"',
+    severityHigh: "\u{1F534} \u0909\u091A\u094D\u091A \u2014 \u0905\u092A\u094D\u0930\u092E\u093E\u0923\u093F\u0924 \u0926\u093E\u0935\u0947",
+    severityMedium: "\u{1F7E0} \u092E\u0927\u094D\u092F\u092E \u2014 \u091B\u0942\u091F\u0947 \u0939\u0941\u090F \u091A\u0930\u0923",
+    severityInfo: "\u{1F535} \u0938\u0942\u091A\u0928\u093E \u2014 \u0916\u0941\u0932\u0947 \u0938\u0942\u0924\u094D\u0930",
+    reportTitle: "\u091C\u094D\u091E\u093E\u0928-\u0917\u094D\u0930\u093E\u092B\u093C (spike) \u2014 {project}",
+    reportIntro: "_\u092E\u094C\u091C\u0942\u0926\u093E \u0906\u0930\u094D\u091F\u093F\u092B\u093C\u0948\u0915\u094D\u091F\u094D\u0938 (front matter + \u092A\u094D\u0930\u0938\u094D\u0924\u0941\u0924 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 + \u0909\u0926\u094D\u0927\u0930\u0923-\u0930\u091C\u093F\u0938\u094D\u091F\u0930) \u0938\u0947 \u0915\u0947\u0935\u0932-\u092A\u0920\u0928 \u092A\u094D\u0930\u0915\u094D\u0937\u0947\u092A\u0923\u0964 \u0905\u0938\u094D\u0925\u093E\u092F\u0940: \u0939\u093E\u0925 \u0938\u0947 \u0938\u0902\u092A\u093E\u0926\u093F\u0924 \u0928 \u0915\u0930\u0947\u0902 \u2014 \u092A\u0941\u0928\u0903 \u091C\u0928\u0930\u0947\u091F \u0915\u0930\u0947\u0902\u0964_",
+    sizeHeading: "\u0906\u0915\u093E\u0930",
+    nodesEdgesLine: "**{nodes}** \u0928\u094B\u0921, **{edges}** \u090F\u091C",
+    gapsHeading: "\u0905\u0902\u0924\u0930\u093E\u0932",
+    noGaps: "_\u0915\u094B\u0908 \u0905\u0902\u0924\u0930\u093E\u0932 \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E\u0964_",
+    nodesPerType: "\u092A\u094D\u0930\u0915\u093E\u0930 \u0915\u0947 \u0905\u0928\u0941\u0938\u093E\u0930 \u0928\u094B\u0921",
+    nodeTypeLabels: {
+      vraag: "\u092A\u094D\u0930\u0936\u094D\u0928",
+      deelvraag: "\u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928",
+      hypothese: "\u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E",
+      bevinding: "\u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937",
+      bron: "\u0938\u094D\u0930\u094B\u0924",
+      lens: "\u0932\u0947\u0902\u0938"
+    },
+    provenanceHeading: "\u0909\u0926\u094D\u0917\u092E (provenance)",
+    provenanceWithEdges: "\u092F\u0939 \u0917\u094D\u0930\u093E\u092B\u093C **\u091C\u0928\u0930\u0947\u0936\u0928-\u0938\u092E\u092F \u0915\u0947 \u090F\u091C** (E68) \u0909\u092A\u092F\u094B\u0917 \u0915\u0930\u0924\u093E \u0939\u0948: `source\u2192finding` (`onderbouwt`) \u0926\u0930\u094D\u091C \u0930\u093F\u0915\u0949\u0930\u094D\u0921 \u0938\u0947 \u0906\u0924\u093E \u0939\u0948, \u0905\u0924\u0903 \u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937\u2192\u0935\u093F\u0936\u093F\u0937\u094D\u091F-\u0938\u094D\u0930\u094B\u0924 \u0935\u093F\u0936\u094D\u0935\u0938\u0928\u0940\u092F \u0939\u0948\u0964 \u092C\u093F\u0928\u093E \u0930\u093F\u0915\u0949\u0930\u094D\u0921 \u0935\u093E\u0932\u0940 \u0928\u094B\u091F\u094D\u0938 (\u092A\u0941\u0930\u093E\u0928\u0947 \u0930\u0928 / \u0917\u0926\u094D\u092F-\u092B\u093C\u0949\u0932\u092C\u0948\u0915) \u092E\u0947\u0902 \u0915\u0947\u0935\u0932 `[n]`-\u0938\u0902\u0926\u0930\u094D\u092D\u094B\u0902 \u0915\u0940 *\u0938\u0902\u0916\u094D\u092F\u093E* \u0917\u093F\u0928\u0940 \u091C\u093E\u0924\u0940 \u0939\u0948\u0964",
+    provenanceWithoutEdges: "\u0907\u0938 \u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u0947 \u0932\u093F\u090F \u0905\u092D\u0940 \u091C\u0928\u0930\u0947\u0936\u0928-\u0938\u092E\u092F \u0915\u0947 \u090F\u091C (E68 \u0930\u093F\u0915\u0949\u0930\u094D\u0921) \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u0947 \u2014 \u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937 \u092A\u094D\u0930\u0938\u094D\u0924\u0941\u0924 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 \u0938\u0947 \u0906\u0924\u0947 \u0939\u0948\u0902, \u091C\u0939\u093E\u0901 `[n]`-\u0938\u0902\u0916\u094D\u092F\u093E\u0913\u0902 \u0915\u093E \u0909\u0926\u094D\u0927\u0930\u0923-\u0915\u0941\u0902\u091C\u093F\u092F\u094B\u0902 \u0938\u0947 \u0915\u094B\u0908 \u0938\u094D\u0925\u093E\u092F\u0940 \u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930\u0923 \u0928\u0939\u0940\u0902 \u0939\u0948\u0964 \u0907\u0938\u0932\u093F\u090F \u0939\u092E \u0915\u0947\u0935\u0932 \u092F\u0939 \u0917\u093F\u0928\u0924\u0947 \u0939\u0948\u0902 \u0915\u093F \u0915\u093F\u0938\u0940 \u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937 \u0915\u0947 \u0938\u093E\u0925 *\u0915\u094B\u0908* \u0938\u0902\u0926\u0930\u094D\u092D \u0939\u0948 \u092F\u093E \u0928\u0939\u0940\u0902\u0964 \u0935\u093F\u0936\u094D\u0935\u0938\u0928\u0940\u092F `source\u2192finding` \u090F\u091C \u092A\u093E\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0928\u092F\u093E \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 \u091A\u0932\u093E\u090F\u0901\u0964"
+  },
+  exportBundle: {
+    accountFileName: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924-\u0935\u093F\u0935\u0930\u0923.md",
+    bibFileName: "\u0938\u094D\u0930\u094B\u0924.bib",
+    stubUnavailable: "_\u0907\u0938 \u0928\u093F\u0930\u094D\u092F\u093E\u0924 \u0915\u0947 \u0932\u093F\u090F \u0938\u094D\u0935\u091A\u093E\u0932\u093F\u0924 \u0930\u0942\u092A \u0938\u0947 \u0938\u0902\u0915\u0932\u093F\u0924 \u0928\u0939\u0940\u0902 \u0915\u093F\u092F\u093E \u091C\u093E \u0938\u0915\u093E\u0964_",
+    stubMissingLabel: "\u0905\u0928\u0941\u092A\u0932\u092C\u094D\u0927:",
+    stubMissingAccount: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0935\u093F\u0935\u0930\u0923",
+    stubNoFrontmatter: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0935\u093F\u0935\u0930\u0923 (\u0907\u0938 \u0928\u094B\u091F \u092A\u0930 \u0915\u094B\u0908 \u0938\u0924\u094D\u0930 front matter \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E)",
+    noSessions: "_\u0907\u0938 \u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u0947 \u0932\u093F\u090F \u0915\u094B\u0908 \u0938\u0924\u094D\u0930 \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E\u0964_",
+    artefactsPresent: "{present}/{total} \u0906\u0930\u094D\u091F\u093F\u092B\u093C\u0948\u0915\u094D\u091F \u092E\u094C\u091C\u0942\u0926"
+  },
+  project: {
+    objectivePlaceholder: "_(\u0905\u092D\u0940 \u0924\u0948\u092F\u093E\u0930 \u0915\u0930\u0928\u093E \u0936\u0947\u0937 \u2014 \u0907\u0938 \u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u094B \u0905\u0902\u0924\u0924\u0903 \u0915\u093F\u0938 \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u093E \u0909\u0924\u094D\u0924\u0930 \u0926\u0947\u0928\u093E \u0939\u0948?)_",
+    overviewHeading: "\u0905\u0935\u0932\u094B\u0915\u0928",
+    overviewBody: "_\u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0936\u094B\u0927-\u092A\u094D\u0930\u0936\u094D\u0928 \u0907\u0938 \u092B\u093C\u094B\u0932\u094D\u0921\u0930 \u092E\u0947\u0902 \u0905\u092A\u0928\u0940 \u0905\u0932\u0917 \u0938\u0924\u094D\u0930-\u0928\u094B\u091F \u0939\u0948; \u0905\u0935\u0932\u094B\u0915\u0928 \u0926\u0947\u0916\u0928\u0947 \u0914\u0930 \u0928\u092F\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u091C\u094B\u0921\u093C\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F Parallax \u0938\u093E\u0907\u0921\u092C\u093E\u0930 \u0916\u094B\u0932\u0947\u0902\u0964_"
+  },
+  logbook: {
+    stepBeliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
+    stepResearch: "\u0936\u094B\u0927",
+    stepAccount: "\u0935\u093F\u0935\u0930\u0923",
+    framingChosen: '\u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917 \u091A\u0941\u0928\u0940 \u0917\u0908: "{framing}"',
+    alternativesConsidered: "; {n} \u0935\u0948\u0915\u0932\u094D\u092A\u093F\u0915 \u0938\u0902\u0930\u0942\u092A\u0923(\u094B\u0902) \u092A\u0930 \u0935\u093F\u091A\u093E\u0930 \u0915\u093F\u092F\u093E \u0917\u092F\u093E",
+    challengesSummary: "{n} \u091A\u0941\u0928\u094C\u0924\u0940(\u092F\u093E\u0901)",
+    challengesAdopted: "; {n} \u092E\u093E\u0928\u094D\u092F\u0924\u093E \u0915\u0947 \u0930\u0942\u092A \u092E\u0947\u0902 \u0926\u0930\u094D\u091C",
+    lensesChosen: "{n} \u0932\u0947\u0902\u0938 \u091A\u0941\u0928\u0947 \u0917\u090F",
+    lensesEliminated: "; {n} \u0939\u091F\u093E\u090F \u0917\u090F",
+    synthesisOver: "{n} \u0938\u094D\u0930\u094B\u0924(\u094B\u0902) \u092A\u0930 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923",
+    searchTerms: "; {n} \u0916\u094B\u091C-\u0936\u092C\u094D\u0926",
+    beliefsUpdated: "\u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 \u0938\u0947 \u0924\u0941\u0932\u0928\u093E \u0915\u0947 \u092C\u093E\u0926 {n} \u092E\u093E\u0928\u094D\u092F\u0924\u093E(\u090F\u0901) \u0905\u0926\u094D\u092F\u0924\u0928",
+    newQuestionsProposed: "{n} \u0928\u092F\u093E/\u0928\u090F \u0936\u094B\u0927-\u092A\u094D\u0930\u0936\u094D\u0928",
+    sessionStarted: "; \u0928\u092F\u093E \u0938\u0924\u094D\u0930 \u092A\u094D\u0930\u093E\u0930\u0902\u092D",
+    accountGenerated: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0935\u093F\u0935\u0930\u0923 \u091C\u0928\u0930\u0947\u091F \u0915\u093F\u092F\u093E \u0917\u092F\u093E"
+  }
+};
+
+// src/i18n/ar.ts
+var ar = {
+  headings: {
+    synthesis: "\u0627\u0644\u062A\u0648\u0644\u064A\u0641",
+    exploration: "\u0627\u0633\u062A\u0643\u0634\u0627\u0641 \u0627\u0644\u0645\u0634\u0643\u0644\u0629",
+    lenses: "\u0627\u0644\u0639\u062F\u0633\u0627\u062A \u0627\u0644\u0646\u0638\u0631\u064A\u0629",
+    challenge: "\u0627\u0644\u062A\u062D\u062F\u064A",
+    agenda: "\u0623\u062C\u0646\u062F\u0629 \u0627\u0644\u0628\u062D\u062B",
+    logbook: "\u0633\u062C\u0644 \u0627\u0644\u0648\u0642\u0627\u0626\u0639",
+    searchstrategy: "\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0629 \u0627\u0644\u0628\u062D\u062B",
+    objective: "\u0627\u0644\u0647\u062F\u0641",
+    context: "\u0627\u0644\u0633\u064A\u0627\u0642",
+    beliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A"
+  },
+  exploration: {
+    chosenFraming: "\u0627\u0644\u062A\u0623\u0637\u064A\u0631 \u0627\u0644\u0645\u062E\u062A\u0627\u0631:",
+    assumptions: "\u0627\u0644\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A \u0627\u0644\u0636\u0645\u0646\u064A\u0629",
+    counterAssumptions: "\u0627\u0644\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A \u0627\u0644\u0645\u0636\u0627\u062F\u0629 \u0627\u0644\u0645\u062D\u062A\u0645\u0644\u0629",
+    reformulations: "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0635\u064A\u0627\u063A\u0627\u062A",
+    disciplines: "\u0627\u0644\u062A\u062E\u0635\u0635\u0627\u062A / \u0627\u0644\u062A\u0642\u0627\u0644\u064A\u062F \u0627\u0644\u0646\u0638\u0631\u064A\u0629",
+    definitions: "\u0627\u0644\u062A\u0639\u0631\u064A\u0641\u0627\u062A \u0627\u0644\u0645\u062A\u0646\u0627\u0641\u0633\u0629",
+    directions: "\u0627\u062A\u062C\u0627\u0647\u0627\u062A \u0628\u062D\u062B\u064A\u0629 \u0648\u0627\u0639\u062F\u0629",
+    facetTheoreticalBasis: "\u0627\u0644\u0623\u0633\u0627\u0633 \u0627\u0644\u0646\u0638\u0631\u064A",
+    facetSearchability: "\u0642\u0627\u0628\u0644\u064A\u0629 \u0627\u0644\u0628\u062D\u062B",
+    facetLiteratureStrength: "\u0627\u062D\u062A\u0645\u0627\u0644 \u0648\u062C\u0648\u062F \u0623\u062F\u0628\u064A\u0627\u062A \u0642\u0648\u064A\u0629 (\u062A\u0642\u062F\u064A\u0631)",
+    facetOriginality: "\u0627\u0644\u0623\u0635\u0627\u0644\u0629",
+    chosenSearchTerms: "\u0645\u0635\u0637\u0644\u062D\u0627\u062A \u0627\u0644\u0628\u062D\u062B (\u0627\u0644\u0645\u062E\u062A\u0627\u0631\u0629)",
+    initialBeliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A \u0627\u0644\u0623\u0648\u0644\u064A\u0629"
+  },
+  theory: {
+    sameMechanism: "\u0627\u0644\u0622\u0644\u064A\u0629 \u0646\u0641\u0633\u0647\u0627 \u0628\u0627\u0633\u0645 \u0645\u062E\u062A\u0644\u0641",
+    strikinglyAbsent: "\u063A\u0627\u0626\u0628 \u0628\u0634\u0643\u0644 \u0644\u0627\u0641\u062A",
+    competing: "\u0627\u0644\u062A\u0641\u0633\u064A\u0631\u0627\u062A \u0627\u0644\u0645\u062A\u0646\u0627\u0641\u0633\u0629",
+    crossDomain: "\u0631\u0648\u0627\u0628\u0637 \u0639\u0627\u0628\u0631\u0629 \u0644\u0644\u0645\u062C\u0627\u0644\u0627\u062A",
+    chosenLenses: "\u0627\u0644\u0639\u062F\u0633\u0627\u062A \u0627\u0644\u0645\u062E\u062A\u0627\u0631\u0629"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "\u0645\u0641\u0627\u0647\u064A\u0645\u064A",
+      methodologisch: "\u0645\u0646\u0647\u062C\u064A",
+      theoretisch: "\u0646\u0638\u0631\u064A",
+      empirisch: "\u0625\u0645\u0628\u064A\u0631\u064A\u0642\u064A",
+      praktisch: "\u0639\u0645\u0644\u064A"
+    },
+    actionLabel: "\u0627\u0644\u0625\u062C\u0631\u0627\u0621",
+    inversion: "\u0625\u0630\u0627 \u0643\u0627\u0646\u062A \u0641\u0631\u0636\u064A\u062A\u0643 \u062E\u0627\u0637\u0626\u0629\u2026"
+  },
+  beliefs: {
+    none: "_(\u0644\u0645 \u062A\u064F\u0633\u062C\u064E\u0651\u0644 \u0623\u064A \u0642\u0646\u0627\u0639\u0627\u062A \u0628\u0639\u062F)_",
+    statusLabels: {
+      open: "\u0645\u0641\u062A\u0648\u062D\u0629",
+      ondersteund: "\u0645\u062F\u0639\u0648\u0645\u0629",
+      weersproken: "\u0645\u062F\u062D\u0648\u0636\u0629"
+    },
+    confidenceLabels: {
+      laag: "\u0645\u0646\u062E\u0641\u0636\u0629",
+      midden: "\u0645\u062A\u0648\u0633\u0637\u0629",
+      hoog: "\u0645\u0631\u062A\u0641\u0639\u0629"
+    },
+    confidence: "\u062F\u0631\u062C\u0629 \u0627\u0644\u062B\u0642\u0629"
+  },
+  synthesis: {
+    findings: "\u0627\u0644\u0646\u062A\u0627\u0626\u062C",
+    evidenceInline: "\u0627\u0644\u062F\u0644\u064A\u0644: {strength}{tier}",
+    strengthLabels: {
+      sterk: "\u0642\u0648\u064A",
+      gemengd: "\u0645\u062A\u0628\u0627\u064A\u0646",
+      beperkt: "\u0645\u062D\u062F\u0648\u062F"
+    },
+    contradictions: "\u0627\u0644\u062A\u0646\u0627\u0642\u0636\u0627\u062A / \u064A\u0639\u062A\u0645\u062F \u0639\u0644\u0649 \u0627\u0644\u0633\u064A\u0627\u0642",
+    practical: "\u0627\u0644\u062A\u0631\u062C\u0645\u0629 \u0627\u0644\u0639\u0645\u0644\u064A\u0629",
+    followUps: "\u0627\u062A\u062C\u0627\u0647\u0627\u062A \u0645\u062A\u0627\u0628\u0639\u0629 \u0645\u0648\u0644\u0650\u0651\u062F\u0629 \u0644\u0644\u0641\u0631\u0636\u064A\u0627\u062A \u0648\u0623\u0633\u0626\u0644\u0629 \u0645\u0641\u062A\u0648\u062D\u0629",
+    evidenceAndGaps: "\u0642\u0648\u0629 \u0627\u0644\u0623\u062F\u0644\u0629 \u0648\u0627\u0644\u0641\u062C\u0648\u0627\u062A",
+    scopeCaveat: "\u26A0 \u0627\u0644\u0646\u0637\u0627\u0642: \u0627\u0644\u0623\u062F\u0644\u0629 \u062A\u062A\u0646\u0627\u0648\u0644 \u0641\u064A \u0627\u0644\u063A\u0627\u0644\u0628 {note} \u2014 \u0648\u0644\u064A\u0633 \u0627\u0644\u0633\u0624\u0627\u0644 \u0643\u0645\u0627 \u0637\u064F\u0631\u062D \u062A\u062D\u062F\u064A\u062F\u0627\u064B. \u0639\u0645\u0650\u0651\u0645 \u0628\u062D\u0630\u0631.",
+    abstractsDisclosure: "\u062A\u0635\u0646\u064A\u0641 \u0627\u0644\u0623\u062F\u0644\u0629 \u0623\u0639\u0644\u0627\u0647 \u0645\u0628\u0646\u064A \u0639\u0644\u0649 \u0627\u0644\u0645\u0644\u062E\u0635\u0627\u062A \u0644\u0627 \u0639\u0644\u0649 \u0627\u0644\u0646\u0635\u0648\u0635 \u0627\u0644\u0643\u0627\u0645\u0644\u0629 \u2014 \u0648\u0643\u062B\u064A\u0631\u0627\u064B \u0645\u0627 \u062A\u064F\u063A\u0641\u0644 \u0627\u0644\u0645\u0644\u062E\u0635\u0627\u062A \u0627\u0644\u0645\u062A\u063A\u064A\u0631\u0627\u062A \u0627\u0644\u0645\u0639\u062F\u0650\u0651\u0644\u0629 \u0648\u0641\u062A\u0631\u0627\u062A \u0627\u0644\u062B\u0642\u0629 \u0648\u0627\u0644\u0646\u062A\u0627\u0626\u062C \u0627\u0644\u0635\u0641\u0631\u064A\u0629.",
+    fulltextNuanceSingular: " \u062D\u062A\u0649 \u0627\u0644\u0622\u0646 \u064A\u0633\u062A\u0646\u062F \u0645\u0635\u062F\u0631 \u0648\u0627\u062D\u062F \u0625\u0644\u0649 \u0627\u0644\u0646\u0635 \u0627\u0644\u0643\u0627\u0645\u0644 (\u0627\u0646\u0638\u0631 \u0627\u0644\u062A\u0639\u0645\u064A\u0642).",
+    fulltextNuancePlural: " \u062D\u062A\u0649 \u0627\u0644\u0622\u0646 \u062A\u0633\u062A\u0646\u062F {n} \u0645\u0635\u0627\u062F\u0631 \u0625\u0644\u0649 \u0627\u0644\u0646\u0635 \u0627\u0644\u0643\u0627\u0645\u0644 (\u0627\u0646\u0638\u0631 \u0627\u0644\u062A\u0639\u0645\u064A\u0642).",
+    unanswered: "\u0644\u0627 \u064A\u0645\u0643\u0646 \u0627\u0644\u0625\u062C\u0627\u0628\u0629 \u0639\u0646\u0647 \u0628\u0647\u0630\u0647 \u0627\u0644\u0623\u062F\u0644\u0629",
+    reasonNotInvestigated: "\u0644\u0645 \u064A\u064F\u0628\u062D\u062B \u0641\u064A \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u062A\u064A \u0639\u064F\u062B\u0631 \u0639\u0644\u064A\u0647\u0627",
+    reasonDesignInsufficient: "\u0644\u0627 \u064A\u0645\u0643\u0646 \u0625\u062B\u0628\u0627\u062A\u0647 \u0628\u0627\u0644\u0623\u062F\u0644\u0629 \u0627\u0644\u0645\u062A\u0648\u0641\u0631\u0629 (\u0627\u0644\u062A\u0635\u0645\u064A\u0645 \u063A\u064A\u0631 \u0643\u0627\u0641\u064D\u060C \u0645\u062B\u0644 \u0627\u0644\u062A\u0635\u0645\u064A\u0645 \u0627\u0644\u0645\u0642\u0637\u0639\u064A)",
+    designNeeded: " \u0633\u064A\u062A\u0637\u0644\u0628 {design}.",
+    readingRecommendations: "\u064A\u064F\u0648\u0635\u0649 \u0628\u0642\u0631\u0627\u0621\u062A\u0647 \u0643\u0627\u0645\u0644\u0627\u064B",
+    readingRecommendationsNote: "(\u0627\u0633\u062A\u0646\u0627\u062F\u0627\u064B \u0625\u0644\u0649 \u0627\u0644\u0645\u0644\u062E\u0635\u0627\u062A\u061B \u063A\u0627\u0644\u0628\u0627\u064B \u062E\u0644\u0641 \u062C\u062F\u0627\u0631 \u062F\u0641\u0639 \u2014 \u0639\u0644\u064A\u0643 \u062C\u0644\u0628 \u0627\u0644\u0646\u0635 \u0627\u0644\u0643\u0627\u0645\u0644 \u0628\u0646\u0641\u0633\u0643)"
+  },
+  evidenceTier: {
+    strong: "\u0645\u0631\u0627\u062C\u0639\u0629/\u062A\u062D\u0644\u064A\u0644 \u062A\u0644\u0648\u064A",
+    moderate: "\u062A\u062C\u0631\u0628\u0629 \u0645\u0639\u0634\u0651\u0627\u0629 (RCT)",
+    limited: "\u0645\u0648\u0644\u0650\u0651\u062F \u0644\u0644\u0641\u0631\u0636\u064A\u0627\u062A"
+  },
+  oa: {
+    paywalled: "\u0639\u0644\u0649 \u0627\u0644\u0623\u0631\u062C\u062D \u062E\u0644\u0641 \u062C\u062F\u0627\u0631 \u062F\u0641\u0639",
+    available: "\u0645\u062A\u0627\u062D \u0628\u0627\u0644\u0648\u0635\u0648\u0644 \u0627\u0644\u062D\u0631",
+    availablePdf: "\u0645\u062A\u0627\u062D \u0628\u0627\u0644\u0648\u0635\u0648\u0644 \u0627\u0644\u062D\u0631 (pdf)"
+  },
+  sources: {
+    frameworkSource: "\u0645\u0635\u062F\u0631 \u0625\u0637\u0627\u0631\u064A",
+    analogous: "\u0642\u064A\u0627\u0633\u064A ({sector})",
+    otherSector: "\u0642\u0637\u0627\u0639 \u0622\u062E\u0631",
+    evidenceTag: "\u0627\u0644\u062F\u0644\u064A\u0644: {label}",
+    notVerifiedDoi: "\u063A\u064A\u0631 \u0645\u062A\u062D\u0642\u0642 \u0645\u0646\u0647 (\u062A\u0639\u0630\u0651\u0631 \u062D\u0644\u0651 DOI)",
+    notCheckedConnection: "\u0644\u0645 \u064A\u064F\u0641\u062D\u0635 (\u0644\u0627 \u064A\u0648\u062C\u062F \u0627\u062A\u0635\u0627\u0644)",
+    notVerifiedNoId: "\u063A\u064A\u0631 \u0645\u062A\u062D\u0642\u0642 \u0645\u0646\u0647 (\u0644\u0627 DOI/ISBN)",
+    noteMissingId: "\u0644\u0627 DOI/ISBN",
+    noteDoiUnresolved: "\u062A\u0639\u0630\u0651\u0631 \u062D\u0644\u0651 DOI",
+    noteNoConnection: "\u0644\u0627 \u064A\u0648\u062C\u062F \u0627\u062A\u0635\u0627\u0644",
+    transferEvidenceSector: "[\u062F\u0644\u064A\u0644 \u0642\u064A\u0627\u0633\u064A \u0645\u0646 \u0642\u0637\u0627\u0639: {sector}]",
+    transferEvidenceGeneric: "[\u062F\u0644\u064A\u0644 \u0642\u064A\u0627\u0633\u064A \u0645\u0646 \u0642\u0637\u0627\u0639 \u0622\u062E\u0631]"
+  },
+  decompose: {
+    frameworkHeading: "\u0627\u0644\u0625\u0637\u0627\u0631 \u0627\u0644\u0646\u0638\u0631\u064A",
+    dimensionsIntro: "\u0627\u0644\u0623\u0628\u0639\u0627\u062F (\u062A\u0648\u062C\u0651\u0647 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0641\u0631\u0639\u064A\u0629):",
+    keySources: "\u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629",
+    subQuestions: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0641\u0631\u0639\u064A\u0629",
+    subQuestionsNote: "(\u0647\u0643\u0630\u0627 \u0642\u064F\u0633\u0650\u0651\u0645 \u0627\u0644\u0633\u0624\u0627\u0644\u061B \u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u062A\u0634\u064A\u0631 \u0625\u0644\u0649 \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u062A\u064A \u0623\u0633\u0641\u0631 \u0639\u0646\u0647\u0627 \u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A)",
+    subQuestionsNoteWithHypotheses: "(\u0647\u0643\u0630\u0627 \u0642\u064F\u0633\u0650\u0651\u0645 \u0627\u0644\u0633\u0624\u0627\u0644\u061B \u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u062A\u0634\u064A\u0631 \u0625\u0644\u0649 \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u062A\u064A \u0623\u0633\u0641\u0631 \u0639\u0646\u0647\u0627 \u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A\u060C \u0645\u062A\u0628\u0648\u0639\u0629 \u0628\u0627\u0644\u0641\u0631\u0636\u064A\u0629 \u0644\u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A)",
+    hypothesisLabel: "\u0627\u0644\u0641\u0631\u0636\u064A\u0629"
+  },
+  searchStrategy: {
+    sources: "\u0627\u0644\u0645\u0635\u0627\u062F\u0631",
+    none: "(\u0644\u0627 \u0634\u064A\u0621)",
+    terms: "\u0645\u0635\u0637\u0644\u062D\u0627\u062A \u0627\u0644\u0628\u062D\u062B",
+    termsCounted: "\u0645\u0635\u0637\u0644\u062D\u0627\u062A \u0627\u0644\u0628\u062D\u062B ({n})",
+    resumedLine: "\u0627\u0633\u062A\u0624\u0646\u0641 \u0639\u0644\u0649 \u0645\u0635\u0627\u062F\u0631 \u0639\u064F\u062B\u0631 \u0639\u0644\u064A\u0647\u0627 \u0633\u0627\u0628\u0642\u0627\u064B (\u0645\u062E\u0632\u0651\u0646\u0629 \u0645\u0624\u0642\u062A\u0627\u064B) \u2014 \u0644\u0645 \u062A\u064F\u0646\u0641\u064E\u0651\u0630 \u062C\u0648\u0644\u0629 \u0628\u062D\u062B \u062C\u062F\u064A\u062F\u0629.",
+    additionalTerms: "\u0645\u0635\u0637\u0644\u062D\u0627\u062A \u0628\u062D\u062B \u0625\u0636\u0627\u0641\u064A\u0629 (\u0645\u0646 \u0627\u0644\u0627\u0633\u062A\u0643\u0634\u0627\u0641/\u0627\u0644\u0639\u062F\u0633\u0627\u062A)",
+    selectionCriteria: "\u0645\u0639\u0627\u064A\u064A\u0631 \u0627\u0644\u0627\u062E\u062A\u064A\u0627\u0631",
+    rerankLine: "\u0625\u0639\u0627\u062F\u0629 \u062A\u0631\u062A\u064A\u0628 \u062D\u0633\u0628 \u0627\u0644\u0635\u0644\u0629 (\u0645\u0632\u064A\u062C \u062A\u0636\u0645\u064A\u0646\u0627\u062A) \u0639\u0644\u0649 \u0627\u0644\u0645\u0631\u0634\u062D\u064A\u0646 \u0627\u0644\u0645\u062F\u0645\u0648\u062C\u064A\u0646{tested}.",
+    testedAgainstSubQuestions: ", \u0645\u0639 \u0627\u062E\u062A\u0628\u0627\u0631\u0647\u0627 \u0645\u0642\u0627\u0628\u0644 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0641\u0631\u0639\u064A\u0629",
+    abstractsOnlyLine: "\u0627\u0644\u062A\u0642\u064A\u064A\u0645 \u0645\u0628\u0646\u064A \u0639\u0644\u0649 \u0627\u0644\u0639\u0646\u0627\u0648\u064A\u0646 \u0648\u0627\u0644\u0645\u0644\u062E\u0635\u0627\u062A\u060C \u0644\u0627 \u0639\u0644\u0649 \u0627\u0644\u0646\u0635\u0648\u0635 \u0627\u0644\u0643\u0627\u0645\u0644\u0629.",
+    limitedToTop: "\u0627\u0642\u062A\u064F\u0635\u0631 \u0639\u0644\u0649 \u0623\u0641\u0636\u0644 {n} \u0645\u0635\u0627\u062F\u0631 \u0645\u0646 \u062D\u064A\u062B \u0627\u0644\u062F\u0631\u062C\u0629.",
+    crossSectorLine: "\u0623\u064F\u0636\u064A\u0641 \u062F\u0644\u064A\u0644 \u0646\u0642\u0644 \u0639\u0627\u0628\u0631 \u0644\u0644\u0642\u0637\u0627\u0639\u0627\u062A{sectors}\u060C \u0645\u0648\u0633\u0648\u0645 \u0639\u0644\u0649 \u062D\u062F\u0629 \u0648\u0645\u0633\u062A\u0628\u0639\u062F \u0645\u0646 \u0627\u0644\u062A\u0648\u0644\u064A\u0641.",
+    sectorsSuffix: " (\u0627\u0644\u0642\u0637\u0627\u0639\u0627\u062A: {sectors})",
+    funnel: "\u0627\u0644\u0623\u0639\u062F\u0627\u062F (\u0627\u0644\u0642\u0645\u0639)",
+    fusedCount: "\u0628\u0639\u062F \u0627\u0644\u062F\u0645\u062C: {n} \u0645\u0635\u062F\u0631 (\u0645\u0635\u0627\u062F\u0631) \u0641\u0631\u064A\u062F\u0629",
+    afterRerank: "\u0628\u0639\u062F \u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u062A\u0631\u062A\u064A\u0628: {n}",
+    keptCount: "\u0627\u0644\u0645\u0639\u0631\u0648\u0636/\u0627\u0644\u0645\u062D\u062A\u0641\u0638 \u0628\u0647: {n}",
+    failuresHeading: "\u0625\u062E\u0641\u0627\u0642\u0627\u062A \u0627\u0644\u0628\u062D\u062B \u0644\u0643\u0644 \u0645\u0635\u062F\u0631",
+    failureLine: "{label}: \u0623\u062E\u0641\u0642\u062A {failed}/{total} \u0645\u0646 \u0639\u0645\u0644\u064A\u0627\u062A \u0627\u0644\u0628\u062D\u062B (\u062A\u062C\u0627\u0648\u0632 \u062D\u062F \u0627\u0644\u0637\u0644\u0628\u0627\u062A \u0623\u0648 \u062E\u0637\u0623 \u0641\u064A \u0627\u0644\u0634\u0628\u0643\u0629)."
+  },
+  account: {
+    title: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0645\u0646\u0647\u062C\u064A",
+    provenanceDerived: "\u0648\u062B\u064A\u0642\u0629 \u0645\u0634\u062A\u0642\u0629 \u0642\u0627\u0628\u0644\u0629 \u0644\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0625\u0646\u062A\u0627\u062C \u2014 \u062C\u064F\u0645\u0650\u0651\u0639\u062A \u062A\u0644\u0642\u0627\u0626\u064A\u0627\u064B \u0645\u0646 \u062C\u0644\u0633\u0629 \u0627\u0644\u0628\u062D\u062B.",
+    provenanceScope: "\u062A\u0635\u0641 **\u0627\u0644\u062E\u064A\u0627\u0631\u0627\u062A \u0627\u0644\u0645\u0646\u0647\u062C\u064A\u0629** \u0627\u0644\u0645\u062D\u064A\u0637\u0629 \u0628\u0627\u0644\u0628\u062D\u062B\u060C \u0644\u0627 \u0627\u0644\u0627\u0633\u062A\u062F\u0644\u0627\u0644 \u0627\u0644\u062F\u0627\u062E\u0644\u064A \u0644\u0644\u0646\u0645\u0648\u0630\u062C.",
+    sourceLabel: "\u0627\u0644\u0645\u0635\u062F\u0631",
+    researchQuestion: "\u0633\u0624\u0627\u0644 \u0627\u0644\u0628\u062D\u062B",
+    notRecorded: "_\u063A\u064A\u0631 \u0645\u0633\u062C\u064E\u0651\u0644 \u2014 \u0647\u0630\u0647 \u0627\u0644\u062E\u0637\u0648\u0629 \u0644\u0645 \u062A\u064F\u0646\u0641\u064E\u0651\u0630 (\u0628\u0639\u062F)._",
+    chosenFraming: "\u0625\u0639\u0627\u062F\u0629 \u0627\u0644\u0635\u064A\u0627\u063A\u0629 \u0627\u0644\u0645\u062E\u062A\u0627\u0631\u0629 (\u0627\u0644\u062A\u0623\u0637\u064A\u0631)",
+    alternativesNote: "\u0627\u0644\u0635\u064A\u0627\u063A\u0627\u062A \u0627\u0644\u0628\u062F\u064A\u0644\u0629 \u0627\u0644\u062A\u064A \u062C\u0631\u0649 \u0627\u0644\u0646\u0638\u0631 \u0641\u064A\u0647\u0627 \u0645\u062F\u0631\u062C\u0629 \u062A\u062D\u062A *{section}*.",
+    unchangedQuestion: "_\u0623\u064F\u0628\u0642\u064A \u0627\u0644\u0633\u0624\u0627\u0644 \u0627\u0644\u0623\u0635\u0644\u064A \u062F\u0648\u0646 \u062A\u063A\u064A\u064A\u0631._",
+    chosenLensesLabel: "\u0627\u0644\u0639\u062F\u0633\u0627\u062A \u0627\u0644\u0645\u062E\u062A\u0627\u0631\u0629",
+    openQuestions: "\u0623\u0633\u0626\u0644\u0629 \u0645\u0641\u062A\u0648\u062D\u0629 \u0648\u0628\u062D\u0648\u062B \u0645\u062A\u0627\u0628\u0639\u0629"
+  },
+  agenda: {
+    gaps: "\u0641\u062C\u0648\u0627\u062A \u0627\u0644\u0645\u0639\u0631\u0641\u0629",
+    limitations: "\u0642\u064A\u0648\u062F \u0645\u0646\u0647\u062C\u064A\u0629 \u0645\u062A\u0643\u0631\u0631\u0629",
+    newQuestions: "\u0623\u0633\u0626\u0644\u0629 \u0628\u062D\u062B\u064A\u0629 \u062C\u062F\u064A\u062F\u0629",
+    designs: "\u062A\u0635\u0627\u0645\u064A\u0645 \u0628\u062D\u062B\u064A\u0629 \u0645\u0644\u0627\u0626\u0645\u0629",
+    data: "\u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A / \u0623\u062F\u0648\u0627\u062A \u0627\u0644\u0642\u064A\u0627\u0633 \u0627\u0644\u0645\u0637\u0644\u0648\u0628\u0629"
+  },
+  graph: {
+    gapNoSubquestions: '\u0633\u0624\u0627\u0644 \u0644\u0645 \u064A\u064F\u0642\u0633\u064E\u0651\u0645 \u0628\u0639\u062F \u0625\u0644\u0649 \u0623\u0633\u0626\u0644\u0629 \u0641\u0631\u0639\u064A\u0629: "{label}"',
+    gapNoFindings: '\u0633\u0624\u0627\u0644 \u0644\u064A\u0633\u062A \u0644\u0647 \u0646\u062A\u0627\u0626\u062C \u062A\u0648\u0644\u064A\u0641 \u0628\u0639\u062F: "{label}"',
+    gapNoSources: '\u0633\u0624\u0627\u0644 \u0644\u064A\u0633\u062A \u0644\u0647 \u0623\u062F\u0628\u064A\u0627\u062A \u0641\u064A \u0627\u0644\u0633\u062C\u0644 \u0628\u0639\u062F: "{label}"',
+    gapFindingNoSource: '\u0646\u062A\u064A\u062C\u0629 \u0628\u0644\u0627 \u0625\u062D\u0627\u0644\u0629 \u0625\u0644\u0649 \u0645\u0635\u062F\u0631 (\u0627\u062F\u0639\u0627\u0621 \u063A\u064A\u0631 \u0645\u062B\u0628\u062A): "{label}"',
+    gapOpenHypothesis: '\u0641\u0631\u0636\u064A\u0629 \u0645\u0641\u062A\u0648\u062D\u0629 \u0644\u0645 \u062A\u064F\u062E\u062A\u0628\u0631 \u0628\u0639\u062F: "{label}"',
+    gapSourceUnused: '\u0645\u0635\u062F\u0631 \u0644\u0645 \u064A\u064F\u0633\u062A\u062E\u062F\u0645 \u0628\u0639\u062F \u0641\u064A \u0623\u064A \u0646\u062A\u064A\u062C\u0629: "{label}"',
+    severityHigh: "\u{1F534} \u0645\u0631\u062A\u0641\u0639 \u2014 \u0627\u062F\u0639\u0627\u0621\u0627\u062A \u063A\u064A\u0631 \u0645\u062B\u0628\u062A\u0629",
+    severityMedium: "\u{1F7E0} \u0645\u062A\u0648\u0633\u0637 \u2014 \u062E\u0637\u0648\u0627\u062A \u0646\u0627\u0642\u0635\u0629",
+    severityInfo: "\u{1F535} \u0645\u0639\u0644\u0648\u0645\u0629 \u2014 \u062E\u064A\u0648\u0637 \u0645\u0641\u062A\u0648\u062D\u0629",
+    reportTitle: "\u0645\u062E\u0637\u0637 \u0627\u0644\u0645\u0639\u0631\u0641\u0629 (\u062A\u062C\u0631\u064A\u0628\u064A) \u2014 {project}",
+    reportIntro: "_\u0625\u0633\u0642\u0627\u0637 \u0644\u0644\u0642\u0631\u0627\u0621\u0629 \u0641\u0642\u0637 \u0645\u0646 \u0627\u0644\u0623\u062F\u0644\u0629 \u0648\u0627\u0644\u0648\u062B\u0627\u0626\u0642 \u0627\u0644\u0642\u0627\u0626\u0645\u0629 (\u0627\u0644\u0628\u064A\u0627\u0646\u0627\u062A \u0627\u0644\u0623\u0645\u0627\u0645\u064A\u0629 + \u0627\u0644\u062A\u0648\u0644\u064A\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636 + \u0633\u062C\u0644 \u0627\u0644\u0627\u0642\u062A\u0628\u0627\u0633\u0627\u062A). \u0642\u0627\u0628\u0644 \u0644\u0644\u0627\u0633\u062A\u063A\u0646\u0627\u0621: \u0644\u0627 \u062A\u062D\u0631\u0650\u0651\u0631\u0647 \u064A\u062F\u0648\u064A\u0627\u064B \u2014 \u0623\u0639\u062F \u062A\u0648\u0644\u064A\u062F\u0647._",
+    sizeHeading: "\u0627\u0644\u062D\u062C\u0645",
+    nodesEdgesLine: "**{nodes}** \u0639\u0642\u062F\u0629\u060C **{edges}** \u062D\u0627\u0641\u0629",
+    gapsHeading: "\u0627\u0644\u0641\u062C\u0648\u0627\u062A",
+    noGaps: "_\u0644\u0645 \u062A\u064F\u0631\u0635\u062F \u0623\u064A \u0641\u062C\u0648\u0627\u062A._",
+    nodesPerType: "\u0627\u0644\u0639\u0642\u062F \u062D\u0633\u0628 \u0627\u0644\u0646\u0648\u0639",
+    nodeTypeLabels: {
+      vraag: "\u0633\u0624\u0627\u0644",
+      deelvraag: "\u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A",
+      hypothese: "\u0641\u0631\u0636\u064A\u0629",
+      bevinding: "\u0646\u062A\u064A\u062C\u0629",
+      bron: "\u0645\u0635\u062F\u0631",
+      lens: "\u0639\u062F\u0633\u0629"
+    },
+    provenanceHeading: "\u0627\u0644\u0645\u0646\u0634\u0623",
+    provenanceWithEdges: "\u064A\u0633\u062A\u062E\u062F\u0645 \u0647\u0630\u0627 \u0627\u0644\u0645\u062E\u0637\u0637 **\u062D\u0648\u0627\u0641\u0651 \u0639\u0646\u062F \u0627\u0644\u062A\u0648\u0644\u064A\u062F** (E68): \u0627\u0644\u062D\u0627\u0641\u0629 `source\u2192finding` (`onderbouwt`) \u0645\u0633\u062A\u0645\u062F\u0629 \u0645\u0646 \u0627\u0644\u0633\u062C\u0644\u0627\u062A \u0627\u0644\u0645\u062F\u0648\u064E\u0651\u0646\u0629\u060C \u0644\u0630\u0627 \u0641\u0625\u0646 \u0627\u0644\u0631\u0628\u0637 \u0646\u062A\u064A\u062C\u0629\u2192\u0645\u0635\u062F\u0631 \u0645\u062D\u062F\u062F \u0645\u0648\u062B\u0648\u0642. \u0627\u0644\u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0628\u0644\u0627 \u0633\u062C\u0644 (\u062A\u0634\u063A\u064A\u0644\u0627\u062A \u0642\u062F\u064A\u0645\u0629 / \u0646\u0635 \u0627\u062D\u062A\u064A\u0627\u0637\u064A) \u0644\u0627 \u064A\u064F\u062D\u0635\u0649 \u0641\u064A\u0647\u0627 \u0633\u0648\u0649 *\u0639\u062F\u062F* \u0627\u0644\u0625\u062D\u0627\u0644\u0627\u062A `[n]`.",
+    provenanceWithoutEdges: "\u0644\u0645 \u064A\u064F\u0639\u062B\u0631 \u0628\u0639\u062F \u0639\u0644\u0649 \u062D\u0648\u0627\u0641\u0651 \u0639\u0646\u062F \u0627\u0644\u062A\u0648\u0644\u064A\u062F (\u0633\u062C\u0644\u0627\u062A E68) \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u2014 \u0627\u0644\u0646\u062A\u0627\u0626\u062C \u0645\u0633\u062A\u0645\u062F\u0629 \u0645\u0646 \u0627\u0644\u062A\u0648\u0644\u064A\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u060C \u062D\u064A\u062B \u0644\u0627 \u062A\u0645\u0644\u0643 \u0627\u0644\u0623\u0631\u0642\u0627\u0645 `[n]` \u0631\u0628\u0637\u0627\u064B \u062F\u0627\u0626\u0645\u0627\u064B \u0628\u0645\u0641\u0627\u062A\u064A\u062D \u0627\u0644\u0627\u0642\u062A\u0628\u0627\u0633. \u0644\u0630\u0644\u0643 \u0646\u062D\u0635\u064A \u0641\u0642\u0637 \u0645\u0627 \u0625\u0630\u0627 \u0643\u0627\u0646\u062A \u0627\u0644\u0646\u062A\u064A\u062C\u0629 \u062A\u062D\u0645\u0644 *\u0623\u064A* \u0625\u062D\u0627\u0644\u0629. \u0634\u063A\u0650\u0651\u0644 \u062A\u0648\u0644\u064A\u0641\u0627\u064B \u062C\u062F\u064A\u062F\u0627\u064B \u0644\u0644\u062D\u0635\u0648\u0644 \u0639\u0644\u0649 \u062D\u0648\u0627\u0641\u0651 `source\u2192finding` \u0645\u0648\u062B\u0648\u0642\u0629."
+  },
+  exportBundle: {
+    accountFileName: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642-\u0627\u0644\u0645\u0646\u0647\u062C\u064A.md",
+    bibFileName: "\u0627\u0644\u0645\u0635\u0627\u062F\u0631.bib",
+    stubUnavailable: "_\u062A\u0639\u0630\u0651\u0631 \u062A\u062C\u0645\u064A\u0639\u0647 \u062A\u0644\u0642\u0627\u0626\u064A\u0627\u064B \u0644\u0647\u0630\u0627 \u0627\u0644\u062A\u0635\u062F\u064A\u0631._",
+    stubMissingLabel: "\u0627\u0644\u0645\u0641\u0642\u0648\u062F:",
+    stubMissingAccount: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0645\u0646\u0647\u062C\u064A",
+    stubNoFrontmatter: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0645\u0646\u0647\u062C\u064A (\u0644\u0645 \u064A\u064F\u0639\u062B\u0631 \u0639\u0644\u0649 \u0628\u064A\u0627\u0646\u0627\u062A \u0623\u0645\u0627\u0645\u064A\u0629 \u0644\u0644\u062C\u0644\u0633\u0629 \u0641\u064A \u0647\u0630\u0647 \u0627\u0644\u0645\u0644\u0627\u062D\u0638\u0629)",
+    noSessions: "_\u0644\u0645 \u064A\u064F\u0639\u062B\u0631 \u0639\u0644\u0649 \u062C\u0644\u0633\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0634\u0631\u0648\u0639._",
+    artefactsPresent: "{present}/{total} \u0645\u0646 \u0627\u0644\u0645\u062E\u0631\u062C\u0627\u062A \u0645\u0648\u062C\u0648\u062F\u0629"
+  },
+  project: {
+    objectivePlaceholder: "_(\u0644\u0645 \u064A\u064F\u0635\u064E\u063A \u0628\u0639\u062F \u2014 \u0645\u0627 \u0627\u0644\u0630\u064A \u064A\u0646\u0628\u063A\u064A \u0623\u0646 \u064A\u062C\u064A\u0628 \u0639\u0646\u0647 \u0647\u0630\u0627 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0641\u064A \u0646\u0647\u0627\u064A\u0629 \u0627\u0644\u0645\u0637\u0627\u0641\u061F)_",
+    overviewHeading: "\u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629",
+    overviewBody: "_\u0643\u0644 \u0633\u0624\u0627\u0644 \u0628\u062D\u062B\u064A \u0647\u0648 \u0645\u0644\u0627\u062D\u0638\u0629 \u062C\u0644\u0633\u0629 \u0645\u0633\u062A\u0642\u0644\u0629 \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u062C\u0644\u062F\u061B \u0627\u0641\u062A\u062D \u0627\u0644\u0634\u0631\u064A\u0637 \u0627\u0644\u062C\u0627\u0646\u0628\u064A \u0644\u0640 Parallax \u0644\u0644\u0627\u0637\u0644\u0627\u0639 \u0639\u0644\u0649 \u0627\u0644\u0646\u0638\u0631\u0629 \u0627\u0644\u0639\u0627\u0645\u0629 \u0648\u0644\u0625\u0636\u0627\u0641\u0629 \u0633\u0624\u0627\u0644 \u062C\u062F\u064A\u062F._"
+  },
+  logbook: {
+    stepBeliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A",
+    stepResearch: "\u0627\u0644\u0628\u062D\u062B",
+    stepAccount: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642",
+    framingChosen: '\u0627\u062E\u062A\u064A\u0631 \u0627\u0644\u062A\u0623\u0637\u064A\u0631: "{framing}"',
+    alternativesConsidered: "; \u062C\u0631\u0649 \u0627\u0644\u0646\u0638\u0631 \u0641\u064A {n} \u0635\u064A\u0627\u063A\u0629 (\u0635\u064A\u0627\u063A\u0627\u062A) \u0628\u062F\u064A\u0644\u0629",
+    challengesSummary: "{n} \u062A\u062D\u062F\u064D\u0651 (\u062A\u062D\u062F\u064A\u0627\u062A)",
+    challengesAdopted: "; \u0633\u064F\u062C\u0650\u0651\u0644 {n} \u0645\u0646\u0647\u0627 \u0643\u0642\u0646\u0627\u0639\u0629",
+    lensesChosen: "\u0627\u062E\u062A\u064A\u0631\u062A {n} \u0639\u062F\u0633\u0629 (\u0639\u062F\u0633\u0627\u062A)",
+    lensesEliminated: "; \u0627\u0633\u062A\u064F\u0628\u0639\u062F\u062A {n}",
+    synthesisOver: "\u062A\u0648\u0644\u064A\u0641 \u0639\u0644\u0649 {n} \u0645\u0635\u062F\u0631 (\u0645\u0635\u0627\u062F\u0631)",
+    searchTerms: "; {n} \u0645\u0635\u0637\u0644\u062D (\u0645\u0635\u0637\u0644\u062D\u0627\u062A) \u0628\u062D\u062B",
+    beliefsUpdated: "\u062D\u064F\u062F\u0650\u0651\u062B\u062A {n} \u0642\u0646\u0627\u0639\u0629 (\u0642\u0646\u0627\u0639\u0627\u062A) \u0628\u0639\u062F \u0645\u0648\u0627\u062C\u0647\u062A\u0647\u0627 \u0628\u0627\u0644\u062A\u0648\u0644\u064A\u0641",
+    newQuestionsProposed: "{n} \u0633\u0624\u0627\u0644 (\u0623\u0633\u0626\u0644\u0629) \u0628\u062D\u062B\u064A\u0629 \u062C\u062F\u064A\u062F\u0629",
+    sessionStarted: "; \u0628\u062F\u0623\u062A \u062C\u0644\u0633\u0629 \u062C\u062F\u064A\u062F\u0629",
+    accountGenerated: "\u0623\u064F\u0646\u0634\u0626 \u0627\u0644\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0645\u0646\u0647\u062C\u064A"
+  }
+};
+
+// src/i18n/ja.ts
+var ja = {
+  headings: {
+    synthesis: "\u7D71\u5408",
+    exploration: "\u554F\u984C\u63A2\u7D22",
+    lenses: "\u7406\u8AD6\u7684\u30EC\u30F3\u30BA",
+    challenge: "\u30C1\u30E3\u30EC\u30F3\u30B8",
+    agenda: "\u7814\u7A76\u30A2\u30B8\u30A7\u30F3\u30C0",
+    logbook: "\u30ED\u30B0\u30D6\u30C3\u30AF",
+    searchstrategy: "\u691C\u7D22\u6226\u7565",
+    objective: "\u76EE\u7684",
+    context: "\u30B3\u30F3\u30C6\u30AD\u30B9\u30C8",
+    beliefs: "\u4FE1\u5FF5"
+  },
+  exploration: {
+    chosenFraming: "\u9078\u629E\u3057\u305F\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0:",
+    assumptions: "\u6697\u9ED9\u306E\u524D\u63D0",
+    counterAssumptions: "\u8003\u3048\u3046\u308B\u53CD\u5BFE\u524D\u63D0",
+    reformulations: "\u518D\u5B9A\u5F0F\u5316",
+    disciplines: "\u5B66\u554F\u5206\u91CE / \u7406\u8AD6\u7684\u4F1D\u7D71",
+    definitions: "\u7AF6\u5408\u3059\u308B\u5B9A\u7FA9",
+    directions: "\u6709\u671B\u306A\u7814\u7A76\u306E\u65B9\u5411\u6027",
+    facetTheoreticalBasis: "\u7406\u8AD6\u7684\u57FA\u76E4",
+    facetSearchability: "\u691C\u7D22\u53EF\u80FD\u6027",
+    facetLiteratureStrength: "\u6709\u529B\u306A\u6587\u732E\u304C\u5B58\u5728\u3059\u308B\u898B\u8FBC\u307F\uFF08\u63A8\u5B9A\uFF09",
+    facetOriginality: "\u72EC\u81EA\u6027",
+    chosenSearchTerms: "\u691C\u7D22\u8A9E\uFF08\u9078\u629E\u6E08\u307F\uFF09",
+    initialBeliefs: "\u521D\u671F\u306E\u4FE1\u5FF5"
+  },
+  theory: {
+    sameMechanism: "\u540C\u3058\u30E1\u30AB\u30CB\u30BA\u30E0\u3001\u7570\u306A\u308B\u540D\u79F0",
+    strikinglyAbsent: "\u9855\u8457\u306B\u6B20\u3051\u3066\u3044\u308B\u3082\u306E",
+    competing: "\u7AF6\u5408\u3059\u308B\u8AAC\u660E",
+    crossDomain: "\u9818\u57DF\u6A2A\u65AD\u7684\u306A\u3064\u306A\u304C\u308A",
+    chosenLenses: "\u9078\u629E\u3057\u305F\u30EC\u30F3\u30BA"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "\u6982\u5FF5\u7684",
+      methodologisch: "\u65B9\u6CD5\u8AD6\u7684",
+      theoretisch: "\u7406\u8AD6\u7684",
+      empirisch: "\u5B9F\u8A3C\u7684",
+      praktisch: "\u5B9F\u8DF5\u7684"
+    },
+    actionLabel: "\u30A2\u30AF\u30B7\u30E7\u30F3",
+    inversion: "\u4EEE\u8AAC\u304C\u8AA4\u308A\u3060\u3068\u3057\u305F\u3089\u2026"
+  },
+  beliefs: {
+    none: "_\uFF08\u307E\u3060\u4FE1\u5FF5\u306F\u8A18\u9332\u3055\u308C\u3066\u3044\u306A\u3044\uFF09_",
+    statusLabels: {
+      open: "\u672A\u78BA\u5B9A",
+      ondersteund: "\u652F\u6301\u3055\u308C\u305F",
+      weersproken: "\u53CD\u8A3C\u3055\u308C\u305F"
+    },
+    confidenceLabels: {
+      laag: "\u4F4E",
+      midden: "\u4E2D",
+      hoog: "\u9AD8"
+    },
+    confidence: "\u78BA\u4FE1\u5EA6"
+  },
+  synthesis: {
+    findings: "\u77E5\u898B",
+    evidenceInline: "\u30A8\u30D3\u30C7\u30F3\u30B9: {strength}{tier}",
+    strengthLabels: {
+      sterk: "\u5F37\u3044",
+      gemengd: "\u6DF7\u5728",
+      beperkt: "\u9650\u5B9A\u7684"
+    },
+    contradictions: "\u77DB\u76FE / \u6761\u4EF6\u306B\u3088\u308B",
+    practical: "\u5B9F\u8DF5\u3078\u306E\u793A\u5506",
+    followUps: "\u4EEE\u8AAC\u751F\u6210\u306B\u3064\u306A\u304C\u308B\u4ECA\u5F8C\u306E\u65B9\u5411\u6027\u3068\u672A\u89E3\u6C7A\u306E\u554F\u3044",
+    evidenceAndGaps: "\u30A8\u30D3\u30C7\u30F3\u30B9\u306E\u5F37\u3055\u3068\u30AE\u30E3\u30C3\u30D7",
+    scopeCaveat: "\u26A0 \u7BC4\u56F2: \u30A8\u30D3\u30C7\u30F3\u30B9\u306F\u4E3B\u306B{note}\u306B\u95A2\u3059\u308B\u3082\u306E\u3067\u3042\u308A\u3001\u554F\u308F\u308C\u305F\u554F\u3044\u305D\u306E\u3082\u306E\u3092\u76F4\u63A5\u6271\u3063\u3066\u306F\u3044\u306A\u3044\u3002\u4E00\u822C\u5316\u306B\u306F\u6CE8\u610F\u304C\u5FC5\u8981\u3067\u3042\u308B\u3002",
+    abstractsDisclosure: "\u4E0A\u8A18\u306E\u30A8\u30D3\u30C7\u30F3\u30B9\u683C\u4ED8\u3051\u306F\u5168\u6587\u3067\u306F\u306A\u304F\u6284\u9332\u306B\u57FA\u3065\u3044\u3066\u3044\u308B \u2014 \u6284\u9332\u3067\u306F\u30E2\u30C7\u30EC\u30FC\u30BF\u30FC\u3001\u4FE1\u983C\u533A\u9593\u3001\u30CC\u30EB\u7D50\u679C\u304C\u3057\u3070\u3057\u3070\u7701\u7565\u3055\u308C\u308B\u3002",
+    fulltextNuanceSingular: "\u73FE\u6642\u70B9\u30671\u4EF6\u306E\u6587\u732E\u306F\u5168\u6587\u306B\u57FA\u3065\u3044\u3066\u3044\u308B\uFF08\u6DF1\u6398\u308A\u3092\u53C2\u7167\uFF09\u3002",
+    fulltextNuancePlural: "\u73FE\u6642\u70B9\u3067{n}\u4EF6\u306E\u6587\u732E\u306F\u5168\u6587\u306B\u57FA\u3065\u3044\u3066\u3044\u308B\uFF08\u6DF1\u6398\u308A\u3092\u53C2\u7167\uFF09\u3002",
+    unanswered: "\u3053\u306E\u30A8\u30D3\u30C7\u30F3\u30B9\u3067\u306F\u56DE\u7B54\u3067\u304D\u306A\u3044\u554F\u3044",
+    reasonNotInvestigated: "\u898B\u3064\u304B\u3063\u305F\u6587\u732E\u3067\u306F\u8ABF\u67FB\u3055\u308C\u3066\u3044\u306A\u3044",
+    reasonDesignInsufficient: "\u898B\u3064\u304B\u3063\u305F\u30A8\u30D3\u30C7\u30F3\u30B9\u3067\u306F\u78BA\u5B9A\u3067\u304D\u306A\u3044\uFF08\u7814\u7A76\u30C7\u30B6\u30A4\u30F3\u304C\u4E0D\u5341\u5206\u3001\u4F8B: \u6A2A\u65AD\u7814\u7A76\uFF09",
+    designNeeded: "{design}\u304C\u5FC5\u8981\u3068\u306A\u308B\u3002",
+    readingRecommendations: "\u5168\u6587\u7CBE\u8AAD\u306E\u63A8\u5968\u6587\u732E",
+    readingRecommendationsNote: "\uFF08\u6284\u9332\u306B\u57FA\u3065\u304F\u3002\u591A\u304F\u306E\u5834\u5408\u30DA\u30A4\u30A6\u30A9\u30FC\u30EB\u5185 \u2014 \u5168\u6587\u306F\u81EA\u8EAB\u3067\u5165\u624B\u3059\u308B\uFF09"
+  },
+  evidenceTier: {
+    strong: "\u30EC\u30D3\u30E5\u30FC/\u30E1\u30BF\u30A2\u30CA\u30EA\u30B7\u30B9",
+    moderate: "RCT",
+    limited: "\u4EEE\u8AAC\u751F\u6210\u7684"
+  },
+  oa: {
+    paywalled: "\u304A\u305D\u3089\u304F\u30DA\u30A4\u30A6\u30A9\u30FC\u30EB\u5185",
+    available: "OA\u5229\u7528\u53EF\u80FD",
+    availablePdf: "OA\u5229\u7528\u53EF\u80FD\uFF08pdf\uFF09"
+  },
+  sources: {
+    frameworkSource: "\u67A0\u7D44\u307F\u6587\u732E",
+    analogous: "\u985E\u63A8\uFF08{sector}\uFF09",
+    otherSector: "\u4ED6\u30BB\u30AF\u30BF\u30FC",
+    evidenceTag: "\u30A8\u30D3\u30C7\u30F3\u30B9: {label}",
+    notVerifiedDoi: "\u672A\u691C\u8A3C\uFF08DOI\u304C\u89E3\u6C7A\u3067\u304D\u306A\u3044\uFF09",
+    notCheckedConnection: "\u672A\u78BA\u8A8D\uFF08\u63A5\u7D9A\u306A\u3057\uFF09",
+    notVerifiedNoId: "\u672A\u691C\u8A3C\uFF08DOI/ISBN\u306A\u3057\uFF09",
+    noteMissingId: "DOI/ISBN\u306A\u3057",
+    noteDoiUnresolved: "DOI\u304C\u89E3\u6C7A\u3067\u304D\u306A\u3044",
+    noteNoConnection: "\u63A5\u7D9A\u306A\u3057",
+    transferEvidenceSector: "[\u985E\u63A8\u30A8\u30D3\u30C7\u30F3\u30B9\uFF08\u30BB\u30AF\u30BF\u30FC: {sector}\uFF09]",
+    transferEvidenceGeneric: "[\u4ED6\u30BB\u30AF\u30BF\u30FC\u304B\u3089\u306E\u985E\u63A8\u30A8\u30D3\u30C7\u30F3\u30B9]"
+  },
+  decompose: {
+    frameworkHeading: "\u7406\u8AD6\u7684\u67A0\u7D44\u307F",
+    dimensionsIntro: "\u6B21\u5143\uFF08\u4E0B\u4F4D\u306E\u554F\u3044\u3092\u65B9\u5411\u3065\u3051\u308B\uFF09:",
+    keySources: "\u4E3B\u8981\u6587\u732E",
+    subQuestions: "\u4E0B\u4F4D\u306E\u554F\u3044",
+    subQuestionsNote: "\uFF08\u554F\u3044\u306E\u5206\u5272\u306E\u4ED5\u65B9\u3002\u756A\u53F7\u306F\u5404\u4E0B\u4F4D\u306E\u554F\u3044\u304C\u5F97\u305F\u6587\u732E\u3092\u6307\u3059\uFF09",
+    subQuestionsNoteWithHypotheses: "\uFF08\u554F\u3044\u306E\u5206\u5272\u306E\u4ED5\u65B9\u3002\u756A\u53F7\u306F\u5404\u4E0B\u4F4D\u306E\u554F\u3044\u304C\u5F97\u305F\u6587\u732E\u3092\u6307\u3057\u3001\u305D\u306E\u5F8C\u306B\u4E0B\u4F4D\u306E\u554F\u3044\u3054\u3068\u306E\u4EEE\u8AAC\u304C\u7D9A\u304F\uFF09",
+    hypothesisLabel: "\u4EEE\u8AAC"
+  },
+  searchStrategy: {
+    sources: "\u60C5\u5831\u6E90",
+    none: "\uFF08\u306A\u3057\uFF09",
+    terms: "\u691C\u7D22\u8A9E",
+    termsCounted: "\u691C\u7D22\u8A9E\uFF08{n}\uFF09",
+    resumedLine: "\u4EE5\u524D\u306B\u53D6\u5F97\u6E08\u307F\uFF08\u30AD\u30E3\u30C3\u30B7\u30E5\u6E08\u307F\uFF09\u306E\u6587\u732E\u3067\u518D\u958B \u2014 \u65B0\u305F\u306A\u691C\u7D22\u30E9\u30A6\u30F3\u30C9\u306F\u5B9F\u884C\u3057\u3066\u3044\u306A\u3044\u3002",
+    additionalTerms: "\u8FFD\u52A0\u306E\u691C\u7D22\u8A9E\uFF08\u554F\u984C\u63A2\u7D22\u30FB\u30EC\u30F3\u30BA\u3088\u308A\uFF09",
+    selectionCriteria: "\u9078\u5B9A\u57FA\u6E96",
+    rerankLine: "\u878D\u5408\u3055\u308C\u305F\u5019\u88DC\u306B\u5BFE\u3059\u308B\u95A2\u9023\u5EA6\u306E\u518D\u9806\u4F4D\u4ED8\u3051\uFF08\u57CB\u3081\u8FBC\u307F\u30D6\u30EC\u30F3\u30C9\uFF09{tested}\u3002",
+    testedAgainstSubQuestions: "\uFF08\u4E0B\u4F4D\u306E\u554F\u3044\u306B\u7167\u3089\u3057\u3066\u691C\u8A3C\u6E08\u307F\uFF09",
+    abstractsOnlyLine: "\u8A55\u4FA1\u306F\u30BF\u30A4\u30C8\u30EB\u3068\u6284\u9332\u306B\u57FA\u3065\u304D\u3001\u5168\u6587\u306B\u306F\u57FA\u3065\u304B\u306A\u3044\u3002",
+    limitedToTop: "\u30B9\u30B3\u30A2\u4E0A\u4F4D{n}\u4EF6\u306E\u6587\u732E\u306B\u9650\u5B9A\u3002",
+    crossSectorLine: "\u30BB\u30AF\u30BF\u30FC\u6A2A\u65AD\u306E\u8EE2\u79FB\u30A8\u30D3\u30C7\u30F3\u30B9\u3092\u8FFD\u52A0{sectors}\u3057\u3001\u500B\u5225\u306B\u30E9\u30D9\u30EB\u4ED8\u3051\u3057\u3066\u7D71\u5408\u306B\u306F\u542B\u3081\u3066\u3044\u306A\u3044\u3002",
+    sectorsSuffix: "\uFF08\u30BB\u30AF\u30BF\u30FC: {sectors}\uFF09",
+    funnel: "\u4EF6\u6570\uFF08\u30D5\u30A1\u30CD\u30EB\uFF09",
+    fusedCount: "\u878D\u5408\u5F8C: {n}\u4EF6\u306E\u30E6\u30CB\u30FC\u30AF\u306A\u6587\u732E",
+    afterRerank: "\u518D\u9806\u4F4D\u4ED8\u3051\u5F8C: {n}",
+    keptCount: "\u8868\u793A/\u4FDD\u6301: {n}",
+    failuresHeading: "\u60C5\u5831\u6E90\u3054\u3068\u306E\u691C\u7D22\u5931\u6557",
+    failureLine: "{label}: {failed}/{total}\u4EF6\u306E\u691C\u7D22\u304C\u5931\u6557\uFF08\u30EC\u30FC\u30C8\u5236\u9650\u307E\u305F\u306F\u30CD\u30C3\u30C8\u30EF\u30FC\u30AF\u30A8\u30E9\u30FC\uFF09\u3002"
+  },
+  account: {
+    title: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E",
+    provenanceDerived: "\u6D3E\u751F\u7684\u3067\u518D\u73FE\u53EF\u80FD\u306A\u6587\u66F8 \u2014 \u7814\u7A76\u30BB\u30C3\u30B7\u30E7\u30F3\u304B\u3089\u81EA\u52D5\u7684\u306B\u69CB\u6210\u3055\u308C\u305F\u3082\u306E\u3067\u3042\u308B\u3002",
+    provenanceScope: "\u672C\u66F8\u306F\u7814\u7A76\u3092\u3081\u3050\u308B**\u65B9\u6CD5\u8AD6\u4E0A\u306E\u9078\u629E**\u3092\u8A18\u8FF0\u3059\u308B\u3082\u306E\u3067\u3042\u308A\u3001\u30E2\u30C7\u30EB\u5185\u90E8\u306E\u63A8\u8AD6\u3092\u8A18\u8FF0\u3059\u308B\u3082\u306E\u3067\u306F\u306A\u3044\u3002",
+    sourceLabel: "\u51FA\u5178",
+    researchQuestion: "\u30EA\u30B5\u30FC\u30C1\u30AF\u30A8\u30B9\u30C1\u30E7\u30F3",
+    notRecorded: "_\u8A18\u9332\u306A\u3057 \u2014 \u3053\u306E\u30B9\u30C6\u30C3\u30D7\u306F\uFF08\u307E\u3060\uFF09\u5B9F\u884C\u3055\u308C\u3066\u3044\u306A\u3044\u3002_",
+    chosenFraming: "\u9078\u629E\u3057\u305F\u518D\u5B9A\u5F0F\u5316\uFF08\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0\uFF09",
+    alternativesNote: "\u691C\u8A0E\u3057\u305F\u4EE3\u66FF\u306E\u5B9A\u5F0F\u5316\u306F *{section}* \u306E\u4E0B\u306B\u8A18\u8F09\u3055\u308C\u3066\u3044\u308B\u3002",
+    unchangedQuestion: "_\u5143\u306E\u554F\u3044\u306F\u5909\u66F4\u305B\u305A\u306B\u7DAD\u6301\u3055\u308C\u305F\u3002_",
+    chosenLensesLabel: "\u9078\u629E\u3057\u305F\u30EC\u30F3\u30BA",
+    openQuestions: "\u672A\u89E3\u6C7A\u306E\u554F\u3044\u3068\u4ECA\u5F8C\u306E\u7814\u7A76"
+  },
+  agenda: {
+    gaps: "\u77E5\u8B58\u306E\u30AE\u30E3\u30C3\u30D7",
+    limitations: "\u7E70\u308A\u8FD4\u3057\u898B\u3089\u308C\u308B\u65B9\u6CD5\u8AD6\u7684\u9650\u754C",
+    newQuestions: "\u65B0\u305F\u306A\u7814\u7A76\u306E\u554F\u3044",
+    designs: "\u9069\u5408\u3059\u308B\u7814\u7A76\u30C7\u30B6\u30A4\u30F3",
+    data: "\u5FC5\u8981\u306A\u30C7\u30FC\u30BF / \u6E2C\u5B9A\u5C3A\u5EA6"
+  },
+  graph: {
+    gapNoSubquestions: '\u554F\u3044\u304C\u307E\u3060\u4E0B\u4F4D\u306E\u554F\u3044\u306B\u5206\u5272\u3055\u308C\u3066\u3044\u306A\u3044: "{label}"',
+    gapNoFindings: '\u554F\u3044\u306B\u307E\u3060\u7D71\u5408\u306E\u77E5\u898B\u304C\u306A\u3044: "{label}"',
+    gapNoSources: '\u554F\u3044\u306B\u5BFE\u5FDC\u3059\u308B\u6587\u732E\u304C\u307E\u3060\u30EC\u30B8\u30B9\u30BF\u30FC\u306B\u306A\u3044: "{label}"',
+    gapFindingNoSource: '\u51FA\u5178\u53C2\u7167\u306E\u306A\u3044\u77E5\u898B\uFF08\u672A\u8A3C\u660E\u306E\u4E3B\u5F35\uFF09: "{label}"',
+    gapOpenHypothesis: '\u672A\u691C\u8A3C\u306E\u30AA\u30FC\u30D7\u30F3\u306A\u4EEE\u8AAC: "{label}"',
+    gapSourceUnused: '\u307E\u3060\u3069\u306E\u77E5\u898B\u306B\u3082\u4F7F\u308F\u308C\u3066\u3044\u306A\u3044\u6587\u732E: "{label}"',
+    severityHigh: "\u{1F534} \u9AD8 \u2014 \u672A\u8A3C\u660E\u306E\u4E3B\u5F35",
+    severityMedium: "\u{1F7E0} \u4E2D \u2014 \u6B20\u3051\u3066\u3044\u308B\u30B9\u30C6\u30C3\u30D7",
+    severityInfo: "\u{1F535} \u60C5\u5831 \u2014 \u672A\u89E3\u6C7A\u306E\u30B9\u30EC\u30C3\u30C9",
+    reportTitle: "\u30CA\u30EC\u30C3\u30B8\u30B0\u30E9\u30D5\uFF08\u30B9\u30D1\u30A4\u30AF\uFF09 \u2014 {project}",
+    reportIntro: "_\u65E2\u5B58\u306E\u30A2\u30FC\u30C6\u30A3\u30D5\u30A1\u30AF\u30C8\uFF08\u30D5\u30ED\u30F3\u30C8\u30DE\u30BF\u30FC + \u30EC\u30F3\u30C0\u30EA\u30F3\u30B0\u6E08\u307F\u306E\u7D71\u5408 + \u5F15\u7528\u30EC\u30B8\u30B9\u30BF\u30FC\uFF09\u304B\u3089\u306E\u8AAD\u307F\u53D6\u308A\u5C02\u7528\u306E\u5C04\u5F71\u3002\u4F7F\u3044\u6368\u3066: \u624B\u3067\u7DE8\u96C6\u305B\u305A\u3001\u518D\u751F\u6210\u3059\u308B\u3053\u3068\u3002_",
+    sizeHeading: "\u898F\u6A21",
+    nodesEdgesLine: "**{nodes}** \u30CE\u30FC\u30C9\u3001**{edges}** \u30A8\u30C3\u30B8",
+    gapsHeading: "\u30AE\u30E3\u30C3\u30D7",
+    noGaps: "_\u30AE\u30E3\u30C3\u30D7\u306F\u691C\u51FA\u3055\u308C\u306A\u304B\u3063\u305F\u3002_",
+    nodesPerType: "\u30BF\u30A4\u30D7\u5225\u30CE\u30FC\u30C9\u6570",
+    nodeTypeLabels: {
+      vraag: "\u554F\u3044",
+      deelvraag: "\u4E0B\u4F4D\u306E\u554F\u3044",
+      hypothese: "\u4EEE\u8AAC",
+      bevinding: "\u77E5\u898B",
+      bron: "\u6587\u732E",
+      lens: "\u30EC\u30F3\u30BA"
+    },
+    provenanceHeading: "\u6765\u6B74",
+    provenanceWithEdges: "\u3053\u306E\u30B0\u30E9\u30D5\u306F**\u751F\u6210\u6642\u30A8\u30C3\u30B8**\uFF08E68\uFF09\u3092\u4F7F\u7528\u3057\u3066\u3044\u308B: `source\u2192finding`\uFF08`onderbouwt`\uFF09\u306F\u8A18\u9332\u3055\u308C\u305F\u30EC\u30B3\u30FC\u30C9\u306B\u7531\u6765\u3059\u308B\u305F\u3081\u3001\u77E5\u898B\u2192\u7279\u5B9A\u306E\u6587\u732E\u306E\u5BFE\u5FDC\u306F\u4FE1\u983C\u3067\u304D\u308B\u3002\u30EC\u30B3\u30FC\u30C9\u306E\u306A\u3044\u30CE\u30FC\u30C8\uFF08\u904E\u53BB\u306E\u5B9F\u884C / \u6563\u6587\u30D5\u30A9\u30FC\u30EB\u30D0\u30C3\u30AF\uFF09\u3067\u306F `[n]` \u53C2\u7167\u306E*\u6570*\u306E\u307F\u3092\u6570\u3048\u308B\u3002",
+    provenanceWithoutEdges: "\u3053\u306E\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306B\u306F\u307E\u3060\u751F\u6210\u6642\u30A8\u30C3\u30B8\uFF08E68\u30EC\u30B3\u30FC\u30C9\uFF09\u304C\u898B\u3064\u304B\u3063\u3066\u3044\u306A\u3044 \u2014 \u77E5\u898B\u306F\u30EC\u30F3\u30C0\u30EA\u30F3\u30B0\u6E08\u307F\u306E\u7D71\u5408\u306B\u7531\u6765\u3057\u3001\u305D\u3053\u3067\u306F `[n]` \u756A\u53F7\u304C\u5F15\u7528\u30AD\u30FC\u3078\u306E\u6C38\u7D9A\u7684\u306A\u30DE\u30C3\u30D4\u30F3\u30B0\u3092\u6301\u305F\u306A\u3044\u3002\u305D\u306E\u305F\u3081\u3001\u77E5\u898B\u304C*\u4F55\u3089\u304B\u306E*\u53C2\u7167\u3092\u6301\u3064\u304B\u3069\u3046\u304B\u306E\u307F\u3092\u6570\u3048\u3066\u3044\u308B\u3002\u4FE1\u983C\u3067\u304D\u308B `source\u2192finding` \u30A8\u30C3\u30B8\u3092\u5F97\u308B\u306B\u306F\u65B0\u3057\u3044\u7D71\u5408\u3092\u5B9F\u884C\u3059\u308B\u3053\u3068\u3002"
+  },
+  exportBundle: {
+    accountFileName: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E.md",
+    bibFileName: "\u6587\u732E.bib",
+    stubUnavailable: "_\u3053\u306E\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u3067\u306F\u81EA\u52D5\u7684\u306B\u69CB\u6210\u3067\u304D\u306A\u304B\u3063\u305F\u3002_",
+    stubMissingLabel: "\u6B20\u843D:",
+    stubMissingAccount: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E",
+    stubNoFrontmatter: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E\uFF08\u3053\u306E\u30CE\u30FC\u30C8\u306B\u30BB\u30C3\u30B7\u30E7\u30F3\u306E\u30D5\u30ED\u30F3\u30C8\u30DE\u30BF\u30FC\u304C\u898B\u3064\u304B\u3089\u306A\u3044\uFF09",
+    noSessions: "_\u3053\u306E\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306B\u306F\u30BB\u30C3\u30B7\u30E7\u30F3\u304C\u898B\u3064\u304B\u3089\u306A\u304B\u3063\u305F\u3002_",
+    artefactsPresent: "{present}/{total} \u4EF6\u306E\u30A2\u30FC\u30C6\u30A3\u30D5\u30A1\u30AF\u30C8\u3042\u308A"
+  },
+  project: {
+    objectivePlaceholder: "_\uFF08\u8981\u5B9A\u5F0F\u5316 \u2014 \u3053\u306E\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306F\u6700\u7D42\u7684\u306B\u4F55\u306B\u7B54\u3048\u308B\u3079\u304D\u304B\uFF1F\uFF09_",
+    overviewHeading: "\u6982\u8981",
+    overviewBody: "_\u3053\u306E\u30D5\u30A9\u30EB\u30C0\u3067\u306F\u5404\u30EA\u30B5\u30FC\u30C1\u30AF\u30A8\u30B9\u30C1\u30E7\u30F3\u304C\u72EC\u7ACB\u3057\u305F\u30BB\u30C3\u30B7\u30E7\u30F3\u30CE\u30FC\u30C8\u306B\u306A\u3063\u3066\u3044\u308B\u3002\u6982\u8981\u306E\u78BA\u8A8D\u3084\u65B0\u3057\u3044\u554F\u3044\u306E\u8FFD\u52A0\u306F Parallax \u30B5\u30A4\u30C9\u30D0\u30FC\u304B\u3089\u884C\u3046\u3002_"
+  },
+  logbook: {
+    stepBeliefs: "\u4FE1\u5FF5",
+    stepResearch: "\u8ABF\u67FB",
+    stepAccount: "\u8AAC\u660E",
+    framingChosen: '\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0\u3092\u9078\u629E: "{framing}"',
+    alternativesConsidered: "; {n}\u4EF6\u306E\u4EE3\u66FF\u5B9A\u5F0F\u5316\u3092\u691C\u8A0E",
+    challengesSummary: "{n}\u4EF6\u306E\u30C1\u30E3\u30EC\u30F3\u30B8",
+    challengesAdopted: "; {n}\u4EF6\u3092\u4FE1\u5FF5\u3068\u3057\u3066\u8A18\u9332",
+    lensesChosen: "{n}\u4EF6\u306E\u30EC\u30F3\u30BA\u3092\u9078\u629E",
+    lensesEliminated: "; {n}\u4EF6\u3092\u9664\u5916",
+    synthesisOver: "{n}\u4EF6\u306E\u6587\u732E\u306B\u308F\u305F\u308B\u7D71\u5408",
+    searchTerms: "; \u691C\u7D22\u8A9E{n}\u4EF6",
+    beliefsUpdated: "\u7D71\u5408\u3068\u306E\u7167\u5408\u5F8C\u306B{n}\u4EF6\u306E\u4FE1\u5FF5\u3092\u66F4\u65B0",
+    newQuestionsProposed: "{n}\u4EF6\u306E\u65B0\u3057\u3044\u7814\u7A76\u306E\u554F\u3044",
+    sessionStarted: "; \u65B0\u3057\u3044\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u958B\u59CB",
+    accountGenerated: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E\u3092\u751F\u6210"
+  }
+};
+
+// src/i18n/ko.ts
+var ko = {
+  headings: {
+    synthesis: "\uC885\uD569",
+    exploration: "\uBB38\uC81C \uD0D0\uC0C9",
+    lenses: "\uC774\uB860\uC801 \uB80C\uC988",
+    challenge: "\uCC4C\uB9B0\uC9C0",
+    agenda: "\uC5F0\uAD6C \uC5B4\uC820\uB2E4",
+    logbook: "\uB85C\uADF8\uBD81",
+    searchstrategy: "\uAC80\uC0C9 \uC804\uB7B5",
+    objective: "\uBAA9\uD45C",
+    context: "\uB9E5\uB77D",
+    beliefs: "\uC2E0\uB150"
+  },
+  exploration: {
+    chosenFraming: "\uC120\uD0DD\uD55C \uD504\uB808\uC774\uBC0D:",
+    assumptions: "\uC554\uBB35\uC801 \uAC00\uC815",
+    counterAssumptions: "\uAC00\uB2A5\uD55C \uBC18\uB300 \uAC00\uC815",
+    reformulations: "\uC7AC\uAD6C\uC131\uB41C \uC9C8\uBB38",
+    disciplines: "\uD559\uBB38 \uBD84\uC57C / \uC774\uB860\uC801 \uC804\uD1B5",
+    definitions: "\uACBD\uC7C1\uD558\uB294 \uC815\uC758",
+    directions: "\uC720\uB9DD\uD55C \uC5F0\uAD6C \uBC29\uD5A5",
+    facetTheoreticalBasis: "\uC774\uB860\uC801 \uAE30\uBC18",
+    facetSearchability: "\uAC80\uC0C9 \uAC00\uB2A5\uC131",
+    facetLiteratureStrength: "\uD0C4\uD0C4\uD55C \uBB38\uD5CC\uC774 \uC788\uC744 \uAC00\uB2A5\uC131(\uCD94\uC815)",
+    facetOriginality: "\uB3C5\uCC3D\uC131",
+    chosenSearchTerms: "\uAC80\uC0C9\uC5B4(\uC120\uD0DD\uB428)",
+    initialBeliefs: "\uCD08\uAE30 \uC2E0\uB150"
+  },
+  theory: {
+    sameMechanism: "\uAC19\uC740 \uBA54\uCEE4\uB2C8\uC998, \uB2E4\uB978 \uC774\uB984",
+    strikinglyAbsent: "\uB208\uC5D0 \uB744\uAC8C \uBD80\uC7AC\uD568",
+    competing: "\uACBD\uC7C1\uD558\uB294 \uC124\uBA85",
+    crossDomain: "\uC601\uC5ED \uAC04 \uC5F0\uACB0",
+    chosenLenses: "\uC120\uD0DD\uD55C \uB80C\uC988"
+  },
+  challenge: {
+    dimensions: {
+      conceptueel: "\uAC1C\uB150\uC801",
+      methodologisch: "\uBC29\uBC95\uB860\uC801",
+      theoretisch: "\uC774\uB860\uC801",
+      empirisch: "\uACBD\uD5D8\uC801",
+      praktisch: "\uC2E4\uC6A9\uC801"
+    },
+    actionLabel: "\uC870\uCE58",
+    inversion: "\uB2F9\uC2E0\uC758 \uAC00\uC124\uC774 \uD2C0\uB838\uB2E4\uBA74\u2026"
+  },
+  beliefs: {
+    none: "_(\uC544\uC9C1 \uAE30\uB85D\uB41C \uC2E0\uB150\uC774 \uC5C6\uC2B5\uB2C8\uB2E4)_",
+    statusLabels: {
+      open: "\uBBF8\uACB0",
+      ondersteund: "\uC9C0\uC9C0\uB428",
+      weersproken: "\uBC18\uBC15\uB428"
+    },
+    confidenceLabels: {
+      laag: "\uB0AE\uC74C",
+      midden: "\uC911\uAC04",
+      hoog: "\uB192\uC74C"
+    },
+    confidence: "\uD655\uC2E0\uB3C4"
+  },
+  synthesis: {
+    findings: "\uBC1C\uACAC \uC0AC\uD56D",
+    evidenceInline: "\uADFC\uAC70: {strength}{tier}",
+    strengthLabels: {
+      sterk: "\uAC15\uD568",
+      gemengd: "\uD63C\uC7AC",
+      beperkt: "\uC81C\uD55C\uC801"
+    },
+    contradictions: "\uC0C1\uCDA9 / \uC870\uAC74\uC5D0 \uB530\uB77C \uB2E4\uB984",
+    practical: "\uC2E4\uBB34\uC801 \uD568\uC758",
+    followUps: "\uAC00\uC124 \uC0DD\uC131\uD615 \uD6C4\uC18D \uBC29\uD5A5 \uBC0F \uBBF8\uD574\uACB0 \uC9C8\uBB38",
+    evidenceAndGaps: "\uADFC\uAC70 \uAC15\uB3C4 \uBC0F \uACF5\uBC31",
+    scopeCaveat: "\u26A0 \uC801\uC6A9 \uBC94\uC704: \uADFC\uAC70\uB294 \uC8FC\uB85C {note}\uC5D0 \uAD00\uD55C \uAC83\uC73C\uB85C, \uC81C\uAE30\uB41C \uC9C8\uBB38 \uC790\uCCB4\uB97C \uC9C1\uC811 \uB2E4\uB8E8\uC9C0\uB294 \uC54A\uC2B5\uB2C8\uB2E4. \uC77C\uBC18\uD654\uC5D0 \uC8FC\uC758\uD558\uC2ED\uC2DC\uC624.",
+    abstractsDisclosure: "\uC704\uC758 \uADFC\uAC70 \uB4F1\uAE09\uC740 \uC804\uBB38(\u5168\u6587)\uC774 \uC544\uB2CC \uCD08\uB85D\uC5D0 \uAE30\uBC18\uD55C \uAC83\uC785\uB2C8\uB2E4 \u2014 \uCD08\uB85D\uC740 \uC870\uC808\uBCC0\uC218, \uC2E0\uB8B0\uAD6C\uAC04, \uC601(null) \uACB0\uACFC\uB97C \uC0DD\uB7B5\uD558\uB294 \uACBD\uC6B0\uAC00 \uB9CE\uC2B5\uB2C8\uB2E4.",
+    fulltextNuanceSingular: " \uD604\uC7AC 1\uAC1C \uCD9C\uCC98\uB294 \uC804\uBB38\uC5D0 \uAE30\uBC18\uD569\uB2C8\uB2E4(\uC2EC\uD654 \uBD84\uC11D \uCC38\uC870).",
+    fulltextNuancePlural: " \uD604\uC7AC {n}\uAC1C \uCD9C\uCC98\uB294 \uC804\uBB38\uC5D0 \uAE30\uBC18\uD569\uB2C8\uB2E4(\uC2EC\uD654 \uBD84\uC11D \uCC38\uC870).",
+    unanswered: "\uC774 \uADFC\uAC70\uB85C\uB294 \uB2F5\uD560 \uC218 \uC5C6\uC74C",
+    reasonNotInvestigated: "\uCC3E\uC740 \uCD9C\uCC98\uC5D0\uC11C \uC870\uC0AC\uB418\uC9C0 \uC54A\uC74C",
+    reasonDesignInsufficient: "\uCC3E\uC740 \uADFC\uAC70\uB85C\uB294 \uD655\uC815\uD560 \uC218 \uC5C6\uC74C(\uC5F0\uAD6C \uC124\uACC4 \uBD88\uCDA9\uBD84, \uC608: \uD6A1\uB2E8 \uC5F0\uAD6C)",
+    designNeeded: " {design}\uC774(\uAC00) \uD544\uC694\uD569\uB2C8\uB2E4.",
+    readingRecommendations: "\uC804\uBB38 \uC77D\uAE30\uB97C \uAD8C\uC7A5",
+    readingRecommendationsNote: "(\uCD08\uB85D\uC5D0 \uAE30\uBC18\uD55C \uD310\uB2E8\uC774\uBA70, \uC720\uB8CC \uAD6C\uB3C5\uC774 \uD544\uC694\uD55C \uACBD\uC6B0\uAC00 \uB9CE\uC2B5\uB2C8\uB2E4 \u2014 \uC804\uBB38\uC740 \uC9C1\uC811 \uD655\uBCF4\uD574\uC57C \uD569\uB2C8\uB2E4)"
+  },
+  evidenceTier: {
+    strong: "\uB9AC\uBDF0/\uBA54\uD0C0\uBD84\uC11D",
+    moderate: "RCT",
+    limited: "\uAC00\uC124 \uC0DD\uC131\uD615"
+  },
+  oa: {
+    paywalled: "\uC720\uB8CC \uAD6C\uB3C5\uC774 \uD544\uC694\uD560 \uAC00\uB2A5\uC131 \uB192\uC74C",
+    available: "OA \uC774\uC6A9 \uAC00\uB2A5",
+    availablePdf: "OA \uC774\uC6A9 \uAC00\uB2A5 (pdf)"
+  },
+  sources: {
+    frameworkSource: "\uD504\uB808\uC784\uC6CC\uD06C \uCD9C\uCC98",
+    analogous: "\uC720\uC0AC \uC0AC\uB840 ({sector})",
+    otherSector: "\uB2E4\uB978 \uBD80\uBB38",
+    evidenceTag: "\uADFC\uAC70: {label}",
+    notVerifiedDoi: "\uAC80\uC99D\uB418\uC9C0 \uC54A\uC74C (DOI \uD655\uC778 \uBD88\uAC00)",
+    notCheckedConnection: "\uD655\uC778\uB418\uC9C0 \uC54A\uC74C (\uC5F0\uACB0 \uC5C6\uC74C)",
+    notVerifiedNoId: "\uAC80\uC99D\uB418\uC9C0 \uC54A\uC74C (DOI/ISBN \uC5C6\uC74C)",
+    noteMissingId: "DOI/ISBN \uC5C6\uC74C",
+    noteDoiUnresolved: "DOI \uD655\uC778 \uBD88\uAC00",
+    noteNoConnection: "\uC5F0\uACB0 \uC5C6\uC74C",
+    transferEvidenceSector: "[\uB2E4\uB978 \uBD80\uBB38\uC758 \uC720\uC0AC \uADFC\uAC70: {sector}]",
+    transferEvidenceGeneric: "[\uB2E4\uB978 \uBD80\uBB38\uC758 \uC720\uC0AC \uADFC\uAC70]"
+  },
+  decompose: {
+    frameworkHeading: "\uC774\uB860\uC801 \uD2C0",
+    dimensionsIntro: "\uCC28\uC6D0(\uD558\uC704 \uC9C8\uBB38\uC758 \uBC29\uD5A5\uC744 \uACB0\uC815):",
+    keySources: "\uD575\uC2EC \uCD9C\uCC98",
+    subQuestions: "\uD558\uC704 \uC9C8\uBB38",
+    subQuestionsNote: "(\uC9C8\uBB38\uC774 \uC774\uB807\uAC8C \uBD84\uD574\uB418\uC5C8\uC73C\uBA70, \uBC88\uD638\uB294 \uAC01 \uD558\uC704 \uC9C8\uBB38\uC5D0\uC11C \uB3C4\uCD9C\uB41C \uCD9C\uCC98\uB97C \uAC00\uB9AC\uD0B5\uB2C8\uB2E4)",
+    subQuestionsNoteWithHypotheses: "(\uC9C8\uBB38\uC774 \uC774\uB807\uAC8C \uBD84\uD574\uB418\uC5C8\uC73C\uBA70, \uBC88\uD638\uB294 \uAC01 \uD558\uC704 \uC9C8\uBB38\uC5D0\uC11C \uB3C4\uCD9C\uB41C \uCD9C\uCC98\uB97C \uAC00\uB9AC\uD0A4\uACE0, \uADF8 \uB4A4\uC5D0 \uD558\uC704 \uC9C8\uBB38\uBCC4 \uAC00\uC124\uC774 \uC774\uC5B4\uC9D1\uB2C8\uB2E4)",
+    hypothesisLabel: "\uAC00\uC124"
+  },
+  searchStrategy: {
+    sources: "\uCD9C\uCC98",
+    none: "(\uC5C6\uC74C)",
+    terms: "\uAC80\uC0C9\uC5B4",
+    termsCounted: "\uAC80\uC0C9\uC5B4 ({n})",
+    resumedLine: "\uC774\uC804\uC5D0 \uCC3E\uC740(\uCE90\uC2DC\uB41C) \uCD9C\uCC98\uC5D0\uC11C \uC7AC\uAC1C \u2014 \uC0C8 \uAC80\uC0C9 \uB77C\uC6B4\uB4DC\uB294 \uC2E4\uD589\uD558\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.",
+    additionalTerms: "\uCD94\uAC00 \uAC80\uC0C9\uC5B4(\uD0D0\uC0C9/\uB80C\uC988\uC5D0\uC11C \uB3C4\uCD9C)",
+    selectionCriteria: "\uC120\uC815 \uAE30\uC900",
+    rerankLine: "\uC735\uD569\uB41C \uD6C4\uBCF4\uC5D0 \uB300\uD574 \uAD00\uB828\uC131 \uC7AC\uC21C\uC704\uD654(\uC784\uBCA0\uB529 \uBE14\uB80C\uB4DC)\uB97C \uC218\uD589\uD588\uC2B5\uB2C8\uB2E4{tested}.",
+    testedAgainstSubQuestions: " (\uD558\uC704 \uC9C8\uBB38\uC5D0 \uB300\uD574 \uAC80\uC99D)",
+    abstractsOnlyLine: "\uD3C9\uAC00\uB294 \uC804\uBB38\uC774 \uC544\uB2CC \uC81C\uBAA9\uACFC \uCD08\uB85D\uC5D0 \uAE30\uBC18\uD588\uC2B5\uB2C8\uB2E4.",
+    limitedToTop: "\uC810\uC218\uAC00 \uAC00\uC7A5 \uB192\uC740 \uC0C1\uC704 {n}\uAC1C \uCD9C\uCC98\uB85C \uC81C\uD55C\uD588\uC2B5\uB2C8\uB2E4.",
+    crossSectorLine: "\uBD80\uBB38 \uAC04 \uC804\uC774 \uADFC\uAC70\uB97C \uCD94\uAC00\uD588\uC73C\uBA70{sectors}, \uBCC4\uB3C4\uB85C \uD45C\uC2DC\uD558\uACE0 \uC885\uD569\uC5D0\uC11C\uB294 \uC81C\uC678\uD588\uC2B5\uB2C8\uB2E4.",
+    sectorsSuffix: " (\uBD80\uBB38: {sectors})",
+    funnel: "\uAC74\uC218(\uD37C\uB110)",
+    fusedCount: "\uC735\uD569\uB428: \uACE0\uC720 \uCD9C\uCC98 {n}\uAC74",
+    afterRerank: "\uC7AC\uC21C\uC704\uD654 \uD6C4: {n}",
+    keptCount: "\uD45C\uC2DC/\uC720\uC9C0\uB428: {n}",
+    failuresHeading: "\uCD9C\uCC98\uBCC4 \uAC80\uC0C9 \uC2E4\uD328",
+    failureLine: "{label}: \uAC80\uC0C9 {total}\uAC74 \uC911 {failed}\uAC74 \uC2E4\uD328 (\uC18D\uB3C4 \uC81C\uD55C \uB610\uB294 \uB124\uD2B8\uC6CC\uD06C \uC624\uB958)."
+  },
+  account: {
+    title: "\uBC29\uBC95\uB860\uC801 \uC124\uBA85",
+    provenanceDerived: "\uD30C\uC0DD\uB41C \uC7AC\uD604 \uAC00\uB2A5 \uBB38\uC11C \u2014 \uC5F0\uAD6C \uC138\uC158\uC5D0\uC11C \uC790\uB3D9\uC73C\uB85C \uC870\uB9BD\uB418\uC5C8\uC2B5\uB2C8\uB2E4.",
+    provenanceScope: "\uC774 \uBB38\uC11C\uB294 \uC5F0\uAD6C\uB97C \uB458\uB7EC\uC2FC **\uBC29\uBC95\uB860\uC801 \uC120\uD0DD**\uC744 \uAE30\uC220\uD558\uBA70, \uBAA8\uB378\uC758 \uB0B4\uBD80 \uCD94\uB860\uC744 \uAE30\uC220\uD558\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.",
+    sourceLabel: "\uCD9C\uCC98",
+    researchQuestion: "\uC5F0\uAD6C \uC9C8\uBB38",
+    notRecorded: "_\uAE30\uB85D\uB418\uC9C0 \uC54A\uC74C \u2014 \uC774 \uB2E8\uACC4\uB294 (\uC544\uC9C1) \uC2E4\uD589\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4._",
+    chosenFraming: "\uC120\uD0DD\uD55C \uC7AC\uAD6C\uC131(\uD504\uB808\uC774\uBC0D)",
+    alternativesNote: "\uAC80\uD1A0\uB41C \uB300\uC548\uC801 \uC815\uC2DD\uD654\uB294 *{section}* \uC544\uB798\uC5D0 \uC788\uC2B5\uB2C8\uB2E4.",
+    unchangedQuestion: "_\uC6D0\uB798 \uC9C8\uBB38\uC744 \uBCC0\uACBD \uC5C6\uC774 \uC720\uC9C0\uD588\uC2B5\uB2C8\uB2E4._",
+    chosenLensesLabel: "\uC120\uD0DD\uD55C \uB80C\uC988",
+    openQuestions: "\uBBF8\uD574\uACB0 \uC9C8\uBB38\uACFC \uD6C4\uC18D \uC5F0\uAD6C"
+  },
+  agenda: {
+    gaps: "\uC9C0\uC2DD \uACF5\uBC31",
+    limitations: "\uBC18\uBCF5\uB418\uB294 \uBC29\uBC95\uB860\uC801 \uD55C\uACC4",
+    newQuestions: "\uC0C8\uB85C\uC6B4 \uC5F0\uAD6C \uC9C8\uBB38",
+    designs: "\uC801\uD569\uD55C \uC5F0\uAD6C \uC124\uACC4",
+    data: "\uD544\uC694\uD55C \uB370\uC774\uD130 / \uCE21\uC815 \uB3C4\uAD6C"
+  },
+  graph: {
+    gapNoSubquestions: '\uC544\uC9C1 \uD558\uC704 \uC9C8\uBB38\uC73C\uB85C \uBD84\uD574\uB418\uC9C0 \uC54A\uC740 \uC9C8\uBB38: "{label}"',
+    gapNoFindings: '\uC544\uC9C1 \uC885\uD569 \uBC1C\uACAC \uC0AC\uD56D\uC774 \uC5C6\uB294 \uC9C8\uBB38: "{label}"',
+    gapNoSources: '\uC544\uC9C1 \uB4F1\uB85D\uBD80\uC5D0 \uBB38\uD5CC\uC774 \uC5C6\uB294 \uC9C8\uBB38: "{label}"',
+    gapFindingNoSource: '\uCD9C\uCC98 \uCC38\uC870\uAC00 \uC5C6\uB294 \uBC1C\uACAC \uC0AC\uD56D(\uC785\uC99D\uB418\uC9C0 \uC54A\uC740 \uC8FC\uC7A5): "{label}"',
+    gapOpenHypothesis: '\uC544\uC9C1 \uAC80\uC99D\uB418\uC9C0 \uC54A\uC740 \uBBF8\uACB0 \uAC00\uC124: "{label}"',
+    gapSourceUnused: '\uC544\uC9C1 \uBC1C\uACAC \uC0AC\uD56D\uC5D0 \uC0AC\uC6A9\uB418\uC9C0 \uC54A\uC740 \uCD9C\uCC98: "{label}"',
+    severityHigh: "\u{1F534} \uB192\uC74C \u2014 \uC785\uC99D\uB418\uC9C0 \uC54A\uC740 \uC8FC\uC7A5",
+    severityMedium: "\u{1F7E0} \uC911\uAC04 \u2014 \uB204\uB77D\uB41C \uB2E8\uACC4",
+    severityInfo: "\u{1F535} \uC815\uBCF4 \u2014 \uBBF8\uACB0 \uC2A4\uB808\uB4DC",
+    reportTitle: "\uC9C0\uC2DD \uADF8\uB798\uD504 (\uC2A4\uD30C\uC774\uD06C) \u2014 {project}",
+    reportIntro: "_\uAE30\uC874 \uC544\uD2F0\uD329\uD2B8(\uD504\uB7F0\uD2B8\uB9E4\uD130 + \uB80C\uB354\uB9C1\uB41C \uC885\uD569 + \uC778\uC6A9 \uB4F1\uB85D\uBD80)\uC5D0\uC11C \uB9CC\uB4E0 \uC77D\uAE30 \uC804\uC6A9 \uD22C\uC601\uC785\uB2C8\uB2E4. \uC77C\uD68C\uC6A9: \uC9C1\uC811 \uD3B8\uC9D1\uD558\uC9C0 \uB9D0\uACE0 \uB2E4\uC2DC \uC0DD\uC131\uD558\uC2ED\uC2DC\uC624._",
+    sizeHeading: "\uADDC\uBAA8",
+    nodesEdgesLine: "\uB178\uB4DC **{nodes}**\uAC1C, \uC5E3\uC9C0 **{edges}**\uAC1C",
+    gapsHeading: "\uACF5\uBC31",
+    noGaps: "_\uAC10\uC9C0\uB41C \uACF5\uBC31\uC774 \uC5C6\uC2B5\uB2C8\uB2E4._",
+    nodesPerType: "\uC720\uD615\uBCC4 \uB178\uB4DC",
+    nodeTypeLabels: {
+      vraag: "\uC9C8\uBB38",
+      deelvraag: "\uD558\uC704 \uC9C8\uBB38",
+      hypothese: "\uAC00\uC124",
+      bevinding: "\uBC1C\uACAC \uC0AC\uD56D",
+      bron: "\uCD9C\uCC98",
+      lens: "\uB80C\uC988"
+    },
+    provenanceHeading: "\uCD9C\uCC98 \uC774\uB825",
+    provenanceWithEdges: "\uC774 \uADF8\uB798\uD504\uB294 **\uC0DD\uC131 \uC2DC\uC810 \uC5E3\uC9C0**(E68)\uB97C \uC0AC\uC6A9\uD569\uB2C8\uB2E4: `\uCD9C\uCC98\u2192\uBC1C\uACAC \uC0AC\uD56D`(`onderbouwt`)\uC740 \uAE30\uB85D\uB41C \uB808\uCF54\uB4DC\uC5D0\uC11C \uB098\uC624\uBBC0\uB85C \uBC1C\uACAC \uC0AC\uD56D\u2192\uD2B9\uC815 \uCD9C\uCC98 \uC5F0\uACB0\uC740 \uC2E0\uB8B0\uD560 \uC218 \uC788\uC2B5\uB2C8\uB2E4. \uB808\uCF54\uB4DC\uAC00 \uC5C6\uB294 \uB178\uD2B8(\uC774\uC804 \uC2E4\uD589 / \uC0B0\uBB38 \uD3F4\uBC31)\uB294 `[n]` \uCC38\uC870\uC758 *\uAC1C\uC218*\uB9CC \uC149\uB2C8\uB2E4.",
+    provenanceWithoutEdges: "\uC774 \uD504\uB85C\uC81D\uD2B8\uC5D0\uC11C\uB294 \uC544\uC9C1 \uC0DD\uC131 \uC2DC\uC810 \uC5E3\uC9C0(E68 \uB808\uCF54\uB4DC)\uAC00 \uBC1C\uACAC\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4 \u2014 \uBC1C\uACAC \uC0AC\uD56D\uC740 \uB80C\uB354\uB9C1\uB41C \uC885\uD569\uC5D0\uC11C \uB098\uC624\uBA70, \uADF8\uACF3\uC758 `[n]` \uBC88\uD638\uB294 \uC778\uC6A9 \uD0A4\uC640\uC758 \uC9C0\uC18D\uC801\uC778 \uB9E4\uD551\uC774 \uC5C6\uC2B5\uB2C8\uB2E4. \uB530\uB77C\uC11C \uBC1C\uACAC \uC0AC\uD56D\uC774 *\uC5B4\uB5A4* \uCC38\uC870\uB77C\uB3C4 \uAC16\uB294\uC9C0\uB9CC \uC149\uB2C8\uB2E4. \uC2E0\uB8B0\uD560 \uC218 \uC788\uB294 `\uCD9C\uCC98\u2192\uBC1C\uACAC \uC0AC\uD56D` \uC5E3\uC9C0\uB97C \uC5BB\uC73C\uB824\uBA74 \uC0C8 \uC885\uD569\uC744 \uC2E4\uD589\uD558\uC2ED\uC2DC\uC624."
+  },
+  exportBundle: {
+    accountFileName: "\uBC29\uBC95\uB860\uC801-\uC124\uBA85.md",
+    bibFileName: "\uCD9C\uCC98.bib",
+    stubUnavailable: "_\uC774 \uB0B4\uBCF4\uB0B4\uAE30\uC5D0\uC11C\uB294 \uC790\uB3D9\uC73C\uB85C \uC870\uB9BD\uD560 \uC218 \uC5C6\uC5C8\uC2B5\uB2C8\uB2E4._",
+    stubMissingLabel: "\uB204\uB77D:",
+    stubMissingAccount: "\uBC29\uBC95\uB860\uC801 \uC124\uBA85",
+    stubNoFrontmatter: "\uBC29\uBC95\uB860\uC801 \uC124\uBA85(\uC774 \uB178\uD2B8\uC5D0\uC11C \uC138\uC158 \uD504\uB7F0\uD2B8\uB9E4\uD130\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC74C)",
+    noSessions: "_\uC774 \uD504\uB85C\uC81D\uD2B8\uC5D0\uC11C \uC138\uC158\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4._",
+    artefactsPresent: "{present}/{total}\uAC1C \uC544\uD2F0\uD329\uD2B8 \uC788\uC74C"
+  },
+  project: {
+    objectivePlaceholder: "_(\uC544\uC9C1 \uC791\uC131\uB418\uC9C0 \uC54A\uC74C \u2014 \uC774 \uD504\uB85C\uC81D\uD2B8\uB294 \uAD81\uADF9\uC801\uC73C\uB85C \uBB34\uC5C7\uC5D0 \uB2F5\uD574\uC57C \uD569\uB2C8\uAE4C?)_",
+    overviewHeading: "\uAC1C\uC694",
+    overviewBody: "_\uAC01 \uC5F0\uAD6C \uC9C8\uBB38\uC740 \uC774 \uD3F4\uB354 \uC548\uC758 \uAC1C\uBCC4 \uC138\uC158 \uB178\uD2B8\uC785\uB2C8\uB2E4. \uAC1C\uC694\uB97C \uBCF4\uAC70\uB098 \uC0C8 \uC9C8\uBB38\uC744 \uCD94\uAC00\uD558\uB824\uBA74 Parallax \uC0AC\uC774\uB4DC\uBC14\uB97C \uC5EC\uC2ED\uC2DC\uC624._"
+  },
+  logbook: {
+    stepBeliefs: "\uC2E0\uB150",
+    stepResearch: "\uC5F0\uAD6C",
+    stepAccount: "\uC124\uBA85",
+    framingChosen: '\uD504\uB808\uC774\uBC0D \uC120\uD0DD\uB428: "{framing}"',
+    alternativesConsidered: "; \uB300\uC548\uC801 \uC815\uC2DD\uD654 {n}\uAC74 \uAC80\uD1A0",
+    challengesSummary: "\uCC4C\uB9B0\uC9C0 {n}\uAC74",
+    challengesAdopted: "; {n}\uAC74\uC744 \uC2E0\uB150\uC73C\uB85C \uAE30\uB85D",
+    lensesChosen: "\uB80C\uC988 {n}\uAC1C \uC120\uD0DD",
+    lensesEliminated: "; {n}\uAC1C \uC81C\uC678",
+    synthesisOver: "\uCD9C\uCC98 {n}\uAC74\uC5D0 \uB300\uD55C \uC885\uD569",
+    searchTerms: "; \uAC80\uC0C9\uC5B4 {n}\uAC1C",
+    beliefsUpdated: "\uC885\uD569\uACFC \uB300\uC870\uD55C \uD6C4 \uC2E0\uB150 {n}\uAC74 \uC5C5\uB370\uC774\uD2B8",
+    newQuestionsProposed: "\uC0C8 \uC5F0\uAD6C \uC9C8\uBB38 {n}\uAC74",
+    sessionStarted: "; \uC0C8 \uC138\uC158 \uC2DC\uC791\uB428",
+    accountGenerated: "\uBC29\uBC95\uB860\uC801 \uC124\uBA85 \uC0DD\uC131\uB428"
+  }
+};
+
+// src/i18n/index.ts
+var ARTIFACT_STRINGS = {
+  en,
+  nl,
+  fr,
+  de,
+  es,
+  pt,
+  it,
+  ru,
+  zh,
+  hi,
+  ar,
+  ja,
+  ko
+};
+var ARTIFACT_LANGUAGE_LABELS = {
+  en: "English",
+  nl: "Nederlands",
+  fr: "Fran\xE7ais",
+  de: "Deutsch",
+  es: "Espa\xF1ol",
+  pt: "Portugu\xEAs",
+  it: "Italiano",
+  ru: "\u0420\u0443\u0441\u0441\u043A\u0438\u0439",
+  zh: "\u4E2D\u6587",
+  hi: "\u0939\u093F\u0928\u094D\u0926\u0940",
+  ar: "\u0627\u0644\u0639\u0631\u0628\u064A\u0629",
+  ja: "\u65E5\u672C\u8A9E",
+  ko: "\uD55C\uAD6D\uC5B4"
+};
+var ARTIFACT_LANGUAGES = Object.keys(ARTIFACT_STRINGS);
+var DEFAULT_ARTIFACT_LANGUAGE = "en";
+var currentLanguage = DEFAULT_ARTIFACT_LANGUAGE;
+function setArtifactLanguage(lang) {
+  currentLanguage = lang;
+}
+function t() {
+  return ARTIFACT_STRINGS[currentLanguage];
+}
+function fmt(template, vars) {
+  return template.replace(
+    /\{(\w+)\}/g,
+    (m, key) => Object.prototype.hasOwnProperty.call(vars, key) ? String(vars[key]) : m
+  );
+}
+
+// src/settings-tab.ts
 var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
@@ -52,10 +2974,20 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       });
     });
+    new import_obsidian.Setting(containerEl).setName("Artifact language").setDesc(
+      "Language of the section headings, labels and methodological account the plugin writes into your notes. AI-written text follows the language of your question instead. Existing notes keep working when you switch."
+    ).addDropdown((d) => {
+      for (const lang of ARTIFACT_LANGUAGES) d.addOption(lang, ARTIFACT_LANGUAGE_LABELS[lang]);
+      d.setValue(this.plugin.settings.artifactLanguage).onChange(async (v) => {
+        this.plugin.settings.artifactLanguage = v;
+        setArtifactLanguage(this.plugin.settings.artifactLanguage);
+        await this.plugin.saveSettings();
+      });
+    });
     new import_obsidian.Setting(containerEl).setName("Contact e-mail (OpenAlex)").setDesc(
-      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by route C. Not sent anywhere else.`
+      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Ask a question (AI \xB7 multi-source)". Not sent anywhere else.`
     ).addText(
-      (t) => t.setPlaceholder("you@example.com").setValue(this.plugin.settings.openAlexMailto).onChange(async (v) => {
+      (t2) => t2.setPlaceholder("you@example.com").setValue(this.plugin.settings.openAlexMailto).onChange(async (v) => {
         this.plugin.settings.openAlexMailto = v.trim();
         await this.plugin.saveSettings();
       })
@@ -63,7 +2995,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
       createFragment((f) => {
         f.appendText(
-          "Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by route C. Request at "
+          'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Ask a question (AI \xB7 multi-source)". Request at '
         );
         f.createEl("a", {
           text: "semanticscholar.org/product/api",
@@ -71,12 +3003,12 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         });
         f.appendText(". Stored locally; never shared.");
       })
-    ).addText((t) => {
-      t.setPlaceholder("optional").setValue(this.plugin.settings.semanticScholarApiKey).onChange(async (v) => {
+    ).addText((t2) => {
+      t2.setPlaceholder("optional").setValue(this.plugin.settings.semanticScholarApiKey).onChange(async (v) => {
         this.plugin.settings.semanticScholarApiKey = v.trim();
         await this.plugin.saveSettings();
       });
-      t.inputEl.type = "password";
+      t2.inputEl.type = "password";
     });
     new import_obsidian.Setting(containerEl).setName("Consensus API key").setDesc(
       createFragment((f) => {
@@ -87,12 +3019,12 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         });
         f.appendText(".");
       })
-    ).addText((t) => {
-      t.setPlaceholder("sk-\u2026").setValue(this.plugin.settings.apiKey).onChange(async (v) => {
+    ).addText((t2) => {
+      t2.setPlaceholder("sk-\u2026").setValue(this.plugin.settings.apiKey).onChange(async (v) => {
         this.plugin.settings.apiKey = v.trim();
         await this.plugin.saveSettings();
       });
-      t.inputEl.type = "password";
+      t2.inputEl.type = "password";
     });
     new import_obsidian.Setting(containerEl).setName("Default format").setDesc("How references are rendered when inserted into a note.").addDropdown((d) => {
       d.addOption("detailed", "Detailed (with abstracts)").addOption("compact", "Compact list").addOption("bibliography", "Bibliography").setValue(this.plugin.settings.defaultFormat).onChange(async (v) => {
@@ -101,19 +3033,19 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       });
     });
     new import_obsidian.Setting(containerEl).setName("Insert question as heading").setDesc("Prepend the research question as an H3 above the references.").addToggle(
-      (t) => t.setValue(this.plugin.settings.insertQuestionHeading).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.insertQuestionHeading).onChange(async (v) => {
         this.plugin.settings.insertQuestionHeading = v;
         await this.plugin.saveSettings();
       })
     );
     new import_obsidian.Setting(containerEl).setName("Include abstracts").setDesc("Show the abstract under each paper in the detailed format.").addToggle(
-      (t) => t.setValue(this.plugin.settings.includeAbstract).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.includeAbstract).onChange(async (v) => {
         this.plugin.settings.includeAbstract = v;
         await this.plugin.saveSettings();
       })
     );
     new import_obsidian.Setting(containerEl).setName("Result limit").setDesc("How many papers to request (Consensus returns up to 20 per search).").addText(
-      (t) => t.setValue(String(this.plugin.settings.resultLimit)).onChange(async (v) => {
+      (t2) => t2.setValue(String(this.plugin.settings.resultLimit)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
           this.plugin.settings.resultLimit = Math.min(n, 20);
@@ -125,20 +3057,20 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Keep a citation register").setDesc(
       "Record every inserted reference in a central JSON file, so you can see which sources recur across notes and projects."
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.registerEnabled).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.registerEnabled).onChange(async (v) => {
         this.plugin.settings.registerEnabled = v;
         await this.plugin.saveSettings();
       })
     );
     new import_obsidian.Setting(containerEl).setName("Register file").setDesc("Vault-relative path of the register JSON.").addText(
-      (t) => t.setPlaceholder(".consensus-research/citations.json").setValue(this.plugin.settings.registerPath).onChange(async (v) => {
+      (t2) => t2.setPlaceholder(".consensus-research/citations.json").setValue(this.plugin.settings.registerPath).onChange(async (v) => {
         this.plugin.settings.registerPath = v.trim() || ".consensus-research/citations.json";
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("AI research (route C)").setHeading();
+    new import_obsidian.Setting(containerEl).setName("AI research (multi-source)").setHeading();
     new import_obsidian.Setting(containerEl).setName("LLM provider").setDesc(
-      'Which backend powers route C (decomposition, rerank embeddings, synthesis and the copilots). "OpenAI-compatible" also covers self-hosted/local servers such as Ollama or LM Studio \u2014 point baseUrl at them below.'
+      'Which backend powers the AI research pipeline (decomposition, rerank embeddings, synthesis and the copilots). "OpenAI-compatible" also covers self-hosted/local servers such as Ollama or LM Studio \u2014 point baseUrl at them below.'
     ).addDropdown(
       (d) => d.addOption("mistral", "Mistral").addOption("openai-compat", "OpenAI-compatible (OpenAI, Ollama, LM Studio, \u2026)").setValue(this.plugin.settings.llmProvider).onChange(async (v) => {
         this.plugin.settings.llmProvider = v;
@@ -154,33 +3086,33 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         f.createEl("a", { text: "console.mistral.ai", href: "https://console.mistral.ai/" });
         f.appendText(". Stored locally (EU); never shared.");
       })
-    ).addText((t) => {
-      t.setPlaceholder("optional").setValue(this.plugin.settings.mistralApiKey).onChange(async (v) => {
+    ).addText((t2) => {
+      t2.setPlaceholder("optional").setValue(this.plugin.settings.mistralApiKey).onChange(async (v) => {
         this.plugin.settings.mistralApiKey = v.trim();
         await this.plugin.saveSettings();
       });
-      t.inputEl.type = "password";
+      t2.inputEl.type = "password";
     });
     if (this.plugin.settings.llmProvider === "openai-compat") {
       new import_obsidian.Setting(containerEl).setName("OpenAI-compatible base URL").setDesc(
         "The endpoint's API root, no trailing slash. Examples: https://api.openai.com/v1 (OpenAI), http://localhost:11434/v1 (Ollama), http://localhost:1234/v1 (LM Studio), https://openrouter.ai/api/v1 (OpenRouter)."
       ).addText(
-        (t) => t.setPlaceholder("https://api.openai.com/v1").setValue(this.plugin.settings.openaiCompatBaseUrl).onChange(async (v) => {
+        (t2) => t2.setPlaceholder("https://api.openai.com/v1").setValue(this.plugin.settings.openaiCompatBaseUrl).onChange(async (v) => {
           this.plugin.settings.openaiCompatBaseUrl = v.trim() || "https://api.openai.com/v1";
           await this.plugin.saveSettings();
         })
       );
-      new import_obsidian.Setting(containerEl).setName("OpenAI-compatible API key").setDesc("Optional \u2014 keyless is a valid config for a local server (Ollama, LM Studio with auth disabled). Never shared.").addText((t) => {
-        t.setPlaceholder("optional").setValue(this.plugin.settings.openaiCompatApiKey).onChange(async (v) => {
+      new import_obsidian.Setting(containerEl).setName("OpenAI-compatible API key").setDesc("Optional \u2014 keyless is a valid config for a local server (Ollama, LM Studio with auth disabled). Never shared.").addText((t2) => {
+        t2.setPlaceholder("optional").setValue(this.plugin.settings.openaiCompatApiKey).onChange(async (v) => {
           this.plugin.settings.openaiCompatApiKey = v.trim();
           await this.plugin.saveSettings();
         });
-        t.inputEl.type = "password";
+        t2.inputEl.type = "password";
       });
       new import_obsidian.Setting(containerEl).setName("OpenAI-compatible chat model").setDesc(
         `Free text \u2014 no live catalogue fetch for this provider (unlike Mistral's "Refresh model list"). Examples: gpt-4o-mini (OpenAI), llama3.1 (Ollama).`
       ).addText(
-        (t) => t.setPlaceholder("gpt-4o-mini").setValue(this.plugin.settings.openaiCompatChatModel).onChange(async (v) => {
+        (t2) => t2.setPlaceholder("gpt-4o-mini").setValue(this.plugin.settings.openaiCompatChatModel).onChange(async (v) => {
           this.plugin.settings.openaiCompatChatModel = v.trim();
           await this.plugin.saveSettings();
         })
@@ -188,7 +3120,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       new import_obsidian.Setting(containerEl).setName("OpenAI-compatible embedding model").setDesc(
         "Used for the rerank step. Free text. Examples: text-embedding-3-small (OpenAI), nomic-embed-text (Ollama)."
       ).addText(
-        (t) => t.setPlaceholder("text-embedding-3-small").setValue(this.plugin.settings.openaiCompatEmbedModel).onChange(async (v) => {
+        (t2) => t2.setPlaceholder("text-embedding-3-small").setValue(this.plugin.settings.openaiCompatEmbedModel).onChange(async (v) => {
           this.plugin.settings.openaiCompatEmbedModel = v.trim();
           await this.plugin.saveSettings();
         })
@@ -198,7 +3130,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Theoretical framework phase").setDesc(
       'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Build theoretical framework" command runs this regardless of this toggle.'
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCFrameworkPhase).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCFrameworkPhase).onChange(async (v) => {
         this.plugin.settings.routeCFrameworkPhase = v;
         await this.plugin.saveSettings();
       })
@@ -206,7 +3138,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Review sub-questions before searching").setDesc(
       "After the question is split into sub-questions (and the framework, if on), pause to edit, add or remove them before the literature search runs. Editing here keeps source attribution accurate."
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCSubQuestionCheckpoint).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCSubQuestionCheckpoint).onChange(async (v) => {
         this.plugin.settings.routeCSubQuestionCheckpoint = v;
         await this.plugin.saveSettings();
       })
@@ -214,7 +3146,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Cross-sector evidence").setDesc(
       'When the topic evidence is thin within its own domain, also search analogous sectors (e.g. healthcare, public administration, education) and offer the hits as clearly-labelled transfer evidence. Only fires on thin evidence; the "force cross-sector" command runs it regardless.'
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCCrossSector).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCCrossSector).onChange(async (v) => {
         this.plugin.settings.routeCCrossSector = v;
         await this.plugin.saveSettings();
       })
@@ -231,7 +3163,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Weight evidence by study design").setDesc(
       "Tag each source by study design (review/meta-analysis > RCT > small study) and steer the synthesis to weight by it \u2014 claims resting only on small studies are flagged as hypothesis-forming, and the basis is shown next to each finding. On by default."
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCEvidenceWeighting).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCEvidenceWeighting).onChange(async (v) => {
         this.plugin.settings.routeCEvidenceWeighting = v;
         await this.plugin.saveSettings();
       })
@@ -239,7 +3171,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Calibrate claims").setDesc(
       "Steer the synthesis to avoid over-stating: hedge absolute claims, surface moderators and context-dependence, and keep distinct outcomes apart. On by default."
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCClaimCalibration).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCClaimCalibration).onChange(async (v) => {
         this.plugin.settings.routeCClaimCalibration = v;
         await this.plugin.saveSettings();
       })
@@ -247,7 +3179,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Auto-deepen findings").setDesc(
       'After the synthesis, automatically add a deepening under each finding (specific numbers, methods, mechanisms) drawing on \u2014 and citing \u2014 the whole bibliography. Off by default; adds one LLM call per finding (a run with 6 findings adds 6 calls). The "Deepen selected finding(s)" command works regardless. The usage summary after each run reports the total tokens spent.'
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCAutoDeepen).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCAutoDeepen).onChange(async (v) => {
         this.plugin.settings.routeCAutoDeepen = v;
         await this.plugin.saveSettings();
       })
@@ -255,16 +3187,16 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Reading recommendations").setDesc(
       'Add an "Aanrader om volledig te lezen" section: a short, prioritised shortlist of which sources are most worth reading in full (and why). The full texts are often paywalled, so fetching them is a separate manual step. On by default.'
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.routeCReadingTips).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.routeCReadingTips).onChange(async (v) => {
         this.plugin.settings.routeCReadingTips = v;
         await this.plugin.saveSettings();
       })
     );
     const adv = containerEl.createEl("details");
     adv.createEl("summary", { text: "Advanced" });
-    new import_obsidian.Setting(adv).setName("Route C retrieval tuning").setHeading();
+    new import_obsidian.Setting(adv).setName("Multi-source search: how many papers to keep").setHeading();
     new import_obsidian.Setting(adv).setName("Max results").setDesc('Upper bound on how many reranked papers "Ask a question (AI \xB7 multi-source)" returns. The selection is weighted, so this is just the ceiling.').addText(
-      (t) => t.setValue(String(this.plugin.settings.routeCMaxResults)).onChange(async (v) => {
+      (t2) => t2.setValue(String(this.plugin.settings.routeCMaxResults)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
           this.plugin.settings.routeCMaxResults = Math.min(Math.floor(n), 60);
@@ -273,7 +3205,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(adv).setName("Min results").setDesc("Lower bound \u2014 always keep at least this many, even if scores are low.").addText(
-      (t) => t.setValue(String(this.plugin.settings.routeCMinResults)).onChange(async (v) => {
+      (t2) => t2.setValue(String(this.plugin.settings.routeCMinResults)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
           this.plugin.settings.routeCMinResults = Math.min(Math.floor(n), 60);
@@ -282,7 +3214,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(adv).setName("Keep ratio").setDesc("Weighted cutoff (0\u20131): keep papers scoring at least this fraction of the top result. Lower = more inclusive; clamped by min/max.").addText(
-      (t) => t.setValue(String(this.plugin.settings.routeCKeepRatio)).onChange(async (v) => {
+      (t2) => t2.setValue(String(this.plugin.settings.routeCKeepRatio)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0 && n <= 1) {
           this.plugin.settings.routeCKeepRatio = n;
@@ -291,7 +3223,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(adv).setName("Relevance keep").setDesc("Topicality gate (0\u20131): keep this fraction of candidates ranked by semantic match to the question, dropping the least-on-topic tail before the weighted cutoff. Lower = stricter (less noise); 1 = off. Protected by the min bound.").addText(
-      (t) => t.setValue(String(this.plugin.settings.routeCRelevanceKeep)).onChange(async (v) => {
+      (t2) => t2.setValue(String(this.plugin.settings.routeCRelevanceKeep)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0 && n <= 1) {
           this.plugin.settings.routeCRelevanceKeep = n;
@@ -302,7 +3234,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(adv).setName("Debug logging").setDesc(
       'Write a "Parallax debug" note with what "Ask a question (AI \xB7 multi-source)" did (sub-questions, queries, per-source result counts). Handy on mobile, where the dev console is out of reach.'
     ).addToggle(
-      (t) => t.setValue(this.plugin.settings.debugLogging).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.debugLogging).onChange(async (v) => {
         this.plugin.settings.debugLogging = v;
         await this.plugin.saveSettings();
       })
@@ -350,7 +3282,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     modelDropdown(
-      new import_obsidian.Setting(adv).setName("Mistral chat model").setDesc("The global default for every route C step (decompose, framework, synthesis, deepen, cross-sector). Per-step overrides below."),
+      new import_obsidian.Setting(adv).setName("Mistral chat model").setDesc("The global default for every AI research step (decompose, framework, synthesis, deepen, cross-sector). Per-step overrides below."),
       chatModels,
       () => this.plugin.settings.mistralChatModel,
       (v) => {
@@ -358,7 +3290,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       },
       null
     );
-    new import_obsidian.Setting(adv).setName("Per-step model overrides (route C)").setHeading();
+    new import_obsidian.Setting(adv).setName("Per-step model overrides").setHeading();
     const stepModel = (step, name, desc) => {
       modelDropdown(
         new import_obsidian.Setting(adv).setName(name).setDesc(desc),
@@ -399,7 +3331,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       "Model \u2014 cross-sector",
       "The analogous-sector transfer step. A cheaper model is usually fine here."
     );
-    new import_obsidian.Setting(adv).setName("Per-step reasoning effort (route C)").setHeading();
+    new import_obsidian.Setting(adv).setName("Per-step reasoning effort").setHeading();
     new import_obsidian.Setting(adv).setDesc(
       `Let a step think before answering. Off by default. Reasoning helps synthesis (and deepen) most; it is usually wasted tokens on the straightforward steps. The thinking is dropped from the output. Supported levels are model-specific \u2014 if you pick one the model doesn't support, the call automatically uses the cheapest level it DOES support (e.g. mistral-medium-latest only offers "high"), shown in the debug log; pick "off" to skip reasoning. On a model with only "high", reasoning is effectively all-or-nothing \u2014 which matters most for deepen (it runs once per finding). Magistral is deprecated. Only the ACTIVE provider's supported levels are offered here (E53) \u2014 the OpenAI-compatible provider offers only "off" for now (see openai-compat-provider.ts).`
     );
@@ -450,13 +3382,13 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       null
     );
     new import_obsidian.Setting(adv).setName("API base URL").setDesc("Override only if Consensus changes the endpoint or version.").addText(
-      (t) => t.setValue(this.plugin.settings.apiBaseUrl).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.apiBaseUrl).onChange(async (v) => {
         this.plugin.settings.apiBaseUrl = v.trim();
         await this.plugin.saveSettings();
       })
     );
     new import_obsidian.Setting(adv).setName("API key header").setDesc("Header used to send the key. Default: X-API-Key.").addText(
-      (t) => t.setValue(this.plugin.settings.apiKeyHeader).onChange(async (v) => {
+      (t2) => t2.setValue(this.plugin.settings.apiKeyHeader).onChange(async (v) => {
         this.plugin.settings.apiKeyHeader = v.trim() || "X-API-Key";
         await this.plugin.saveSettings();
       })
@@ -562,18 +3494,18 @@ var SearchModal = class extends import_obsidian3.Modal {
     if (!import_obsidian3.Platform.isMobile) window.setTimeout(() => ta.focus(), 0);
     const details = contentEl.createEl("details", { cls: "consensus-filters" });
     details.createEl("summary", { text: "Filters (optional)" });
-    new import_obsidian3.Setting(details).setName("Published from year").addText((t) => {
-      t.setPlaceholder("e.g. 2018").onChange((v) => {
+    new import_obsidian3.Setting(details).setName("Published from year").addText((t2) => {
+      t2.setPlaceholder("e.g. 2018").onChange((v) => {
         const n = Number(v);
         this.filters.yearMin = v && !Number.isNaN(n) ? n : void 0;
       });
     });
-    new import_obsidian3.Setting(details).setName("Peer-reviewed only").addToggle((t) => {
-      t.setValue(false).onChange((v) => this.filters.excludePreprints = v || void 0);
+    new import_obsidian3.Setting(details).setName("Peer-reviewed only").addToggle((t2) => {
+      t2.setValue(false).onChange((v) => this.filters.excludePreprints = v || void 0);
     });
     if (this.supportsMedicalFilters) {
-      new import_obsidian3.Setting(details).setName("Human studies only").addToggle((t) => {
-        t.setValue(false).onChange((v) => this.filters.humanOnly = v || void 0);
+      new import_obsidian3.Setting(details).setName("Human studies only").addToggle((t2) => {
+        t2.setValue(false).onChange((v) => this.filters.humanOnly = v || void 0);
       });
     }
     new import_obsidian3.Setting(contentEl).addButton(
@@ -640,7 +3572,7 @@ var ProjectModal = class extends import_obsidian4.Modal {
       }
     });
     if (this.moveEligible) {
-      new import_obsidian4.Setting(contentEl).setName("Move the current note into the project").addToggle((t) => t.setValue(this.moveNote).onChange((v) => this.moveNote = v));
+      new import_obsidian4.Setting(contentEl).setName("Move the current note into the project").addToggle((t2) => t2.setValue(this.moveNote).onChange((v) => this.moveNote = v));
     }
     new import_obsidian4.Setting(contentEl).addButton(
       (b) => b.setButtonText("Create project").setCta().onClick(() => this.submit())
@@ -671,15 +3603,15 @@ var S2_STRONG_TYPES = /* @__PURE__ */ new Set(["Review", "MetaAnalysis"]);
 var S2_MODERATE_TYPES = /* @__PURE__ */ new Set(["ClinicalTrial"]);
 function classifyFromMetadata(types) {
   if (!types || types.length === 0) return null;
-  if (types.some((t) => S2_STRONG_TYPES.has(t))) return "strong";
-  if (types.some((t) => S2_MODERATE_TYPES.has(t))) return "moderate";
+  if (types.some((t2) => S2_STRONG_TYPES.has(t2))) return "strong";
+  if (types.some((t2) => S2_MODERATE_TYPES.has(t2))) return "moderate";
   return null;
 }
 function classifyFromTitle(title) {
-  const t = title != null ? title : "";
-  if (PROTOCOL_RE.test(t)) return "limited";
-  if (STRONG_RE.test(t)) return "strong";
-  if (MODERATE_RE.test(t)) return "moderate";
+  const t2 = title != null ? title : "";
+  if (PROTOCOL_RE.test(t2)) return "limited";
+  if (STRONG_RE.test(t2)) return "strong";
+  if (MODERATE_RE.test(t2)) return "moderate";
   return "limited";
 }
 function classifyEvidenceTier(paper) {
@@ -688,14 +3620,7 @@ function classifyEvidenceTier(paper) {
   return classifyFromTitle(paper.title);
 }
 function evidenceTierLabel(tier) {
-  switch (tier) {
-    case "strong":
-      return "review/meta-analyse";
-    case "moderate":
-      return "RCT";
-    case "limited":
-      return "hypothesevormend";
-  }
+  return t().evidenceTier[tier];
 }
 function evidenceTierTag(tier) {
   return `[evidence: ${tier}]`;
@@ -922,8 +3847,8 @@ async function fetchOaTexts(papers, recommendations, cache, http, opts = {}) {
   return { cache: next, fetchedCount };
 }
 function renderOaBadge(paper) {
-  if (!(paper == null ? void 0 : paper.oaUrl)) return "waarschijnlijk achter een paywall";
-  return isPdfUrl(paper.oaUrl) ? `[OA beschikbaar (pdf)](${paper.oaUrl})` : `[OA beschikbaar](${paper.oaUrl})`;
+  if (!(paper == null ? void 0 : paper.oaUrl)) return t().oa.paywalled;
+  return isPdfUrl(paper.oaUrl) ? `[${t().oa.availablePdf}](${paper.oaUrl})` : `[${t().oa.available}](${paper.oaUrl})`;
 }
 
 // src/errors.ts
@@ -1344,68 +4269,62 @@ function renderAbstract(s, question) {
   }
   return lines.join("\n");
 }
-var ABSTRACTS_DISCLOSURE_BASE = "De bewijskracht hierboven is gebaseerd op abstracts, niet op volledige teksten \u2014 abstracts laten vaak moderatoren, betrouwbaarheidsintervallen en null-resultaten weg.";
-var ABSTRACTS_DISCLOSURE_BASE_LINE = `*${ABSTRACTS_DISCLOSURE_BASE}*`;
+function abstractsDisclosureBaseLine() {
+  return `*${t().synthesis.abstractsDisclosure}*`;
+}
 function abstractsDisclosureLine(fulltextSourceCount = 0) {
-  if (fulltextSourceCount <= 0) return ABSTRACTS_DISCLOSURE_BASE_LINE;
-  const n = fulltextSourceCount === 1 ? "1 bron rust" : `${fulltextSourceCount} bronnen rusten`;
-  return `*${ABSTRACTS_DISCLOSURE_BASE} Inmiddels ${n} op de volledige tekst (zie de verdieping).*`;
+  if (fulltextSourceCount <= 0) return abstractsDisclosureBaseLine();
+  const nuance = fulltextSourceCount === 1 ? t().synthesis.fulltextNuanceSingular : fmt(t().synthesis.fulltextNuancePlural, { n: fulltextSourceCount });
+  return `*${t().synthesis.abstractsDisclosure}${nuance}*`;
 }
 function nuanceAbstractsDisclosure(markdown, fulltextSourceCount) {
-  if (fulltextSourceCount <= 0 || !markdown.includes(ABSTRACTS_DISCLOSURE_BASE_LINE)) return markdown;
-  return markdown.replace(ABSTRACTS_DISCLOSURE_BASE_LINE, abstractsDisclosureLine(fulltextSourceCount));
+  if (fulltextSourceCount <= 0 || !markdown.includes(abstractsDisclosureBaseLine())) return markdown;
+  return markdown.replace(abstractsDisclosureBaseLine(), abstractsDisclosureLine(fulltextSourceCount));
 }
 function renderSynthesis(s, papers = []) {
   const lines = [];
   if (s.findings.length > 0) {
-    lines.push("", "#### Bevindingen");
+    lines.push("", `#### ${t().synthesis.findings}`);
     for (const f of s.findings) {
       const cite = f.sources.length ? ` ${renderSources(f.sources)}` : "";
       const tier = strongestTier(f.sources, papers);
       const basis = tier ? ` \xB7 ${evidenceTierLabel(tier)}` : "";
-      lines.push(`- ${f.claim} \u2014 *bewijs: ${f.strength}${basis}*${cite}`);
+      const grade = fmt(t().synthesis.evidenceInline, { strength: t().synthesis.strengthLabels[f.strength], tier: basis });
+      lines.push(`- ${f.claim} \u2014 *${grade}*${cite}`);
     }
   }
   if (s.contradictions.length > 0) {
-    lines.push("", "#### Tegenspraak / het hangt af van");
+    lines.push("", `#### ${t().synthesis.contradictions}`);
     for (const c of s.contradictions) {
       const cite = c.sources.length ? ` ${renderSources(c.sources)}` : "";
       lines.push(`- ${c.point}${cite}`);
     }
   }
   if (s.practical) {
-    lines.push("", "#### Praktische vertaling", "", s.practical);
+    lines.push("", `#### ${t().synthesis.practical}`, "", s.practical);
   }
   if (s.followUps && s.followUps.length > 0) {
-    lines.push("", "#### Hypothesevormende vervolgrichtingen & open vragen");
+    lines.push("", `#### ${t().synthesis.followUps}`);
     for (const d of s.followUps) lines.push(`- ${d}`);
   }
   if (s.scope || s.evidenceNote) {
-    lines.push("", "#### Bewijskracht & lacunes");
+    lines.push("", `#### ${t().synthesis.evidenceAndGaps}`);
     if (s.scope) {
-      lines.push(
-        "",
-        `\u26A0 Bereik: het bewijs gaat vooral over ${s.scope.note} \u2014 niet specifiek over de vraag zoals gesteld. Generaliseer met voorzichtigheid.`
-      );
+      lines.push("", fmt(t().synthesis.scopeCaveat, { note: s.scope.note }));
     }
     if (s.evidenceNote) lines.push("", s.evidenceNote);
     lines.push("", abstractsDisclosureLine());
   }
   if (s.unanswered && s.unanswered.length > 0) {
-    lines.push("", "#### Niet te beantwoorden met dit bewijs");
+    lines.push("", `#### ${t().synthesis.unanswered}`);
     for (const u of s.unanswered) {
-      const why = u.reason === "ontwerp-ontoereikend" ? "niet vast te stellen met het gevonden bewijs (ontwerp ontoereikend, bv. cross-sectioneel)" : "niet onderzocht in de gevonden bronnen";
-      const design = u.designNeeded ? ` Zou een ${u.designNeeded} vergen.` : "";
+      const why = u.reason === "ontwerp-ontoereikend" ? t().synthesis.reasonDesignInsufficient : t().synthesis.reasonNotInvestigated;
+      const design = u.designNeeded ? fmt(t().synthesis.designNeeded, { design: u.designNeeded }) : "";
       lines.push(`- ${u.question} \u2014 ${why}.${design}`);
     }
   }
   if (s.readingRecommendations && s.readingRecommendations.length > 0) {
-    lines.push(
-      "",
-      "#### Aanrader om volledig te lezen",
-      "",
-      "*(op basis van de abstracts; vaak achter een paywall \u2014 jij haalt de volledige tekst erbij)*"
-    );
+    lines.push("", `#### ${t().synthesis.readingRecommendations}`, "", `*${t().synthesis.readingRecommendationsNote}*`);
     for (const r of s.readingRecommendations) {
       lines.push(`- [${r.source}] ${r.reason} \u2014 ${renderOaBadge(papers[r.source - 1])}`);
     }
@@ -1595,7 +4514,7 @@ async function verifyIdentifier(source, http, opts = {}) {
   const isbn = normalizeIsbn(source.isbn);
   const doi = isValidDoi(source.doi) ? normalizeDoi(source.doi) : void 0;
   if (!doi && !isbn) {
-    return { status: "missing", note: "geen DOI/ISBN" };
+    return { status: "missing", note: t().sources.noteMissingId };
   }
   if (!doi && isbn) {
     return { status: "resolved", isbn, note: "geldige ISBN" };
@@ -1605,19 +4524,19 @@ async function verifyIdentifier(source, http, opts = {}) {
     case "resolved":
       return { status: "resolved", doi, isbn, note: "DOI resolveert" };
     case "unresolved":
-      return { status: "unresolved", doi, isbn, note: "DOI niet vindbaar" };
+      return { status: "unresolved", doi, isbn, note: t().sources.noteDoiUnresolved };
     case "unreachable":
-      return { status: "unreachable", doi, isbn, note: "geen verbinding" };
+      return { status: "unreachable", doi, isbn, note: t().sources.noteNoConnection };
   }
 }
 function identifierMarker(status) {
   switch (status) {
     case "unresolved":
-      return "\u26A0 niet geverifieerd (DOI niet vindbaar)";
+      return `\u26A0 ${t().sources.notVerifiedDoi}`;
     case "unreachable":
-      return "\u26A0 niet gecontroleerd (geen verbinding)";
+      return `\u26A0 ${t().sources.notCheckedConnection}`;
     case "missing":
-      return "\u26A0 niet geverifieerd (geen DOI/ISBN)";
+      return `\u26A0 ${t().sources.notVerifiedNoId}`;
     case "resolved":
     default:
       return void 0;
@@ -1691,22 +4610,23 @@ function markerSuffix(paper) {
   return marker ? ` ${marker}` : "";
 }
 function originSuffix(paper) {
-  if (paper.origin === "framework") return " \xB7 kaderbron";
-  if (paper.sector === "transfer") return ` \xB7 analoog (${paper.transferSector || "andere sector"})`;
+  if (paper.origin === "framework") return ` \xB7 ${t().sources.frameworkSource}`;
+  if (paper.sector === "transfer")
+    return ` \xB7 ${fmt(t().sources.analogous, { sector: paper.transferSector || t().sources.otherSector })}`;
   return "";
 }
 function evidenceTierSuffix(paper) {
-  return paper.evidenceTier ? ` \xB7 bewijs: ${evidenceTierLabel(paper.evidenceTier)}` : "";
+  return paper.evidenceTier ? ` \xB7 ${fmt(t().sources.evidenceTag, { label: evidenceTierLabel(paper.evidenceTier) })}` : "";
 }
 function renderFramework(fw) {
-  const lines = [`#### Theoretisch kader \u2014 ${collapseWhitespace(fw.construct)}`];
+  const lines = [`#### ${t().decompose.frameworkHeading} \u2014 ${collapseWhitespace(fw.construct)}`];
   if (fw.definition) lines.push("", collapseWhitespace(fw.definition));
   if (fw.dimensions.length > 0) {
-    lines.push("", "Dimensies (sturen de deelvragen):");
+    lines.push("", t().decompose.dimensionsIntro);
     for (const d of fw.dimensions) lines.push(`- ${collapseWhitespace(d)}`);
   }
   if (fw.sources && fw.sources.length > 0) {
-    lines.push("", `Sleutelbronnen: ${fw.sources.map((n) => `[${n}]`).join("")}`);
+    lines.push("", `${t().decompose.keySources}: ${fw.sources.map((n) => `[${n}]`).join("")}`);
   }
   return lines.join("\n");
 }
@@ -1766,12 +4686,12 @@ function formatResult(result, papers, opts) {
     const items = result.subQuestions.map((s, i) => {
       const notes = s.sources && s.sources.length ? ` ${cite(s.sources.map((n) => `[${n}]`).join(""))}` : "";
       const lines = [`${i + 1}. ${collapseWhitespace(s.query)}${notes}`];
-      if (s.hypothesis) lines.push(`   - *Hypothese:* ${collapseWhitespace(s.hypothesis)}`);
+      if (s.hypothesis) lines.push(`   - *${t().decompose.hypothesisLabel}:* ${collapseWhitespace(s.hypothesis)}`);
       return lines.join("\n");
     });
     const hasHypotheses = result.subQuestions.some((s) => s.hypothesis);
-    const note = hasHypotheses ? "*(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde, gevolgd door de hypothese per deelvraag)*" : "*(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde)*";
-    parts.push(["#### Deelvragen", "", note, ...items].join("\n"));
+    const note = hasHypotheses ? `*${t().decompose.subQuestionsNoteWithHypotheses}*` : `*${t().decompose.subQuestionsNote}*`;
+    parts.push([`#### ${t().decompose.subQuestions}`, "", note, ...items].join("\n"));
   }
   if (result.summary) {
     parts.push(cite(result.summary.trim()));
@@ -1907,7 +4827,7 @@ function buildSearchUrl(query, filters, settings) {
     params.set("sample_size_min", String(filters.sampleSizeMin));
   }
   if (filters.studyTypes && filters.studyTypes.length > 0) {
-    for (const t of filters.studyTypes) params.append("study_types", t);
+    for (const t2 of filters.studyTypes) params.append("study_types", t2);
   }
   return `${base}/quick_search?${params.toString()}`;
 }
@@ -2201,7 +5121,7 @@ var S2_STOPWORDS = /* @__PURE__ */ new Set([
 function toKeywordQuery(query, maxTokens = 8) {
   const cleaned = query.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
   const tokens = cleaned.split(" ").filter(Boolean);
-  const content = tokens.filter((t) => !S2_STOPWORDS.has(t.toLowerCase()));
+  const content = tokens.filter((t2) => !S2_STOPWORDS.has(t2.toLowerCase()));
   const kept = content.slice(0, maxTokens).join(" ").trim();
   return content.length >= 2 ? kept : cleaned;
 }
@@ -2251,7 +5171,7 @@ function pickUrl2(raw, doi) {
 function pickPublicationTypes2(raw) {
   const types = raw.publicationTypes;
   if (!Array.isArray(types)) return void 0;
-  const out = types.filter((t) => typeof t === "string" && t.length > 0);
+  const out = types.filter((t2) => typeof t2 === "string" && t2.length > 0);
   return out.length > 0 ? out : void 0;
 }
 function pickOpenAccess2(raw) {
@@ -2468,25 +5388,28 @@ function applyBeliefStatus(beliefs, updates) {
   });
 }
 function renderBeliefs(beliefs) {
-  if (beliefs.length === 0) return "_(nog geen overtuigingen vastgelegd)_";
+  if (beliefs.length === 0) return t().beliefs.none;
   return beliefs.map((b) => {
     var _a;
-    const conf = b.confidence ? ` _(vertrouwen: ${b.confidence})_` : "";
-    return `- [${(_a = b.status) != null ? _a : "open"}] ${b.claim}${conf}`;
+    const conf = b.confidence ? ` _(${t().beliefs.confidence}: ${t().beliefs.confidenceLabels[b.confidence]})_` : "";
+    return `- [${t().beliefs.statusLabels[(_a = b.status) != null ? _a : "open"]}] ${b.claim}${conf}`;
   }).join("\n");
 }
-var SECTION_IDS = {
-  synthesis: "Synthese",
-  exploration: "Probleemverkenning",
-  lenses: "Theoretische lenzen",
-  challenge: "Challenge",
-  agenda: "Onderzoeksagenda",
-  logbook: "Logboek",
-  searchstrategy: "Zoekstrategie",
-  objective: "Doelstelling",
-  context: "Context",
-  beliefs: "Overtuigingen"
-};
+var SECTION_ID_LIST = [
+  "synthesis",
+  "exploration",
+  "lenses",
+  "challenge",
+  "agenda",
+  "logbook",
+  "searchstrategy",
+  "objective",
+  "context",
+  "beliefs"
+];
+function sectionHeading(id) {
+  return t().headings[id];
+}
 var LEGACY_HEADINGS = {
   beliefs: ["Beliefs"],
   agenda: ["Implicaties"]
@@ -2498,13 +5421,15 @@ function markerRegex(id) {
   return new RegExp(`<!--\\s*lens:${id}(?:\\s+h:([0-9a-f]+))?\\s*-->`);
 }
 function isSectionId(heading) {
-  return Object.prototype.hasOwnProperty.call(SECTION_IDS, heading);
+  return SECTION_ID_LIST.includes(heading);
 }
 function resolveHeading(headingOrId) {
-  var _a;
-  if (isSectionId(headingOrId)) return { heading: SECTION_IDS[headingOrId], id: headingOrId };
-  const id = (_a = Object.keys(SECTION_IDS).find((k) => SECTION_IDS[k] === headingOrId)) != null ? _a : null;
-  return { heading: headingOrId, id };
+  if (isSectionId(headingOrId)) return { heading: sectionHeading(headingOrId), id: headingOrId };
+  for (const lang of ARTIFACT_LANGUAGES) {
+    const id = SECTION_ID_LIST.find((k) => ARTIFACT_STRINGS[lang].headings[k] === headingOrId);
+    if (id) return { heading: headingOrId, id };
+  }
+  return { heading: headingOrId, id: null };
 }
 function findHeadingLine(lines, headingOrId) {
   const { heading, id } = resolveHeading(headingOrId);
@@ -2515,6 +5440,13 @@ function findHeadingLine(lines, headingOrId) {
   }
   const byText = lines.findIndex((l) => l.trim() === `## ${heading}`);
   if (byText !== -1) return byText;
+  if (id) {
+    for (const lang of ARTIFACT_LANGUAGES) {
+      const localized = ARTIFACT_STRINGS[lang].headings[id];
+      const byLocalizedText = lines.findIndex((l) => l.trim() === `## ${localized}`);
+      if (byLocalizedText !== -1) return byLocalizedText;
+    }
+  }
   for (const alias of id && LEGACY_HEADINGS[id] || []) {
     const byLegacyText = lines.findIndex((l) => l.trim() === `## ${alias}`);
     if (byLegacyText !== -1) return byLegacyText;
@@ -2559,10 +5491,10 @@ function unionStrings(existing, add) {
   const out = Array.isArray(existing) ? existing.filter((x) => typeof x === "string") : [];
   const seen = new Set(out.map((s) => s.toLowerCase()));
   for (const s of add) {
-    const t = s.trim();
-    if (!t || seen.has(t.toLowerCase())) continue;
-    seen.add(t.toLowerCase());
-    out.push(t);
+    const t2 = s.trim();
+    if (!t2 || seen.has(t2.toLowerCase())) continue;
+    seen.add(t2.toLowerCase());
+    out.push(t2);
   }
   return out;
 }
@@ -2810,8 +5742,8 @@ function listArtifacts(session, body) {
   var _a, _b;
   const has = (id) => extractSection(body, id) !== "";
   const row = (id, presentExtra = false) => ({
-    label: SECTION_IDS[id],
-    heading: SECTION_IDS[id],
+    label: sectionHeading(id),
+    heading: sectionHeading(id),
     present: presentExtra || has(id),
     navigable: has(id)
   });
@@ -2855,16 +5787,14 @@ function recentLog(body, n) {
 }
 
 // src/project.ts
-var DOELSTELLING_PLACEHOLDER = "_(nog te formuleren \u2014 waar wil dit project uiteindelijk antwoord op geven?)_";
+function objectivePlaceholder() {
+  return t().project.objectivePlaceholder;
+}
 function renderProjectHub(name, objective) {
-  const doelstelling = objective.trim() || DOELSTELLING_PLACEHOLDER;
+  const doelstelling = objective.trim() || objectivePlaceholder();
   let body = `# ${name}`;
   body = upsertSection(body, "objective", doelstelling);
-  body = upsertSection(
-    body,
-    "Overzicht",
-    "_Elke onderzoeksvraag is een eigen sessie-notitie in deze map; open de Research Workbench-zijbalk voor het overzicht en om een nieuwe vraag toe te voegen._"
-  );
+  body = upsertSection(body, t().project.overviewHeading, t().project.overviewBody);
   return `---
 ${PROJECT_FLAG}: true
 project: ${JSON.stringify(name)}
@@ -2894,18 +5824,19 @@ function projectMembers(projectId, notes) {
 }
 var MAX_PROJECT_HYPOTHESES = 20;
 function isDirectionsHeading(text) {
-  return /^Hypothesevormende vervolgrichtingen/i.test(text);
+  const lower = text.toLowerCase();
+  return ARTIFACT_LANGUAGES.some((lang) => lower.startsWith(ARTIFACT_STRINGS[lang].synthesis.followUps.toLowerCase()));
 }
 function projectHypotheses(projectId, notes) {
   var _a;
   const out = [];
   const seen = /* @__PURE__ */ new Set();
   const add = (text, kind, n) => {
-    const t = text.trim();
-    const key = t.toLowerCase();
-    if (!t || seen.has(key) || out.length >= MAX_PROJECT_HYPOTHESES) return;
+    const t2 = text.trim();
+    const key = t2.toLowerCase();
+    if (!t2 || seen.has(key) || out.length >= MAX_PROJECT_HYPOTHESES) return;
     seen.add(key);
-    out.push({ text: t, kind, sourceTitle: n.title, sourcePath: n.path });
+    out.push({ text: t2, kind, sourceTitle: n.title, sourcePath: n.path });
   };
   for (const n of notes) {
     if (!n.session || !sameProject(n.session.project, projectId)) continue;
@@ -2927,8 +5858,8 @@ function noteEligibleForProjectMove(frontmatter, notePath) {
 // src/graph.ts
 var LABEL_MAX = 120;
 function clip(s, max = LABEL_MAX) {
-  const t = s.replace(/\s+/g, " ").trim();
-  return t.length > max ? `${t.slice(0, max - 1)}\u2026` : t;
+  const t2 = s.replace(/\s+/g, " ").trim();
+  return t2.length > max ? `${t2.slice(0, max - 1)}\u2026` : t2;
 }
 function slug(s) {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || "x";
@@ -3054,18 +5985,18 @@ function detectGaps(graph) {
   for (const node of graph.nodes) {
     if (node.type === "vraag") {
       if (!has("deelvraag", "splitst", node.id))
-        gaps.push({ type: "vraag-zonder-deelvraag", severity: "midden", nodeId: node.id, note: node.note, message: `Vraag nog niet opgesplitst in deelvragen: "${node.label}"` });
+        gaps.push({ type: "vraag-zonder-deelvraag", severity: "midden", nodeId: node.id, note: node.note, message: fmt(t().graph.gapNoSubquestions, { label: node.label }) });
       if (!has("bevinding", "adresseert", node.id))
-        gaps.push({ type: "vraag-zonder-bevinding", severity: "midden", nodeId: node.id, note: node.note, message: `Vraag heeft nog geen synthese-bevindingen: "${node.label}"` });
+        gaps.push({ type: "vraag-zonder-bevinding", severity: "midden", nodeId: node.id, note: node.note, message: fmt(t().graph.gapNoFindings, { label: node.label }) });
       if (!has("bron", "gebruikt-in", node.id))
-        gaps.push({ type: "vraag-zonder-bron", severity: "midden", nodeId: node.id, note: node.note, message: `Vraag heeft nog geen literatuur in het register: "${node.label}"` });
+        gaps.push({ type: "vraag-zonder-bron", severity: "midden", nodeId: node.id, note: node.note, message: fmt(t().graph.gapNoSources, { label: node.label }) });
     }
     if (node.type === "bevinding" && Number((_b = (_a = node.meta) == null ? void 0 : _a.bronverwijzingen) != null ? _b : 0) === 0)
-      gaps.push({ type: "bevinding-zonder-bron", severity: "hoog", nodeId: node.id, note: node.note, message: `Bevinding zonder bronverwijzing (onbewezen claim): "${node.label}"` });
+      gaps.push({ type: "bevinding-zonder-bron", severity: "hoog", nodeId: node.id, note: node.note, message: fmt(t().graph.gapFindingNoSource, { label: node.label }) });
     if (node.type === "hypothese" && ((_d = (_c = node.meta) == null ? void 0 : _c.status) != null ? _d : "open") === "open")
-      gaps.push({ type: "hypothese-open", severity: "info", nodeId: node.id, note: node.note, message: `Open hypothese, nog te toetsen: "${node.label}"` });
+      gaps.push({ type: "hypothese-open", severity: "info", nodeId: node.id, note: node.note, message: fmt(t().graph.gapOpenHypothesis, { label: node.label }) });
     if (hasRealSourceEdges && node.type === "bron" && !graph.edges.some((e) => e.from === node.id && e.type === "onderbouwt"))
-      gaps.push({ type: "bron-zonder-bevinding", severity: "info", nodeId: node.id, note: node.note, message: `Bron nog niet gebruikt in een bevinding: "${node.label}"` });
+      gaps.push({ type: "bron-zonder-bevinding", severity: "info", nodeId: node.id, note: node.note, message: fmt(t().graph.gapSourceUnused, { label: node.label }) });
   }
   return gaps;
 }
@@ -3073,45 +6004,43 @@ function nodeType(graph, id) {
   var _a;
   return (_a = graph.nodes.find((n) => n.id === id)) == null ? void 0 : _a.type;
 }
-var GAP_HEADING = {
-  hoog: "\u{1F534} Hoog \u2014 onbewezen claims",
-  midden: "\u{1F7E0} Midden \u2014 ontbrekende stappen",
-  info: "\u{1F535} Info \u2014 open draden"
-};
+function gapHeading(severity) {
+  return severity === "hoog" ? t().graph.severityHigh : severity === "midden" ? t().graph.severityMedium : t().graph.severityInfo;
+}
 function noteLink(label, note) {
   return note ? `[[${note}|${label}]]` : label;
 }
 function renderGraphReport(graph, gaps, jsonBytes) {
   const stats = graphStats(graph);
   const lines = [
-    `# Kennisgraph (spike) \u2014 ${graph.project}`,
+    `# ${fmt(t().graph.reportTitle, { project: graph.project })}`,
     "",
-    "_Read-only projectie uit de bestaande artefacten (front-matter + gerenderde synthese + citatie-register). Wegwerp: niet met de hand bijwerken \u2014 opnieuw genereren._",
+    t().graph.reportIntro,
     "",
-    "## Omvang",
+    `## ${t().graph.sizeHeading}`,
     "",
-    `- **${graph.nodes.length}** nodes, **${graph.edges.length}** edges` + (jsonBytes !== void 0 ? ` \xB7 graph-JSON \u2248 ${(jsonBytes / 1024).toFixed(1)} kB` : ""),
-    `- vraag ${stats.byType.vraag} \xB7 deelvraag ${stats.byType.deelvraag} \xB7 hypothese ${stats.byType.hypothese} \xB7 bevinding ${stats.byType.bevinding} \xB7 bron ${stats.byType.bron} \xB7 lens ${stats.byType.lens}`,
+    `- ${fmt(t().graph.nodesEdgesLine, { nodes: graph.nodes.length, edges: graph.edges.length })}` + (jsonBytes !== void 0 ? ` \xB7 graph-JSON \u2248 ${(jsonBytes / 1024).toFixed(1)} kB` : ""),
+    `- ${t().graph.nodeTypeLabels.vraag} ${stats.byType.vraag} \xB7 ${t().graph.nodeTypeLabels.deelvraag} ${stats.byType.deelvraag} \xB7 ${t().graph.nodeTypeLabels.hypothese} ${stats.byType.hypothese} \xB7 ${t().graph.nodeTypeLabels.bevinding} ${stats.byType.bevinding} \xB7 ${t().graph.nodeTypeLabels.bron} ${stats.byType.bron} \xB7 ${t().graph.nodeTypeLabels.lens} ${stats.byType.lens}`,
     "",
-    "## Gaten",
+    `## ${t().graph.gapsHeading}`,
     ""
   ];
   if (gaps.length === 0) {
-    lines.push("_Geen gaten gedetecteerd._", "");
+    lines.push(t().graph.noGaps, "");
   } else {
     for (const sev of ["hoog", "midden", "info"]) {
       const group = gaps.filter((g) => g.severity === sev);
       if (group.length === 0) continue;
-      lines.push(`### ${GAP_HEADING[sev]} (${group.length})`, "");
+      lines.push(`### ${gapHeading(sev)} (${group.length})`, "");
       for (const g of group) lines.push(`- ${g.message.replace(/^(.*?): "(.*)"$/, (_, p, l) => `${p}: ${noteLink(l, g.note)}`)}`);
       lines.push("");
     }
   }
-  lines.push("## Nodes per type", "");
+  lines.push(`## ${t().graph.nodesPerType}`, "");
   for (const type of ["vraag", "deelvraag", "hypothese", "bevinding", "bron", "lens"]) {
     const group = graph.nodes.filter((n) => n.type === type);
     if (group.length === 0) continue;
-    lines.push(`### ${type} (${group.length})`, "");
+    lines.push(`### ${t().graph.nodeTypeLabels[type]} (${group.length})`, "");
     for (const n of group) {
       const meta = n.meta ? ` _(${Object.entries(n.meta).map(([k, v]) => `${k}: ${v}`).join(", ")})_` : "";
       lines.push(`- ${noteLink(n.label, n.note)}${meta}`);
@@ -3120,9 +6049,9 @@ function renderGraphReport(graph, gaps, jsonBytes) {
   }
   const withEdges = graph.edges.some((e) => e.type === "onderbouwt");
   lines.push(
-    "## Provenance",
+    `## ${t().graph.provenanceHeading}`,
     "",
-    withEdges ? "Deze graph gebruikt **edges-bij-generatie** (E68): `bron\u2192bevinding` (`onderbouwt`) komt uit de vastgelegde records, dus bevinding\u2192specifieke-bron is betrouwbaar. Notities zonder record (oude runs / proza-fallback) tellen alleen het *aantal* `[n]`-verwijzingen." : "Nog **geen** edges-bij-generatie (E68-records) gevonden voor dit project \u2014 de bevindingen komen uit de gerenderde synthese, waar de `[n]`-nummers geen persistente mapping naar citatie-keys hebben. We tellen daarom alleen of een bevinding *een* verwijzing draagt. Draai een nieuwe synthese om betrouwbare `bron\u2192bevinding`-edges te krijgen.",
+    withEdges ? t().graph.provenanceWithEdges : t().graph.provenanceWithoutEdges,
     ""
   );
   return `${lines.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}
@@ -3227,51 +6156,51 @@ function upsertSessionArtefactRecord(store, note, patch) {
 }
 
 // src/methodology-account.ts
-var NOT_RECORDED = "_Niet vastgelegd \u2014 deze stap is (nog) niet uitgevoerd._";
 function block(heading, content) {
   return `## ${heading}
 
-${content.trim() || NOT_RECORDED}`;
+${content.trim() || t().account.notRecorded}`;
 }
 function assembleMethodologyAccount(session, body, sourceLink) {
   const parts = [];
-  parts.push("# Methodologische verantwoording");
+  const NOT_RECORDED = t().account.notRecorded;
+  parts.push(`# ${t().account.title}`);
   const prov = [
-    "> Afgeleid, reproduceerbaar document \u2014 automatisch samengesteld uit de onderzoekssessie.",
-    "> Het beschrijft de **methodologische keuzes** rond het onderzoek, niet het interne redeneren van het model.",
-    sourceLink ? `> Bron: ${sourceLink}` : null
+    `> ${t().account.provenanceDerived}`,
+    `> ${t().account.provenanceScope}`,
+    sourceLink ? `> ${t().account.sourceLabel}: ${sourceLink}` : null
   ].filter(Boolean).join("\n");
   parts.push(prov);
   const framingChosen = session.framing && session.framing !== session.question;
   const vraag = [
     session.question || NOT_RECORDED,
     "",
-    framingChosen ? `**Gekozen herformulering (framing):** ${session.framing}
+    framingChosen ? `**${t().account.chosenFraming}:** ${session.framing}
 
-De overwogen alternatieve formuleringen staan onder *Probleemverkenning*.` : "_De oorspronkelijke vraag is ongewijzigd aangehouden._"
+${fmt(t().account.alternativesNote, { section: t().headings.exploration })}` : t().account.unchangedQuestion
   ].join("\n");
-  parts.push(`## Onderzoeksvraag
+  parts.push(`## ${t().account.researchQuestion}
 
 ${vraag}`);
-  parts.push(block("Probleemverkenning", extractSection(body, "exploration")));
+  parts.push(block(t().headings.exploration, extractSection(body, "exploration")));
   const lensSection = extractSection(body, "lenses");
-  const lensChosen = session.lenses.length > 0 ? `**Gekozen lenzen:** ${session.lenses.join(", ")}.
+  const lensChosen = session.lenses.length > 0 ? `**${t().account.chosenLensesLabel}:** ${session.lenses.join(", ")}.
 
 ` : "";
-  parts.push(`## Theoretische lenzen
+  parts.push(`## ${t().headings.lenses}
 
 ${(lensChosen + lensSection).trim() || NOT_RECORDED}`);
-  parts.push(block("Zoekstrategie", extractSection(body, "searchstrategy")));
-  parts.push(block("Synthese", extractSection(body, "synthesis")));
-  parts.push(`## Overtuigingen
+  parts.push(block(t().headings.searchstrategy, extractSection(body, "searchstrategy")));
+  parts.push(block(t().headings.synthesis, extractSection(body, "synthesis")));
+  parts.push(`## ${t().headings.beliefs}
 
 ${renderBeliefs(session.beliefs)}`);
   const openVragen = extractSection(body, "agenda");
-  if (openVragen) parts.push(`## Open vragen en vervolgonderzoek
+  if (openVragen) parts.push(`## ${t().account.openQuestions}
 
 ${openVragen}`);
   const logbook = extractSection(body, "logbook");
-  if (logbook) parts.push(`## Logboek
+  if (logbook) parts.push(`## ${t().headings.logbook}
 
 ${logbook}`);
   return parts.join("\n\n").replace(/\n{3,}/g, "\n\n").trimEnd() + "\n";
@@ -3285,11 +6214,11 @@ function formatEvent(e) {
 }
 var BELIEF_SNIPPET_LEN = 60;
 function snippet(text, max) {
-  const t = text.trim();
-  return t.length > max ? `${t.slice(0, max).trimEnd()}\u2026` : t;
+  const t2 = text.trim();
+  return t2.length > max ? `${t2.slice(0, max).trimEnd()}\u2026` : t2;
 }
-function formatBeliefTransition(t) {
-  return `[belief: "${snippet(t.claim, BELIEF_SNIPPET_LEN)}" ${t.from} \u2192 ${t.to}]`;
+function formatBeliefTransition(t2) {
+  return `[belief: "${snippet(t2.claim, BELIEF_SNIPPET_LEN)}" ${t2.from} \u2192 ${t2.to}]`;
 }
 function appendBeliefTransitions(summary, transitions) {
   if (transitions.length === 0) return summary;
@@ -3310,7 +6239,7 @@ function parseBeliefTransitions(logbookSection) {
 // src/session-export.ts
 var SESSION_EXPORT_SCHEMA = "lens-session-export";
 var SESSION_EXPORT_SCHEMA_VERSION = 2;
-var SESSION_EXPORT_SECTION_IDS = Object.keys(SECTION_IDS).filter(
+var SESSION_EXPORT_SECTION_IDS = SECTION_ID_LIST.filter(
   (id) => id !== "objective" && id !== "context"
 );
 function filterRegisterToNote(register, notePath) {
@@ -3347,7 +6276,7 @@ function buildSessionExport(inputs) {
     return {
       text: b.claim,
       status: (_a2 = b.status) != null ? _a2 : "open",
-      transitions: transitions.filter((t) => transitionMatchesClaim(t.claim, b.claim)).map((t) => ({ from: t.from, to: t.to }))
+      transitions: transitions.filter((t2) => transitionMatchesClaim(t2.claim, b.claim)).map((t2) => ({ from: t2.from, to: t2.to }))
     };
   });
   const findings = ((_c = (_b = inputs.graphRecord) == null ? void 0 : _b.findings) != null ? _c : []).map((f) => {
@@ -3412,41 +6341,45 @@ function buildSessionExport(inputs) {
 
 // src/session-export-bundle.ts
 var SESSION_EXPORT_JSON_FILE = "session.json";
-var SESSION_EXPORT_ACCOUNT_FILE = "verantwoording.md";
-var SESSION_EXPORT_BIBTEX_FILE = "bronnen.bib";
+function sessionExportAccountFile() {
+  return t().exportBundle.accountFileName;
+}
+function sessionExportBibtexFile() {
+  return t().exportBundle.bibFileName;
+}
 var PROJECT_EXPORT_INDEX_FILE = "index.md";
 function methodologyStub(missing) {
-  const list = (missing.length > 0 ? missing : ["de methodologische verantwoording"]).map((m) => `- ${m}`).join("\n");
-  return ["# Methodologische verantwoording", "", "_Kon niet automatisch worden samengesteld voor deze export._", "", "Ontbrekend:", list, ""].join(
+  const list = (missing.length > 0 ? missing : [t().exportBundle.stubMissingAccount]).map((m) => `- ${m}`).join("\n");
+  return [`# ${t().account.title}`, "", t().exportBundle.stubUnavailable, "", t().exportBundle.stubMissingLabel, list, ""].join(
     "\n"
   );
 }
 function buildSessionBundleFiles(exportDoc, bibtex) {
-  const account = exportDoc.methodologicalAccount.present && exportDoc.methodologicalAccount.markdown ? exportDoc.methodologicalAccount.markdown : methodologyStub(["methodologische verantwoording (geen sessie-front-matter gevonden op deze notitie)"]);
+  const account = exportDoc.methodologicalAccount.present && exportDoc.methodologicalAccount.markdown ? exportDoc.methodologicalAccount.markdown : methodologyStub([t().exportBundle.stubNoFrontmatter]);
   return [
     { relativePath: SESSION_EXPORT_JSON_FILE, content: `${JSON.stringify(exportDoc, null, 2)}
 ` },
-    { relativePath: SESSION_EXPORT_ACCOUNT_FILE, content: account },
-    { relativePath: SESSION_EXPORT_BIBTEX_FILE, content: bibtex }
+    { relativePath: sessionExportAccountFile(), content: account },
+    { relativePath: sessionExportBibtexFile(), content: bibtex }
   ];
 }
 function artefactSummary(exportDoc) {
   const present = SESSION_EXPORT_SECTION_IDS.filter((id) => exportDoc.artefacts[id].present).length;
-  return `${present}/${SESSION_EXPORT_SECTION_IDS.length} artefacten aanwezig`;
+  return fmt(t().exportBundle.artefactsPresent, { present, total: SESSION_EXPORT_SECTION_IDS.length });
 }
 function buildProjectIndexMarkdown(project, entries, hubObjective) {
   const lines = [`# Portable export \u2014 ${project}`, ""];
   if (hubObjective && hubObjective.trim()) {
-    lines.push("## Doelstelling", "", hubObjective.trim(), "");
+    lines.push(`## ${t().headings.objective}`, "", hubObjective.trim(), "");
   }
   lines.push(`${entries.length} sessie(s) ge\xEBxporteerd.`, "");
   if (entries.length === 0) {
-    lines.push("_Geen sessies gevonden voor dit project._");
+    lines.push(t().exportBundle.noSessions);
     return `${lines.join("\n")}
 `;
   }
   for (const e of entries) {
-    lines.push(`## [${e.title}](${e.folderName}/${SESSION_EXPORT_ACCOUNT_FILE})`);
+    lines.push(`## [${e.title}](${e.folderName}/${sessionExportAccountFile()})`);
     lines.push("");
     lines.push(`- ${artefactSummary(e.exportDoc)}`);
     lines.push(`- Bevindingen: ${e.exportDoc.findings.length}`);
@@ -3982,10 +6915,10 @@ function queryList(query) {
   const seen = /* @__PURE__ */ new Set();
   const out = [];
   for (const q of raw) {
-    const t = q.trim();
-    if (!t || seen.has(t)) continue;
-    seen.add(t);
-    out.push(t);
+    const t2 = q.trim();
+    if (!t2 || seen.has(t2)) continue;
+    seen.add(t2);
+    out.push(t2);
   }
   return out;
 }
@@ -4529,9 +7462,9 @@ function describeOccurrence(o) {
   return o.project ? `${o.note} (${o.project})` : o.note;
 }
 function formatAlreadyUsed(items) {
-  return items.map((it) => {
-    const where = it.occurrences.map(describeOccurrence).join(", ");
-    return `"${it.title}" \u2014 al gebruikt in ${where}`;
+  return items.map((it2) => {
+    const where = it2.occurrences.map(describeOccurrence).join(", ");
+    return `"${it2.title}" \u2014 al gebruikt in ${where}`;
   }).join("\n");
 }
 
@@ -5149,7 +8082,7 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
       const link = li.createEl("a", { text: f.claim, href: "#", cls: "consensus-workbench-artifact-link" });
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        void this.app.workspace.openLinkText(`#${SECTION_IDS.synthesis}`, file.path, false);
+        void this.app.workspace.openLinkText(`#${sectionHeading("synthesis")}`, file.path, false);
       });
       li.appendText(` \u2014 ${f.strength}`);
     }
@@ -5265,7 +8198,7 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
         const link = p.createEl("a", { text: item.text, href: "#", cls: "consensus-workbench-artifact-link" });
         link.addEventListener("click", (e) => {
           e.preventDefault();
-          void this.app.workspace.openLinkText(`#${SECTION_IDS.synthesis}`, item.note, false);
+          void this.app.workspace.openLinkText(`#${sectionHeading("synthesis")}`, item.note, false);
         });
         p.appendText(` \u2014 "${this.noteTitle(item.note)}"`);
       }
@@ -5774,33 +8707,33 @@ async function exploreProblem(question, chat, log) {
 }
 function buildExplorationBody(result, choice) {
   const lines = [];
-  if (choice.framing) lines.push(`Gekozen framing: ${choice.framing}`, "");
+  if (choice.framing) lines.push(`${t().exploration.chosenFraming} ${choice.framing}`, "");
   const section = (heading, items) => {
     if (items.length === 0) return;
     lines.push(`*${heading}*`);
     for (const item of items) lines.push(`- ${item}`);
     lines.push("");
   };
-  section("Impliciete aannames", result.assumptions);
-  section("Mogelijke tegenaannames", result.counterAssumptions);
-  section("Herformuleringen", result.questionVariants);
-  section("Disciplines / theoretische tradities", result.lenses);
-  section("Concurrerende definities", result.definitions);
+  section(t().exploration.assumptions, result.assumptions);
+  section(t().exploration.counterAssumptions, result.counterAssumptions);
+  section(t().exploration.reformulations, result.questionVariants);
+  section(t().exploration.disciplines, result.lenses);
+  section(t().exploration.definitions, result.definitions);
   if (result.researchDirections.length > 0) {
-    lines.push("*Kansrijke onderzoeksrichtingen*");
+    lines.push(`*${t().exploration.directions}*`);
     for (const d of result.researchDirections) {
       const facets = [
-        d.theoreticalBasis && `theoretische basis: ${d.theoreticalBasis}`,
-        d.searchability && `zoekbaarheid: ${d.searchability}`,
-        d.literatureStrength && `kans op sterke literatuur (inschatting): ${d.literatureStrength}`,
-        d.originality && `originaliteit: ${d.originality}`
+        d.theoreticalBasis && `${t().exploration.facetTheoreticalBasis}: ${d.theoreticalBasis}`,
+        d.searchability && `${t().exploration.facetSearchability}: ${d.searchability}`,
+        d.literatureStrength && `${t().exploration.facetLiteratureStrength}: ${d.literatureStrength}`,
+        d.originality && `${t().exploration.facetOriginality}: ${d.originality}`
       ].filter(Boolean);
       lines.push(`- **${d.title}**${facets.length ? ` \u2014 ${facets.join("; ")}` : ""}`);
     }
     lines.push("");
   }
-  section("Zoektermen (gekozen)", choice.searchTermSeeds);
-  if (choice.beliefs) lines.push("*Eerste overtuigingen*", choice.beliefs, "");
+  section(t().exploration.chosenSearchTerms, choice.searchTermSeeds);
+  if (choice.beliefs) lines.push(`*${t().exploration.initialBeliefs}*`, choice.beliefs, "");
   return lines.join("\n").trimEnd();
 }
 function explorationAdoptionRecord(question, choice) {
@@ -5860,7 +8793,7 @@ var ExplorationModal = class extends import_obsidian12.Modal {
       contentEl.createEl("h3", { text: "Missed search terms (widen the search)" });
       for (const seed of this.result.searchTermSeeds) {
         new import_obsidian12.Setting(contentEl).setName(seed).addToggle(
-          (t) => t.setValue(this.selectedSeeds.has(seed)).onChange((on) => {
+          (t2) => t2.setValue(this.selectedSeeds.has(seed)).onChange((on) => {
             if (on) this.selectedSeeds.add(seed);
             else this.selectedSeeds.delete(seed);
           })
@@ -6045,11 +8978,11 @@ function buildTheoryBody(result, choice) {
     for (const item of items) lines.push(`- ${item}`);
     lines.push("");
   };
-  section("Zelfde mechanisme, andere naam", result.sameMechanism);
-  section("Opvallend afwezig", result.absent);
-  section("Concurrerende verklaringen", result.competing);
-  section("Cross-domein verbindingen", result.crossDomain);
-  if (choice.lenses.length > 0) section("Gekozen lenzen", choice.lenses);
+  section(t().theory.sameMechanism, result.sameMechanism);
+  section(t().theory.strikinglyAbsent, result.absent);
+  section(t().theory.competing, result.competing);
+  section(t().theory.crossDomain, result.crossDomain);
+  if (choice.lenses.length > 0) section(t().theory.chosenLenses, choice.lenses);
   return lines.join("\n").trimEnd();
 }
 function theoryAdoptionRecord(result, choice) {
@@ -6090,7 +9023,7 @@ var TheoryModal = class extends import_obsidian13.Modal {
         new import_obsidian13.Setting(contentEl).setName(`${lens.name}${lens.tradition ? ` \u2014 ${lens.tradition}` : ""}`).setDesc(
           [lens.why && `Why here: ${lens.why}`, lens.predicts && `Predicts: ${lens.predicts}`].filter(Boolean).join(" \xB7 ")
         ).addToggle(
-          (t) => t.setValue(this.selected.has(lens.name)).onChange((on) => {
+          (t2) => t2.setValue(this.selected.has(lens.name)).onChange((on) => {
             if (on) this.selected.add(lens.name);
             else this.selected.delete(lens.name);
           })
@@ -6228,7 +9161,7 @@ var BeliefModal = class extends import_obsidian14.Modal {
       for (const p of actionable) {
         const status = verdictToStatus(p.verdict);
         new import_obsidian14.Setting(contentEl).setName(`${VERDICT_LABEL[p.verdict]}: ${p.claim}`).setDesc([p.reason, status && `\u2192 status: ${status}`].filter(Boolean).join(" \xB7 ")).addToggle(
-          (t) => t.setValue(this.selected.has(p.claim)).onChange((on) => {
+          (t2) => t2.setValue(this.selected.has(p.claim)).onChange((on) => {
             if (on) this.selected.add(p.claim);
             else this.selected.delete(p.claim);
           })
@@ -6308,46 +9241,43 @@ function renderSearchStrategy(s) {
   var _a;
   const lines = [];
   const providerLabels = s.providers.map((id) => getProvider(id).label);
-  lines.push("*Bronnen*");
-  lines.push(providerLabels.length ? `- ${providerLabels.join(", ")}` : "- (geen)");
+  lines.push(`*${t().searchStrategy.sources}*`);
+  lines.push(providerLabels.length ? `- ${providerLabels.join(", ")}` : `- ${t().searchStrategy.none}`);
   lines.push("");
   if (s.resumed) {
-    lines.push("*Zoektermen*");
-    lines.push("- Hervat op eerder gevonden (gecachte) bronnen \u2014 geen nieuwe zoekronde uitgevoerd.");
+    lines.push(`*${t().searchStrategy.terms}*`);
+    lines.push(`- ${t().searchStrategy.resumedLine}`);
     lines.push("");
   } else if (s.queries.length > 0) {
-    lines.push(`*Zoektermen (${s.queries.length})*`);
+    lines.push(`*${fmt(t().searchStrategy.termsCounted, { n: s.queries.length })}*`);
     for (const q of s.queries) lines.push(`- ${q}`);
     lines.push("");
     if (s.seeds.length > 0) {
-      lines.push("*Aanvullende zoektermen (uit verkenning/lenzen)*");
-      for (const t of s.seeds) lines.push(`- ${t}`);
+      lines.push(`*${t().searchStrategy.additionalTerms}*`);
+      for (const t2 of s.seeds) lines.push(`- ${t2}`);
       lines.push("");
     }
   }
-  lines.push("*Selectiecriteria*");
-  lines.push(
-    `- Relevantie-herordening (embedding-blend) over de gefuseerde kandidaten${s.split ? ", getoetst tegen de deelvragen" : ""}.`
-  );
-  lines.push("- Beoordeling op basis van titels en abstracts, niet van volledige teksten.");
-  if (s.rerankLimit) lines.push(`- Beperkt tot de top ${s.rerankLimit} best scorende bronnen.`);
+  lines.push(`*${t().searchStrategy.selectionCriteria}*`);
+  lines.push(`- ${fmt(t().searchStrategy.rerankLine, { tested: s.split ? t().searchStrategy.testedAgainstSubQuestions : "" })}`);
+  lines.push(`- ${t().searchStrategy.abstractsOnlyLine}`);
+  if (s.rerankLimit) lines.push(`- ${fmt(t().searchStrategy.limitedToTop, { n: s.rerankLimit })}`);
   if (s.crossSector) {
-    lines.push(
-      `- Cross-sector transferbewijs toegevoegd${s.transferSectors.length ? ` (sectoren: ${s.transferSectors.join(", ")})` : ""}, apart gelabeld en buiten de synthese gehouden.`
-    );
+    const sectors = s.transferSectors.length ? fmt(t().searchStrategy.sectorsSuffix, { sectors: s.transferSectors.join(", ") }) : "";
+    lines.push(`- ${fmt(t().searchStrategy.crossSectorLine, { sectors })}`);
   }
   lines.push("");
-  lines.push("*Aantallen (trechter)*");
-  if (!s.resumed) lines.push(`- Gefuseerd: ${s.fusedCount} unieke bron(nen)`);
-  lines.push(`- Na herordening: ${s.rerankedCount}`);
-  lines.push(`- Getoond/behouden: ${s.keptCount}`);
+  lines.push(`*${t().searchStrategy.funnel}*`);
+  if (!s.resumed) lines.push(`- ${fmt(t().searchStrategy.fusedCount, { n: s.fusedCount })}`);
+  lines.push(`- ${fmt(t().searchStrategy.afterRerank, { n: s.rerankedCount })}`);
+  lines.push(`- ${fmt(t().searchStrategy.keptCount, { n: s.keptCount })}`);
   const failures = ((_a = s.providerFailures) != null ? _a : []).filter((f) => f.failed > 0);
   if (failures.length > 0) {
     lines.push("");
-    lines.push("*Zoekfouten per bron*");
+    lines.push(`*${t().searchStrategy.failuresHeading}*`);
     for (const f of failures) {
       const label = getProvider(f.provider).label;
-      lines.push(`- ${label}: ${f.failed}/${f.total} zoekactie(s) mislukt (rate limit of netwerkfout).`);
+      lines.push(`- ${fmt(t().searchStrategy.failureLine, { label, failed: f.failed, total: f.total })}`);
     }
   }
   return lines.join("\n").trimEnd();
@@ -6438,25 +9368,18 @@ ${beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}` : "";
   }
   return parseChallenges(raw, log);
 }
-var DIMENSION_LABEL = {
-  conceptueel: "Conceptueel",
-  methodologisch: "Methodologisch",
-  theoretisch: "Theoretisch",
-  empirisch: "Empirisch",
-  praktisch: "Praktisch"
-};
 function buildChallengeBody(result) {
   var _a;
   const lines = [];
   for (const dim of CHALLENGE_DIMENSIONS) {
     const items = result.challenges.filter((c) => c.dimension === dim);
     if (items.length === 0) continue;
-    lines.push(`*${(_a = DIMENSION_LABEL[dim]) != null ? _a : dim}*`);
-    for (const c of items) lines.push(`- ${c.challenge}${c.action ? ` \u2014 _actie: ${c.action}_` : ""}`);
+    lines.push(`*${(_a = t().challenge.dimensions[dim]) != null ? _a : dim}*`);
+    for (const c of items) lines.push(`- ${c.challenge}${c.action ? ` \u2014 _${t().challenge.actionLabel}: ${c.action}_` : ""}`);
     lines.push("");
   }
   if (result.inversion) {
-    lines.push("*Als je hypothese onjuist is\u2026*");
+    lines.push(`*${t().challenge.inversion}*`);
     lines.push(result.inversion);
   }
   return lines.join("\n").trimEnd();
@@ -6472,7 +9395,7 @@ function challengeAdoptionRecord(result, choice) {
 
 // src/challenge-modal.ts
 var import_obsidian16 = require("obsidian");
-var DIMENSION_LABEL2 = {
+var DIMENSION_LABEL = {
   conceptueel: "Conceptual",
   methodologisch: "Methodological",
   theoretisch: "Theoretical",
@@ -6499,7 +9422,7 @@ var ChallengeModal = class extends import_obsidian16.Modal {
     for (const dim of CHALLENGE_DIMENSIONS) {
       const items = this.result.challenges.filter((c) => c.dimension === dim);
       if (items.length === 0) continue;
-      contentEl.createEl("h3", { text: (_a = DIMENSION_LABEL2[dim]) != null ? _a : dim });
+      contentEl.createEl("h3", { text: (_a = DIMENSION_LABEL[dim]) != null ? _a : dim });
       for (const c of items) this.renderChallenge(contentEl, c);
     }
     if (this.result.inversion) {
@@ -6512,14 +9435,14 @@ var ChallengeModal = class extends import_obsidian16.Modal {
   }
   renderChallenge(parent, c) {
     new import_obsidian16.Setting(parent).setName(c.challenge).setDesc(c.action ? `Action: ${c.action}` : "").addToggle(
-      (t) => t.setValue(this.selected.has(c.challenge)).onChange((on) => {
+      (t2) => t2.setValue(this.selected.has(c.challenge)).onChange((on) => {
         if (on) this.selected.add(c.challenge);
         else this.selected.delete(c.challenge);
       })
     );
   }
   choose(action) {
-    const adopted = this.result.challenges.map((c) => c.challenge).filter((t) => this.selected.has(t));
+    const adopted = this.result.challenges.map((c) => c.challenge).filter((t2) => this.selected.has(t2));
     this.resolve({ action, adopted });
     this.close();
   }
@@ -6634,15 +9557,15 @@ function renderResearchAgenda(agenda) {
     for (const item of items) lines.push(`- ${item}`);
     lines.push("");
   };
-  section("Kennislacunes", agenda.gaps);
-  section("Terugkerende methodologische beperkingen", agenda.limitations);
-  section("Nieuwe onderzoeksvragen", agenda.newQuestions);
+  section(t().agenda.gaps, agenda.gaps);
+  section(t().agenda.limitations, agenda.limitations);
+  section(t().agenda.newQuestions, agenda.newQuestions);
   if (agenda.designs.length > 0) {
-    lines.push("*Passende onderzoeksdesigns*");
+    lines.push(`*${t().agenda.designs}*`);
     for (const d of agenda.designs) lines.push(`- **${d.design}**${d.rationale ? ` \u2014 ${d.rationale}` : ""}`);
     lines.push("");
   }
-  section("Benodigde data / meetinstrumenten", agenda.data);
+  section(t().agenda.data, agenda.data);
   return lines.join("\n").trimEnd();
 }
 function agendaAdoptionRecord(agenda, choice) {
@@ -6755,7 +9678,7 @@ function assembleDeepened(selection, items) {
     }
     out.push(line);
     const norm = normalize4(line);
-    const item = items.find((it) => !used.has(it.finding) && norm.includes(normalize4(it.finding.claim)));
+    const item = items.find((it2) => !used.has(it2.finding) && norm.includes(normalize4(it2.finding.claim)));
     if (item && item.text.trim()) {
       used.add(item.finding);
       pushBlank();
@@ -6781,8 +9704,8 @@ function identifierTail(paper) {
 }
 function transferTag(paper) {
   if (paper.sector !== "transfer") return "";
-  if (paper.transferSector) return ` [analoog bewijs uit sector: ${paper.transferSector}]`;
-  return " [analoog bewijs uit andere sector]";
+  if (paper.transferSector) return ` ${fmt(t().sources.transferEvidenceSector, { sector: paper.transferSector })}`;
+  return ` ${t().sources.transferEvidenceGeneric}`;
 }
 function buildNumberedSources(papers) {
   return papers.map((paper, i) => ({ n: i + 1, paper }));
@@ -7309,6 +10232,7 @@ function bibtexExport(register) {
 // src/types.ts
 var DEFAULT_SETTINGS = {
   provider: "openalex",
+  artifactLanguage: "en",
   openAlexMailto: "",
   semanticScholarApiKey: "",
   apiKey: "",
@@ -7498,6 +10422,7 @@ var ParallaxPlugin = class extends import_obsidian18.Plugin {
   async loadSettings() {
     const loaded = await this.loadData();
     this.settings = migrateRouteCStepFields(Object.assign({}, DEFAULT_SETTINGS, loaded), loaded);
+    setArtifactLanguage(this.settings.artifactLanguage);
   }
   async saveSettings() {
     await this.saveData(this.settings);
@@ -7657,8 +10582,8 @@ ${body}
     const alts = result.questionVariants.length;
     await this.sessionStore.logEvent(
       file,
-      "Probleemverkenning",
-      `framing gekozen: "${chosen}"${alts ? `; ${alts} alternatieve formulering(en) overwogen` : ""}`
+      t().headings.exploration,
+      `${fmt(t().logbook.framingChosen, { framing: chosen })}${alts ? fmt(t().logbook.alternativesConsidered, { n: alts }) : ""}`
     );
     await this.vaultAdapters.persistSessionArtefactRecord(file, {
       adoptions: { exploration: explorationAdoptionRecord(question, choice) }
@@ -7789,7 +10714,7 @@ ${body}
     }
     if (!hubFile) return "";
     const objective = extractSection(await this.app.vault.cachedRead(hubFile), "objective").trim();
-    return objective === DOELSTELLING_PLACEHOLDER ? "" : objective;
+    return objective === objectivePlaceholder() ? "" : objective;
   }
   /** Mark the active note as a research session (front-matter), prompting for the question. Public: called from {@link registerCommands}. */
   startResearchSession() {
@@ -7869,13 +10794,10 @@ ${body}
       const transitions = updates.map((u) => {
         var _a2;
         return { claim: u.claim, from: (_a2 = beforeByClaim.get(u.claim.toLowerCase())) != null ? _a2 : "open", to: u.status };
-      }).filter((t) => t.from !== t.to);
+      }).filter((t2) => t2.from !== t2.to);
       void this.sessionStore.applyBeliefs(file, updates).then(async () => {
-        const summary = appendBeliefTransitions(
-          `${updates.length} overtuiging(en) bijgewerkt na toetsing aan de synthese`,
-          transitions
-        );
-        await this.sessionStore.logEvent(file, "Beliefs", summary);
+        const summary = appendBeliefTransitions(fmt(t().logbook.beliefsUpdated, { n: updates.length }), transitions);
+        await this.sessionStore.logEvent(file, t().logbook.stepBeliefs, summary);
         new import_obsidian18.Notice(`Updated ${updates.length} belief(s).`);
       });
     }).open();
@@ -7909,7 +10831,7 @@ ${body}
     }
     const written = this.app.vault.getAbstractFileByPath(targetPath);
     if (written instanceof import_obsidian18.TFile) await this.app.workspace.getLeaf(true).openFile(written);
-    await this.sessionStore.logEvent(file, "Verantwoording", "methodologische verantwoording gegenereerd");
+    await this.sessionStore.logEvent(file, t().logbook.stepAccount, t().logbook.accountGenerated);
     new import_obsidian18.Notice("Methodological account generated.");
   }
   // ── Challenge Copilot (E49) ──
@@ -7998,8 +10920,8 @@ ${buildChallengeBody(result)}
     if (adopted.length > 0) await this.sessionStore.addBeliefs(file, adopted);
     await this.sessionStore.logEvent(
       file,
-      "Challenge",
-      `${result.challenges.length} uitdaging(en)${adopted.length ? `; ${adopted.length} als overtuiging vastgelegd` : ""}`
+      t().headings.challenge,
+      `${fmt(t().logbook.challengesSummary, { n: result.challenges.length })}${adopted.length ? fmt(t().logbook.challengesAdopted, { n: adopted.length }) : ""}`
     );
     await this.vaultAdapters.persistSessionArtefactRecord(file, {
       adoptions: { challenge: challengeAdoptionRecord(result, choice) }
@@ -8057,8 +10979,8 @@ ${buildChallengeBody(result)}
         await this.sessionStore.writeSessionSection(file, "agenda", renderResearchAgenda(agenda));
         await this.sessionStore.logEvent(
           file,
-          "Onderzoeksagenda",
-          `${agenda.newQuestions.length} nieuwe onderzoeksvraag/vragen${choice.startSessionWith ? "; nieuwe sessie gestart" : ""}`
+          t().headings.agenda,
+          `${fmt(t().logbook.newQuestionsProposed, { n: agenda.newQuestions.length })}${choice.startSessionWith ? t().logbook.sessionStarted : ""}`
         );
         await this.vaultAdapters.persistSessionArtefactRecord(file, {
           adoptions: { agenda: agendaAdoptionRecord(agenda, choice) }
@@ -8339,8 +11261,8 @@ ${buildTheoryBody(result, choice)}
     await this.sessionStore.writeSessionSection(file, "lenses", buildTheoryBody(result, choice));
     await this.sessionStore.logEvent(
       file,
-      "Theoretische lenzen",
-      `${choice.lenses.length} lens(en) gekozen${result.eliminated.length ? `; ${result.eliminated.length} ge\xEBlimineerd` : ""}`
+      t().headings.lenses,
+      `${fmt(t().logbook.lensesChosen, { n: choice.lenses.length })}${result.eliminated.length ? fmt(t().logbook.lensesEliminated, { n: result.eliminated.length }) : ""}`
     );
     await this.vaultAdapters.persistSessionArtefactRecord(file, { adoptions: { theory: theoryAdoptionRecord(result, choice) } });
     new import_obsidian18.Notice("Theoretical lenses added to the session.");
@@ -8477,8 +11399,8 @@ ${buildTheoryBody(result, choice)}
         const strat = result.searchStrategy;
         await this.sessionStore.logEvent(
           sessionFile,
-          "Onderzoek",
-          `synthese over ${(_f = strat == null ? void 0 : strat.keptCount) != null ? _f : result.papers.length} bron(nen)${strat && !strat.resumed ? `; ${strat.queries.length} zoekterm(en)` : ""}`
+          t().logbook.stepResearch,
+          `${fmt(t().logbook.synthesisOver, { n: (_f = strat == null ? void 0 : strat.keptCount) != null ? _f : result.papers.length })}${strat && !strat.resumed ? fmt(t().logbook.searchTerms, { n: strat.queries.length }) : ""}`
         );
         new import_obsidian18.Notice("Synthesis added to the session.");
         if (sessionHasBeliefs) new import_obsidian18.Notice('Tip: weigh your beliefs via "Confront beliefs".', 6e3);
@@ -8625,7 +11547,7 @@ ${buildTheoryBody(result, choice)}
     if (fulltextSourceCount <= 0) return;
     for (let i = 0; i < editor.lineCount(); i++) {
       const line = editor.getLine(i);
-      if (line.trim() === ABSTRACTS_DISCLOSURE_BASE_LINE) {
+      if (line.trim() === abstractsDisclosureBaseLine()) {
         editor.replaceRange(abstractsDisclosureLine(fulltextSourceCount), { line: i, ch: 0 }, { line: i, ch: line.length });
         return;
       }
@@ -8928,7 +11850,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
       let accountFile = null;
       for (const f of files) {
         const written = await this.vaultAdapters.writeVaultFile(`${folder}/${f.relativePath}`, f.content);
-        if (f.relativePath === SESSION_EXPORT_ACCOUNT_FILE) accountFile = written;
+        if (f.relativePath === sessionExportAccountFile()) accountFile = written;
       }
       if (accountFile) await this.app.workspace.getLeaf(true).openFile(accountFile);
       new import_obsidian18.Notice(`Session exported to "${folder}/".`);
@@ -8974,7 +11896,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     let hubObjective = "";
     if (hubFile) {
       const obj = extractSection(await this.app.vault.cachedRead(hubFile), "objective").trim();
-      if (obj && obj !== DOELSTELLING_PLACEHOLDER) hubObjective = obj;
+      if (obj && obj !== objectivePlaceholder()) hubObjective = obj;
     }
     const register = await this.loadRegisterSafely();
     const exportedAt = (/* @__PURE__ */ new Date()).toISOString();

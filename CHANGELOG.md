@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.0]
+
+**Artifact language — Parallax now writes in your language.** The section headings, labels and methodological account that Parallax writes into your notes are available in 13 languages: English (new default), Nederlands, Français, Deutsch, Español, Português, Italiano, Русский, 中文, हिन्दी, العربية, 日本語 and 한국어. Pick yours under **Settings → Artifact language**. The AI-written prose already followed the language of your question — now the surrounding structure does too.
+
+- Existing notes keep working when you switch languages: section recognition matches invisible markers first, then heading text in any supported language.
+- If you started on 0.1.x and want to keep the original Dutch artefacts, set **Artifact language** to *Nederlands* — the output is identical to before.
+- The non-English/Dutch translations are machine-generated first versions — corrections from native speakers are very welcome on GitHub.
+- Also: the Advanced settings section lost its internal "Route C" jargon in favour of plain descriptions.
+
 ## [0.1.1]
 
 Maintenance release for the community plugin review: shortened the plugin description in `manifest.json` to fit the directory's 250-character limit. No functional changes.

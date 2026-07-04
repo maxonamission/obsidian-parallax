@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.1.1]
+
+Maintenance release for the community plugin review: shortened the plugin description in `manifest.json` to fit the directory's 250-character limit. No functional changes.
+
 ## [0.1.0]
 
 First public release of **Parallax** — research thinking, not research answers. A workbench that structures your research *thinking* and records it as artefacts in your own notes.

@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.0]
+
+**A clearer sidebar.** The action buttons ("Next step", "All steps" and "More") are now one integrated **Steps** list: every action on its own row with a short explanation of what it does, grouped in the same order as the workflow strip at the top (Explore → Frame → Theory → Challenge → Evidence → Design). The recommended next step is highlighted in place — with a context-aware explanation — instead of living in a separate section, and the "More" commands got the same row layout with explanations.
+
+Also fixed: with a non-Dutch question, a few AI-generated fields (the scope note, the "would require a …" study design, mechanism phrasings) could come back in Dutch — the prompts behind them now carry language-neutral examples, so those fields follow the language of your question like the rest of the prose.
+
 ## [0.2.0]
 
 **Artifact language — Parallax now writes in your language.** The section headings, labels and methodological account that Parallax writes into your notes are available in 13 languages: English (new default), Nederlands, Français, Deutsch, Español, Português, Italiano, Русский, 中文, हिन्दी, العربية, 日本語 and 한국어. Pick yours under **Settings → Artifact language**. The AI-written prose already followed the language of your question — now the surrounding structure does too.

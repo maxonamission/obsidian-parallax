@@ -4340,8 +4340,8 @@ var STRUCTURED_BASE = [
   '"findings":[{"claim":"...","strength":"sterk|gemengd|beperkt","sources":[1,3]}],',
   '"contradictions":[{"point":"where studies disagree or it depends","sources":[5]}],',
   '"evidence_note":"1-2 sentences: how many/which studies, how consistent, what is missing or thin",',
-  `"unanswered":[{"question":"an angle of the question the sources do NOT answer","reason":"niet-onderzocht|ontwerp-ontoereikend","design_needed":"the study design that WOULD answer it, in the question's language, e.g. longitudinaal cohortonderzoek / interventie (RCT)"}],`,
-  '"scope":{"match":"direct|broader|adjacent","note":"empty when direct; else a SHORT NOUN PHRASE (no leading capital, no full sentence) that grammatically completes \\"het bewijs gaat vooral over \u2026\\", e.g. \\"algemene criminaliteitspreventie, niet georganiseerde criminaliteit\\""}}.',
+  `"unanswered":[{"question":"an angle of the question the sources do NOT answer","reason":"niet-onderzocht|ontwerp-ontoereikend","design_needed":"the study design that WOULD answer it, in the question's language, e.g. a longitudinal cohort study / an intervention (RCT)"}],`,
+  `"scope":{"match":"direct|broader|adjacent","note":"empty when direct; else a SHORT NOUN PHRASE (no leading capital, no full sentence) that grammatically completes \\"the evidence is mostly about \u2026\\" in the question's language, e.g. \\"general crime prevention, not organised crime\\""}}.`,
   "For 'scope': judge whether the sources address the SPECIFIC subject of the question, or mostly a BROADER/more",
   "general or ADJACENT (related-but-different) subject. If the question names a specific phenomenon, subtype,",
   "population, mechanism or context while the evidence is mostly about a more general or neighbouring topic, set",
@@ -4354,8 +4354,8 @@ var STRUCTURED_BASE = [
   "appears in that source's abstract; never estimate, infer or invent one.",
   "MECHANISM vs EFFECT: distinguish a DEMONSTRATED effect from the MECHANISM that supposedly explains it.",
   "When a claim asserts a causal pathway or mediation (X works VIA Y, or X\u2192Y\u2192Z) that no single source directly",
-  "tested, present it as a SUPPOSED/likely mechanism \u2014 phrase it as 'waarschijnlijk mechanisme', 'de literatuur",
-  "veronderstelt', 'vermoedelijk via' (in the question's language), NOT as a settled causal chain. A meta-analytic",
+  "tested, present it as a SUPPOSED/likely mechanism \u2014 phrase it as 'likely mechanism', 'the literature",
+  "suggests', 'presumably via' (in the question's language), NOT as a settled causal chain. A meta-analytic",
   "effect of participation on outcomes does NOT by itself establish the intermediate mechanism.",
   "BE HONEST ABOUT WHAT THE EVIDENCE CANNOT ANSWER (use 'unanswered'): if the question \u2014 or a salient angle",
   "in it such as reversibility, change-over-time, causality, or long-term effect \u2014 is NOT answerable from the",
@@ -4376,7 +4376,7 @@ var EVIDENCE_WEIGHTING_CLAUSE = [
   "Weight the evidence by study design, shown as [evidence: strong|moderate|limited] on each source:",
   "strong = meta-analyses/systematic reviews, moderate = RCTs, limited = small/observational studies.",
   "NEVER give a single 'limited' study the same weight as a 'strong' source; when a claim rests only on",
-  "'limited' studies, say so (e.g. 'hypothesevormend') and grade it 'beperkt'.",
+  "'limited' studies, say so (e.g. 'hypothesis-generating', in the question's language) and grade it 'beperkt'.",
   "Base the strength grade on the strongest supporting design, not the number of studies alone."
 ].join(" ");
 var CALIBRATION_CLAUSE = [
@@ -5706,36 +5706,121 @@ function recommendActions(s) {
   }
   return picked;
 }
-function allActions(s) {
+function stepActions(s, recommended = recommendActions(s)) {
   const out = [];
-  if (!s.isSession) out.push({ commandId: "start-research-session", label: "Start research session" });
-  out.push(
-    { commandId: "explore-problem", label: "Explore the problem" },
-    { commandId: "theory-lenses", label: "Explore theoretical lenses" },
-    { commandId: "challenge-framing", label: "Challenge my framing" },
-    { commandId: "research-question", label: "Ask a question (research)" }
-  );
-  if (s.isSession) {
-    out.push(
-      { commandId: "confront-beliefs", label: "Confront beliefs" },
-      { commandId: "research-agenda", label: "Propose research agenda" },
-      { commandId: "methodology-account", label: "Generate methodological account" }
-    );
+  if (!s.isSession) {
+    out.push({
+      commandId: "start-research-session",
+      label: "Start research session",
+      description: "Turn this note into a research session \u2014 the copilots write their artefacts into it.",
+      step: "explore"
+    });
   }
+  out.push({
+    commandId: "explore-problem",
+    label: "Explore the problem",
+    description: "Probe the question before searching: assumptions, counter-assumptions, reformulations, search seeds.",
+    step: "explore"
+  });
+  out.push({
+    commandId: "theory-lenses",
+    label: "Explore theoretical lenses",
+    description: "Choose the theoretical lenses to think with \u2014 they steer the search terms and the synthesis.",
+    step: "theory"
+  });
+  out.push({
+    commandId: "challenge-framing",
+    label: "Challenge my framing",
+    description: "Get pushback on your framing along five dimensions \u2014 hardest against your recorded beliefs.",
+    step: "challenge"
+  });
+  out.push({
+    commandId: "research-question",
+    label: "Ask a question (research)",
+    description: "Run the literature research: multi-source search \u2192 rerank \u2192 graded synthesis with citations.",
+    step: "evidence"
+  });
+  if (s.isSession) {
+    out.push({
+      commandId: "confront-beliefs",
+      label: "Confront beliefs",
+      description: "Test your recorded beliefs against the latest synthesis \u2014 you tick what to adopt.",
+      step: "evidence"
+    });
+    out.push({
+      commandId: "research-agenda",
+      label: "Propose research agenda",
+      description: "Turn the synthesis into a research agenda: gaps, sharper questions, fitting study designs.",
+      step: "design"
+    });
+    out.push({
+      commandId: "methodology-account",
+      label: "Generate methodological account",
+      description: "Assemble the reproducible account of this session \u2014 question, framing, lenses, search, synthesis.",
+      step: "design"
+    });
+  }
+  const byId = new Map(out.map((a) => [a.commandId, a]));
+  recommended.forEach((r, i) => {
+    const row = byId.get(r.commandId);
+    if (!row) return;
+    row.recommended = i === 0 ? "primary" : "alternative";
+    row.description = r.why;
+  });
   return out;
 }
 function moreActions() {
   return [
-    { commandId: "build-framework", label: "Build theoretical framework" },
-    { commandId: "research-question-cross-sector", label: "Ask a question \u2014 force cross-sector evidence" },
-    { commandId: "deepen-finding", label: "Deepen selected finding(s)" },
-    { commandId: "register-bibliography-project", label: "Register \u2014 bibliography (this note's project)" },
-    { commandId: "register-bridge-papers", label: "Register \u2014 bridge papers across projects" },
-    { commandId: "register-overview", label: "Register \u2014 authors & orphans" },
-    { commandId: "register-export-bibtex", label: "Register \u2014 export BibTeX" },
-    { commandId: "ask-research-question", label: "Quick search (single provider)" },
-    { commandId: "export-session", label: "Export research session (portable)" },
-    { commandId: "export-project", label: "Export research project (portable)" }
+    {
+      commandId: "build-framework",
+      label: "Build theoretical framework",
+      description: "Only the framework step: construct, working definition and the dimensions that steer sub-questions."
+    },
+    {
+      commandId: "ask-research-question",
+      label: "Quick search (single provider)",
+      description: "Insert references from one provider \u2014 keyless, no AI, the fastest way to real sources."
+    },
+    {
+      commandId: "research-question-cross-sector",
+      label: "Ask a question \u2014 force cross-sector evidence",
+      description: "Full research run that always adds analogous evidence from other sectors, labelled separately."
+    },
+    {
+      commandId: "deepen-finding",
+      label: "Deepen selected finding(s)",
+      description: "Expand the selected finding(s) with detail from their sources \u2014 open-access full texts included."
+    },
+    {
+      commandId: "register-bibliography-project",
+      label: "Register \u2014 bibliography (this note's project)",
+      description: "Every reference used in this project, with where each one is cited."
+    },
+    {
+      commandId: "register-bridge-papers",
+      label: "Register \u2014 bridge papers across projects",
+      description: "Sources that appear in more than one project \u2014 where your projects touch."
+    },
+    {
+      commandId: "register-overview",
+      label: "Register \u2014 authors & orphans",
+      description: "Recurring authors, plus inserted references never cited again."
+    },
+    {
+      commandId: "register-export-bibtex",
+      label: "Register \u2014 export BibTeX",
+      description: "Export the citation register as BibTeX \u2014 feeds Zotero or any reference manager."
+    },
+    {
+      commandId: "export-session",
+      label: "Export research session (portable)",
+      description: "One portable bundle for this session: JSON, methodological account and BibTeX."
+    },
+    {
+      commandId: "export-project",
+      label: "Export research project (portable)",
+      description: "The same bundle for every session in this project, plus a project index."
+    }
   ];
 }
 function listArtifacts(session, body) {
@@ -7953,7 +8038,8 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
     if (!file) {
       this.lastRenderedProjectMemberPaths = [];
       this.renderOnboarding(root);
-      this.renderActions(root, recommendActions(deriveSessionState(null, "")));
+      const emptyState = deriveSessionState(null, "");
+      this.renderSteps(root, emptyState, recommendActions(emptyState));
       return;
     }
     const session = parseSession((_b = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _b.frontmatter);
@@ -7964,8 +8050,8 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
     await this.renderProjectPanel(root, file, session);
     this.renderSessionPanel(root, state);
     if (session) await this.renderSourceProvenance(root, file);
-    this.renderActions(root, recommended);
-    this.renderAllActions(root, state, recommended);
+    this.renderSteps(root, state, recommended);
+    this.renderMoreActions(root);
     this.renderArtifacts(root, session, body, file);
     this.renderTrace(root, body);
   }
@@ -8210,49 +8296,57 @@ var WorkbenchView = class extends import_obsidian9.ItemView {
     const base = (_a = path.split("/").pop()) != null ? _a : path;
     return base.replace(/\.md$/i, "");
   }
-  /** Next actions — one primary (CTA) + one alternative, each with a why. */
-  renderActions(root, actions) {
-    if (actions.length === 0) return;
-    root.createEl("h4", { text: "Next step" });
-    actions.forEach((a, i) => {
-      new import_obsidian9.Setting(root).setName(a.label).setDesc(a.why).addButton((b) => {
-        b.setButtonText(i === 0 ? "Run" : "Or this");
-        if (i === 0) b.setCta();
-        b.onClick(() => this.run(a.commandId));
-      });
-    });
-  }
   /**
-   * All workflow actions as buttons (E61) — full control, so you're never boxed into only the
-   * recommended step. Excludes whatever is already shown as the primary/alternative above.
+   * The integral "Steps" list (AU_E94_S1, supersedes the separate "Next step" + "All steps"
+   * sections): every workflow action as a row — button + one-line explanation — grouped under
+   * small step labels in the same order as the workflow strip above. The live recommendation is
+   * folded in: its row carries the CTA styling (and the alternative a subtle outline) plus the
+   * contextual why-text, so "what should I do next" and "what can I do" are one list.
    */
-  renderAllActions(root, state, recommended) {
-    const shown = new Set(recommended.map((a) => a.commandId));
-    const rest = allActions(state).filter((a) => !shown.has(a.commandId));
-    if (rest.length > 0) {
-      root.createEl("h4", { text: "All steps" });
-      const wrap = root.createEl("div", { cls: "consensus-workbench-actions" });
-      for (const a of rest) {
-        const btn = wrap.createEl("button", { text: a.label, cls: "consensus-workbench-action" });
-        btn.addEventListener("click", () => this.run(a.commandId));
+  renderSteps(root, state, recommended) {
+    const stepLabel = {
+      explore: "Explore",
+      frame: "Frame",
+      theory: "Theory",
+      challenge: "Challenge",
+      evidence: "Evidence",
+      design: "Design"
+    };
+    root.createEl("h4", { text: "Steps" });
+    const wrap = root.createEl("div", { cls: "consensus-workbench-steps" });
+    let lastStep = null;
+    for (const a of stepActions(state, recommended)) {
+      if (a.step !== lastStep) {
+        wrap.createEl("div", { text: stepLabel[a.step], cls: "consensus-workbench-step-group" });
+        lastStep = a.step;
       }
+      this.renderActionRow(wrap, a);
     }
-    this.renderMoreActions(root);
+  }
+  /** One action row: the button on the left, its one-line explanation next to it (AU_E94_S1). */
+  renderActionRow(wrap, a) {
+    const row = wrap.createEl("div", { cls: "consensus-workbench-step-row" });
+    const btn = row.createEl("button", { text: a.label, cls: "consensus-workbench-action" });
+    if (a.recommended === "primary") {
+      btn.addClass("mod-cta");
+      btn.setAttr("aria-label", "Recommended next step");
+    } else if (a.recommended === "alternative") {
+      btn.addClass("consensus-workbench-action-alt");
+    }
+    btn.addEventListener("click", () => this.run(a.commandId));
+    row.createEl("div", { text: a.description, cls: "consensus-workbench-step-desc" });
   }
   /**
-   * Collapsed "More" group (D5/E78) under "All steps" — the secondary/rescue commands that were
+   * Collapsed "More" group (D5/E78) under the Steps list — the secondary/rescue commands that were
    * previously palette-only (framework-only, cross-sector, deepen, register slices, quick search).
    * A native `<details>` keeps this cheap: collapsed by default so it doesn't compete with the
-   * primary workflow, one click away when needed.
+   * primary workflow, one click away when needed. Same row layout as Steps (AU_E94_S1).
    */
   renderMoreActions(root) {
     const details = root.createEl("details", { cls: "consensus-workbench-more" });
     details.createEl("summary", { text: "More" });
-    const wrap = details.createEl("div", { cls: "consensus-workbench-actions" });
-    for (const a of moreActions()) {
-      const btn = wrap.createEl("button", { text: a.label, cls: "consensus-workbench-action" });
-      btn.addEventListener("click", () => this.run(a.commandId));
-    }
+    const wrap = details.createEl("div", { cls: "consensus-workbench-steps" });
+    for (const a of moreActions()) this.renderActionRow(wrap, a);
   }
   /** Artefacts — which sections exist; present ones are click-to-jump to their `##` section (E55). */
   renderArtifacts(root, session, body, file) {

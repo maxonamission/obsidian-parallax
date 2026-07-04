@@ -172,17 +172,48 @@
 	font-size: var(--font-ui-smaller);
 }
 
-/* Parallax — all-actions buttons (E61) */
-.consensus-workbench-actions {
+/* Parallax — integral Steps list (AU_E94_S1, supersedes the E61 wrap-grid): one action per
+   row in workflow order, the button left and its one-line explanation next to it. */
+.consensus-workbench-steps {
 	display: flex;
-	flex-wrap: wrap;
-	gap: 0.3em;
+	flex-direction: column;
+	gap: 0.45em;
 	margin: 0.2em 0 0.6em;
+}
+.consensus-workbench-step-group {
+	margin-top: 0.35em;
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	font-variant: small-caps;
+	letter-spacing: 0.04em;
+}
+.consensus-workbench-step-group:first-child {
+	margin-top: 0;
+}
+.consensus-workbench-step-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6em;
+}
+.consensus-workbench-step-row .consensus-workbench-action {
+	flex: 0 0 auto;
+	max-width: 55%;
+	white-space: normal; /* long labels wrap inside the button instead of overflowing the pane */
+}
+.consensus-workbench-step-desc {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	line-height: 1.35;
+	padding-top: 0.15em;
 }
 .consensus-workbench-action {
 	font-size: var(--font-ui-smaller);
 	padding: 0.2em 0.6em;
 	cursor: pointer;
+}
+/* The alternative recommendation: visible accent, quieter than the primary's CTA fill. */
+.consensus-workbench-action-alt {
+	border: 1px solid var(--interactive-accent);
 }
 
 /* Parallax — resume rescue action (D5/E78) */
@@ -202,7 +233,7 @@
 	color: var(--text-muted);
 	font-size: var(--font-ui-smaller);
 }
-.consensus-workbench-more .consensus-workbench-actions {
+.consensus-workbench-more .consensus-workbench-steps {
 	margin-top: 0.4em;
 }
 

@@ -4,6 +4,18 @@ on:
   push:
     tags:
       - "*"
+    # Pushing a release/x.y.z branch also cuts release x.y.z: the workflow
+    # derives the version from the branch name and creates the tag itself,
+    # for environments that cannot push tags directly.
+    branches:
+      - "release/*"
+  # Same fallback, but triggered by hand from the Actions tab.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Bare version to release (must match a CHANGELOG section), e.g. 0.1.0"
+        required: true
+        type: string
 
 jobs:
   release:
@@ -14,12 +26,22 @@ jobs:
       attestations: write
     steps:
       - uses: actions/checkout@v4
-      - name: Extract release notes for this version
-        # Pull just this version's section out of CHANGELOG.md (the tag is the
-        # bare version, e.g. "0.1.0") for use as the release body. Falls back to
-        # an empty body so the auto-generated notes still appear.
+      - name: Determine version
+        # Tag push: the tag is the bare version. release/* push or manual
+        # dispatch: strip the branch prefix / take the input.
+        id: version
+        env:
+          VERSION_INPUT: ${{ inputs.version }}
         run: |
-          VERSION="${GITHUB_REF_NAME}"
+          VERSION="${VERSION_INPUT:-${GITHUB_REF_NAME#release/}}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Extract release notes for this version
+        # Pull just this version's section out of CHANGELOG.md for use as the
+        # release body. Falls back to an empty body so the auto-generated
+        # notes still appear.
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
           : > RELEASE_NOTES.md
           if [ -f CHANGELOG.md ]; then
             awk -v v="$VERSION" '
@@ -36,6 +58,8 @@ jobs:
             styles.css
       - uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
           body_path: RELEASE_NOTES.md
           generate_release_notes: true
           files: |

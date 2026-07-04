@@ -1,0 +1,11 @@
+{
+	"id": "consensus-research",
+	"name": "Parallax",
+	"version": "0.1.0",
+	"minAppVersion": "1.5.0",
+	"description": "Where research thinking takes shape: explore a problem before searching, weigh graded evidence from OpenAlex & Semantic Scholar, challenge your framing, track your beliefs, and keep a deterministic methodological account. Free by default; bring any LLM or none.",
+	"author": "Max Kloosterman",
+	"authorUrl": "https://github.com/maxonamission",
+	"fundingUrl": "https://buymeacoffee.com/maxonamission",
+	"isDesktopOnly": false
+}

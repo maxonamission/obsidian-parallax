@@ -16,7 +16,7 @@ can still see not just *what* you concluded, but *how* and *why*.
 An LLM proposes; **you decide, and you hold the pen**. Nothing is ever written over your own
 thinking without asking.
 
-<!-- SCREENSHOT: workbench sidebar next to a research session note -->
+![The Parallax sidebar next to a research session note: a problem exploration in the note, the workflow strip, and the Steps list with the recommended next step highlighted](docs/screenshots/problem-exploration.png)
 
 ## Try it in 60 seconds — free, no API key
 
@@ -54,7 +54,7 @@ The **Parallax sidebar** is the cockpit: where you are, a recommended next step
 provenance. Sessions group into **projects**; everything exports as a portable, reproducible
 bundle (JSON + methodological account + BibTeX).
 
-<!-- SCREENSHOT: graded synthesis with evidence tiers and clickable citations -->
+![A graded synthesis: findings labelled with evidence strength and study-design tier, clickable citations, and deepened findings drawn from the sources](docs/screenshots/synthesis.png)
 
 ## What Parallax is *not*
 

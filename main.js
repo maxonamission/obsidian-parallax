@@ -223,12 +223,18 @@ var en = {
     stubMissingAccount: "the methodological account",
     stubNoFrontmatter: "methodological account (no session front matter found on this note)",
     noSessions: "_No sessions found for this project._",
-    artefactsPresent: "{present}/{total} artefacts present"
+    artefactsPresent: "{present}/{total} artefacts present",
+    sessionsExported: "{n} session(s) exported."
   },
   project: {
     objectivePlaceholder: "_(still to be formulated \u2014 what should this project ultimately answer?)_",
     overviewHeading: "Overview",
-    overviewBody: "_Each research question is its own session note in this folder; open the Parallax sidebar for the overview and to add a new question._"
+    overviewBody: "_Each research question is its own session note in this folder; open the Parallax sidebar for the overview and to add a new question._",
+    sessionFileSuffix: " \u2014 session",
+    sessionFileFallback: "new session",
+    exportFolderFallback: "session",
+    parentQuestionLine: "Follow-up question arising from: _{topic}_.",
+    parentSessionLabel: "Parent session"
   },
   logbook: {
     stepBeliefs: "Beliefs",
@@ -444,12 +450,18 @@ var nl = {
     stubMissingAccount: "de methodologische verantwoording",
     stubNoFrontmatter: "methodologische verantwoording (geen sessie-front-matter gevonden op deze notitie)",
     noSessions: "_Geen sessies gevonden voor dit project._",
-    artefactsPresent: "{present}/{total} artefacten aanwezig"
+    artefactsPresent: "{present}/{total} artefacten aanwezig",
+    sessionsExported: "{n} sessie(s) ge\xEBxporteerd."
   },
   project: {
     objectivePlaceholder: "_(nog te formuleren \u2014 waar wil dit project uiteindelijk antwoord op geven?)_",
     overviewHeading: "Overzicht",
-    overviewBody: "_Elke onderzoeksvraag is een eigen sessie-notitie in deze map; open de Research Workbench-zijbalk voor het overzicht en om een nieuwe vraag toe te voegen._"
+    overviewBody: "_Elke onderzoeksvraag is een eigen sessie-notitie in deze map; open de Research Workbench-zijbalk voor het overzicht en om een nieuwe vraag toe te voegen._",
+    sessionFileSuffix: " \u2014 sessie",
+    sessionFileFallback: "nieuwe sessie",
+    exportFolderFallback: "sessie",
+    parentQuestionLine: "Vervolgvraag voortkomend uit: _{topic}_.",
+    parentSessionLabel: "Ouder-sessie"
   },
   logbook: {
     stepBeliefs: "Beliefs",
@@ -665,12 +677,18 @@ var fr = {
     stubMissingAccount: "la justification m\xE9thodologique",
     stubNoFrontmatter: "justification m\xE9thodologique (aucun front matter de session trouv\xE9 sur cette note)",
     noSessions: "_Aucune session trouv\xE9e pour ce projet._",
-    artefactsPresent: "{present}/{total} artefacts pr\xE9sents"
+    artefactsPresent: "{present}/{total} artefacts pr\xE9sents",
+    sessionsExported: "{n} session(s) export\xE9e(s)."
   },
   project: {
     objectivePlaceholder: "_(encore \xE0 formuler \u2014 \xE0 quoi ce projet doit-il r\xE9pondre en d\xE9finitive ?)_",
     overviewHeading: "Vue d'ensemble",
-    overviewBody: "_Chaque question de recherche est une note de session \xE0 part dans ce dossier ; ouvrez la barre lat\xE9rale de Parallax pour la vue d'ensemble et pour ajouter une nouvelle question._"
+    overviewBody: "_Chaque question de recherche est une note de session \xE0 part dans ce dossier ; ouvrez la barre lat\xE9rale de Parallax pour la vue d'ensemble et pour ajouter une nouvelle question._",
+    sessionFileSuffix: " \u2014 session",
+    sessionFileFallback: "nouvelle session",
+    exportFolderFallback: "session",
+    parentQuestionLine: "Question de suivi issue de : _{topic}_.",
+    parentSessionLabel: "Session parente"
   },
   logbook: {
     stepBeliefs: "Convictions",
@@ -886,12 +904,18 @@ var de = {
     stubMissingAccount: "die methodologische Rechenschaft",
     stubNoFrontmatter: "methodologische Rechenschaft (kein Session-Front-Matter auf dieser Notiz gefunden)",
     noSessions: "_Keine Sessions f\xFCr dieses Projekt gefunden._",
-    artefactsPresent: "{present}/{total} Artefakte vorhanden"
+    artefactsPresent: "{present}/{total} Artefakte vorhanden",
+    sessionsExported: "{n} Session(s) exportiert."
   },
   project: {
     objectivePlaceholder: "_(noch zu formulieren \u2014 was soll dieses Projekt letztlich beantworten?)_",
     overviewHeading: "\xDCbersicht",
-    overviewBody: "_Jede Forschungsfrage ist eine eigene Session-Notiz in diesem Ordner; \xF6ffne die Parallax-Seitenleiste f\xFCr die \xDCbersicht und um eine neue Frage hinzuzuf\xFCgen._"
+    overviewBody: "_Jede Forschungsfrage ist eine eigene Session-Notiz in diesem Ordner; \xF6ffne die Parallax-Seitenleiste f\xFCr die \xDCbersicht und um eine neue Frage hinzuzuf\xFCgen._",
+    sessionFileSuffix: " \u2014 Session",
+    sessionFileFallback: "neue Session",
+    exportFolderFallback: "session",
+    parentQuestionLine: "Anschlussfrage, hervorgegangen aus: _{topic}_.",
+    parentSessionLabel: "\xDCbergeordnete Session"
   },
   logbook: {
     stepBeliefs: "\xDCberzeugungen",
@@ -1107,12 +1131,18 @@ var es = {
     stubMissingAccount: "la justificaci\xF3n metodol\xF3gica",
     stubNoFrontmatter: "justificaci\xF3n metodol\xF3gica (no se encontr\xF3 front matter de sesi\xF3n en esta nota)",
     noSessions: "_No se encontraron sesiones para este proyecto._",
-    artefactsPresent: "{present}/{total} artefactos presentes"
+    artefactsPresent: "{present}/{total} artefactos presentes",
+    sessionsExported: "{n} sesi\xF3n(es) exportada(s)."
   },
   project: {
     objectivePlaceholder: "_(pendiente de formular \u2014 \xBFqu\xE9 deber\xEDa responder en \xFAltima instancia este proyecto?)_",
     overviewHeading: "Panorama general",
-    overviewBody: "_Cada pregunta de investigaci\xF3n es su propia nota de sesi\xF3n en esta carpeta; abre la barra lateral de Parallax para ver el panorama general y a\xF1adir una nueva pregunta._"
+    overviewBody: "_Cada pregunta de investigaci\xF3n es su propia nota de sesi\xF3n en esta carpeta; abre la barra lateral de Parallax para ver el panorama general y a\xF1adir una nueva pregunta._",
+    sessionFileSuffix: " \u2014 sesi\xF3n",
+    sessionFileFallback: "nueva sesi\xF3n",
+    exportFolderFallback: "sesi\xF3n",
+    parentQuestionLine: "Pregunta de seguimiento derivada de: _{topic}_.",
+    parentSessionLabel: "Sesi\xF3n de origen"
   },
   logbook: {
     stepBeliefs: "Convicciones",
@@ -1328,12 +1358,18 @@ var pt = {
     stubMissingAccount: "o relato metodol\xF3gico",
     stubNoFrontmatter: "relato metodol\xF3gico (nenhum front matter de sess\xE3o encontrado nesta nota)",
     noSessions: "_Nenhuma sess\xE3o encontrada para este projeto._",
-    artefactsPresent: "{present}/{total} artefactos presentes"
+    artefactsPresent: "{present}/{total} artefactos presentes",
+    sessionsExported: "{n} sess\xE3o(\xF5es) exportada(s)."
   },
   project: {
     objectivePlaceholder: "_(ainda por formular \u2014 o que este projeto deve, em \xFAltima an\xE1lise, responder?)_",
     overviewHeading: "Vis\xE3o geral",
-    overviewBody: "_Cada quest\xE3o de pesquisa \xE9 uma nota de sess\xE3o pr\xF3pria nesta pasta; abra a barra lateral do Parallax para ver a vis\xE3o geral e adicionar uma nova quest\xE3o._"
+    overviewBody: "_Cada quest\xE3o de pesquisa \xE9 uma nota de sess\xE3o pr\xF3pria nesta pasta; abra a barra lateral do Parallax para ver a vis\xE3o geral e adicionar uma nova quest\xE3o._",
+    sessionFileSuffix: " \u2014 sess\xE3o",
+    sessionFileFallback: "nova sess\xE3o",
+    exportFolderFallback: "sess\xE3o",
+    parentQuestionLine: "Pergunta de seguimento decorrente de: _{topic}_.",
+    parentSessionLabel: "Sess\xE3o de origem"
   },
   logbook: {
     stepBeliefs: "Cren\xE7as",
@@ -1549,12 +1585,18 @@ var it = {
     stubMissingAccount: "il resoconto metodologico",
     stubNoFrontmatter: "resoconto metodologico (nessun front matter di sessione trovato su questa nota)",
     noSessions: "_Nessuna sessione trovata per questo progetto._",
-    artefactsPresent: "{present}/{total} artefatti presenti"
+    artefactsPresent: "{present}/{total} artefatti presenti",
+    sessionsExported: "{n} sessione/i esportata/e."
   },
   project: {
     objectivePlaceholder: "_(ancora da formulare \u2014 a cosa dovrebbe rispondere, in ultima analisi, questo progetto?)_",
     overviewHeading: "Panoramica",
-    overviewBody: "_Ogni domanda di ricerca \xE8 una nota di sessione a s\xE9 in questa cartella; apri la barra laterale di Parallax per la panoramica e per aggiungere una nuova domanda._"
+    overviewBody: "_Ogni domanda di ricerca \xE8 una nota di sessione a s\xE9 in questa cartella; apri la barra laterale di Parallax per la panoramica e per aggiungere una nuova domanda._",
+    sessionFileSuffix: " \u2014 sessione",
+    sessionFileFallback: "nuova sessione",
+    exportFolderFallback: "sessione",
+    parentQuestionLine: "Domanda di approfondimento derivata da: _{topic}_.",
+    parentSessionLabel: "Sessione di origine"
   },
   logbook: {
     stepBeliefs: "Convinzioni",
@@ -1770,12 +1812,18 @@ var ru = {
     stubMissingAccount: "\u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435",
     stubNoFrontmatter: "\u043C\u0435\u0442\u043E\u0434\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u043E\u0435 \u043E\u0431\u043E\u0441\u043D\u043E\u0432\u0430\u043D\u0438\u0435 (\u0432 \u044D\u0442\u043E\u0439 \u0437\u0430\u043C\u0435\u0442\u043A\u0435 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D front matter \u0441\u0435\u0441\u0441\u0438\u0438)",
     noSessions: "_\u0421\u0435\u0441\u0441\u0438\u0438 \u0434\u043B\u044F \u044D\u0442\u043E\u0433\u043E \u043F\u0440\u043E\u0435\u043A\u0442\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u044B._",
-    artefactsPresent: "{present}/{total} \u0430\u0440\u0442\u0435\u0444\u0430\u043A\u0442\u043E\u0432 \u043F\u0440\u0438\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442"
+    artefactsPresent: "{present}/{total} \u0430\u0440\u0442\u0435\u0444\u0430\u043A\u0442\u043E\u0432 \u043F\u0440\u0438\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442",
+    sessionsExported: "\u042D\u043A\u0441\u043F\u043E\u0440\u0442\u0438\u0440\u043E\u0432\u0430\u043D\u043E \u0441\u0435\u0441\u0441\u0438\u0439: {n}."
   },
   project: {
     objectivePlaceholder: "_(\u0435\u0449\u0451 \u043F\u0440\u0435\u0434\u0441\u0442\u043E\u0438\u0442 \u0441\u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u2014 \u043D\u0430 \u043A\u0430\u043A\u043E\u0439 \u0432\u043E\u043F\u0440\u043E\u0441 \u044D\u0442\u043E\u0442 \u043F\u0440\u043E\u0435\u043A\u0442 \u0432 \u0438\u0442\u043E\u0433\u0435 \u0434\u043E\u043B\u0436\u0435\u043D \u043E\u0442\u0432\u0435\u0442\u0438\u0442\u044C?)_",
     overviewHeading: "\u041E\u0431\u0437\u043E\u0440",
-    overviewBody: "_\u041A\u0430\u0436\u0434\u044B\u0439 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0439 \u0432\u043E\u043F\u0440\u043E\u0441 \u2014 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u0430\u044F \u0437\u0430\u043C\u0435\u0442\u043A\u0430-\u0441\u0435\u0441\u0441\u0438\u044F \u0432 \u044D\u0442\u043E\u0439 \u043F\u0430\u043F\u043A\u0435; \u043E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u0431\u043E\u043A\u043E\u0432\u0443\u044E \u043F\u0430\u043D\u0435\u043B\u044C Parallax \u0434\u043B\u044F \u043E\u0431\u0437\u043E\u0440\u0430 \u0438 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043D\u043E\u0432\u043E\u0433\u043E \u0432\u043E\u043F\u0440\u043E\u0441\u0430._"
+    overviewBody: "_\u041A\u0430\u0436\u0434\u044B\u0439 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044C\u0441\u043A\u0438\u0439 \u0432\u043E\u043F\u0440\u043E\u0441 \u2014 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u0430\u044F \u0437\u0430\u043C\u0435\u0442\u043A\u0430-\u0441\u0435\u0441\u0441\u0438\u044F \u0432 \u044D\u0442\u043E\u0439 \u043F\u0430\u043F\u043A\u0435; \u043E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u0431\u043E\u043A\u043E\u0432\u0443\u044E \u043F\u0430\u043D\u0435\u043B\u044C Parallax \u0434\u043B\u044F \u043E\u0431\u0437\u043E\u0440\u0430 \u0438 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u0438\u044F \u043D\u043E\u0432\u043E\u0433\u043E \u0432\u043E\u043F\u0440\u043E\u0441\u0430._",
+    sessionFileSuffix: " \u2014 \u0441\u0435\u0441\u0441\u0438\u044F",
+    sessionFileFallback: "\u043D\u043E\u0432\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F",
+    exportFolderFallback: "\u0441\u0435\u0441\u0441\u0438\u044F",
+    parentQuestionLine: "\u041F\u043E\u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0432\u043E\u043F\u0440\u043E\u0441, \u0432\u044B\u0442\u0435\u043A\u0430\u044E\u0449\u0438\u0439 \u0438\u0437: _{topic}_.",
+    parentSessionLabel: "\u0420\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F"
   },
   logbook: {
     stepBeliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F",
@@ -1991,12 +2039,18 @@ var zh = {
     stubMissingAccount: "\u65B9\u6CD5\u8BBA\u8BF4\u660E",
     stubNoFrontmatter: "\u65B9\u6CD5\u8BBA\u8BF4\u660E\uFF08\u6B64\u7B14\u8BB0\u4E0A\u672A\u627E\u5230\u4F1A\u8BDD front matter\uFF09",
     noSessions: "_\u672A\u627E\u5230\u6B64\u9879\u76EE\u7684\u4EFB\u4F55\u4F1A\u8BDD\u3002_",
-    artefactsPresent: "{present}/{total} \u4E2A\u5DE5\u4EF6\u5DF2\u751F\u6210"
+    artefactsPresent: "{present}/{total} \u4E2A\u5DE5\u4EF6\u5DF2\u751F\u6210",
+    sessionsExported: "\u5DF2\u5BFC\u51FA {n} \u4E2A\u4F1A\u8BDD\u3002"
   },
   project: {
     objectivePlaceholder: "_\uFF08\u5F85\u62DF\u5B9A\u2014\u2014\u672C\u9879\u76EE\u6700\u7EC8\u8981\u56DE\u7B54\u4EC0\u4E48\u95EE\u9898\uFF1F\uFF09_",
     overviewHeading: "\u6982\u89C8",
-    overviewBody: "_\u6BCF\u4E2A\u7814\u7A76\u95EE\u9898\u90FD\u662F\u6B64\u6587\u4EF6\u5939\u4E2D\u4E00\u6761\u72EC\u7ACB\u7684\u4F1A\u8BDD\u7B14\u8BB0\uFF1B\u6253\u5F00 Parallax \u4FA7\u8FB9\u680F\u53EF\u67E5\u770B\u6982\u89C8\u5E76\u6DFB\u52A0\u65B0\u95EE\u9898\u3002_"
+    overviewBody: "_\u6BCF\u4E2A\u7814\u7A76\u95EE\u9898\u90FD\u662F\u6B64\u6587\u4EF6\u5939\u4E2D\u4E00\u6761\u72EC\u7ACB\u7684\u4F1A\u8BDD\u7B14\u8BB0\uFF1B\u6253\u5F00 Parallax \u4FA7\u8FB9\u680F\u53EF\u67E5\u770B\u6982\u89C8\u5E76\u6DFB\u52A0\u65B0\u95EE\u9898\u3002_",
+    sessionFileSuffix: " \u2014 \u4F1A\u8BDD",
+    sessionFileFallback: "\u65B0\u4F1A\u8BDD",
+    exportFolderFallback: "\u4F1A\u8BDD",
+    parentQuestionLine: "\u540E\u7EED\u95EE\u9898\uFF0C\u6E90\u81EA\uFF1A_{topic}_\u3002",
+    parentSessionLabel: "\u7236\u4F1A\u8BDD"
   },
   logbook: {
     stepBeliefs: "\u4FE1\u5FF5",
@@ -2212,12 +2266,18 @@ var hi = {
     stubMissingAccount: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0935\u093F\u0935\u0930\u0923",
     stubNoFrontmatter: "\u092A\u0926\u094D\u0927\u0924\u093F\u0917\u0924 \u0935\u093F\u0935\u0930\u0923 (\u0907\u0938 \u0928\u094B\u091F \u092A\u0930 \u0915\u094B\u0908 \u0938\u0924\u094D\u0930 front matter \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E)",
     noSessions: "_\u0907\u0938 \u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u0947 \u0932\u093F\u090F \u0915\u094B\u0908 \u0938\u0924\u094D\u0930 \u0928\u0939\u0940\u0902 \u092E\u093F\u0932\u093E\u0964_",
-    artefactsPresent: "{present}/{total} \u0906\u0930\u094D\u091F\u093F\u092B\u093C\u0948\u0915\u094D\u091F \u092E\u094C\u091C\u0942\u0926"
+    artefactsPresent: "{present}/{total} \u0906\u0930\u094D\u091F\u093F\u092B\u093C\u0948\u0915\u094D\u091F \u092E\u094C\u091C\u0942\u0926",
+    sessionsExported: "{n} \u0938\u0924\u094D\u0930 \u0928\u093F\u0930\u094D\u092F\u093E\u0924 \u0915\u093F\u090F \u0917\u090F."
   },
   project: {
     objectivePlaceholder: "_(\u0905\u092D\u0940 \u0924\u0948\u092F\u093E\u0930 \u0915\u0930\u0928\u093E \u0936\u0947\u0937 \u2014 \u0907\u0938 \u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u094B \u0905\u0902\u0924\u0924\u0903 \u0915\u093F\u0938 \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u093E \u0909\u0924\u094D\u0924\u0930 \u0926\u0947\u0928\u093E \u0939\u0948?)_",
     overviewHeading: "\u0905\u0935\u0932\u094B\u0915\u0928",
-    overviewBody: "_\u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0936\u094B\u0927-\u092A\u094D\u0930\u0936\u094D\u0928 \u0907\u0938 \u092B\u093C\u094B\u0932\u094D\u0921\u0930 \u092E\u0947\u0902 \u0905\u092A\u0928\u0940 \u0905\u0932\u0917 \u0938\u0924\u094D\u0930-\u0928\u094B\u091F \u0939\u0948; \u0905\u0935\u0932\u094B\u0915\u0928 \u0926\u0947\u0916\u0928\u0947 \u0914\u0930 \u0928\u092F\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u091C\u094B\u0921\u093C\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F Parallax \u0938\u093E\u0907\u0921\u092C\u093E\u0930 \u0916\u094B\u0932\u0947\u0902\u0964_"
+    overviewBody: "_\u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0936\u094B\u0927-\u092A\u094D\u0930\u0936\u094D\u0928 \u0907\u0938 \u092B\u093C\u094B\u0932\u094D\u0921\u0930 \u092E\u0947\u0902 \u0905\u092A\u0928\u0940 \u0905\u0932\u0917 \u0938\u0924\u094D\u0930-\u0928\u094B\u091F \u0939\u0948; \u0905\u0935\u0932\u094B\u0915\u0928 \u0926\u0947\u0916\u0928\u0947 \u0914\u0930 \u0928\u092F\u093E \u092A\u094D\u0930\u0936\u094D\u0928 \u091C\u094B\u0921\u093C\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F Parallax \u0938\u093E\u0907\u0921\u092C\u093E\u0930 \u0916\u094B\u0932\u0947\u0902\u0964_",
+    sessionFileSuffix: " \u2014 \u0938\u0924\u094D\u0930",
+    sessionFileFallback: "\u0928\u092F\u093E \u0938\u0924\u094D\u0930",
+    exportFolderFallback: "\u0938\u0924\u094D\u0930",
+    parentQuestionLine: "\u0907\u0938\u0938\u0947 \u0909\u0924\u094D\u092A\u0928\u094D\u0928 \u0905\u0928\u0941\u0935\u0930\u094D\u0924\u0940 \u092A\u094D\u0930\u0936\u094D\u0928: _{topic}_.",
+    parentSessionLabel: "\u092E\u0942\u0932 \u0938\u0924\u094D\u0930"
   },
   logbook: {
     stepBeliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
@@ -2433,12 +2493,18 @@ var ar = {
     stubMissingAccount: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0645\u0646\u0647\u062C\u064A",
     stubNoFrontmatter: "\u0627\u0644\u062A\u0648\u062B\u064A\u0642 \u0627\u0644\u0645\u0646\u0647\u062C\u064A (\u0644\u0645 \u064A\u064F\u0639\u062B\u0631 \u0639\u0644\u0649 \u0628\u064A\u0627\u0646\u0627\u062A \u0623\u0645\u0627\u0645\u064A\u0629 \u0644\u0644\u062C\u0644\u0633\u0629 \u0641\u064A \u0647\u0630\u0647 \u0627\u0644\u0645\u0644\u0627\u062D\u0638\u0629)",
     noSessions: "_\u0644\u0645 \u064A\u064F\u0639\u062B\u0631 \u0639\u0644\u0649 \u062C\u0644\u0633\u0627\u062A \u0644\u0647\u0630\u0627 \u0627\u0644\u0645\u0634\u0631\u0648\u0639._",
-    artefactsPresent: "{present}/{total} \u0645\u0646 \u0627\u0644\u0645\u062E\u0631\u062C\u0627\u062A \u0645\u0648\u062C\u0648\u062F\u0629"
+    artefactsPresent: "{present}/{total} \u0645\u0646 \u0627\u0644\u0645\u062E\u0631\u062C\u0627\u062A \u0645\u0648\u062C\u0648\u062F\u0629",
+    sessionsExported: "\u062A\u0645 \u062A\u0635\u062F\u064A\u0631 {n} \u062C\u0644\u0633\u0629."
   },
   project: {
     objectivePlaceholder: "_(\u0644\u0645 \u064A\u064F\u0635\u064E\u063A \u0628\u0639\u062F \u2014 \u0645\u0627 \u0627\u0644\u0630\u064A \u064A\u0646\u0628\u063A\u064A \u0623\u0646 \u064A\u062C\u064A\u0628 \u0639\u0646\u0647 \u0647\u0630\u0627 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0641\u064A \u0646\u0647\u0627\u064A\u0629 \u0627\u0644\u0645\u0637\u0627\u0641\u061F)_",
     overviewHeading: "\u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629",
-    overviewBody: "_\u0643\u0644 \u0633\u0624\u0627\u0644 \u0628\u062D\u062B\u064A \u0647\u0648 \u0645\u0644\u0627\u062D\u0638\u0629 \u062C\u0644\u0633\u0629 \u0645\u0633\u062A\u0642\u0644\u0629 \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u062C\u0644\u062F\u061B \u0627\u0641\u062A\u062D \u0627\u0644\u0634\u0631\u064A\u0637 \u0627\u0644\u062C\u0627\u0646\u0628\u064A \u0644\u0640 Parallax \u0644\u0644\u0627\u0637\u0644\u0627\u0639 \u0639\u0644\u0649 \u0627\u0644\u0646\u0638\u0631\u0629 \u0627\u0644\u0639\u0627\u0645\u0629 \u0648\u0644\u0625\u0636\u0627\u0641\u0629 \u0633\u0624\u0627\u0644 \u062C\u062F\u064A\u062F._"
+    overviewBody: "_\u0643\u0644 \u0633\u0624\u0627\u0644 \u0628\u062D\u062B\u064A \u0647\u0648 \u0645\u0644\u0627\u062D\u0638\u0629 \u062C\u0644\u0633\u0629 \u0645\u0633\u062A\u0642\u0644\u0629 \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u062C\u0644\u062F\u061B \u0627\u0641\u062A\u062D \u0627\u0644\u0634\u0631\u064A\u0637 \u0627\u0644\u062C\u0627\u0646\u0628\u064A \u0644\u0640 Parallax \u0644\u0644\u0627\u0637\u0644\u0627\u0639 \u0639\u0644\u0649 \u0627\u0644\u0646\u0638\u0631\u0629 \u0627\u0644\u0639\u0627\u0645\u0629 \u0648\u0644\u0625\u0636\u0627\u0641\u0629 \u0633\u0624\u0627\u0644 \u062C\u062F\u064A\u062F._",
+    sessionFileSuffix: " \u2014 \u062C\u0644\u0633\u0629",
+    sessionFileFallback: "\u062C\u0644\u0633\u0629 \u062C\u062F\u064A\u062F\u0629",
+    exportFolderFallback: "\u062C\u0644\u0633\u0629",
+    parentQuestionLine: "\u0633\u0624\u0627\u0644 \u0645\u062A\u0627\u0628\u0639\u0629 \u0646\u0627\u0628\u0639 \u0645\u0646: _{topic}_.",
+    parentSessionLabel: "\u0627\u0644\u062C\u0644\u0633\u0629 \u0627\u0644\u0623\u0635\u0644"
   },
   logbook: {
     stepBeliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A",
@@ -2654,12 +2720,18 @@ var ja = {
     stubMissingAccount: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E",
     stubNoFrontmatter: "\u65B9\u6CD5\u8AD6\u7684\u8AAC\u660E\uFF08\u3053\u306E\u30CE\u30FC\u30C8\u306B\u30BB\u30C3\u30B7\u30E7\u30F3\u306E\u30D5\u30ED\u30F3\u30C8\u30DE\u30BF\u30FC\u304C\u898B\u3064\u304B\u3089\u306A\u3044\uFF09",
     noSessions: "_\u3053\u306E\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306B\u306F\u30BB\u30C3\u30B7\u30E7\u30F3\u304C\u898B\u3064\u304B\u3089\u306A\u304B\u3063\u305F\u3002_",
-    artefactsPresent: "{present}/{total} \u4EF6\u306E\u30A2\u30FC\u30C6\u30A3\u30D5\u30A1\u30AF\u30C8\u3042\u308A"
+    artefactsPresent: "{present}/{total} \u4EF6\u306E\u30A2\u30FC\u30C6\u30A3\u30D5\u30A1\u30AF\u30C8\u3042\u308A",
+    sessionsExported: "{n} \u4EF6\u306E\u30BB\u30C3\u30B7\u30E7\u30F3\u3092\u30A8\u30AF\u30B9\u30DD\u30FC\u30C8\u3057\u307E\u3057\u305F\u3002"
   },
   project: {
     objectivePlaceholder: "_\uFF08\u8981\u5B9A\u5F0F\u5316 \u2014 \u3053\u306E\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306F\u6700\u7D42\u7684\u306B\u4F55\u306B\u7B54\u3048\u308B\u3079\u304D\u304B\uFF1F\uFF09_",
     overviewHeading: "\u6982\u8981",
-    overviewBody: "_\u3053\u306E\u30D5\u30A9\u30EB\u30C0\u3067\u306F\u5404\u30EA\u30B5\u30FC\u30C1\u30AF\u30A8\u30B9\u30C1\u30E7\u30F3\u304C\u72EC\u7ACB\u3057\u305F\u30BB\u30C3\u30B7\u30E7\u30F3\u30CE\u30FC\u30C8\u306B\u306A\u3063\u3066\u3044\u308B\u3002\u6982\u8981\u306E\u78BA\u8A8D\u3084\u65B0\u3057\u3044\u554F\u3044\u306E\u8FFD\u52A0\u306F Parallax \u30B5\u30A4\u30C9\u30D0\u30FC\u304B\u3089\u884C\u3046\u3002_"
+    overviewBody: "_\u3053\u306E\u30D5\u30A9\u30EB\u30C0\u3067\u306F\u5404\u30EA\u30B5\u30FC\u30C1\u30AF\u30A8\u30B9\u30C1\u30E7\u30F3\u304C\u72EC\u7ACB\u3057\u305F\u30BB\u30C3\u30B7\u30E7\u30F3\u30CE\u30FC\u30C8\u306B\u306A\u3063\u3066\u3044\u308B\u3002\u6982\u8981\u306E\u78BA\u8A8D\u3084\u65B0\u3057\u3044\u554F\u3044\u306E\u8FFD\u52A0\u306F Parallax \u30B5\u30A4\u30C9\u30D0\u30FC\u304B\u3089\u884C\u3046\u3002_",
+    sessionFileSuffix: " \u2014 \u30BB\u30C3\u30B7\u30E7\u30F3",
+    sessionFileFallback: "\u65B0\u3057\u3044\u30BB\u30C3\u30B7\u30E7\u30F3",
+    exportFolderFallback: "\u30BB\u30C3\u30B7\u30E7\u30F3",
+    parentQuestionLine: "\u6B21\u306E\u5185\u5BB9\u304B\u3089\u751F\u3058\u305F\u30D5\u30A9\u30ED\u30FC\u30A2\u30C3\u30D7\u306E\u8CEA\u554F\uFF1A_{topic}_\u3002",
+    parentSessionLabel: "\u89AA\u30BB\u30C3\u30B7\u30E7\u30F3"
   },
   logbook: {
     stepBeliefs: "\u4FE1\u5FF5",
@@ -2875,12 +2947,18 @@ var ko = {
     stubMissingAccount: "\uBC29\uBC95\uB860\uC801 \uC124\uBA85",
     stubNoFrontmatter: "\uBC29\uBC95\uB860\uC801 \uC124\uBA85(\uC774 \uB178\uD2B8\uC5D0\uC11C \uC138\uC158 \uD504\uB7F0\uD2B8\uB9E4\uD130\uB97C \uCC3E\uC744 \uC218 \uC5C6\uC74C)",
     noSessions: "_\uC774 \uD504\uB85C\uC81D\uD2B8\uC5D0\uC11C \uC138\uC158\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4._",
-    artefactsPresent: "{present}/{total}\uAC1C \uC544\uD2F0\uD329\uD2B8 \uC788\uC74C"
+    artefactsPresent: "{present}/{total}\uAC1C \uC544\uD2F0\uD329\uD2B8 \uC788\uC74C",
+    sessionsExported: "{n}\uAC1C \uC138\uC158\uC744 \uB0B4\uBCF4\uB0C8\uC2B5\uB2C8\uB2E4."
   },
   project: {
     objectivePlaceholder: "_(\uC544\uC9C1 \uC791\uC131\uB418\uC9C0 \uC54A\uC74C \u2014 \uC774 \uD504\uB85C\uC81D\uD2B8\uB294 \uAD81\uADF9\uC801\uC73C\uB85C \uBB34\uC5C7\uC5D0 \uB2F5\uD574\uC57C \uD569\uB2C8\uAE4C?)_",
     overviewHeading: "\uAC1C\uC694",
-    overviewBody: "_\uAC01 \uC5F0\uAD6C \uC9C8\uBB38\uC740 \uC774 \uD3F4\uB354 \uC548\uC758 \uAC1C\uBCC4 \uC138\uC158 \uB178\uD2B8\uC785\uB2C8\uB2E4. \uAC1C\uC694\uB97C \uBCF4\uAC70\uB098 \uC0C8 \uC9C8\uBB38\uC744 \uCD94\uAC00\uD558\uB824\uBA74 Parallax \uC0AC\uC774\uB4DC\uBC14\uB97C \uC5EC\uC2ED\uC2DC\uC624._"
+    overviewBody: "_\uAC01 \uC5F0\uAD6C \uC9C8\uBB38\uC740 \uC774 \uD3F4\uB354 \uC548\uC758 \uAC1C\uBCC4 \uC138\uC158 \uB178\uD2B8\uC785\uB2C8\uB2E4. \uAC1C\uC694\uB97C \uBCF4\uAC70\uB098 \uC0C8 \uC9C8\uBB38\uC744 \uCD94\uAC00\uD558\uB824\uBA74 Parallax \uC0AC\uC774\uB4DC\uBC14\uB97C \uC5EC\uC2ED\uC2DC\uC624._",
+    sessionFileSuffix: " \u2014 \uC138\uC158",
+    sessionFileFallback: "\uC0C8 \uC138\uC158",
+    exportFolderFallback: "\uC138\uC158",
+    parentQuestionLine: "\uB2E4\uC74C\uC5D0\uC11C \uBE44\uB86F\uB41C \uD6C4\uC18D \uC9C8\uBB38: _{topic}_.",
+    parentSessionLabel: "\uC0C1\uC704 \uC138\uC158"
   },
   logbook: {
     stepBeliefs: "\uC2E0\uB150",
@@ -6347,8 +6425,12 @@ function transitionMatchesClaim(transitionClaim, fullClaim) {
   return claim === transitionClaim.trim().toLowerCase();
 }
 function parseFollowUp(contextBody) {
-  const m = /Ouder-sessie:\s*\[\[([^\]]+)\]\]/.exec(contextBody);
-  return { parentNote: m ? m[1] : null };
+  for (const lang of ARTIFACT_LANGUAGES) {
+    const label = ARTIFACT_STRINGS[lang].project.parentSessionLabel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const m = new RegExp(`${label}:\\s*\\[\\[([^\\]]+)\\]\\]`).exec(contextBody);
+    if (m) return { parentNote: m[1] };
+  }
+  return { parentNote: null };
 }
 function buildSessionExport(inputs) {
   var _a, _b, _c, _d, _e, _f, _g, _h;
@@ -6461,7 +6543,7 @@ function buildProjectIndexMarkdown(project, entries, hubObjective) {
   if (hubObjective && hubObjective.trim()) {
     lines.push(`## ${t().headings.objective}`, "", hubObjective.trim(), "");
   }
-  lines.push(`${entries.length} sessie(s) ge\xEBxporteerd.`, "");
+  lines.push(fmt(t().exportBundle.sessionsExported, { n: entries.length }), "");
   if (entries.length === 0) {
     lines.push(t().exportBundle.noSessions);
     return `${lines.join("\n")}
@@ -7844,10 +7926,10 @@ var SessionStore = class {
    */
   async createSessionNote(question, folderPath, project, opts = {}) {
     const folder = folderPath && folderPath !== "/" ? `${folderPath}/` : "";
-    const slug2 = safeFileName(question).slice(0, 60).trim() || "nieuwe sessie";
-    let path = (0, import_obsidian8.normalizePath)(`${folder}${slug2} \u2014 sessie.md`);
+    const slug2 = safeFileName(question).slice(0, 60).trim() || t().project.sessionFileFallback;
+    let path = (0, import_obsidian8.normalizePath)(`${folder}${slug2}${t().project.sessionFileSuffix}.md`);
     for (let n = 2; this.deps.vault.getAbstractFileByPath(path); n++) {
-      path = (0, import_obsidian8.normalizePath)(`${folder}${slug2} \u2014 sessie (${n}).md`);
+      path = (0, import_obsidian8.normalizePath)(`${folder}${slug2}${t().project.sessionFileSuffix} (${n}).md`);
     }
     const proj = project ? `project: ${JSON.stringify(project)}
 ` : "";
@@ -7863,8 +7945,8 @@ beliefs: []
     let body = "";
     if (opts.parent) {
       const contentLines = [];
-      if (opts.parentTopic) contentLines.push(`Vervolgvraag voortkomend uit: _${opts.parentTopic}_.`, "");
-      contentLines.push(`Ouder-sessie: [[${opts.parent.basename}]]`);
+      if (opts.parentTopic) contentLines.push(fmt(t().project.parentQuestionLine, { topic: opts.parentTopic }), "");
+      contentLines.push(`${t().project.parentSessionLabel}: [[${opts.parent.basename}]]`);
       body = upsertSection("", "context", contentLines.join("\n"));
     }
     return this.deps.vault.create(path, fm + body);
@@ -8242,7 +8324,8 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian9.ItemView {
       root.createEl("h4", { text: "Open hypotheses & follow-up directions" });
       const list = root.createEl("div", { cls: "consensus-workbench-session" });
       for (const h of hypotheses) {
-        const setting = new import_obsidian9.Setting(list).setName(h.text).setDesc(`${h.kind} \xB7 from "${h.sourceTitle}"`);
+        const kindLabel = h.kind === "overtuiging" ? "belief" : "follow-up direction";
+        const setting = new import_obsidian9.Setting(list).setName(h.text).setDesc(`${kindLabel} \xB7 from "${h.sourceTitle}"`);
         setting.addButton((b) => {
           b.setButtonText("Research this");
           b.onClick(() => void this.plugin.startHypothesisFollowUp(h.text, h.sourcePath));
@@ -11951,7 +12034,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     const exportDoc = await this.gatherSessionExportInputs(file, session, body, register, (/* @__PURE__ */ new Date()).toISOString());
     const bibtex = bibtexExport(filterRegisterToNote(register, file.path));
     const files = buildSessionBundleFiles(exportDoc, bibtex);
-    const safeName = safeFileName(file.basename).trim() || "sessie";
+    const safeName = safeFileName(file.basename).trim() || t().project.exportFolderFallback;
     const folder = `Exports/${safeName}`;
     try {
       await this.vaultAdapters.ensureFolder(folder);
@@ -12017,7 +12100,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
         const body = await this.app.vault.cachedRead(memberFile);
         const exportDoc = await this.gatherSessionExportInputs(memberFile, session, body, register, exportedAt);
         const bibtex = bibtexExport(filterRegisterToNote(register, memberFile.path));
-        const baseName = safeFileName(memberFile.basename).trim() || "sessie";
+        const baseName = safeFileName(memberFile.basename).trim() || t().project.exportFolderFallback;
         let folderName = baseName;
         for (let n = 2; usedNames.has(folderName.toLowerCase()); n++) folderName = `${baseName} (${n})`;
         usedNames.add(folderName.toLowerCase());

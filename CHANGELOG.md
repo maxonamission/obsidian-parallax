@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.2]
+
+Finishes the artifact-language work from 0.2.0 — a handful of strings were still hardcoded Dutch and now follow your **Artifact language** setting:
+
+- New session notes are named "&lt;question&gt; — session.md" in your language (was always "— sessie").
+- The Context lines of follow-up sessions ("Follow-up question arising from…", "Parent session: [[…]]") are written in your language; notes written under any other language (including the old Dutch) keep being recognised.
+- The project export's index line ("{n} session(s) exported.") follows your language.
+- The sidebar's open-hypotheses list showed the internal Dutch tokens "overtuiging"/"richting" — now proper labels ("belief" / "follow-up direction").
+
+Notes written by earlier versions keep their existing text — Parallax never rewrites your notes; new writes follow the setting.
+
 ## [0.3.1]
 
 Polish on the new Steps sidebar, from first-use feedback:

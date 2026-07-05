@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.0]
+
+**Starting a project got smarter.** When you run *Start research project* from a note, Parallax now suggests a project name — the first line of your selection if you have one, otherwise the note's title. It's pre-filled and selected, so accepting costs nothing and replacing it costs one keystroke. (The option to move the current note into the new project was already there.)
+
+Also, the last two hardcoded Dutch file names now follow your **Artifact language**: the project hub is created as "&lt;project&gt; — overview.md" (was "— overzicht.md"), and the register views ("bibliography-…", "register-overview") are named in your language too. Existing notes keep their names — Parallax never renames what's already yours.
+
 ## [0.3.2]
 
 Finishes the artifact-language work from 0.2.0 — a handful of strings were still hardcoded Dutch and now follow your **Artifact language** setting:

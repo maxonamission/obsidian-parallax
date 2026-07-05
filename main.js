@@ -234,7 +234,10 @@ var en = {
     sessionFileFallback: "new session",
     exportFolderFallback: "session",
     parentQuestionLine: "Follow-up question arising from: _{topic}_.",
-    parentSessionLabel: "Parent session"
+    parentSessionLabel: "Parent session",
+    hubFileSuffix: " \u2014 overview",
+    bibliographySlicePrefix: "bibliography",
+    registerOverviewFile: "register-overview"
   },
   logbook: {
     stepBeliefs: "Beliefs",
@@ -461,7 +464,10 @@ var nl = {
     sessionFileFallback: "nieuwe sessie",
     exportFolderFallback: "sessie",
     parentQuestionLine: "Vervolgvraag voortkomend uit: _{topic}_.",
-    parentSessionLabel: "Ouder-sessie"
+    parentSessionLabel: "Ouder-sessie",
+    hubFileSuffix: " \u2014 overzicht",
+    bibliographySlicePrefix: "bibliografie",
+    registerOverviewFile: "register-overzicht"
   },
   logbook: {
     stepBeliefs: "Beliefs",
@@ -688,7 +694,10 @@ var fr = {
     sessionFileFallback: "nouvelle session",
     exportFolderFallback: "session",
     parentQuestionLine: "Question de suivi issue de : _{topic}_.",
-    parentSessionLabel: "Session parente"
+    parentSessionLabel: "Session parente",
+    hubFileSuffix: " \u2014 aper\xE7u",
+    bibliographySlicePrefix: "bibliographie",
+    registerOverviewFile: "registre-aper\xE7u"
   },
   logbook: {
     stepBeliefs: "Convictions",
@@ -915,7 +924,10 @@ var de = {
     sessionFileFallback: "neue Session",
     exportFolderFallback: "session",
     parentQuestionLine: "Anschlussfrage, hervorgegangen aus: _{topic}_.",
-    parentSessionLabel: "\xDCbergeordnete Session"
+    parentSessionLabel: "\xDCbergeordnete Session",
+    hubFileSuffix: " \u2014 \xDCberblick",
+    bibliographySlicePrefix: "bibliografie",
+    registerOverviewFile: "register-\xFCberblick"
   },
   logbook: {
     stepBeliefs: "\xDCberzeugungen",
@@ -1142,7 +1154,10 @@ var es = {
     sessionFileFallback: "nueva sesi\xF3n",
     exportFolderFallback: "sesi\xF3n",
     parentQuestionLine: "Pregunta de seguimiento derivada de: _{topic}_.",
-    parentSessionLabel: "Sesi\xF3n de origen"
+    parentSessionLabel: "Sesi\xF3n de origen",
+    hubFileSuffix: " \u2014 panorama",
+    bibliographySlicePrefix: "bibliograf\xEDa",
+    registerOverviewFile: "registro-resumen"
   },
   logbook: {
     stepBeliefs: "Convicciones",
@@ -1369,7 +1384,10 @@ var pt = {
     sessionFileFallback: "nova sess\xE3o",
     exportFolderFallback: "sess\xE3o",
     parentQuestionLine: "Pergunta de seguimento decorrente de: _{topic}_.",
-    parentSessionLabel: "Sess\xE3o de origem"
+    parentSessionLabel: "Sess\xE3o de origem",
+    hubFileSuffix: " \u2014 panorama",
+    bibliographySlicePrefix: "bibliografia",
+    registerOverviewFile: "registo-panorama"
   },
   logbook: {
     stepBeliefs: "Cren\xE7as",
@@ -1596,7 +1614,10 @@ var it = {
     sessionFileFallback: "nuova sessione",
     exportFolderFallback: "sessione",
     parentQuestionLine: "Domanda di approfondimento derivata da: _{topic}_.",
-    parentSessionLabel: "Sessione di origine"
+    parentSessionLabel: "Sessione di origine",
+    hubFileSuffix: " \u2014 panoramica",
+    bibliographySlicePrefix: "bibliografia",
+    registerOverviewFile: "registro-panoramica"
   },
   logbook: {
     stepBeliefs: "Convinzioni",
@@ -1823,7 +1844,10 @@ var ru = {
     sessionFileFallback: "\u043D\u043E\u0432\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F",
     exportFolderFallback: "\u0441\u0435\u0441\u0441\u0438\u044F",
     parentQuestionLine: "\u041F\u043E\u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0432\u043E\u043F\u0440\u043E\u0441, \u0432\u044B\u0442\u0435\u043A\u0430\u044E\u0449\u0438\u0439 \u0438\u0437: _{topic}_.",
-    parentSessionLabel: "\u0420\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F"
+    parentSessionLabel: "\u0420\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F",
+    hubFileSuffix: " \u2014 \u043E\u0431\u0437\u043E\u0440",
+    bibliographySlicePrefix: "\u0431\u0438\u0431\u043B\u0438\u043E\u0433\u0440\u0430\u0444\u0438\u044F",
+    registerOverviewFile: "\u043E\u0431\u0437\u043E\u0440-\u0440\u0435\u0435\u0441\u0442\u0440\u0430"
   },
   logbook: {
     stepBeliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F",
@@ -2050,7 +2074,10 @@ var zh = {
     sessionFileFallback: "\u65B0\u4F1A\u8BDD",
     exportFolderFallback: "\u4F1A\u8BDD",
     parentQuestionLine: "\u540E\u7EED\u95EE\u9898\uFF0C\u6E90\u81EA\uFF1A_{topic}_\u3002",
-    parentSessionLabel: "\u7236\u4F1A\u8BDD"
+    parentSessionLabel: "\u7236\u4F1A\u8BDD",
+    hubFileSuffix: " \u2014 \u603B\u89C8",
+    bibliographySlicePrefix: "\u53C2\u8003\u6587\u732E",
+    registerOverviewFile: "\u5F15\u7528\u767B\u8BB0\u603B\u89C8"
   },
   logbook: {
     stepBeliefs: "\u4FE1\u5FF5",
@@ -2277,7 +2304,10 @@ var hi = {
     sessionFileFallback: "\u0928\u092F\u093E \u0938\u0924\u094D\u0930",
     exportFolderFallback: "\u0938\u0924\u094D\u0930",
     parentQuestionLine: "\u0907\u0938\u0938\u0947 \u0909\u0924\u094D\u092A\u0928\u094D\u0928 \u0905\u0928\u0941\u0935\u0930\u094D\u0924\u0940 \u092A\u094D\u0930\u0936\u094D\u0928: _{topic}_.",
-    parentSessionLabel: "\u092E\u0942\u0932 \u0938\u0924\u094D\u0930"
+    parentSessionLabel: "\u092E\u0942\u0932 \u0938\u0924\u094D\u0930",
+    hubFileSuffix: " \u2014 \u0905\u0935\u0932\u094B\u0915\u0928",
+    bibliographySlicePrefix: "\u0917\u094D\u0930\u0902\u0925-\u0938\u0942\u091A\u0940",
+    registerOverviewFile: "\u0930\u091C\u093F\u0938\u094D\u091F\u0930-\u0905\u0935\u0932\u094B\u0915\u0928"
   },
   logbook: {
     stepBeliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
@@ -2504,7 +2534,10 @@ var ar = {
     sessionFileFallback: "\u062C\u0644\u0633\u0629 \u062C\u062F\u064A\u062F\u0629",
     exportFolderFallback: "\u062C\u0644\u0633\u0629",
     parentQuestionLine: "\u0633\u0624\u0627\u0644 \u0645\u062A\u0627\u0628\u0639\u0629 \u0646\u0627\u0628\u0639 \u0645\u0646: _{topic}_.",
-    parentSessionLabel: "\u0627\u0644\u062C\u0644\u0633\u0629 \u0627\u0644\u0623\u0635\u0644"
+    parentSessionLabel: "\u0627\u0644\u062C\u0644\u0633\u0629 \u0627\u0644\u0623\u0635\u0644",
+    hubFileSuffix: " \u2014 \u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629",
+    bibliographySlicePrefix: "\u0642\u0627\u0626\u0645\u0629-\u0627\u0644\u0645\u0631\u0627\u062C\u0639",
+    registerOverviewFile: "\u0646\u0638\u0631\u0629-\u0639\u0627\u0645\u0629-\u0639\u0644\u0649-\u0627\u0644\u0633\u062C\u0644"
   },
   logbook: {
     stepBeliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A",
@@ -2731,7 +2764,10 @@ var ja = {
     sessionFileFallback: "\u65B0\u3057\u3044\u30BB\u30C3\u30B7\u30E7\u30F3",
     exportFolderFallback: "\u30BB\u30C3\u30B7\u30E7\u30F3",
     parentQuestionLine: "\u6B21\u306E\u5185\u5BB9\u304B\u3089\u751F\u3058\u305F\u30D5\u30A9\u30ED\u30FC\u30A2\u30C3\u30D7\u306E\u8CEA\u554F\uFF1A_{topic}_\u3002",
-    parentSessionLabel: "\u89AA\u30BB\u30C3\u30B7\u30E7\u30F3"
+    parentSessionLabel: "\u89AA\u30BB\u30C3\u30B7\u30E7\u30F3",
+    hubFileSuffix: " \u2014 \u6982\u8981",
+    bibliographySlicePrefix: "\u53C2\u8003\u6587\u732E",
+    registerOverviewFile: "\u30EC\u30B8\u30B9\u30BF\u30FC\u6982\u8981"
   },
   logbook: {
     stepBeliefs: "\u4FE1\u5FF5",
@@ -2958,7 +2994,10 @@ var ko = {
     sessionFileFallback: "\uC0C8 \uC138\uC158",
     exportFolderFallback: "\uC138\uC158",
     parentQuestionLine: "\uB2E4\uC74C\uC5D0\uC11C \uBE44\uB86F\uB41C \uD6C4\uC18D \uC9C8\uBB38: _{topic}_.",
-    parentSessionLabel: "\uC0C1\uC704 \uC138\uC158"
+    parentSessionLabel: "\uC0C1\uC704 \uC138\uC158",
+    hubFileSuffix: " \u2014 \uAC1C\uC694",
+    bibliographySlicePrefix: "\uCC38\uACE0\uBB38\uD5CC",
+    registerOverviewFile: "\uB808\uC9C0\uC2A4\uD130-\uAC1C\uC694"
   },
   logbook: {
     stepBeliefs: "\uC2E0\uB150",
@@ -3606,13 +3645,15 @@ var SearchModal = class extends import_obsidian3.Modal {
 // src/project-modal.ts
 var import_obsidian4 = require("obsidian");
 var ProjectModal = class extends import_obsidian4.Modal {
-  constructor(app, moveEligible, onSubmit) {
+  constructor(app, opts, onSubmit) {
+    var _a;
     super(app);
-    this.moveEligible = moveEligible;
-    this.name = "";
     this.objective = "";
     this.moveNote = true;
     this.submitted = false;
+    this.moveEligible = opts.moveEligible;
+    this.initialName = ((_a = opts.initialName) != null ? _a : "").trim();
+    this.name = this.initialName;
     this.onSubmit = onSubmit;
   }
   onOpen() {
@@ -3627,6 +3668,7 @@ var ProjectModal = class extends import_obsidian4.Modal {
     contentEl.createEl("div", { text: "Becomes the folder name and the hub note's title.", cls: "setting-item-description" });
     const nameEl = contentEl.createEl("input", { cls: "consensus-search-input", type: "text" });
     nameEl.placeholder = "e.g. Talent development in speed skating";
+    if (this.initialName) nameEl.value = this.initialName;
     nameEl.addEventListener("input", () => this.name = nameEl.value);
     nameEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
@@ -3655,7 +3697,11 @@ var ProjectModal = class extends import_obsidian4.Modal {
     new import_obsidian4.Setting(contentEl).addButton(
       (b) => b.setButtonText("Create project").setCta().onClick(() => this.submit())
     );
-    if (!import_obsidian4.Platform.isMobile) window.setTimeout(() => nameEl.focus(), 0);
+    if (!import_obsidian4.Platform.isMobile)
+      window.setTimeout(() => {
+        nameEl.focus();
+        if (this.initialName) nameEl.select();
+      }, 0);
   }
   submit() {
     const name = this.name.trim();
@@ -5976,6 +6022,11 @@ function resolveProject(notePath, frontmatter) {
   const parts = notePath.split("/").filter((p) => p.length > 0);
   if (parts.length > 1) return parts[0];
   return void 0;
+}
+function suggestProjectName(selection, noteBasename) {
+  const firstLine = (selection != null ? selection : "").trim().split("\n")[0].replace(/^#+\s*/, "").trim();
+  const capped = firstLine.length > 80 ? `${firstLine.slice(0, 80).trim()}\u2026` : firstLine;
+  return capped || (noteBasename != null ? noteBasename : "").trim();
 }
 function resolveProjectId(hub, basename) {
   return hub.project || normalizeProjectRef(basename);
@@ -11280,11 +11331,12 @@ ${renderResearchAgenda(agenda)}
   // ── Research project (E64) ──
   /** Start a research project: create its folder + hub (index) note and open the hub. Public: called from {@link registerCommands}. */
   startResearchProject() {
-    var _a;
+    var _a, _b;
     const file = this.activeNoteFile();
     const fm = file ? (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter : void 0;
     const moveEligible = !!file && file.extension === "md" && noteEligibleForProjectMove(fm, file.path);
-    new ProjectModal(this.app, moveEligible, (submission) => {
+    const initialName = suggestProjectName(this.activeSelection(), (_b = file == null ? void 0 : file.basename) != null ? _b : null);
+    new ProjectModal(this.app, { moveEligible, initialName }, (submission) => {
       if (!submission) return;
       void this.createProject(submission.name, submission.objective, submission.moveNote);
     }).open();
@@ -11300,7 +11352,7 @@ ${renderResearchAgenda(agenda)}
     const folder = (0, import_obsidian18.normalizePath)(safeFileName(name).trim() || "Project");
     try {
       if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
-      const hubPath = (0, import_obsidian18.normalizePath)(`${folder}/${folder} \u2014 overzicht.md`);
+      const hubPath = (0, import_obsidian18.normalizePath)(`${folder}/${folder}${t().project.hubFileSuffix}.md`);
       if (this.app.vault.getAbstractFileByPath(hubPath)) {
         new import_obsidian18.Notice("This project already exists.");
         return;
@@ -11954,7 +12006,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
       return;
     }
     const register = await this.loadRegisterSafely();
-    await this.writeAndOpenSlice(`bibliografie-${project}`, bibliographyForProject(register, project));
+    await this.writeAndOpenSlice(`${t().project.bibliographySlicePrefix}-${project}`, bibliographyForProject(register, project));
   }
   /** UC6 — sources that bridge ≥2 projects. Public: called from {@link registerCommands}. */
   async sliceBridgePapers() {
@@ -11964,7 +12016,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   /** UC9 — author landscape + orphan sources. Public: called from {@link registerCommands}. */
   async sliceOverview() {
     const register = await this.loadRegisterSafely();
-    await this.writeAndOpenSlice("register-overzicht", crossCutOverview(register));
+    await this.writeAndOpenSlice(t().project.registerOverviewFile, crossCutOverview(register));
   }
   /**
    * BibTeX export (E2 — "Transparantie-kleinood"): the whole citation register as a `.bib`

@@ -40,7 +40,8 @@ var en = {
     searchstrategy: "Search strategy",
     objective: "Objective",
     context: "Context",
-    beliefs: "Beliefs"
+    beliefs: "Beliefs",
+    contents: "Contents"
   },
   exploration: {
     chosenFraming: "Chosen framing:",
@@ -237,7 +238,8 @@ var en = {
     parentSessionLabel: "Parent session",
     hubFileSuffix: " \u2014 overview",
     bibliographySlicePrefix: "bibliography",
-    registerOverviewFile: "register-overview"
+    registerOverviewFile: "register-overview",
+    contentsEmpty: "_(no other notes in this folder yet)_"
   },
   logbook: {
     stepBeliefs: "Beliefs",
@@ -270,7 +272,8 @@ var nl = {
     searchstrategy: "Zoekstrategie",
     objective: "Doelstelling",
     context: "Context",
-    beliefs: "Overtuigingen"
+    beliefs: "Overtuigingen",
+    contents: "Inhoudsopgave"
   },
   exploration: {
     chosenFraming: "Gekozen framing:",
@@ -467,7 +470,8 @@ var nl = {
     parentSessionLabel: "Ouder-sessie",
     hubFileSuffix: " \u2014 overzicht",
     bibliographySlicePrefix: "bibliografie",
-    registerOverviewFile: "register-overzicht"
+    registerOverviewFile: "register-overzicht",
+    contentsEmpty: "_(nog geen andere notities in deze map)_"
   },
   logbook: {
     stepBeliefs: "Beliefs",
@@ -500,7 +504,8 @@ var fr = {
     searchstrategy: "Strat\xE9gie de recherche documentaire",
     objective: "Objectif",
     context: "Contexte",
-    beliefs: "Convictions"
+    beliefs: "Convictions",
+    contents: "Table des mati\xE8res"
   },
   exploration: {
     chosenFraming: "Cadrage retenu :",
@@ -697,7 +702,8 @@ var fr = {
     parentSessionLabel: "Session parente",
     hubFileSuffix: " \u2014 aper\xE7u",
     bibliographySlicePrefix: "bibliographie",
-    registerOverviewFile: "registre-aper\xE7u"
+    registerOverviewFile: "registre-aper\xE7u",
+    contentsEmpty: "_(pas encore d'autres notes dans ce dossier)_"
   },
   logbook: {
     stepBeliefs: "Convictions",
@@ -730,7 +736,8 @@ var de = {
     searchstrategy: "Suchstrategie",
     objective: "Zielsetzung",
     context: "Kontext",
-    beliefs: "\xDCberzeugungen"
+    beliefs: "\xDCberzeugungen",
+    contents: "Inhaltsverzeichnis"
   },
   exploration: {
     chosenFraming: "Gew\xE4hltes Framing:",
@@ -927,7 +934,8 @@ var de = {
     parentSessionLabel: "\xDCbergeordnete Session",
     hubFileSuffix: " \u2014 \xDCberblick",
     bibliographySlicePrefix: "bibliografie",
-    registerOverviewFile: "register-\xFCberblick"
+    registerOverviewFile: "register-\xFCberblick",
+    contentsEmpty: "_(noch keine weiteren Notizen in diesem Ordner)_"
   },
   logbook: {
     stepBeliefs: "\xDCberzeugungen",
@@ -960,7 +968,8 @@ var es = {
     searchstrategy: "Estrategia de b\xFAsqueda",
     objective: "Objetivo",
     context: "Contexto",
-    beliefs: "Convicciones"
+    beliefs: "Convicciones",
+    contents: "\xCDndice"
   },
   exploration: {
     chosenFraming: "Encuadre elegido:",
@@ -1157,7 +1166,8 @@ var es = {
     parentSessionLabel: "Sesi\xF3n de origen",
     hubFileSuffix: " \u2014 panorama",
     bibliographySlicePrefix: "bibliograf\xEDa",
-    registerOverviewFile: "registro-resumen"
+    registerOverviewFile: "registro-resumen",
+    contentsEmpty: "_(todav\xEDa no hay otras notas en esta carpeta)_"
   },
   logbook: {
     stepBeliefs: "Convicciones",
@@ -1190,7 +1200,8 @@ var pt = {
     searchstrategy: "Estrat\xE9gia de busca",
     objective: "Objetivo",
     context: "Contexto",
-    beliefs: "Cren\xE7as"
+    beliefs: "Cren\xE7as",
+    contents: "\xCDndice"
   },
   exploration: {
     chosenFraming: "Enquadramento escolhido:",
@@ -1387,7 +1398,8 @@ var pt = {
     parentSessionLabel: "Sess\xE3o de origem",
     hubFileSuffix: " \u2014 panorama",
     bibliographySlicePrefix: "bibliografia",
-    registerOverviewFile: "registo-panorama"
+    registerOverviewFile: "registo-panorama",
+    contentsEmpty: "_(ainda n\xE3o h\xE1 outras notas nesta pasta)_"
   },
   logbook: {
     stepBeliefs: "Cren\xE7as",
@@ -1420,7 +1432,8 @@ var it = {
     searchstrategy: "Strategia di ricerca",
     objective: "Obiettivo",
     context: "Contesto",
-    beliefs: "Convinzioni"
+    beliefs: "Convinzioni",
+    contents: "Indice"
   },
   exploration: {
     chosenFraming: "Inquadramento scelto:",
@@ -1617,7 +1630,8 @@ var it = {
     parentSessionLabel: "Sessione di origine",
     hubFileSuffix: " \u2014 panoramica",
     bibliographySlicePrefix: "bibliografia",
-    registerOverviewFile: "registro-panoramica"
+    registerOverviewFile: "registro-panoramica",
+    contentsEmpty: "_(ancora nessun'altra nota in questa cartella)_"
   },
   logbook: {
     stepBeliefs: "Convinzioni",
@@ -1650,7 +1664,8 @@ var ru = {
     searchstrategy: "\u0421\u0442\u0440\u0430\u0442\u0435\u0433\u0438\u044F \u043F\u043E\u0438\u0441\u043A\u0430",
     objective: "\u0426\u0435\u043B\u044C",
     context: "\u041A\u043E\u043D\u0442\u0435\u043A\u0441\u0442",
-    beliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F"
+    beliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F",
+    contents: "\u0421\u043E\u0434\u0435\u0440\u0436\u0430\u043D\u0438\u0435"
   },
   exploration: {
     chosenFraming: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u0444\u0440\u0435\u0439\u043C\u0438\u043D\u0433:",
@@ -1847,7 +1862,8 @@ var ru = {
     parentSessionLabel: "\u0420\u043E\u0434\u0438\u0442\u0435\u043B\u044C\u0441\u043A\u0430\u044F \u0441\u0435\u0441\u0441\u0438\u044F",
     hubFileSuffix: " \u2014 \u043E\u0431\u0437\u043E\u0440",
     bibliographySlicePrefix: "\u0431\u0438\u0431\u043B\u0438\u043E\u0433\u0440\u0430\u0444\u0438\u044F",
-    registerOverviewFile: "\u043E\u0431\u0437\u043E\u0440-\u0440\u0435\u0435\u0441\u0442\u0440\u0430"
+    registerOverviewFile: "\u043E\u0431\u0437\u043E\u0440-\u0440\u0435\u0435\u0441\u0442\u0440\u0430",
+    contentsEmpty: "_(\u0432 \u044D\u0442\u043E\u0439 \u043F\u0430\u043F\u043A\u0435 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0434\u0440\u0443\u0433\u0438\u0445 \u0437\u0430\u043C\u0435\u0442\u043E\u043A)_"
   },
   logbook: {
     stepBeliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F",
@@ -1880,7 +1896,8 @@ var zh = {
     searchstrategy: "\u68C0\u7D22\u7B56\u7565",
     objective: "\u76EE\u6807",
     context: "\u80CC\u666F",
-    beliefs: "\u4FE1\u5FF5"
+    beliefs: "\u4FE1\u5FF5",
+    contents: "\u76EE\u5F55"
   },
   exploration: {
     chosenFraming: "\u9009\u5B9A\u7684\u6846\u67B6\uFF1A",
@@ -2077,7 +2094,8 @@ var zh = {
     parentSessionLabel: "\u7236\u4F1A\u8BDD",
     hubFileSuffix: " \u2014 \u603B\u89C8",
     bibliographySlicePrefix: "\u53C2\u8003\u6587\u732E",
-    registerOverviewFile: "\u5F15\u7528\u767B\u8BB0\u603B\u89C8"
+    registerOverviewFile: "\u5F15\u7528\u767B\u8BB0\u603B\u89C8",
+    contentsEmpty: "_\uFF08\u6B64\u6587\u4EF6\u5939\u4E2D\u6682\u65E0\u5176\u4ED6\u7B14\u8BB0\uFF09_"
   },
   logbook: {
     stepBeliefs: "\u4FE1\u5FF5",
@@ -2110,7 +2128,8 @@ var hi = {
     searchstrategy: "\u0916\u094B\u091C-\u0930\u0923\u0928\u0940\u0924\u093F",
     objective: "\u0909\u0926\u094D\u0926\u0947\u0936\u094D\u092F",
     context: "\u0938\u0902\u0926\u0930\u094D\u092D",
-    beliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901"
+    beliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
+    contents: "\u0905\u0928\u0941\u0915\u094D\u0930\u092E\u0923\u093F\u0915\u093E"
   },
   exploration: {
     chosenFraming: "\u091A\u0941\u0928\u0940 \u0917\u0908 \u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917:",
@@ -2307,7 +2326,8 @@ var hi = {
     parentSessionLabel: "\u092E\u0942\u0932 \u0938\u0924\u094D\u0930",
     hubFileSuffix: " \u2014 \u0905\u0935\u0932\u094B\u0915\u0928",
     bibliographySlicePrefix: "\u0917\u094D\u0930\u0902\u0925-\u0938\u0942\u091A\u0940",
-    registerOverviewFile: "\u0930\u091C\u093F\u0938\u094D\u091F\u0930-\u0905\u0935\u0932\u094B\u0915\u0928"
+    registerOverviewFile: "\u0930\u091C\u093F\u0938\u094D\u091F\u0930-\u0905\u0935\u0932\u094B\u0915\u0928",
+    contentsEmpty: "_(\u0907\u0938 \u092B\u093C\u094B\u0932\u094D\u0921\u0930 \u092E\u0947\u0902 \u0905\u092D\u0940 \u0924\u0915 \u0915\u094B\u0908 \u0905\u0928\u094D\u092F \u0928\u094B\u091F \u0928\u0939\u0940\u0902 \u0939\u0948)_"
   },
   logbook: {
     stepBeliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
@@ -2340,7 +2360,8 @@ var ar = {
     searchstrategy: "\u0627\u0633\u062A\u0631\u0627\u062A\u064A\u062C\u064A\u0629 \u0627\u0644\u0628\u062D\u062B",
     objective: "\u0627\u0644\u0647\u062F\u0641",
     context: "\u0627\u0644\u0633\u064A\u0627\u0642",
-    beliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A"
+    beliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A",
+    contents: "\u0627\u0644\u0641\u0647\u0631\u0633"
   },
   exploration: {
     chosenFraming: "\u0627\u0644\u062A\u0623\u0637\u064A\u0631 \u0627\u0644\u0645\u062E\u062A\u0627\u0631:",
@@ -2537,7 +2558,8 @@ var ar = {
     parentSessionLabel: "\u0627\u0644\u062C\u0644\u0633\u0629 \u0627\u0644\u0623\u0635\u0644",
     hubFileSuffix: " \u2014 \u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629",
     bibliographySlicePrefix: "\u0642\u0627\u0626\u0645\u0629-\u0627\u0644\u0645\u0631\u0627\u062C\u0639",
-    registerOverviewFile: "\u0646\u0638\u0631\u0629-\u0639\u0627\u0645\u0629-\u0639\u0644\u0649-\u0627\u0644\u0633\u062C\u0644"
+    registerOverviewFile: "\u0646\u0638\u0631\u0629-\u0639\u0627\u0645\u0629-\u0639\u0644\u0649-\u0627\u0644\u0633\u062C\u0644",
+    contentsEmpty: "_(\u0644\u0627 \u062A\u0648\u062C\u062F \u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0623\u062E\u0631\u0649 \u0628\u0639\u062F \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u062C\u0644\u062F)_"
   },
   logbook: {
     stepBeliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A",
@@ -2570,7 +2592,8 @@ var ja = {
     searchstrategy: "\u691C\u7D22\u6226\u7565",
     objective: "\u76EE\u7684",
     context: "\u30B3\u30F3\u30C6\u30AD\u30B9\u30C8",
-    beliefs: "\u4FE1\u5FF5"
+    beliefs: "\u4FE1\u5FF5",
+    contents: "\u76EE\u6B21"
   },
   exploration: {
     chosenFraming: "\u9078\u629E\u3057\u305F\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0:",
@@ -2767,7 +2790,8 @@ var ja = {
     parentSessionLabel: "\u89AA\u30BB\u30C3\u30B7\u30E7\u30F3",
     hubFileSuffix: " \u2014 \u6982\u8981",
     bibliographySlicePrefix: "\u53C2\u8003\u6587\u732E",
-    registerOverviewFile: "\u30EC\u30B8\u30B9\u30BF\u30FC\u6982\u8981"
+    registerOverviewFile: "\u30EC\u30B8\u30B9\u30BF\u30FC\u6982\u8981",
+    contentsEmpty: "_\uFF08\u3053\u306E\u30D5\u30A9\u30EB\u30C0\u306B\u306F\u307E\u3060\u4ED6\u306E\u30CE\u30FC\u30C8\u304C\u306A\u3044\uFF09_"
   },
   logbook: {
     stepBeliefs: "\u4FE1\u5FF5",
@@ -2800,7 +2824,8 @@ var ko = {
     searchstrategy: "\uAC80\uC0C9 \uC804\uB7B5",
     objective: "\uBAA9\uD45C",
     context: "\uB9E5\uB77D",
-    beliefs: "\uC2E0\uB150"
+    beliefs: "\uC2E0\uB150",
+    contents: "\uBAA9\uCC28"
   },
   exploration: {
     chosenFraming: "\uC120\uD0DD\uD55C \uD504\uB808\uC774\uBC0D:",
@@ -2997,7 +3022,8 @@ var ko = {
     parentSessionLabel: "\uC0C1\uC704 \uC138\uC158",
     hubFileSuffix: " \u2014 \uAC1C\uC694",
     bibliographySlicePrefix: "\uCC38\uACE0\uBB38\uD5CC",
-    registerOverviewFile: "\uB808\uC9C0\uC2A4\uD130-\uAC1C\uC694"
+    registerOverviewFile: "\uB808\uC9C0\uC2A4\uD130-\uAC1C\uC694",
+    contentsEmpty: "_(\uC774 \uD3F4\uB354\uC5D0 \uC544\uC9C1 \uB2E4\uB978 \uB178\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4)_"
   },
   logbook: {
     stepBeliefs: "\uC2E0\uB150",
@@ -3528,9 +3554,10 @@ function rowsForLines(lineCount, minRows) {
 }
 function makeAutoGrowTextarea(textarea, minRows = 2) {
   textarea.rows = minRows;
+  textarea.setCssStyles({ minHeight: `calc(${minRows}lh + 0.75em)` });
   const resize = () => {
     textarea.setCssStyles({ height: "auto" });
-    textarea.setCssStyles({ height: `${textarea.scrollHeight}px` });
+    if (textarea.scrollHeight > 0) textarea.setCssStyles({ height: `${textarea.scrollHeight}px` });
   };
   textarea.addEventListener("input", resize);
   resize();
@@ -5529,7 +5556,8 @@ var SECTION_ID_LIST = [
   "searchstrategy",
   "objective",
   "context",
-  "beliefs"
+  "beliefs",
+  "contents"
 ];
 function sectionHeading(id) {
   return t().headings[id];
@@ -6072,6 +6100,13 @@ function noteEligibleForProjectMove(frontmatter, notePath) {
   if (parseProjectHub(frontmatter)) return false;
   return resolveProject(notePath, frontmatter) === void 0;
 }
+function renderProjectContents(entries) {
+  if (entries.length === 0) return t().project.contentsEmpty;
+  return entries.slice().sort((a, b) => a.title.localeCompare(b.title, void 0, { sensitivity: "base" })).map((e) => `- [[${e.title}]]`).join("\n");
+}
+function updateProjectContentsSection(body, entries) {
+  return upsertSection(body, "contents", renderProjectContents(entries));
+}
 
 // src/graph.ts
 var LABEL_MAX = 120;
@@ -6458,7 +6493,7 @@ function parseBeliefTransitions(logbookSection) {
 var SESSION_EXPORT_SCHEMA = "lens-session-export";
 var SESSION_EXPORT_SCHEMA_VERSION = 2;
 var SESSION_EXPORT_SECTION_IDS = SECTION_ID_LIST.filter(
-  (id) => id !== "objective" && id !== "context"
+  (id) => id !== "objective" && id !== "context" && id !== "contents"
 );
 function filterRegisterToNote(register, notePath) {
   return {
@@ -8025,6 +8060,7 @@ var COMMAND_NAMES = {
   "start-research-session": "Start research session (this note)",
   "start-research-project": "Start research project (folder)",
   "new-project-session": "New question in this project",
+  "refresh-project-contents": "Refresh project contents",
   "build-knowledge-graph-spike": "Build knowledge graph (spike)",
   "theory-lenses": "Explore theoretical lenses",
   "challenge-framing": "Challenge my framing",
@@ -8577,6 +8613,12 @@ function registerCommands(plugin) {
     name: COMMAND_NAMES["new-project-session"],
     icon: "file-plus",
     callback: () => plugin.newProjectSession()
+  });
+  plugin.addCommand({
+    id: "refresh-project-contents",
+    name: COMMAND_NAMES["refresh-project-contents"],
+    icon: "list-tree",
+    callback: () => void plugin.refreshProjectContents()
   });
   if (plugin.settings.debugLogging) {
     plugin.addCommand({
@@ -10712,9 +10754,10 @@ var ParallaxPlugin = class extends import_obsidian18.Plugin {
       new import_obsidian18.Notice(`Set your ${provider.label} API key in the plugin settings first.`);
       return;
     }
+    const seed = initialQuery || this.activeSelection();
     new SearchModal(
       this.app,
-      initialQuery,
+      seed,
       provider.supportsMedicalFilters,
       (submission) => {
         if (!submission) return;
@@ -10933,30 +10976,77 @@ ${body}
     return pickPromptSeed(initialQuery, this.activeSelection(), topic);
   }
   /**
+   * Resolve the project HUB relevant to the active note (AU_E98_S1, extracted from the E71 logic
+   * {@link activeProjectObjective} originally inlined): the active note itself when it IS a hub,
+   * else the hub whose `project:` matches the active note's session. Null when the active note
+   * belongs to no project. Shared by every caller that needs "the hub for what's open right now" —
+   * the project objective seed and the manual "refresh contents" command.
+   */
+  resolveActiveHubFile() {
+    var _a, _b, _c, _d;
+    const file = this.activeNoteFile();
+    if (!file) return null;
+    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+    if (parseProjectHub(fm)) return file;
+    const projectId = (_c = (_b = parseSession(fm)) == null ? void 0 : _b.project) != null ? _c : "";
+    if (!projectId) return null;
+    for (const f of this.app.vault.getMarkdownFiles()) {
+      const h = parseProjectHub((_d = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _d.frontmatter);
+      if (h && resolveProjectId(h, f.basename).toLowerCase() === projectId.toLowerCase()) return f;
+    }
+    return null;
+  }
+  /**
    * The active project's `## Doelstelling` (E71) — read from the project HUB (the active note when it
    * is a hub, else the hub whose `project:` matches the active session). "" when none / still the
    * placeholder. This is the project-level aim that can seed exploration and new questions.
    */
   async activeProjectObjective() {
-    var _a, _b, _c, _d;
-    const file = this.activeNoteFile();
-    if (!file) return "";
-    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
-    let hubFile = parseProjectHub(fm) ? file : null;
-    if (!hubFile) {
-      const projectId = (_c = (_b = parseSession(fm)) == null ? void 0 : _b.project) != null ? _c : "";
-      if (!projectId) return "";
-      for (const f of this.app.vault.getMarkdownFiles()) {
-        const h = parseProjectHub((_d = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _d.frontmatter);
-        if (h && resolveProjectId(h, f.basename).toLowerCase() === projectId.toLowerCase()) {
-          hubFile = f;
-          break;
-        }
-      }
-    }
+    const hubFile = this.resolveActiveHubFile();
     if (!hubFile) return "";
     const objective = extractSection(await this.app.vault.cachedRead(hubFile), "objective").trim();
     return objective === objectivePlaceholder() ? "" : objective;
+  }
+  // ── Hub Contents / index (AU_E98_S1) ──
+  /**
+   * Upsert `hubFile`'s `## Inhoudsopgave`/Contents section from `folder`'s current markdown notes
+   * (excluding the hub itself) — the shared write for every path that (re)populates the index:
+   * initial project creation, a new/moved-in note, and the manual refresh command. Entries need
+   * only a path + title (the wikilink target), so this never depends on the OTHER notes'
+   * front-matter being cached yet — only on `hubFile` itself already being a known hub.
+   */
+  async writeHubContents(hubFile, folder) {
+    const entries = this.app.vault.getMarkdownFiles().filter((f) => f.path !== hubFile.path && (f.parent && f.parent.path !== "/" ? f.parent.path : "") === folder).map((f) => ({ path: f.path, title: f.basename }));
+    await this.app.vault.process(hubFile, (body) => updateProjectContentsSection(body, entries));
+  }
+  /**
+   * Refresh `folder`'s hub Contents section, if `folder` HAS a hub (AU_E98_S1) — a no-op
+   * otherwise, since most note-creation folders aren't project folders at all. Called after every
+   * note create/move so the index stays live without the writer ever running a command for it.
+   */
+  async refreshHubContentsForFolder(folder) {
+    if (!folder) return;
+    const hubFile = this.app.vault.getMarkdownFiles().find((f) => {
+      var _a, _b;
+      return ((_a = f.parent) == null ? void 0 : _a.path) === folder && parseProjectHub((_b = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _b.frontmatter);
+    });
+    if (!hubFile) return;
+    await this.writeHubContents(hubFile, folder);
+  }
+  /**
+   * Manually refresh the active project's Contents section (AU_E98_S1's third acceptance
+   * criterion): catches notes added/renamed outside Parallax (so the automatic refresh on
+   * create/move never saw them). Public: called from {@link registerCommands}.
+   */
+  async refreshProjectContents() {
+    const hubFile = this.resolveActiveHubFile();
+    if (!hubFile) {
+      new import_obsidian18.Notice("Open a project hub or a session within a project first.");
+      return;
+    }
+    const folder = hubFile.parent && hubFile.parent.path !== "/" ? hubFile.parent.path : "";
+    await this.writeHubContents(hubFile, folder);
+    new import_obsidian18.Notice("Project contents refreshed.");
   }
   /** Mark the active note as a research session (front-matter), prompting for the question. Public: called from {@link registerCommands}. */
   startResearchSession() {
@@ -10965,7 +11055,7 @@ ${body}
       new import_obsidian18.Notice("Open a note to use as the research session.");
       return;
     }
-    new SearchModal(this.app, "", false, (submission) => {
+    new SearchModal(this.app, this.activeSelection(), false, (submission) => {
       if (!submission) return;
       const question = submission.query.trim();
       if (!question) return;
@@ -11061,12 +11151,15 @@ ${body}
     const { file, session } = active;
     const body = await this.app.vault.read(file);
     const doc = assembleMethodologyAccount(session, body, `[[${file.basename}]]`);
-    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const targetPath = (0, import_obsidian18.normalizePath)(`${folder}${file.basename} \u2014 methodologische verantwoording.md`);
+    const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
+    const targetPath = (0, import_obsidian18.normalizePath)(`${folder ? `${folder}/` : ""}${file.basename} \u2014 methodologische verantwoording.md`);
     try {
       const existing = this.app.vault.getAbstractFileByPath(targetPath);
       if (existing instanceof import_obsidian18.TFile) await this.app.vault.modify(existing, doc);
-      else await this.app.vault.create(targetPath, doc);
+      else {
+        await this.app.vault.create(targetPath, doc);
+        await this.refreshHubContentsForFolder(folder);
+      }
     } catch (e) {
       notifyError("Writing the methodological account", e);
       return;
@@ -11258,6 +11351,7 @@ ${renderResearchAgenda(agenda)}
   async createSessionNote(question, folderPath, project, opts = {}) {
     try {
       const created = await this.sessionStore.createSessionNote(question, folderPath, project, opts);
+      await this.refreshHubContentsForFolder(folderPath);
       await this.app.workspace.getLeaf(true).openFile(created);
       if (!opts.silent) new import_obsidian18.Notice("New session created.");
       return created;
@@ -11359,6 +11453,7 @@ ${renderResearchAgenda(agenda)}
       }
       const hub = await this.app.vault.create(hubPath, renderProjectHub(name, objective));
       const moved = moveNote ? await this.moveNoteIntoProject(name, folder) : null;
+      await this.writeHubContents(hub, folder);
       await this.app.workspace.getLeaf(false).openFile(moved != null ? moved : hub);
       new import_obsidian18.Notice(moved ? `Project "${name}" created \u2014 "${moved.basename}" moved in.` : `Project "${name}" created.`);
     } catch (e) {
@@ -11405,10 +11500,11 @@ ${renderResearchAgenda(agenda)}
     }
     const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
     void this.activeProjectObjective().then((objective) => {
+      const selection = this.activeSelection();
       const hint = objective ? "Sharpen the project objective into one concrete research question for this session." : void 0;
       new SearchModal(
         this.app,
-        objective,
+        selection || objective,
         false,
         (submission) => {
           if (!submission) return;

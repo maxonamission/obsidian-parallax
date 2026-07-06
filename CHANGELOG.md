@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.5.0]
+
+**The project hub now keeps its own table of contents.** A new **Contents** section lists
+every note in the project folder as plain wikilinks — no Bases/Dataview dependency, so it
+stays readable as plain markdown even outside Obsidian. It updates automatically whenever
+Parallax creates or moves a note into the folder (a new question, a follow-up, starting a
+project from an existing note, generating a methodological account); a new **Refresh project
+contents** command catches notes added or renamed outside Parallax. Existing hubs only get
+the section the next time something changes there — Parallax never mass-rewrites notes you
+already have.
+
+## [0.4.1]
+
+Multi-line fields stay multi-line: on mobile (and sometimes on desktop) the growing text areas — like the project objective — could collapse to a single line when a modal opened before layout settled. They now keep a hard minimum height.
+
+Selection-to-field, everywhere: following the same principle as the project-name suggestion, every command that opens an input now pre-fills it with your selected text. New in this release: **Quick search**, **Start research session** (a selected line is often the question itself) and **New question in this project** (a selection — say, an open hypothesis in the hub — now wins over the project objective). The research/explore/theory/challenge commands already worked this way.
+
 ## [0.4.0]
 
 **Starting a project got smarter.** When you run *Start research project* from a note, Parallax now suggests a project name — the first line of your selection if you have one, otherwise the note's title. It's pre-filled and selected, so accepting costs nothing and replacing it costs one keystroke. (The option to move the current note into the new project was already there.)

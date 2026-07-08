@@ -101,6 +101,15 @@ the problem** — Parallax picks up the thinking exactly where the recording sto
 plugins share the same principles (your keys, local where possible, no telemetry) but stay
 deliberately separate tools: Voxtral owns capturing speech, Parallax owns the reasoning.
 
+**[Quadro](https://github.com/chrisgrieser/obsidian-quadro)** — qualitative data analysis
+(coding and extraction; an open alternative to MAXQDA/atlas.ti) in plain markdown. Parallax
+ends roughly where Quadro begins: design a qualitative study in Parallax, then code your
+interviews in Quadro — same plain-text philosophy, each tool owning its own phase. The hand-off is
+built in (0.10.0, conventions confirmed by Quadro's maintainer): export your adopted lenses as
+a starting codebook, or a full starter kit (data intake, codebook, one extraction template per
+research question) — and the methodological account reads Quadro's own process registrations
+back in. Background: the [interop discussion](https://github.com/chrisgrieser/obsidian-quadro/discussions/29).
+
 ## Support
 
 Parallax is free and GPL-3.0. If it sharpens your research, you can

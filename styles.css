@@ -84,6 +84,49 @@
 	resize: vertical;
 }
 
+/* Stacked setting — label above, control on the full modal width (AU_E112_S2): for the
+   fields that are a modal's main content (framing, beliefs, dimensions), the default
+   side-by-side Setting layout squeezes the textarea into roughly half the modal, which
+   reads as a preview instead of an invitation to edit. */
+.consensus-setting-stacked {
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.consensus-setting-stacked .setting-item-info {
+	margin-right: 0;
+	margin-bottom: 0.35em;
+}
+
+.consensus-setting-stacked .setting-item-control {
+	width: 100%;
+	justify-content: flex-start;
+}
+
+/* Sub-question review — one growing field per sub-question (AU_E112_S1) */
+.consensus-subq-row {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.4em;
+	margin: 0.45em 0 0.2em;
+}
+
+.consensus-subq-row textarea {
+	flex: 1;
+}
+
+.consensus-subq-row .clickable-icon {
+	margin-top: 0.3em;
+	flex-shrink: 0;
+}
+
+.consensus-subq-hypothesis {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-style: italic;
+	margin: 0 2.4em 0.55em 0.2em;
+}
+
 .consensus-review-framework {
 	margin: 0.5em 0;
 }
@@ -190,21 +233,6 @@
 .consensus-workbench-step-group:first-child {
 	margin-top: 0;
 }
-.consensus-workbench-step-row {
-	display: flex;
-	align-items: center; /* description centres on the button instead of hanging high */
-	gap: 0.6em;
-}
-.consensus-workbench-step-row .consensus-workbench-action {
-	flex: 0 0 auto;
-	max-width: 55%;
-	white-space: normal; /* long labels wrap inside the button instead of overflowing the pane */
-}
-.consensus-workbench-step-desc {
-	color: var(--text-muted);
-	font-size: 0.85em; /* em, not --font-ui-smaller: scales with the user's font size */
-	line-height: 1.35;
-}
 .consensus-workbench-action {
 	font-size: 0.85em; /* em, not --font-ui-smaller: scales with the user's font size */
 	padding: 0.2em 0.6em;
@@ -243,4 +271,73 @@
 }
 .consensus-workbench-more .consensus-workbench-more summary {
 	color: var(--text-normal);
+}
+
+/* Accordion settings sections (AU_E117_S1; shared pattern:
+   codebase-standards/docs/obsidian-settings-patroon.md). */
+.consensus-settings-section {
+	border-top: 1px solid var(--background-modifier-border);
+}
+
+.consensus-settings-summary {
+	cursor: pointer;
+	padding: 0.6em 0;
+	font-weight: var(--font-semibold);
+}
+
+.consensus-settings-badge {
+	margin-left: 0.6em;
+	color: var(--text-warning);
+	font-size: var(--font-smaller);
+	font-weight: var(--font-normal);
+}
+
+/* Output-mode sub-group (AU_E119_S1): the two toggles governed by Public/Academic sit
+   indented under the mode dropdown; when the mode forces them on, dim them unmistakably
+   (Obsidian's setDisabled blocks interaction but barely dims). */
+.consensus-settings-subgroup {
+	margin-left: 1.2em;
+	padding-left: 0.8em;
+	border-left: 2px solid var(--background-modifier-border);
+}
+
+.consensus-settings-subgroup-forced {
+	opacity: 0.55;
+}
+
+/* "Uses AI"/"Uses embeddings" chips on settings rows (AU_E120_S2): subtle, next to the
+   setting name — marks options that only take effect when the AI pipeline runs. */
+.consensus-settings-chip {
+	margin-left: 0.5em;
+	padding: 0 0.45em;
+	border-radius: var(--radius-s);
+	background: var(--background-modifier-border);
+	color: var(--text-muted);
+	font-size: var(--font-smallest);
+	font-weight: var(--font-normal);
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+/* Step cards (AU_E121_S2): title, full-width description, then the Add section / Ask AI
+   button row — replaces the cramped button-with-side-description layout on mobile. */
+.consensus-workbench-card {
+	padding: 0.45em 0;
+}
+
+.consensus-workbench-card-title {
+	font-weight: var(--font-semibold);
+	margin-bottom: 0.1em;
+}
+
+.consensus-workbench-card-desc {
+	color: var(--text-muted);
+	font-size: var(--font-smaller);
+	margin-bottom: 0.4em;
+}
+
+.consensus-workbench-card-buttons {
+	display: flex;
+	gap: 0.5em;
+	flex-wrap: wrap;
 }

@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.21.0]
+
+**Bring any AI — or none at all.** The biggest release since the research pipeline itself, in four moves:
+
+- **Six LLM providers, first-class.** Mistral · OpenAI · Anthropic · Google · Local (Ollama/LM Studio) · Custom (any OpenAI-compatible endpoint). Each gets its own settings block with a live model list fetched from your account, and the chat-model choice moved out of Advanced to where you configure the provider. Embeddings for the semantic rerank are a separate, explicit choice (Anthropic has none — pick another provider there, or the rerank gracefully falls back to fusion order). Reasoning dropdowns now offer only the levels your chosen model actually supports (Mistral's enum is effectively off/high; gpt-5 knows `minimal`, the o-series doesn't; Claude and Gemini think in budgets) — and mismatched leftovers are clamped at call time instead of erroring. A local server never needs a key, works from mobile via its LAN address, and an empty base URL is a hard error rather than a silent fallback to OpenAI.
+- **Settings you can read.** The settings tab is now an accordion: sections open themselves (with a badge saying why) only when something needs your attention — a fresh install reads as a short checklist, a configured one opens fully collapsed. Options that only matter when the AI pipeline runs carry a subtle "Uses AI" chip; the Public/Academic output modes now visibly take over the two evidence toggles they force on.
+- **Every thinking step works without AI.** Each research-assistant step has a self-write twin: **Add section** inserts the marked section with a one-line writing hint (as an `[!info]` callout, in your Artifact language — all 13), and **Ask AI** runs the assistant as before. A hint-only section doesn't count as "done" until your own words are under it. And when AI meets a section you hand-edited, you now choose: **Keep mine · Append below · Replace**.
+- **A calmer sidebar.** Steps are cards — title, description, then the buttons — instead of cramped rows; the More group follows the same layout with honest verbs (Search, Open, Export). Without a configured provider, "Add section" takes the accent: the workbench stays usable end-to-end, AI is the accelerator, not the entry fee.
+
+## [0.20.0]
+
+**Your words, not ours.** "Route C" — an internal codename that leaked into settings and logs — is gone: the plugin now speaks of the *research pipeline* and *research assistants* everywhere, matching what the UI already said. Persisted settings migrate automatically on first load; your existing notes, markers and commands keep working untouched.
+
+## [0.19.0]
+
+**Research results land where they belong.** A research run now writes the full result into the session note as proper sections — theoretical framework, sub-questions and the graded synthesis each under their own heading — instead of one blob at the cursor. Reference actions insert exactly that: references, with canonical numbering, in a `## References` section at the bottom of the note. The floating "Insert here" step is gone; the note structure is the landing zone.
+
+## [0.18.0]
+
+**Sub-questions became a real checkpoint.** When "Review sub-questions before searching" is on, every proposed sub-question gets its own edit field (full modal width, also on mobile), you can add or remove questions, and "Insert into note" lands the reviewed set in the session note so you can refine it there and restart the research from your own version.
+
+## [0.17.0]
+
+**The quantitative route gets a road.** Since 0.15.0 Parallax knows which of your questions lean quantitative — now it knows what to do with them, in three propose-only steps that mirror the qualitative bridge (interview guide → Quadro):
+
+- **Propose hypotheses (from the argument map).** Your argument map holds claims, assumptions and attack relations (E103) — exactly where a test changes the argument most. This command turns them (plus your open beliefs and quantitative-labelled questions) into falsifiable hypotheses, each with the element it operationalizes and a one-line testing direction. You adopt per hypothesis; the set lands as a `## Hypotheses` section (13 languages), a structured record, and a logbook event — and it appears in the methodological account. *Hypotheses — refresh* re-renders from the record without the LLM.
+- **Find validated scales (for a construct).** The agenda's "required data / measurement instruments" line becomes actionable: name a construct ("perceived recovery", not a whole question) and Parallax runs a fixed psychometric query fan-out through the same free search machinery as always (OpenAlex + Semantic Scholar), ranks toward measurement literature (scales, questionnaires, validation studies) and lands in the familiar results screen — inserting references records them in the citation register like any source. No LLM call.
+- **Export pre-registration draft.** Deterministically assembled from what your session already recorded — question and framing, research questions with their method fit, adopted hypotheses, the agenda's study designs and data needs — into a plain-markdown draft next to your note. Sampling and analysis plans are deliberately fill-in sections: Parallax names them so you can't overlook them, and says explicitly that designing them is yours. A draft to review and complete, never a submission.
+
+Fielding and analysis stay out of scope by design — Parallax prepares the thinking, your survey and stats tools do the doing. Also in this release: the plugin description now leads with the parallel theoretical lenses, and the Quadro starter kit's `Data/README` now carries the maintainer-confirmed transcript conventions (one paragraph per speaker turn; speaker labels and pre-existing block ids are safe; data files reserve only the front-matter key `read`).
+
 ## [0.16.0]
 
 **When the network drops, you now see it, survive it longer, and learn why.** A research run on mobile can lose its connection halfway (screen off, wifi asleep, a network switch) — and until now that looked like a freeze, retried briefly, and left a debug log that said only "network error". Three changes: **(1) Visible retries** — every network retry of an AI call shows a short toast ("Network error — retrying synthesis (2/6)…") next to the persistent step notice, so a retry window reads as *still working*. **(2) A wider window** — network errors now get 6 retries instead of 4 (~45 seconds with backoff), enough for a woken-up mobile connection to come back; a resume after a failed synthesis therefore survives a slow reconnect. **(3) A verdict in the debug log** — each retry line now names the underlying cause (e.g. `UnknownHostException` = DNS), and when all retries are exhausted the log adds a one-line **network diagnosis**: the plugin probes a neutral reference host (OpenAlex) and tells you whether *only* the AI endpoint is unreachable (points to a DNS filter, adblock list or VPN rule blocking that domain) or *everything* is (the device is simply offline). Both providers (Mistral and OpenAI-compatible) get the same treatment.

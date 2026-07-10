@@ -20,7 +20,7 @@ That's the whole entry fee. Everything beyond it is opt-in: bring any OpenAI-com
 
 ## What a research session looks like
 
-A session is a plain markdown note that you work step by step. A set of **copilots** helps — each one propose-only, so you tick what to adopt and can always edit anything:
+A session is a plain markdown note that you work step by step. A set of **research assistants** helps — each one propose-only, so you tick what to adopt and can always edit anything:
 
 1. **Explore** the problem before you search. Parallax surfaces the assumptions you're smuggling in and their counter-assumptions, competing definitions, reformulations that would change your whole research programme, and search seeds you'd never find from your original phrasing.
 2. **Theory** — choose the theoretical lenses you'll think with, each grounded (*why it might apply here, what it would predict*), including the eliminative list: tempting theories that explain little.
@@ -52,7 +52,7 @@ Parallax is the layer those tools don't cover: the reasoning between question an
   claims resting on abstracts say so; a resolving DOI marks *existence*, never content-truth.
 - **Traceable.** Finding→source links are recorded at generation time; every inserted
   reference lands in a citation register with occurrence tracking and DOI verification.
-- **Yours.** Copilots propose into review screens with adopt-toggles default-off. Re-running a
+- **Yours.** The research assistants propose into review screens with adopt-toggles default-off. Re-running a
   step over a section you hand-edited asks before replacing — your edits are leading.
 
 ## Privacy — what leaves your machine
@@ -116,7 +116,7 @@ Parallax is free and GPL-3.0. If it sharpens your research, you can
 [**buy me a coffee** ☕](https://buymeacoffee.com/maxonamission) — it keeps the work going.
 
 Issues and ideas: [GitHub issues](../../issues). Development happens in the
-[automations](https://github.com/maxonamission/automations) repo; this repo carries releases.
+[codebase-lanayru](https://github.com/maxonamission/codebase-lanayru) repo; this repo carries releases.
 
 ## License
 

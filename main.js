@@ -9234,6 +9234,36 @@ ${line.trimEnd()}
   return `${rebuilt.replace(/\n{3,}/g, "\n\n").replace(/\s+$/, "")}
 `;
 }
+function reorderSectionsCanonically(body) {
+  const lines = body.split("\n");
+  const headingIdxs = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (/^##\s+/.test(lines[i])) headingIdxs.push(i);
+  }
+  if (headingIdxs.length < 2) return { body, moved: 0 };
+  const preamble = lines.slice(0, headingIdxs[0]);
+  const chains = [];
+  for (let h = 0; h < headingIdxs.length; h++) {
+    const start = headingIdxs[h];
+    const end = h + 1 < headingIdxs.length ? headingIdxs[h + 1] : lines.length;
+    const rank = headingRank(lines[start]);
+    const block2 = lines.slice(start, end);
+    if (rank === null && chains.length > 0) {
+      chains[chains.length - 1].lines.push(...block2);
+    } else {
+      chains.push({ rank: rank != null ? rank : -1, lines: block2 });
+    }
+  }
+  const sorted = chains.map((chain, index) => ({ chain, index })).sort((a, b) => a.chain.rank - b.chain.rank || a.index - b.index);
+  const moved = sorted.filter((entry, position) => entry.index !== position).length;
+  if (moved === 0) return { body, moved: 0 };
+  const parts = [
+    ...preamble.join("\n").trim() ? [preamble.join("\n").replace(/\s+$/, "")] : [],
+    ...sorted.map((entry) => entry.chain.lines.join("\n").replace(/\s+$/, ""))
+  ];
+  return { body: `${parts.join("\n\n").replace(/\n{3,}/g, "\n\n")}
+`, moved };
+}
 
 // src/scaffold.ts
 var SCAFFOLD_SECTION_IDS = [
@@ -12128,6 +12158,7 @@ var COMMAND_NAMES = {
   "explore-problem": "Explore the problem (before researching)",
   "insert-scaffold": "Insert section to write yourself (no AI)",
   "start-research-session": "Start research session (this note)",
+  "reorder-sections": "Reorder sections (canonical order)",
   "start-research-project": "Start research project (folder)",
   "new-project-session": "New question in this project",
   "refresh-project-contents": "Refresh project contents",
@@ -12738,6 +12769,12 @@ function registerCommands(plugin) {
     name: COMMAND_NAMES["start-research-session"],
     icon: "notebook-pen",
     callback: () => plugin.startResearchSession()
+  });
+  plugin.addCommand({
+    id: "reorder-sections",
+    name: COMMAND_NAMES["reorder-sections"],
+    icon: "arrow-down-up",
+    callback: () => void plugin.reorderSections()
   });
   plugin.addCommand({
     id: "start-research-project",
@@ -15692,6 +15729,27 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     }
     await this.sessionStore.writeSessionSection(file, id, buildScaffoldBody(id));
     new import_obsidian25.Notice(`"${sectionHeading(id)}" inserted \u2014 write it in your own words and delete the hint.`);
+  }
+  /**
+   * Put the active note's existing sections in the canonical reading order (AU_E123_S2).
+   * Public: called from registerCommands. Section content is untouched; an already-ordered
+   * note is left byte-for-byte as it is.
+   */
+  async reorderSections() {
+    const file = this.activeNoteFile();
+    if (!file) {
+      new import_obsidian25.Notice("Open a note first \u2014 its sections are reordered there.");
+      return;
+    }
+    let moved = 0;
+    await this.app.vault.process(file, (body) => {
+      const result = reorderSectionsCanonically(body);
+      moved = result.moved;
+      return result.body;
+    });
+    new import_obsidian25.Notice(
+      moved === 0 ? "Sections are already in the canonical order \u2014 nothing changed." : `Reordered ${moved} section${moved === 1 ? "" : "s"} into the canonical order.`
+    );
   }
   // ── ResearchSession (E46) ──
   /**

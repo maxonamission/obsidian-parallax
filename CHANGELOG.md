@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.21.2]
+
+**Tidy up an older note on demand.** 0.21.1 made *new* sections land in a fixed, logical order — but deliberately never touches what's already there, so notes from before it can still be scrambled. The new command **"Reorder sections (canonical order)"** puts the active note's sections in that same order as an explicit action: references end up last, your intro stays on top, and your own headings travel with the section they sit under. Section content is untouched; running it on a note that's already in order changes nothing and says so.
+
 ## [0.21.1]
 
 **Sections now land in a fixed, logical order.** Repeated research runs in the same note used to append each new section wherever the note happened to end — logbook in the middle, a synthesis below the references. New sections now slot in at their canonical position: exploration → lenses → framework → sub-questions → search strategy → synthesis → challenge → beliefs → argument → interview → agenda → hypotheses → connections → logbook, with references always last. Sections that already exist are never moved — your own arrangement (and your own headings) stay exactly where you put them; only where a *new* section lands is governed.

@@ -9127,6 +9127,46 @@ function sectionEditState(body, headingOrId) {
 function needsOverwriteConfirmation(state) {
   return state === "edited" || state === "unstamped";
 }
+var CANONICAL_SECTION_ORDER = [
+  "objective",
+  "context",
+  "contents",
+  "exploration",
+  "lenses",
+  "framework",
+  "subquestions",
+  "searchstrategy",
+  "synthesis",
+  "challenge",
+  "beliefs",
+  "argument",
+  "interview",
+  "agenda",
+  "hypotheses",
+  "connections",
+  "logbook"
+];
+var REFERENCES_RANK = CANONICAL_SECTION_ORDER.length;
+var REFERENCES_HEADINGS = new Set(Object.values(ARTIFACT_STRINGS).map((s) => s.references.heading));
+function headingRank(line) {
+  const marker = /<!--\s*lens:([a-z]+)/.exec(line);
+  if (marker) {
+    const idx = CANONICAL_SECTION_ORDER.indexOf(marker[1]);
+    return idx === -1 ? null : idx;
+  }
+  const text = line.replace(/^##\s+/, "").replace(/<!--.*?-->/g, "").trim();
+  return REFERENCES_HEADINGS.has(text) ? REFERENCES_RANK : null;
+}
+function sectionInsertionLine(lines, id) {
+  const rank = id ? CANONICAL_SECTION_ORDER.indexOf(id) : -1;
+  if (rank === -1) return -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^##\s+/.test(lines[i])) continue;
+    const r = headingRank(lines[i]);
+    if (r !== null && r > rank) return i;
+  }
+  return -1;
+}
 function upsertSection(body, headingOrId, content, fingerprintContent) {
   const lines = body.split("\n");
   const { heading, id } = resolveHeading(headingOrId);
@@ -9134,10 +9174,16 @@ function upsertSection(body, headingOrId, content, fingerprintContent) {
   const block2 = [headingLine, "", content.trimEnd()];
   const startIdx = findHeadingLine(lines, headingOrId);
   if (startIdx === -1) {
-    const base = body.replace(/\s+$/, "");
-    return `${base ? `${base}
+    const insertBefore = sectionInsertionLine(lines, id);
+    if (insertBefore === -1) {
+      const base = body.replace(/\s+$/, "");
+      return `${base ? `${base}
 
 ` : ""}${block2.join("\n")}
+`;
+    }
+    const rebuilt2 = [...lines.slice(0, insertBefore), "", ...block2, "", ...lines.slice(insertBefore)].join("\n");
+    return `${rebuilt2.replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "").replace(/\s+$/, "")}
 `;
   }
   let endIdx = lines.length;
@@ -9159,12 +9205,18 @@ function appendToSection(body, headingOrId, line) {
   const headingLine = id ? `## ${heading} ${sectionMarker(id)}` : `## ${heading}`;
   const startIdx = findHeadingLine(lines, headingOrId);
   if (startIdx === -1) {
-    const base = body.replace(/\s+$/, "");
-    return `${base ? `${base}
+    const insertBefore = sectionInsertionLine(lines, id);
+    if (insertBefore === -1) {
+      const base = body.replace(/\s+$/, "");
+      return `${base ? `${base}
 
 ` : ""}${headingLine}
 
 ${line.trimEnd()}
+`;
+    }
+    const rebuilt2 = [...lines.slice(0, insertBefore), "", headingLine, "", line.trimEnd(), "", ...lines.slice(insertBefore)].join("\n");
+    return `${rebuilt2.replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "").replace(/\s+$/, "")}
 `;
   }
   let endIdx = lines.length;

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.21.1]
+
+**Sections now land in a fixed, logical order.** Repeated research runs in the same note used to append each new section wherever the note happened to end — logbook in the middle, a synthesis below the references. New sections now slot in at their canonical position: exploration → lenses → framework → sub-questions → search strategy → synthesis → challenge → beliefs → argument → interview → agenda → hypotheses → connections → logbook, with references always last. Sections that already exist are never moved — your own arrangement (and your own headings) stay exactly where you put them; only where a *new* section lands is governed.
+
 ## [0.21.0]
 
 **Bring any AI — or none at all.** The biggest release since the research pipeline itself, in four moves:

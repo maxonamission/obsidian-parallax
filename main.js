@@ -241,7 +241,10 @@ async function mistralChat(messages, opts, settings, http, net = {}) {
     }
     if (status !== 0 && (!isTransientStatus(status) || attempt >= retries)) {
       if (reason) (_j = net.log) == null ? void 0 : _j.call(net, `Mistral ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(`Mistral chat request failed (${status}). Check your key and connection.`, status);
+      throw new SearchApiError(
+        `Mistral chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your key and connection."}`,
+        status
+      );
     }
     const budget = status === 0 ? networkRetries : retries;
     const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
@@ -476,7 +479,10 @@ async function openAiCompatChat(messages, opts, endpoint3, http, net = {}) {
     }
     if (status !== 0 && (!isTransientStatus2(status) || attempt >= retries)) {
       if (reason) (_i = net.log) == null ? void 0 : _i.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(`Chat request failed (${status}). Check your endpoint/model and connection.`, status);
+      throw new SearchApiError(
+        `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your endpoint/model and connection."}`,
+        status
+      );
     }
     const budget = status === 0 ? networkRetries : retries;
     const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
@@ -782,12 +788,17 @@ function buildAnthropicBody(messages, opts, model, reasoningEffort) {
   return body;
 }
 async function anthropicChat(messages, opts, settings, http, net = {}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
   const model = opts.model || settings.anthropicChatModel;
   if (!model.trim()) {
     throw new SearchApiError("Set a chat model for the Anthropic provider in the plugin settings.", 0);
   }
-  const body = JSON.stringify(buildAnthropicBody(messages, opts, model, net.reasoningEffort));
+  let sendTemperature = opts.temperature != null;
+  let triedWithoutTemperature = false;
+  const makeBody = () => JSON.stringify(
+    buildAnthropicBody(messages, sendTemperature ? opts : { ...opts, temperature: void 0 }, model, net.reasoningEffort)
+  );
+  let body = makeBody();
   const retries = (_a = net.retries) != null ? _a : 2;
   const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
   const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
@@ -815,15 +826,25 @@ async function anthropicChat(messages, opts, settings, http, net = {}) {
       }
       netReason = shortNetworkError3(e);
     }
+    if (status >= 400 && status < 500 && sendTemperature && !triedWithoutTemperature && /temperature/i.test(reason)) {
+      sendTemperature = false;
+      triedWithoutTemperature = true;
+      body = makeBody();
+      (_f = net.log) == null ? void 0 : _f.call(net, `LLM ${label}(${model}): ${status} on temperature \u2014 retrying WITHOUT temperature (${reason})`);
+      continue;
+    }
     if (status !== 0 && (!isTransientStatus3(status) || attempt >= retries)) {
-      if (reason) (_f = net.log) == null ? void 0 : _f.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(`Chat request failed (${status}). Check your Anthropic key/model and connection.`, status);
+      if (reason) (_g = net.log) == null ? void 0 : _g.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
+      throw new SearchApiError(
+        `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your Anthropic key/model and connection."}`,
+        status
+      );
     }
     const budget = status === 0 ? networkRetries : retries;
     const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
     const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_g = net.log) == null ? void 0 : _g.call(net, `LLM ${label}(${model}): ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_i = net.onRetry) == null ? void 0 : _i.call(net, `Network error \u2014 retrying ${(_h = net.label) != null ? _h : "LLM call"} (${attempt + 1}/${budget})\u2026`);
+    (_h = net.log) == null ? void 0 : _h.call(net, `LLM ${label}(${model}): ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
+    if (status === 0) (_j = net.onRetry) == null ? void 0 : _j.call(net, `Network error \u2014 retrying ${(_i = net.label) != null ? _i : "LLM call"} (${attempt + 1}/${budget})\u2026`);
     if (wait > 0) await delay3(wait);
   }
 }
@@ -998,7 +1019,10 @@ async function googleChat(messages, opts, settings, http, net = {}) {
     }
     if (status !== 0 && (!isTransientStatus4(status) || attempt >= retries)) {
       if (reason) (_f = net.log) == null ? void 0 : _f.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(`Chat request failed (${status}). Check your Google key/model and connection.`, status);
+      throw new SearchApiError(
+        `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your Google key/model and connection."}`,
+        status
+      );
     }
     const budget = status === 0 ? networkRetries : retries;
     const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
@@ -6603,21 +6627,23 @@ var SearchModal = class extends import_obsidian3.Modal {
     const buttons = new import_obsidian3.Setting(contentEl);
     buttons.addButton((b) => {
       b.setButtonText("Rephrase for search (uses AI)");
-      if (!this.rephrase) {
-        b.setDisabled(true);
-        b.setTooltip("Configure an AI provider in the settings to rephrase.");
-        return;
-      }
-      const rephrase = this.rephrase;
       b.setTooltip("Replaces the text with a concise English search query \u2014 review it, then Search.");
       b.onClick(() => {
+        if (!this.rephrase) {
+          new import_obsidian3.Notice("No AI provider configured \u2014 set one up under Settings \u2192 Parallax \u2192 AI research, then try again.", 8e3);
+          return;
+        }
+        const rephrase = this.rephrase;
         const text = this.query.trim();
-        if (!text) return;
+        if (!text) {
+          new import_obsidian3.Notice("Type or paste a question first \u2014 there is nothing to rephrase yet.");
+          return;
+        }
         b.setDisabled(true).setButtonText("Rephrasing\u2026");
         void rephrase(text).then((rewritten) => {
           ta.value = rewritten;
           ta.dispatchEvent(new Event("input"));
-        }).catch((e) => new import_obsidian3.Notice(`Rephrasing failed: ${e instanceof Error ? e.message : String(e)}`)).finally(() => {
+        }).catch((e) => new import_obsidian3.Notice(`Rephrasing failed: ${e instanceof Error ? e.message : String(e)}`, 8e3)).finally(() => {
           b.setDisabled(false).setButtonText("Rephrase for search (uses AI)");
         });
       });

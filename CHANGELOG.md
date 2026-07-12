@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.4]
+
+**Fixes from the first field test of Rephrase.** Three things the 0.21.3 test surfaced, fixed in one go:
+
+- **The newest Claude models work again.** Recent Anthropic models reject the `temperature` parameter outright ("deprecated for this model"), which failed every AI call on them. The plugin now retries once without it — older models keep their temperature, newer ones just work.
+- **Error messages tell you what's actually wrong.** "Chat request failed (400)" now carries the provider's own explanation (wrong model, unsupported option, token limit) for all four AI providers, instead of a generic hint.
+- **The Rephrase button always responds.** On mobile, a tap without a configured AI provider used to do nothing at all (a disabled button with a tooltip — which mobile doesn't show). Every tap now answers: what to configure, what's missing, progress, or the result.
+
 ## [0.21.3]
 
 **Quick search now understands what you selected.** Selecting a line from your note used to drag its markdown along into the search — a challenge item like `- [open] Is 'persoonskenmerken' te breed?` reached the search provider with `- open` as its most prominent "keywords", burying the actual question under random matches. Quick search now strips markdown structure (list markers, status boxes, emphasis, links) for all three providers, understands Dutch function words next to English ones when distilling keywords for Semantic Scholar, and puts the terms you 'quoted' yourself at the front of the query — they are, after all, the concepts you're asking about.

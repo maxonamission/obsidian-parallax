@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.21.3]
+
+**Quick search now understands what you selected.** Selecting a line from your note used to drag its markdown along into the search — a challenge item like `- [open] Is 'persoonskenmerken' te breed?` reached the search provider with `- open` as its most prominent "keywords", burying the actual question under random matches. Quick search now strips markdown structure (list markers, status boxes, emphasis, links) for all three providers, understands Dutch function words next to English ones when distilling keywords for Semantic Scholar, and puts the terms you 'quoted' yourself at the front of the query — they are, after all, the concepts you're asking about.
+
+**…and rephrases anything into a real search query.** The scholarly databases are overwhelmingly English, and a selection dragged from a note is rarely search-shaped — whatever its language. The quick-search window now always offers **Rephrase for search (uses AI)** when an AI provider is configured: one click turns any text — a Dutch question, a rhetorical English challenge line — into a concise English search query (author citations like *(Tait, 1985)* preserved), which replaces your editable text so you review it before searching. No language detection, no assumptions. Nothing else about quick search touches AI — without a provider it stays fully keyless, and the button simply explains what to configure.
+
 ## [0.21.2]
 
 **Tidy up an older note on demand.** 0.21.1 made *new* sections land in a fixed, logical order — but deliberately never touches what's already there, so notes from before it can still be scrambled. The new command **"Reorder sections (canonical order)"** puts the active note's sections in that same order as an explicit action: references end up last, your intro stays on top, and your own headings travel with the section they sit under. Section content is untouched; running it on a note that's already in order changes nothing and says so.

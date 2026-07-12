@@ -6552,7 +6552,7 @@ function applyModalChrome(modal) {
 
 // src/search-modal.ts
 var SearchModal = class extends import_obsidian3.Modal {
-  constructor(app, initialQuery, supportsMedicalFilters, onSubmit, hint) {
+  constructor(app, initialQuery, supportsMedicalFilters, onSubmit, hint, rephrase) {
     super(app);
     this.filters = {};
     this.submitted = false;
@@ -6560,6 +6560,7 @@ var SearchModal = class extends import_obsidian3.Modal {
     this.supportsMedicalFilters = supportsMedicalFilters;
     this.onSubmit = onSubmit;
     this.hint = hint;
+    this.rephrase = rephrase;
   }
   onOpen() {
     const { contentEl } = this;
@@ -6568,14 +6569,14 @@ var SearchModal = class extends import_obsidian3.Modal {
     if (this.hint) contentEl.createEl("p", { text: this.hint, cls: "consensus-handoff-hint" });
     contentEl.createEl("label", { text: "Research question", cls: "consensus-search-label" });
     contentEl.createEl("div", {
-      text: 'Phrased as you would search \u2014 e.g. "does spaced repetition improve retention".',
+      text: 'Phrased as you would search \u2014 e.g. "does spaced repetition improve retention". The databases are mostly English; the Rephrase button turns any text into a concise English search query.',
       cls: "setting-item-description"
     });
     const ta = contentEl.createEl("textarea", { cls: "consensus-search-input" });
     ta.value = this.query;
     ta.placeholder = "Type your question\u2026";
-    ta.addEventListener("input", () => this.query = ta.value);
     makeAutoGrowTextarea(ta, 3);
+    ta.addEventListener("input", () => this.query = ta.value);
     ta.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
@@ -6599,7 +6600,29 @@ var SearchModal = class extends import_obsidian3.Modal {
         t2.setValue(false).onChange((v) => this.filters.humanOnly = v || void 0);
       });
     }
-    new import_obsidian3.Setting(contentEl).addButton(
+    const buttons = new import_obsidian3.Setting(contentEl);
+    buttons.addButton((b) => {
+      b.setButtonText("Rephrase for search (uses AI)");
+      if (!this.rephrase) {
+        b.setDisabled(true);
+        b.setTooltip("Configure an AI provider in the settings to rephrase.");
+        return;
+      }
+      const rephrase = this.rephrase;
+      b.setTooltip("Replaces the text with a concise English search query \u2014 review it, then Search.");
+      b.onClick(() => {
+        const text = this.query.trim();
+        if (!text) return;
+        b.setDisabled(true).setButtonText("Rephrasing\u2026");
+        void rephrase(text).then((rewritten) => {
+          ta.value = rewritten;
+          ta.dispatchEvent(new Event("input"));
+        }).catch((e) => new import_obsidian3.Notice(`Rephrasing failed: ${e instanceof Error ? e.message : String(e)}`)).finally(() => {
+          b.setDisabled(false).setButtonText("Rephrase for search (uses AI)");
+        });
+      });
+    });
+    buttons.addButton(
       (b) => b.setButtonText("Search").setCta().onClick(() => this.submit())
     );
   }
@@ -8364,11 +8387,24 @@ var RecordHygieneModal = class extends import_obsidian8.Modal {
   }
 };
 
+// src/query-clean.ts
+function stripMarkdownNoise(query) {
+  return query.split("\n").map(
+    (line) => line.replace(/^\s*(?:>+\s*)?(?:[-*+]|\d+[.)])\s+/, "").replace(/^\s*#{1,6}\s+/, "").replace(/^\s*\[[^\]]{0,16}\]\s*/, "")
+  ).join(" ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`~]/g, " ").replace(/[–—]/g, " ").replace(/\s+/g, " ").trim();
+}
+var QUOTED_SPAN = /(^|[\s(])['‘"“]([^'’"”]{2,80}?)['’"”](?=$|[\s).,;:!?])/g;
+function extractQuotedPhrases(query) {
+  const out = [];
+  for (const m of query.matchAll(QUOTED_SPAN)) out.push(m[2].trim());
+  return out.filter(Boolean);
+}
+
 // src/consensus-api.ts
 function buildSearchUrl(query, filters, settings) {
   const base = settings.apiBaseUrl.replace(/\/+$/, "");
   const params = new URLSearchParams();
-  params.set("query", query);
+  params.set("query", stripMarkdownNoise(query));
   if (settings.resultLimit) params.set("page_size", String(settings.resultLimit));
   if (filters.yearMin != null) params.set("year_min", String(filters.yearMin));
   if (filters.yearMax != null) params.set("year_max", String(filters.yearMax));
@@ -8483,7 +8519,7 @@ async function searchConsensus(query, filters, settings, http) {
 var OPENALEX_WORKS = "https://api.openalex.org/works";
 function buildOpenAlexUrl(query, filters, settings) {
   const params = new URLSearchParams();
-  params.set("search", query.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
+  params.set("search", stripMarkdownNoise(query).replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
   params.set("per-page", String(Math.min(settings.resultLimit || 20, 50)));
   params.set(
     "select",
@@ -8667,12 +8703,128 @@ var S2_STOPWORDS = /* @__PURE__ */ new Set([
   "between",
   "among",
   "through",
-  "per"
+  "per",
+  // Dutch: articles, pronouns, prepositions, auxiliaries, interrogatives.
+  "de",
+  "het",
+  "een",
+  "en",
+  "maar",
+  "want",
+  "dus",
+  "als",
+  "dan",
+  "dat",
+  "dit",
+  "deze",
+  "die",
+  "ook",
+  "nog",
+  "al",
+  "alleen",
+  "hier",
+  "daar",
+  "er",
+  "niet",
+  "geen",
+  "wel",
+  "zo",
+  "zoals",
+  "van",
+  "voor",
+  "naar",
+  "met",
+  "bij",
+  "tot",
+  "uit",
+  "onder",
+  "tussen",
+  "door",
+  "om",
+  "op",
+  "aan",
+  "binnen",
+  "tegen",
+  "zonder",
+  "tijdens",
+  "volgens",
+  "vanuit",
+  "na",
+  "te",
+  "ten",
+  "ter",
+  "zijn",
+  "waren",
+  "wordt",
+  "worden",
+  "werd",
+  "werden",
+  "ben",
+  "bent",
+  "heeft",
+  "hebben",
+  "had",
+  "hadden",
+  "kan",
+  "kunnen",
+  "kon",
+  "konden",
+  "zal",
+  "zullen",
+  "zou",
+  "zouden",
+  "moet",
+  "moeten",
+  "mag",
+  "mogen",
+  "wil",
+  "willen",
+  "wat",
+  "wie",
+  "waar",
+  "waarom",
+  "hoe",
+  "welke",
+  "welk",
+  "wanneer",
+  "waarin",
+  "waarbij",
+  "waarvoor",
+  "waarmee",
+  "hun",
+  "hen",
+  "ze",
+  "zij",
+  "hij",
+  "hem",
+  "haar",
+  "je",
+  "jij",
+  "u",
+  "we",
+  "wij",
+  "men",
+  "iets",
+  "niets",
+  "alles",
+  "elk",
+  "elke",
+  "ieder",
+  "iedere"
 ]);
 function toKeywordQuery(query, maxTokens = 8) {
-  const cleaned = query.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
+  const noiseFree = stripMarkdownNoise(query);
+  const quotedTokens = extractQuotedPhrases(noiseFree).flatMap((p) => p.split(/\s+/));
+  const cleaned = noiseFree.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
   const tokens = cleaned.split(" ").filter(Boolean);
-  const content = tokens.filter((t2) => !S2_STOPWORDS.has(t2.toLowerCase()));
+  const isContent = (t2) => !S2_STOPWORDS.has(t2.toLowerCase()) && /[\p{L}\p{N}]/u.test(t2);
+  const seen = /* @__PURE__ */ new Set();
+  const content = [];
+  for (const t2 of [...quotedTokens.filter(isContent), ...tokens.filter(isContent)]) {
+    if (seen.has(t2.toLowerCase())) continue;
+    seen.add(t2.toLowerCase());
+    content.push(t2);
+  }
   const kept = content.slice(0, maxTokens).join(" ").trim();
   return content.length >= 2 ? kept : cleaned;
 }
@@ -10896,6 +11048,21 @@ function tagTransferPapers(papers, queryList2) {
 }
 
 // src/decompose.ts
+async function rephraseSearchQuery(chat, text) {
+  const raw = await chat(
+    [
+      {
+        role: "system",
+        content: "You rewrite text into a concise English scholarly literature-search query. The input may be in any language and may be a rough note fragment (markdown, task items, rhetorical questions). Extract the searchable core and translate to English when needed. Keep established scholarly terms (e.g. 'Big Five') as-is, and PRESERVE author citations such as (Tait, 1985) exactly \u2014 author names are valuable search terms. If the input already is a good English search query, return it unchanged. Return ONLY the query. No quotes, no commentary, no alternatives."
+      },
+      { role: "user", content: text }
+    ],
+    { temperature: 0.2 }
+  );
+  const cleaned = raw.trim().replace(/^["'“”‘’]+|["'“”‘’]+$/g, "").replace(/\s+/g, " ").trim();
+  if (!cleaned) throw new Error("The model returned an empty query.");
+  return cleaned;
+}
 var SYSTEM3 = [
   "You are a research methodologist helping a writer search the literature.",
   "Decompose a possibly vague research question into sharp, searchable sub-questions,",
@@ -15516,6 +15683,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       return;
     }
     const seed = initialQuery || this.activeSelection();
+    const rephrase = this.llm.isConfigured() ? (text) => rephraseSearchQuery(this.llmChatFn("decompose"), text) : void 0;
     new SearchModal(
       this.app,
       seed,
@@ -15523,7 +15691,9 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       (submission) => {
         if (!submission) return;
         void this.runSearch(submission.query, submission.filters);
-      }
+      },
+      void 0,
+      rephrase
     ).open();
   }
   /** Research pipeline: prompt for a question, then run the multi-source AI pipeline. Public: called from {@link registerCommands}. */

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.22.0]
+
+**Pick your effort level on modern Claude models.** The reasoning dropdowns now offer the full effort range (low · medium · high · xhigh · max) for current Anthropic models — Sonnet 5, Opus 4.7/4.8, Fable/Mythos 5 — and up to *max* on the 4.6 family. Under the hood the Anthropic adapter now speaks the current API: adaptive thinking plus the effort parameter, instead of the legacy thinking-token budgets those models reject outright. Older Claude models (3.7, Opus/Sonnet 4.0–4.5, Haiku 4.5) keep their budget-based levels — everything stays working across the board.
+
+**Rephrase now knows what your session is about.** A selected line often names its subject only implicitly ("does this hold for this question?") — and a rephrase without the subject finds beautifully generic literature about everything except your topic. When you rephrase inside a research session, the session topic now rides along, so "this question" resolves to what you're actually researching and its key terms land in the query.
+
+**OpenAlex searches are now semantic.** OpenAlex quietly gained an embedding-based search mode, and the difference on natural-language queries is night and day: the same personality-and-music-preferences query that returned a mixed bag under keyword matching comes back fully on-topic — at the same (free-tier) cost. All OpenAlex searches — quick search and the research pipeline — now use it, with your year and peer-reviewed filters intact. Since the parameter isn't in OpenAlex's documented API yet, the plugin automatically falls back to classic keyword search if it's ever rejected.
+
+**Windows now use your phone's screen.** On phones, the search-results window squeezed the reference list down to a sliver of a few pixels — technically scrollable, practically invisible — while the window itself used barely half the screen. Windows may now grow to most of the screen (the on-screen keyboard still shrinks them dynamically when it opens), the results list stretches into whatever space is available so the buttons stay in view without scrolling, and reaching the list's end no longer scrolls the note behind it. Text fits too: a long selection pre-filled into the search field is fully visible right away (it used to stay clipped at three lines until you typed), field explanations no longer get cut off mid-sentence by theme styling, and a huge selection scrolls inside its field instead of pushing the buttons out.
+
+**One work, one entry.** Semantic ranking has a side effect: the journal article, its publisher data deposit, and its preprint are each other's nearest neighbours, so the same work could show up two or three times under different DOIs. Result lists now collapse those versions into one entry — the best-cited version (usually the journal article) represents the work, holds the top-ranked spot, and quietly inherits anything the other versions knew (an abstract, an open-access link). Genuinely different works are never merged.
+
+**Room to actually search: OpenAlex API key.** OpenAlex meters anonymous usage at a tiny daily allowance — about ten searches, which a single research run can exhaust ("Rate limit exceeded"). A free API key raises that to roughly a thousand searches per day. Settings → Parallax → Search sources now has an **OpenAlex API key** field, with a link to where you create one (openalex.org/settings/api). Like the other keys it's stored locally in your vault, masked in the settings screen, and sent only to OpenAlex itself.
+
 ## [0.21.4]
 
 **Fixes from the first field test of Rephrase.** Three things the 0.21.3 test surfaced, fixed in one go:

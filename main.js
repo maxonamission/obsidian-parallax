@@ -627,8 +627,14 @@ var FAMILIES = {
     { pattern: /^o\d/, efforts: ["off", "low", "medium", "high"] }
   ],
   anthropic: [
-    // Extended thinking: Claude 3.7+ and the Claude 4 families (budget-based; the adapter
-    // translates low/medium/high into budgets).
+    // Modern families (AU_E125_S1): Opus 4.7+, Sonnet 5+, Fable/Mythos 5 take
+    // `output_config.effort` (low..xhigh/max) with adaptive thinking; thinking budgets
+    // are REMOVED there (400). Order matters — most specific first.
+    { pattern: /^claude-(opus-4-[7-9]|opus-[5-9]|sonnet-[5-9]|fable|mythos)/, efforts: ["off", "low", "medium", "high", "xhigh", "max"] },
+    // Opus 4.6 / Sonnet 4.6: effort GA up to "max" (no xhigh), adaptive thinking.
+    { pattern: /^claude-(opus-4-6|sonnet-4-6)/, efforts: ["off", "low", "medium", "high", "max"] },
+    // Legacy extended thinking (budget-based): Claude 3.7, Opus 4.0-4.5, Sonnet 4.0-4.5,
+    // Haiku 4.5 — the adapter translates low/medium/high into budget_tokens.
     { pattern: /^claude-(3-7|opus-4|sonnet-4|haiku-4|4)/, efforts: ["off", "low", "medium", "high"] }
   ],
   google: [
@@ -765,6 +771,8 @@ function extractUsageTotal(payload) {
   if (input == null && output == null) return void 0;
   return (input != null ? input : 0) + (output != null ? output : 0);
 }
+var ADAPTIVE_EFFORT_MODELS = /^claude-(opus-4-[6-9]|opus-[5-9]|sonnet-4-6|sonnet-[5-9]|fable|mythos)/;
+var XHIGH_MODELS = /^claude-(opus-4-[7-9]|opus-[5-9]|sonnet-[5-9]|fable|mythos)/;
 function buildAnthropicBody(messages, opts, model, reasoningEffort) {
   var _a;
   const systemParts = messages.filter((m) => m.role === "system").map((m) => m.content);
@@ -772,15 +780,22 @@ function buildAnthropicBody(messages, opts, model, reasoningEffort) {
     systemParts.push("Respond with a single valid JSON object only \u2014 no prose, no code fences.");
   }
   const turns = messages.filter((m) => m.role !== "system").map((m) => ({ role: m.role, content: m.content }));
+  const id = model.trim().toLowerCase();
   const effort = (reasoningEffort != null ? reasoningEffort : "").trim();
-  const budget = effort && effort !== "off" ? (_a = THINKING_BUDGETS[effort]) != null ? _a : THINKING_BUDGETS.medium : void 0;
+  const wantsReasoning = Boolean(effort) && effort !== "off";
+  const modern = ADAPTIVE_EFFORT_MODELS.test(id);
+  const budget = wantsReasoning && !modern ? (_a = THINKING_BUDGETS[effort]) != null ? _a : THINKING_BUDGETS.medium : void 0;
   const body = {
     model,
     max_tokens: budget != null ? budget + MAX_OUTPUT_TOKENS : MAX_OUTPUT_TOKENS,
     messages: turns
   };
   if (systemParts.length > 0) body.system = systemParts.join("\n\n");
-  if (budget != null) {
+  if (modern && wantsReasoning) {
+    const clamped = effort === "xhigh" && !XHIGH_MODELS.test(id) ? "high" : effort;
+    body.thinking = { type: "adaptive" };
+    body.output_config = { effort: clamped };
+  } else if (budget != null) {
     body.thinking = { type: "enabled", budget_tokens: budget };
   } else if (opts.temperature != null) {
     body.temperature = opts.temperature;
@@ -5805,6 +5820,24 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
+    new import_obsidian.Setting(containerEl).setName("OpenAlex API key").setDesc(
+      createFragment((f) => {
+        f.appendText(
+          "Optional \u2014 works without one, but the anonymous daily allowance is tiny (about ten searches); a free key raises it to roughly a thousand per day. Create one at "
+        );
+        f.createEl("a", {
+          text: "openalex.org/settings/api",
+          href: "https://openalex.org/settings/api"
+        });
+        f.appendText(". Stored locally; sent only to OpenAlex.");
+      })
+    ).addText((t2) => {
+      t2.setPlaceholder("optional").setValue(this.plugin.settings.openAlexApiKey).onChange(async (v) => {
+        this.plugin.settings.openAlexApiKey = v.trim();
+        await this.plugin.saveSettings();
+      });
+      t2.inputEl.type = "password";
+    });
     new import_obsidian.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
       createFragment((f) => {
         f.appendText(
@@ -6513,8 +6546,13 @@ var import_obsidian3 = require("obsidian");
 var import_obsidian2 = require("obsidian");
 var FOCUS_SCROLL_DELAY_MS = 280;
 var VIEWPORT_MARGIN_PX = 16;
+var KEYBOARD_THRESHOLD_PX = 100;
 function modalMaxHeight(viewportHeight, margin = VIEWPORT_MARGIN_PX) {
   return Math.max(0, viewportHeight - margin);
+}
+function keyboardCap(viewportHeight, layoutHeight, contentTop) {
+  if (viewportHeight >= layoutHeight - KEYBOARD_THRESHOLD_PX) return null;
+  return modalMaxHeight(viewportHeight - contentTop);
 }
 function rowsForLines(lineCount, minRows) {
   return Math.max(minRows, lineCount + 1);
@@ -6528,6 +6566,9 @@ function makeAutoGrowTextarea(textarea, minRows = 2) {
   };
   textarea.addEventListener("input", resize);
   resize();
+  if (typeof window !== "undefined" && typeof window.requestAnimationFrame === "function") {
+    window.requestAnimationFrame(resize);
+  }
   return resize;
 }
 function stackSetting(setting) {
@@ -6539,8 +6580,8 @@ function attachKeyboardAvoidance(modal) {
   const vv = window.visualViewport;
   const onViewportResize = () => {
     if (!vv) return;
-    const top = contentEl.getBoundingClientRect().top;
-    contentEl.setCssStyles({ maxHeight: `${modalMaxHeight(vv.height - top)}px` });
+    const cap = keyboardCap(vv.height, window.innerHeight, contentEl.getBoundingClientRect().top);
+    contentEl.setCssStyles({ maxHeight: cap === null ? "" : `${cap}px` });
   };
   if (vv) {
     vv.addEventListener("resize", onViewportResize);
@@ -6594,7 +6635,9 @@ var SearchModal = class extends import_obsidian3.Modal {
     contentEl.createEl("label", { text: "Research question", cls: "consensus-search-label" });
     contentEl.createEl("div", {
       text: 'Phrased as you would search \u2014 e.g. "does spaced repetition improve retention". The databases are mostly English; the Rephrase button turns any text into a concise English search query.',
-      cls: "setting-item-description"
+      // Own class (AU_E127_S2): themes may line-clamp Obsidian's setting-item-description,
+      // which cut this explanation off mid-sentence on the owner's device.
+      cls: "consensus-field-desc"
     });
     const ta = contentEl.createEl("textarea", { cls: "consensus-search-input" });
     ta.value = this.query;
@@ -6688,7 +6731,7 @@ var ProjectModal = class extends import_obsidian4.Modal {
       cls: "consensus-handoff-hint"
     });
     contentEl.createEl("label", { text: "Project name", cls: "consensus-search-label" });
-    contentEl.createEl("div", { text: "Becomes the folder name and the hub note's title.", cls: "setting-item-description" });
+    contentEl.createEl("div", { text: "Becomes the folder name and the hub note's title.", cls: "consensus-field-desc" });
     const nameEl = contentEl.createEl("input", { cls: "consensus-search-input", type: "text" });
     nameEl.placeholder = "e.g. Talent development in speed skating";
     if (this.initialName) nameEl.value = this.initialName;
@@ -6702,7 +6745,7 @@ var ProjectModal = class extends import_obsidian4.Modal {
     contentEl.createEl("label", { text: "Research objective", cls: "consensus-search-label" });
     contentEl.createEl("div", {
       text: "What do you ultimately want to understand or achieve with this project? Becomes the first artefact (## Doelstelling).",
-      cls: "setting-item-description"
+      cls: "consensus-field-desc"
     });
     const objEl = contentEl.createEl("textarea", { cls: "consensus-search-input" });
     objEl.placeholder = "Describe the aim or the reason for the project\u2026";
@@ -8543,18 +8586,32 @@ async function searchConsensus(query, filters, settings, http) {
 
 // src/openalex-api.ts
 var OPENALEX_WORKS = "https://api.openalex.org/works";
-function buildOpenAlexUrl(query, filters, settings) {
+function buildOpenAlexUrl(query, filters, settings, mode = "semantic") {
   const params = new URLSearchParams();
-  params.set("search", stripMarkdownNoise(query).replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
+  const cleaned = stripMarkdownNoise(query);
+  if (mode === "semantic") {
+    params.set("search.semantic", cleaned);
+  } else {
+    params.set("search", cleaned.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
+  }
   params.set("per-page", String(Math.min(settings.resultLimit || 20, 50)));
   params.set(
     "select",
     "id,doi,title,display_name,publication_year,cited_by_count,primary_location,authorships,abstract_inverted_index,type,open_access"
   );
   if (settings.openAlexMailto) params.set("mailto", settings.openAlexMailto);
+  if (settings.openAlexApiKey) params.set("api_key", settings.openAlexApiKey);
   const filterParts = [];
-  if (filters.yearMin != null) filterParts.push(`from_publication_date:${filters.yearMin}-01-01`);
-  if (filters.yearMax != null) filterParts.push(`to_publication_date:${filters.yearMax}-12-31`);
+  if (filters.yearMin != null) {
+    filterParts.push(
+      mode === "semantic" ? `publication_year:>${filters.yearMin - 1}` : `from_publication_date:${filters.yearMin}-01-01`
+    );
+  }
+  if (filters.yearMax != null) {
+    filterParts.push(
+      mode === "semantic" ? `publication_year:<${filters.yearMax + 1}` : `to_publication_date:${filters.yearMax}-12-31`
+    );
+  }
   if (filters.excludePreprints) filterParts.push("type:article");
   if (filterParts.length > 0) params.set("filter", filterParts.join(","));
   return `${OPENALEX_WORKS}?${params.toString()}`;
@@ -8652,8 +8709,12 @@ function parseOpenAlexResponse(query, payload) {
   return { query, papers, raw: payload };
 }
 async function searchOpenAlex(query, filters, settings, http) {
-  const url = buildOpenAlexUrl(query, filters, settings);
-  const res = await http({ url, method: "GET", headers: { Accept: "application/json" } });
+  const url = buildOpenAlexUrl(query, filters, settings, "semantic");
+  let res = await http({ url, method: "GET", headers: { Accept: "application/json" } });
+  if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+    const fallbackUrl = buildOpenAlexUrl(query, filters, settings, "keyword");
+    res = await http({ url: fallbackUrl, method: "GET", headers: { Accept: "application/json" } });
+  }
   if (res.status < 200 || res.status >= 300) {
     throw new SearchApiError(
       `OpenAlex returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
@@ -11074,12 +11135,13 @@ function tagTransferPapers(papers, queryList2) {
 }
 
 // src/decompose.ts
-async function rephraseSearchQuery(chat, text) {
+async function rephraseSearchQuery(chat, text, topic) {
+  const topicLine = (topic == null ? void 0 : topic.trim()) ? ` The researcher's session topic is: "${topic.trim()}". Resolve implicit references in the input (such as 'this question' or 'deze vraag') to that topic and include its key terms in the query \u2014 a query without the subject matter finds the wrong literature.` : "";
   const raw = await chat(
     [
       {
         role: "system",
-        content: "You rewrite text into a concise English scholarly literature-search query. The input may be in any language and may be a rough note fragment (markdown, task items, rhetorical questions). Extract the searchable core and translate to English when needed. Keep established scholarly terms (e.g. 'Big Five') as-is, and PRESERVE author citations such as (Tait, 1985) exactly \u2014 author names are valuable search terms. If the input already is a good English search query, return it unchanged. Return ONLY the query. No quotes, no commentary, no alternatives."
+        content: "You rewrite text into a concise English scholarly literature-search query. The input may be in any language and may be a rough note fragment (markdown, task items, rhetorical questions). Extract the searchable core and translate to English when needed. Keep established scholarly terms (e.g. 'Big Five') as-is, and PRESERVE author citations such as (Tait, 1985) exactly \u2014 author names are valuable search terms. If the input already is a good English search query, return it unchanged. Return ONLY the query. No quotes, no commentary, no alternatives." + topicLine
       },
       { role: "user", content: text }
     ],
@@ -11327,6 +11389,30 @@ function mergePapers(a, b) {
     isOpenAccess: (_d = a.isOpenAccess) != null ? _d : b.isOpenAccess
   };
 }
+function preferVersion(a, b) {
+  var _a, _b;
+  const ca = (_a = a.citationCount) != null ? _a : 0;
+  const cb = (_b = b.citationCount) != null ? _b : 0;
+  if (cb > ca) return b;
+  if (cb === ca && !a.journal && b.journal) return b;
+  return a;
+}
+function dedupeByTitleFingerprint(papers) {
+  const at = /* @__PURE__ */ new Map();
+  const out = [];
+  for (const paper of papers) {
+    const fp = titleFingerprint(paper.title);
+    const seen = fp ? at.get(fp) : void 0;
+    if (seen === void 0) {
+      if (fp) at.set(fp, out.length);
+      out.push(paper);
+      continue;
+    }
+    const winner = preferVersion(out[seen], paper);
+    out[seen] = mergePapers(winner, winner === paper ? out[seen] : paper);
+  }
+  return out;
+}
 function reciprocalRankFusion(lists, k = RRF_K) {
   const byKey = /* @__PURE__ */ new Map();
   for (const list of lists) {
@@ -11342,7 +11428,8 @@ function reciprocalRankFusion(lists, k = RRF_K) {
       }
     });
   }
-  return [...byKey.values()].sort((a, b) => b.score - a.score).map((e) => e.paper);
+  const ranked = [...byKey.values()].sort((a, b) => b.score - a.score).map((e) => e.paper);
+  return dedupeByTitleFingerprint(ranked);
 }
 function delay5(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
@@ -11813,7 +11900,7 @@ async function runResearch(rawQuestion, settings, http, provider, filters = {}, 
     crossSectorForce: !!opts.crossSectorForce
   });
   log(
-    `credentials \u2014 OpenAlex mailto: ${settings.openAlexMailto ? "set" : "unset"}, Semantic Scholar key: ${settings.semanticScholarApiKey ? "set" : "unset"}`
+    `credentials \u2014 OpenAlex mailto: ${settings.openAlexMailto ? "set" : "unset"}, OpenAlex key: ${settings.openAlexApiKey ? "set" : "unset"}, Semantic Scholar key: ${settings.semanticScholarApiKey ? "set" : "unset"}`
   );
   const chatFor = (step) => {
     const model = resolveStepModel(settings, step);
@@ -15441,6 +15528,7 @@ var DEFAULT_SETTINGS = {
   provider: "openalex",
   artifactLanguage: "en",
   openAlexMailto: "",
+  openAlexApiKey: "",
   semanticScholarApiKey: "",
   apiKey: "",
   apiBaseUrl: "https://api.consensus.app/v1",
@@ -15709,7 +15797,14 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       return;
     }
     const seed = initialQuery || this.activeSelection();
-    const rephrase = this.llm.isConfigured() ? (text) => rephraseSearchQuery(this.llmChatFn("decompose"), text) : void 0;
+    const rephrase = this.llm.isConfigured() ? (text) => {
+      var _a, _b;
+      return rephraseSearchQuery(
+        this.llmChatFn("decompose"),
+        text,
+        sessionTopic((_b = (_a = this.activeSession()) == null ? void 0 : _a.session) != null ? _b : null) || void 0
+      );
+    } : void 0;
     new SearchModal(
       this.app,
       seed,
@@ -17878,7 +17973,8 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     const provider = getProvider(this.settings.provider);
     const loading = new import_obsidian25.Notice(`Searching ${provider.label}\u2026`, 0);
     try {
-      const result = await provider.search(query, filters, this.settings, this.httpRequest);
+      const raw = await provider.search(query, filters, this.settings, this.httpRequest);
+      const result = { ...raw, papers: dedupeByTitleFingerprint(raw.papers) };
       loading.hide();
       if (result.papers.length === 0) {
         new import_obsidian25.Notice("No papers found for that question.");

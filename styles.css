@@ -12,17 +12,40 @@
 	resize: vertical;
 	margin-top: 0.4em;
 	margin-bottom: 0.6em;
+	/* AU_E127_S2: auto-grow (E90) may size the field to a long prefilled selection; cap it so
+	   a huge selection can't crowd the buttons out of the modal — beyond this it scrolls. */
+	max-height: 45vh;
+}
+
+/* Field descriptions rendered outside a Setting row (search/project modal). Deliberately our
+   own class (AU_E127_S2): themes may line-clamp Obsidian's `setting-item-description`, which
+   cut the search modal's explanation off mid-sentence on the owner's device. */
+.consensus-field-desc {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	line-height: var(--line-height-tight);
+	margin: 0.15em 0 0.35em;
 }
 
 /* Mobile: cap the modal height and let it scroll, so the on-screen keyboard can't hide the
-   fields/buttons — combined with scrollIntoView-on-focus + no autofocus (E71). The 55vh cap is a
-   static fallback for when `visualViewport` isn't available; where it is, modal-chrome.ts's
+   fields/buttons — combined with scrollIntoView-on-focus + no autofocus (E71). The static cap is
+   a fallback for when `visualViewport` isn't available; where it is, modal-chrome.ts's
    keyboard-avoidance (E90) sets an inline max-height on this same element that tracks the keyboard
-   as it opens/closes, so the extra bottom padding here gives the last field room to scroll clear. */
+   as it opens/closes, so the extra bottom padding here gives the last field room to scroll clear.
+   AU_E127_S2: 55vh → 85vh — the old cap wasted half the screen on modals without an open
+   keyboard (results list showed ~1.5 rows); the keyboard case is governed by E90's dynamic
+   inline value, not by this static one. */
 .is-mobile .consensus-modal .modal-content {
-	max-height: 55vh;
+	max-height: 85vh;
 	overflow-y: auto;
 	padding-bottom: 3em;
+}
+
+/* AU_E127_S2: also raise the ceiling of the sheet itself — the content cap above is moot if
+   Obsidian's own modal element stops growing earlier. Height stays content-driven; this only
+   allows growth. */
+.is-mobile .consensus-modal {
+	max-height: 90vh;
 }
 
 .consensus-filters {
@@ -40,12 +63,27 @@
 }
 
 .consensus-paper-list {
+	/* AU_E127_S1: the mobile modal-content is a height-capped (55vh) flex column, and this list
+	   — the only shrinkable child (overflow-y resolves min-height:auto to 0) — absorbed ALL the
+	   squeeze, collapsing to a few pixels. The minimum keeps ~4 rows visible; the modal-content
+	   overflow scrolls whatever no longer fits, so the buttons stay reachable. */
+	min-height: 10em;
 	max-height: 50vh;
 	overflow-y: auto;
+	/* Reaching the list's end must not chain-scroll the modal/note behind it (mobile). */
+	overscroll-behavior: contain;
 	border: 1px solid var(--background-modifier-border);
 	border-radius: var(--radius-s);
 	padding: 0.5em;
 	margin-bottom: 0.75em;
+}
+
+/* AU_E127_S2: inside the mobile flex column the list should GROW into whatever the modal has
+   left over (not just survive at its minimum, S1) — buttons stay in view without scrolling
+   the modal itself; the parent's 85vh cap is the real bound, so the 50vh max is lifted. */
+.is-mobile .consensus-modal .consensus-paper-list {
+	flex: 1 1 auto;
+	max-height: none;
 }
 
 .consensus-paper-row {

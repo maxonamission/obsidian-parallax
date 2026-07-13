@@ -379,3 +379,8 @@
 	gap: 0.5em;
 	flex-wrap: wrap;
 }
+
+/* AU_E131_S5: staleness marker on a workbench step card — the artefact's basis changed. */
+.consensus-workbench-stale {
+	color: var(--text-error);
+}

@@ -23,7 +23,7 @@ __export(main_exports, {
   default: () => ParallaxPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian25 = require("obsidian");
+var import_obsidian26 = require("obsidian");
 
 // src/settings-tab.ts
 var import_obsidian = require("obsidian");
@@ -1295,6 +1295,25 @@ var en = {
     connections: "Connections",
     contents: "Contents"
   },
+  sectionIntros: {
+    objective: "What this project sets out to learn \u2014 the compass the sessions below point back to.",
+    context: "Background supplied at the start; it frames how every later step reads the question.",
+    contents: "The project's sessions and notes at a glance \u2014 the map of what follows.",
+    exploration: "Problem exploration before any searching: framings, assumptions and directions that set up the search steps below.",
+    lenses: "Theoretical lenses chosen after the exploration above; they color how the sections below interpret the findings.",
+    framework: "The theoretical framework behind the search: the construct and dimensions steering the sub-questions below.",
+    subquestions: "How the question above was split for the search, each with the expectation stated before the results came in.",
+    searchstrategy: "How the literature was searched \u2014 the method behind the synthesis below.",
+    synthesis: "What the found sources say, graded by evidence strength \u2014 the results the challenge and argument below reason with.",
+    challenge: "Counter-arguments and blind spots raised against the synthesis above; what survives feeds the beliefs below.",
+    beliefs: "The researcher's working convictions after the challenge above \u2014 the ground the argument map below builds on.",
+    argument: "The argument map \u2014 claims, assumptions and support/attack relations, extracted verbatim from the sections above.",
+    hypotheses: "Falsifiable hypotheses derived from the argument map above \u2014 the tests that would move the argument most.",
+    interview: "An interview guide that takes the argument and hypotheses above into fieldwork.",
+    agenda: "Open questions and next research steps that follow from everything above.",
+    connections: "Where this session's thinking links to other sessions and notes in the vault.",
+    logbook: "The chronological trace of every step that produced the sections above."
+  },
   exploration: {
     chosenFraming: "Chosen framing:",
     assumptions: "Implicit assumptions",
@@ -1333,6 +1352,11 @@ var en = {
     assumptions: "Assumptions",
     supports: "supports",
     attacks: "attacks",
+    tests: "tests",
+    evidence: "Evidence",
+    source: "source",
+    projection: "Projection of {note} \u2014 edit there, not here.",
+    staleBanner: '\u26A0 The basis of this map changed since it was adopted ({changed}) \u2014 run "Design \xB7 argument map" again to refresh it.',
     largeMapHint: "This map is getting large \u2014 open it as a Canvas for a better overview (command: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -1421,8 +1445,8 @@ var en = {
     keySources: "Key sources",
     subQuestions: "Sub-questions",
     subQuestionsNote: "(how the question was split; numbers point to the sources each sub-question yielded)",
-    subQuestionsNoteWithHypotheses: "(how the question was split; numbers point to the sources each sub-question yielded, followed by the hypothesis per sub-question)",
-    hypothesisLabel: "Hypothesis"
+    subQuestionsNoteWithExpectations: "(how the question was split; numbers point to the sources each sub-question yielded, followed by the expectation per sub-question)",
+    expectationLabel: "Expectation"
   },
   references: {
     heading: "References"
@@ -1563,6 +1587,9 @@ var en = {
     contentsEmpty: "_(no other notes in this folder yet)_"
   },
   logbook: {
+    stepFork: "Fork",
+    forkedFrom: "forked from {note} at {section}",
+    forkedTo: "forked to {note} at {section}",
     stepBeliefs: "Beliefs",
     stepResearch: "Research",
     stepLibrary: "Library",
@@ -1626,6 +1653,25 @@ var nl = {
     connections: "Verbanden",
     contents: "Inhoudsopgave"
   },
+  sectionIntros: {
+    objective: "Wat dit project wil leren \u2014 het kompas waar de sessies hieronder naar terugwijzen.",
+    context: "Achtergrond die bij de start is meegegeven; bepaalt hoe elke latere stap de vraag leest.",
+    contents: "De sessies en notities van dit project in \xE9\xE9n oogopslag \u2014 de kaart van wat volgt.",
+    exploration: "Probleemverkenning v\xF3\xF3r het zoeken: framings, aannames en richtingen die de zoekstappen hieronder voorbereiden.",
+    lenses: "Theoretische lenzen, gekozen na de verkenning hierboven; ze kleuren hoe de secties hieronder de bevindingen duiden.",
+    framework: "Het theoretisch kader achter de zoektocht: construct en dimensies die de deelvragen hieronder sturen.",
+    subquestions: "Zo is de vraag hierboven opgesplitst voor het zoeken, elk met de verwachting die v\xF3\xF3r de resultaten is uitgesproken.",
+    searchstrategy: "Hoe de literatuur is doorzocht \u2014 de methode achter de synthese hieronder.",
+    synthesis: "Wat de gevonden bronnen zeggen, gegradeerd naar bewijskracht \u2014 de resultaten waar challenge en argumentstructuur hieronder mee redeneren.",
+    challenge: "Tegenwerpingen en blinde vlekken tegen de synthese hierboven; wat overeind blijft voedt de overtuigingen hieronder.",
+    beliefs: "De werkovertuigingen van de onderzoeker na de challenge hierboven \u2014 de grond waar de argumentkaart hieronder op bouwt.",
+    argument: "De argumentkaart \u2014 claims, aannames en steun-/aanvalsrelaties, letterlijk ge\xEBxtraheerd uit de secties hierboven.",
+    hypotheses: "Falsifieerbare hypothesen, afgeleid uit de argumentkaart hierboven \u2014 de toetsen die het betoog het meest bewegen.",
+    interview: "Een interviewleidraad die het betoog en de hypothesen hierboven het veld in brengt.",
+    agenda: "Open vragen en volgende onderzoeksstappen die uit al het bovenstaande volgen.",
+    connections: "Waar het denken van deze sessie raakt aan andere sessies en notities in de kluis.",
+    logbook: "Het chronologische spoor van elke stap die de secties hierboven heeft opgeleverd."
+  },
   exploration: {
     chosenFraming: "Gekozen framing:",
     assumptions: "Impliciete aannames",
@@ -1664,6 +1710,11 @@ var nl = {
     assumptions: "Aannames",
     supports: "steunt",
     attacks: "valt aan",
+    tests: "toetst",
+    evidence: "Bewijs",
+    source: "bron",
+    projection: "Projectie van {note} \u2014 bewerk daar, niet hier.",
+    staleBanner: '\u26A0 De basis van deze kaart is gewijzigd sinds de adoptie ({changed}) \u2014 draai "Design \xB7 argument map" opnieuw om te verversen.',
     largeMapHint: "Deze kaart wordt groot \u2014 open haar als Canvas voor een beter overzicht (commando: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -1752,8 +1803,8 @@ var nl = {
     keySources: "Sleutelbronnen",
     subQuestions: "Deelvragen",
     subQuestionsNote: "(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde)",
-    subQuestionsNoteWithHypotheses: "(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde, gevolgd door de hypothese per deelvraag)",
-    hypothesisLabel: "Hypothese"
+    subQuestionsNoteWithExpectations: "(zo is de vraag opgesplitst; nummers verwijzen naar de bronnen die elke deelvraag opleverde, gevolgd door de verwachting per deelvraag)",
+    expectationLabel: "Verwachting"
   },
   references: {
     heading: "Referenties"
@@ -1894,6 +1945,9 @@ var nl = {
     contentsEmpty: "_(nog geen andere notities in deze map)_"
   },
   logbook: {
+    stepFork: "Fork",
+    forkedFrom: "gevorkt vanaf {note} bij {section}",
+    forkedTo: "gevorkt naar {note} bij {section}",
     stepBeliefs: "Beliefs",
     stepResearch: "Onderzoek",
     stepLibrary: "Bibliotheek",
@@ -1957,6 +2011,25 @@ var fr = {
     connections: "Connexions",
     contents: "Table des mati\xE8res"
   },
+  sectionIntros: {
+    objective: "Ce que ce projet cherche \xE0 apprendre \u2014 la boussole vers laquelle pointent les sessions ci-dessous.",
+    context: "Contexte fourni au d\xE9part ; il cadre la lecture de la question \xE0 chaque \xE9tape ult\xE9rieure.",
+    contents: "Les sessions et notes du projet en un coup d'\u0153il \u2014 la carte de ce qui suit.",
+    exploration: "Exploration du probl\xE8me avant toute recherche : cadrages, pr\xE9suppos\xE9s et directions qui pr\xE9parent les \xE9tapes ci-dessous.",
+    lenses: "Lentilles th\xE9oriques choisies apr\xE8s l'exploration ci-dessus ; elles colorent la lecture des sections suivantes.",
+    framework: "Le cadre th\xE9orique derri\xE8re la recherche : construit et dimensions qui guident les sous-questions ci-dessous.",
+    subquestions: "D\xE9coupage de la question ci-dessus pour la recherche, chacune avec l'attente formul\xE9e avant les r\xE9sultats.",
+    searchstrategy: "Comment la litt\xE9rature a \xE9t\xE9 explor\xE9e \u2014 la m\xE9thode derri\xE8re la synth\xE8se ci-dessous.",
+    synthesis: "Ce que disent les sources trouv\xE9es, gradu\xE9es selon la force des preuves \u2014 les r\xE9sultats avec lesquels raisonnent le challenge et l'argumentation ci-dessous.",
+    challenge: "Objections et angles morts oppos\xE9s \xE0 la synth\xE8se ci-dessus ; ce qui r\xE9siste nourrit les convictions ci-dessous.",
+    beliefs: "Les convictions de travail du chercheur apr\xE8s le challenge ci-dessus \u2014 le socle de la carte argumentative ci-dessous.",
+    argument: "La carte argumentative \u2014 affirmations, pr\xE9suppos\xE9s et relations de soutien/attaque, extraites mot pour mot des sections ci-dessus.",
+    hypotheses: "Hypoth\xE8ses falsifiables d\xE9riv\xE9es de la carte argumentative ci-dessus \u2014 les tests qui feraient le plus bouger l'argument.",
+    interview: "Un guide d'entretien qui porte l'argument et les hypoth\xE8ses ci-dessus sur le terrain.",
+    agenda: "Questions ouvertes et prochaines \xE9tapes de recherche d\xE9coulant de tout ce qui pr\xE9c\xE8de.",
+    connections: "O\xF9 la pens\xE9e de cette session rejoint d'autres sessions et notes du coffre.",
+    logbook: "La trace chronologique de chaque \xE9tape ayant produit les sections ci-dessus."
+  },
   exploration: {
     chosenFraming: "Cadrage retenu :",
     assumptions: "Pr\xE9suppos\xE9s implicites",
@@ -1995,6 +2068,11 @@ var fr = {
     assumptions: "Pr\xE9suppos\xE9s",
     supports: "soutient",
     attacks: "attaque",
+    tests: "teste",
+    evidence: "Preuves",
+    source: "source",
+    projection: "Projection de {note} \u2014 modifiez l\xE0-bas, pas ici.",
+    staleBanner: '\u26A0 La base de cette carte a chang\xE9 depuis son adoption ({changed}) \u2014 relancez "Design \xB7 argument map" pour l\u2019actualiser.',
     largeMapHint: "Cette carte devient grande \u2014 ouvrez-la comme Canvas pour une meilleure vue d'ensemble (commande : \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -2083,8 +2161,8 @@ var fr = {
     keySources: "Sources cl\xE9s",
     subQuestions: "Sous-questions",
     subQuestionsNote: "(d\xE9coupage de la question ; les num\xE9ros renvoient aux sources produites par chaque sous-question)",
-    subQuestionsNoteWithHypotheses: "(d\xE9coupage de la question ; les num\xE9ros renvoient aux sources produites par chaque sous-question, suivis de l'hypoth\xE8se par sous-question)",
-    hypothesisLabel: "Hypoth\xE8se"
+    subQuestionsNoteWithExpectations: "(d\xE9coupage de la question ; les num\xE9ros renvoient aux sources produites par chaque sous-question, suivis de l'attente par sous-question)",
+    expectationLabel: "Attente"
   },
   references: {
     heading: "R\xE9f\xE9rences"
@@ -2225,6 +2303,9 @@ var fr = {
     contentsEmpty: "_(pas encore d'autres notes dans ce dossier)_"
   },
   logbook: {
+    stepFork: "Fourche",
+    forkedFrom: "bifurqu\xE9 depuis {note} \xE0 {section}",
+    forkedTo: "bifurqu\xE9 vers {note} \xE0 {section}",
     stepBeliefs: "Convictions",
     stepResearch: "Recherche",
     stepLibrary: "Biblioth\xE8que",
@@ -2288,6 +2369,25 @@ var de = {
     connections: "Verbindungen",
     contents: "Inhaltsverzeichnis"
   },
+  sectionIntros: {
+    objective: "Was dieses Projekt herausfinden will \u2014 der Kompass, auf den die Sitzungen unten zur\xFCckweisen.",
+    context: "Zu Beginn mitgegebener Hintergrund; er pr\xE4gt, wie jeder sp\xE4tere Schritt die Frage liest.",
+    contents: "Die Sitzungen und Notizen des Projekts auf einen Blick \u2014 die Karte dessen, was folgt.",
+    exploration: "Problemerkundung vor der Suche: Rahmungen, Annahmen und Richtungen, die die Suchschritte unten vorbereiten.",
+    lenses: "Theoretische Linsen, gew\xE4hlt nach der Erkundung oben; sie f\xE4rben, wie die Abschnitte unten die Befunde deuten.",
+    framework: "Der theoretische Rahmen hinter der Suche: Konstrukt und Dimensionen, die die Teilfragen unten steuern.",
+    subquestions: "So wurde die Frage oben f\xFCr die Suche aufgeteilt, jede mit der vor den Ergebnissen formulierten Erwartung.",
+    searchstrategy: "Wie die Literatur durchsucht wurde \u2014 die Methode hinter der Synthese unten.",
+    synthesis: "Was die gefundenen Quellen sagen, nach Evidenzst\xE4rke gestuft \u2014 die Ergebnisse, mit denen Challenge und Argumentstruktur unten arbeiten.",
+    challenge: "Einw\xE4nde und blinde Flecken gegen die Synthese oben; was standh\xE4lt, speist die \xDCberzeugungen unten.",
+    beliefs: "Die Arbeits\xFCberzeugungen nach der Challenge oben \u2014 der Grund, auf dem die Argumentkarte unten baut.",
+    argument: "Die Argumentkarte \u2014 Claims, Annahmen und St\xFCtz-/Angriffsrelationen, w\xF6rtlich aus den Abschnitten oben extrahiert.",
+    hypotheses: "Falsifizierbare Hypothesen, abgeleitet aus der Argumentkarte oben \u2014 die Tests, die das Argument am meisten bewegen.",
+    interview: "Ein Interviewleitfaden, der Argument und Hypothesen oben ins Feld tr\xE4gt.",
+    agenda: "Offene Fragen und n\xE4chste Forschungsschritte, die aus allem oben folgen.",
+    connections: "Wo das Denken dieser Sitzung an andere Sitzungen und Notizen im Vault ankn\xFCpft.",
+    logbook: "Die chronologische Spur jedes Schritts, der die Abschnitte oben hervorgebracht hat."
+  },
   exploration: {
     chosenFraming: "Gew\xE4hltes Framing:",
     assumptions: "Implizite Annahmen",
@@ -2326,6 +2426,11 @@ var de = {
     assumptions: "Annahmen",
     supports: "st\xFCtzt",
     attacks: "greift an",
+    tests: "pr\xFCft",
+    evidence: "Belege",
+    source: "Quelle",
+    projection: "Projektion von {note} \u2014 dort bearbeiten, nicht hier.",
+    staleBanner: '\u26A0 Die Grundlage dieser Karte hat sich seit der \xDCbernahme ge\xE4ndert ({changed}) \u2014 f\xFChre "Design \xB7 argument map" erneut aus.',
     largeMapHint: "Diese Karte wird gro\xDF \u2014 \xF6ffnen Sie sie f\xFCr mehr \xDCbersicht als Canvas (Befehl: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -2414,8 +2519,8 @@ var de = {
     keySources: "Schl\xFCsselquellen",
     subQuestions: "Teilfragen",
     subQuestionsNote: "(so wurde die Frage aufgeteilt; Nummern verweisen auf die Quellen, die jede Teilfrage ergab)",
-    subQuestionsNoteWithHypotheses: "(so wurde die Frage aufgeteilt; Nummern verweisen auf die Quellen, die jede Teilfrage ergab, gefolgt von der Hypothese je Teilfrage)",
-    hypothesisLabel: "Hypothese"
+    subQuestionsNoteWithExpectations: "(so wurde die Frage aufgeteilt; Nummern verweisen auf die Quellen, die jede Teilfrage ergab, gefolgt von der Erwartung je Teilfrage)",
+    expectationLabel: "Erwartung"
   },
   references: {
     heading: "Referenzen"
@@ -2556,6 +2661,9 @@ var de = {
     contentsEmpty: "_(noch keine weiteren Notizen in diesem Ordner)_"
   },
   logbook: {
+    stepFork: "Fork",
+    forkedFrom: "abgezweigt von {note} bei {section}",
+    forkedTo: "abgezweigt nach {note} bei {section}",
     stepBeliefs: "\xDCberzeugungen",
     stepResearch: "Recherche",
     stepLibrary: "Bibliothek",
@@ -2619,6 +2727,25 @@ var es = {
     connections: "Conexiones",
     contents: "\xCDndice"
   },
+  sectionIntros: {
+    objective: "Lo que este proyecto quiere averiguar \u2014 la br\xFAjula a la que apuntan las sesiones de abajo.",
+    context: "Contexto aportado al inicio; enmarca c\xF3mo cada paso posterior lee la pregunta.",
+    contents: "Las sesiones y notas del proyecto de un vistazo \u2014 el mapa de lo que sigue.",
+    exploration: "Exploraci\xF3n del problema antes de buscar: encuadres, supuestos y direcciones que preparan los pasos de b\xFAsqueda de abajo.",
+    lenses: "Lentes te\xF3ricas elegidas tras la exploraci\xF3n de arriba; ti\xF1en c\xF3mo las secciones siguientes interpretan los hallazgos.",
+    framework: "El marco te\xF3rico tras la b\xFAsqueda: constructo y dimensiones que gu\xEDan las subpreguntas de abajo.",
+    subquestions: "As\xED se dividi\xF3 la pregunta de arriba para la b\xFAsqueda, cada una con la expectativa formulada antes de los resultados.",
+    searchstrategy: "C\xF3mo se busc\xF3 la literatura \u2014 el m\xE9todo tras la s\xEDntesis de abajo.",
+    synthesis: "Lo que dicen las fuentes halladas, graduadas por fuerza de la evidencia \u2014 los resultados con los que razonan el challenge y la argumentaci\xF3n de abajo.",
+    challenge: "Objeciones y puntos ciegos frente a la s\xEDntesis de arriba; lo que resiste alimenta las convicciones de abajo.",
+    beliefs: "Las convicciones de trabajo tras el challenge de arriba \u2014 la base sobre la que construye el mapa argumental de abajo.",
+    argument: "El mapa argumental \u2014 afirmaciones, supuestos y relaciones de apoyo/ataque, extra\xEDdas literalmente de las secciones de arriba.",
+    hypotheses: "Hip\xF3tesis falsables derivadas del mapa argumental de arriba \u2014 las pruebas que m\xE1s mover\xEDan el argumento.",
+    interview: "Una gu\xEDa de entrevista que lleva el argumento y las hip\xF3tesis de arriba al trabajo de campo.",
+    agenda: "Preguntas abiertas y pr\xF3ximos pasos de investigaci\xF3n que se derivan de todo lo anterior.",
+    connections: "D\xF3nde el pensamiento de esta sesi\xF3n conecta con otras sesiones y notas del vault.",
+    logbook: "El rastro cronol\xF3gico de cada paso que produjo las secciones de arriba."
+  },
   exploration: {
     chosenFraming: "Encuadre elegido:",
     assumptions: "Supuestos impl\xEDcitos",
@@ -2657,6 +2784,11 @@ var es = {
     assumptions: "Supuestos",
     supports: "apoya",
     attacks: "ataca",
+    tests: "prueba",
+    evidence: "Evidencia",
+    source: "fuente",
+    projection: "Proyecci\xF3n de {note} \u2014 edite all\xED, no aqu\xED.",
+    staleBanner: '\u26A0 La base de este mapa cambi\xF3 desde su adopci\xF3n ({changed}) \u2014 vuelve a ejecutar "Design \xB7 argument map" para actualizarlo.',
     largeMapHint: "Este mapa se est\xE1 haciendo grande \u2014 \xE1bralo como Canvas para una mejor visi\xF3n general (comando: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -2745,8 +2877,8 @@ var es = {
     keySources: "Fuentes clave",
     subQuestions: "Subpreguntas",
     subQuestionsNote: "(as\xED se dividi\xF3 la pregunta; los n\xFAmeros remiten a las fuentes que aport\xF3 cada subpregunta)",
-    subQuestionsNoteWithHypotheses: "(as\xED se dividi\xF3 la pregunta; los n\xFAmeros remiten a las fuentes que aport\xF3 cada subpregunta, seguidas de la hip\xF3tesis por subpregunta)",
-    hypothesisLabel: "Hip\xF3tesis"
+    subQuestionsNoteWithExpectations: "(as\xED se dividi\xF3 la pregunta; los n\xFAmeros remiten a las fuentes que aport\xF3 cada subpregunta, seguidas de la expectativa por subpregunta)",
+    expectationLabel: "Expectativa"
   },
   references: {
     heading: "Referencias"
@@ -2887,6 +3019,9 @@ var es = {
     contentsEmpty: "_(todav\xEDa no hay otras notas en esta carpeta)_"
   },
   logbook: {
+    stepFork: "Bifurcaci\xF3n",
+    forkedFrom: "bifurcado desde {note} en {section}",
+    forkedTo: "bifurcado hacia {note} en {section}",
     stepBeliefs: "Convicciones",
     stepResearch: "Investigaci\xF3n",
     stepLibrary: "Biblioteca",
@@ -2950,6 +3085,25 @@ var pt = {
     connections: "Conex\xF5es",
     contents: "\xCDndice"
   },
+  sectionIntros: {
+    objective: "O que este projeto quer descobrir \u2014 a b\xFAssola para a qual apontam as sess\xF5es abaixo.",
+    context: "Contexto fornecido no in\xEDcio; enquadra como cada passo posterior l\xEA a pergunta.",
+    contents: "As sess\xF5es e notas do projeto num relance \u2014 o mapa do que segue.",
+    exploration: "Explora\xE7\xE3o do problema antes da busca: enquadramentos, pressupostos e dire\xE7\xF5es que preparam os passos de busca abaixo.",
+    lenses: "Lentes te\xF3ricas escolhidas ap\xF3s a explora\xE7\xE3o acima; colorem como as se\xE7\xF5es seguintes interpretam os achados.",
+    framework: "O quadro te\xF3rico por tr\xE1s da busca: constructo e dimens\xF5es que orientam as subquest\xF5es abaixo.",
+    subquestions: "Assim a pergunta acima foi dividida para a busca, cada uma com a expectativa formulada antes dos resultados.",
+    searchstrategy: "Como a literatura foi pesquisada \u2014 o m\xE9todo por tr\xE1s da s\xEDntese abaixo.",
+    synthesis: "O que dizem as fontes encontradas, graduadas pela for\xE7a da evid\xEAncia \u2014 os resultados com que raciocinam o challenge e a argumenta\xE7\xE3o abaixo.",
+    challenge: "Obje\xE7\xF5es e pontos cegos contra a s\xEDntese acima; o que resiste alimenta as convic\xE7\xF5es abaixo.",
+    beliefs: "As convic\xE7\xF5es de trabalho ap\xF3s o challenge acima \u2014 a base sobre a qual constr\xF3i o mapa argumentativo abaixo.",
+    argument: "O mapa argumentativo \u2014 afirma\xE7\xF5es, pressupostos e rela\xE7\xF5es de apoio/ataque, extra\xEDdas literalmente das se\xE7\xF5es acima.",
+    hypotheses: "Hip\xF3teses false\xE1veis derivadas do mapa argumentativo acima \u2014 os testes que mais moveriam o argumento.",
+    interview: "Um guia de entrevista que leva o argumento e as hip\xF3teses acima para o campo.",
+    agenda: "Quest\xF5es abertas e pr\xF3ximos passos de pesquisa que decorrem de tudo acima.",
+    connections: "Onde o pensamento desta sess\xE3o se liga a outras sess\xF5es e notas do vault.",
+    logbook: "O rastro cronol\xF3gico de cada passo que produziu as se\xE7\xF5es acima."
+  },
   exploration: {
     chosenFraming: "Enquadramento escolhido:",
     assumptions: "Pressupostos impl\xEDcitos",
@@ -2988,6 +3142,11 @@ var pt = {
     assumptions: "Pressupostos",
     supports: "apoia",
     attacks: "ataca",
+    tests: "testa",
+    evidence: "Evid\xEAncias",
+    source: "fonte",
+    projection: "Proje\xE7\xE3o de {note} \u2014 edite l\xE1, n\xE3o aqui.",
+    staleBanner: '\u26A0 A base deste mapa mudou desde a ado\xE7\xE3o ({changed}) \u2014 execute "Design \xB7 argument map" novamente para atualiz\xE1-lo.',
     largeMapHint: "Este mapa est\xE1 a ficar grande \u2014 abra-o como Canvas para uma melhor vis\xE3o geral (comando: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -3076,8 +3235,8 @@ var pt = {
     keySources: "Fontes-chave",
     subQuestions: "Subquest\xF5es",
     subQuestionsNote: "(como a quest\xE3o foi dividida; os n\xFAmeros remetem \xE0s fontes que cada subquest\xE3o rendeu)",
-    subQuestionsNoteWithHypotheses: "(como a quest\xE3o foi dividida; os n\xFAmeros remetem \xE0s fontes que cada subquest\xE3o rendeu, seguidos da hip\xF3tese por subquest\xE3o)",
-    hypothesisLabel: "Hip\xF3tese"
+    subQuestionsNoteWithExpectations: "(como a quest\xE3o foi dividida; os n\xFAmeros remetem \xE0s fontes que cada subquest\xE3o rendeu, seguidos da expectativa por subquest\xE3o)",
+    expectationLabel: "Expectativa"
   },
   references: {
     heading: "Refer\xEAncias"
@@ -3218,6 +3377,9 @@ var pt = {
     contentsEmpty: "_(ainda n\xE3o h\xE1 outras notas nesta pasta)_"
   },
   logbook: {
+    stepFork: "Bifurca\xE7\xE3o",
+    forkedFrom: "bifurcado de {note} em {section}",
+    forkedTo: "bifurcado para {note} em {section}",
     stepBeliefs: "Cren\xE7as",
     stepResearch: "Pesquisa",
     stepLibrary: "Biblioteca",
@@ -3281,6 +3443,25 @@ var it = {
     connections: "Connessioni",
     contents: "Indice"
   },
+  sectionIntros: {
+    objective: "Ci\xF2 che questo progetto vuole scoprire \u2014 la bussola a cui puntano le sessioni qui sotto.",
+    context: "Contesto fornito all'inizio; incornicia come ogni passo successivo legge la domanda.",
+    contents: "Le sessioni e le note del progetto a colpo d'occhio \u2014 la mappa di ci\xF2 che segue.",
+    exploration: "Esplorazione del problema prima della ricerca: inquadramenti, assunti e direzioni che preparano i passi di ricerca qui sotto.",
+    lenses: "Lenti teoriche scelte dopo l'esplorazione qui sopra; colorano come le sezioni successive interpretano i risultati.",
+    framework: "Il quadro teorico dietro la ricerca: costrutto e dimensioni che guidano le sotto-domande qui sotto.",
+    subquestions: "Cos\xEC \xE8 stata suddivisa la domanda qui sopra per la ricerca, ciascuna con l'aspettativa formulata prima dei risultati.",
+    searchstrategy: "Come \xE8 stata cercata la letteratura \u2014 il metodo dietro la sintesi qui sotto.",
+    synthesis: "Ci\xF2 che dicono le fonti trovate, graduate per forza dell'evidenza \u2014 i risultati con cui ragionano challenge e argomentazione qui sotto.",
+    challenge: "Obiezioni e punti ciechi contro la sintesi qui sopra; ci\xF2 che resiste alimenta le convinzioni qui sotto.",
+    beliefs: "Le convinzioni di lavoro dopo il challenge qui sopra \u2014 la base su cui costruisce la mappa argomentativa qui sotto.",
+    argument: "La mappa argomentativa \u2014 affermazioni, assunti e relazioni di sostegno/attacco, estratte alla lettera dalle sezioni qui sopra.",
+    hypotheses: "Ipotesi falsificabili derivate dalla mappa argomentativa qui sopra \u2014 i test che pi\xF9 muoverebbero l'argomento.",
+    interview: "Una guida all'intervista che porta sul campo l'argomento e le ipotesi qui sopra.",
+    agenda: "Domande aperte e prossimi passi di ricerca che seguono da tutto quanto sopra.",
+    connections: "Dove il pensiero di questa sessione si collega ad altre sessioni e note del vault.",
+    logbook: "La traccia cronologica di ogni passo che ha prodotto le sezioni qui sopra."
+  },
   exploration: {
     chosenFraming: "Inquadramento scelto:",
     assumptions: "Assunti impliciti",
@@ -3319,6 +3500,11 @@ var it = {
     assumptions: "Assunti",
     supports: "sostiene",
     attacks: "attacca",
+    tests: "verifica",
+    evidence: "Evidenze",
+    source: "fonte",
+    projection: "Proiezione di {note} \u2014 modifica l\xEC, non qui.",
+    staleBanner: '\u26A0 La base di questa mappa \xE8 cambiata dopo l\u2019adozione ({changed}) \u2014 riesegui "Design \xB7 argument map" per aggiornarla.',
     largeMapHint: "Questa mappa sta diventando grande \u2014 aprila come Canvas per una visione d'insieme migliore (comando: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -3407,8 +3593,8 @@ var it = {
     keySources: "Fonti chiave",
     subQuestions: "Sotto-domande",
     subQuestionsNote: "(come \xE8 stata suddivisa la domanda; i numeri rimandano alle fonti prodotte da ciascuna sotto-domanda)",
-    subQuestionsNoteWithHypotheses: "(come \xE8 stata suddivisa la domanda; i numeri rimandano alle fonti prodotte da ciascuna sotto-domanda, seguite dall'ipotesi per sotto-domanda)",
-    hypothesisLabel: "Ipotesi"
+    subQuestionsNoteWithExpectations: "(come \xE8 stata suddivisa la domanda; i numeri rimandano alle fonti prodotte da ciascuna sotto-domanda, seguite dall'aspettativa per sotto-domanda)",
+    expectationLabel: "Aspettativa"
   },
   references: {
     heading: "Riferimenti"
@@ -3549,6 +3735,9 @@ var it = {
     contentsEmpty: "_(ancora nessun'altra nota in questa cartella)_"
   },
   logbook: {
+    stepFork: "Fork",
+    forkedFrom: "biforcato da {note} a {section}",
+    forkedTo: "biforcato verso {note} a {section}",
     stepBeliefs: "Convinzioni",
     stepResearch: "Ricerca",
     stepLibrary: "Biblioteca",
@@ -3612,6 +3801,25 @@ var ru = {
     connections: "\u0421\u0432\u044F\u0437\u0438",
     contents: "\u0421\u043E\u0434\u0435\u0440\u0436\u0430\u043D\u0438\u0435"
   },
+  sectionIntros: {
+    objective: "\u0427\u0442\u043E \u044D\u0442\u043E\u0442 \u043F\u0440\u043E\u0435\u043A\u0442 \u0445\u043E\u0447\u0435\u0442 \u0432\u044B\u044F\u0441\u043D\u0438\u0442\u044C \u2014 \u043A\u043E\u043C\u043F\u0430\u0441, \u043A \u043A\u043E\u0442\u043E\u0440\u043E\u043C\u0443 \u043E\u0431\u0440\u0430\u0449\u0435\u043D\u044B \u0441\u0435\u0441\u0441\u0438\u0438 \u043D\u0438\u0436\u0435.",
+    context: "\u041A\u043E\u043D\u0442\u0435\u043A\u0441\u0442, \u0437\u0430\u0434\u0430\u043D\u043D\u044B\u0439 \u0432 \u043D\u0430\u0447\u0430\u043B\u0435; \u043E\u043D \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u044F\u0435\u0442, \u043A\u0430\u043A \u043A\u0430\u0436\u0434\u044B\u0439 \u043F\u043E\u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0439 \u0448\u0430\u0433 \u0447\u0438\u0442\u0430\u0435\u0442 \u0432\u043E\u043F\u0440\u043E\u0441.",
+    contents: "\u0421\u0435\u0441\u0441\u0438\u0438 \u0438 \u0437\u0430\u043C\u0435\u0442\u043A\u0438 \u043F\u0440\u043E\u0435\u043A\u0442\u0430 \u043E\u0434\u043D\u0438\u043C \u0432\u0437\u0433\u043B\u044F\u0434\u043E\u043C \u2014 \u043A\u0430\u0440\u0442\u0430 \u0442\u043E\u0433\u043E, \u0447\u0442\u043E \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u0434\u0430\u043B\u0435\u0435.",
+    exploration: "\u0418\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u0435 \u043F\u0440\u043E\u0431\u043B\u0435\u043C\u044B \u0434\u043E \u043F\u043E\u0438\u0441\u043A\u0430: \u0440\u0430\u043C\u043A\u0438, \u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F \u0438 \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u044F, \u0433\u043E\u0442\u043E\u0432\u044F\u0449\u0438\u0435 \u043F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0448\u0430\u0433\u0438 \u043D\u0438\u0436\u0435.",
+    lenses: "\u0422\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u043B\u0438\u043D\u0437\u044B, \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0435 \u043F\u043E\u0441\u043B\u0435 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F \u0432\u044B\u0448\u0435; \u043E\u043D\u0438 \u043E\u043A\u0440\u0430\u0448\u0438\u0432\u0430\u044E\u0442 \u0442\u0440\u0430\u043A\u0442\u043E\u0432\u043A\u0443 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u043E\u0432 \u0432 \u0440\u0430\u0437\u0434\u0435\u043B\u0430\u0445 \u043D\u0438\u0436\u0435.",
+    framework: "\u0422\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0430\u044F \u0440\u0430\u043C\u043A\u0430 \u043F\u043E\u0438\u0441\u043A\u0430: \u043A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442 \u0438 \u0438\u0437\u043C\u0435\u0440\u0435\u043D\u0438\u044F, \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u044F\u044E\u0449\u0438\u0435 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u044B \u043D\u0438\u0436\u0435.",
+    subquestions: "\u0422\u0430\u043A \u0432\u043E\u043F\u0440\u043E\u0441 \u0432\u044B\u0448\u0435 \u0431\u044B\u043B \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u0434\u043B\u044F \u043F\u043E\u0438\u0441\u043A\u0430; \u0443 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u2014 \u043E\u0436\u0438\u0434\u0430\u043D\u0438\u0435, \u0441\u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u043E\u0435 \u0434\u043E \u043F\u043E\u043B\u0443\u0447\u0435\u043D\u0438\u044F \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u043E\u0432.",
+    searchstrategy: "\u041A\u0430\u043A \u0438\u0441\u043A\u0430\u043B\u0430\u0441\u044C \u043B\u0438\u0442\u0435\u0440\u0430\u0442\u0443\u0440\u0430 \u2014 \u043C\u0435\u0442\u043E\u0434, \u0441\u0442\u043E\u044F\u0449\u0438\u0439 \u0437\u0430 \u0441\u0438\u043D\u0442\u0435\u0437\u043E\u043C \u043D\u0438\u0436\u0435.",
+    synthesis: "\u0427\u0442\u043E \u0433\u043E\u0432\u043E\u0440\u044F\u0442 \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0435 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438, \u0440\u0430\u043D\u0436\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u044B\u0435 \u043F\u043E \u0441\u0438\u043B\u0435 \u0434\u043E\u043A\u0430\u0437\u0430\u0442\u0435\u043B\u044C\u0441\u0442\u0432 \u2014 \u0440\u0435\u0437\u0443\u043B\u044C\u0442\u0430\u0442\u044B, \u0441 \u043A\u043E\u0442\u043E\u0440\u044B\u043C\u0438 \u0440\u0430\u0431\u043E\u0442\u0430\u044E\u0442 challenge \u0438 \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u0430\u0446\u0438\u044F \u043D\u0438\u0436\u0435.",
+    challenge: "\u0412\u043E\u0437\u0440\u0430\u0436\u0435\u043D\u0438\u044F \u0438 \u0441\u043B\u0435\u043F\u044B\u0435 \u043F\u044F\u0442\u043D\u0430 \u043F\u0440\u043E\u0442\u0438\u0432 \u0441\u0438\u043D\u0442\u0435\u0437\u0430 \u0432\u044B\u0448\u0435; \u0447\u0442\u043E \u0443\u0441\u0442\u043E\u044F\u043B\u043E, \u043F\u0438\u0442\u0430\u0435\u0442 \u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F \u043D\u0438\u0436\u0435.",
+    beliefs: "\u0420\u0430\u0431\u043E\u0447\u0438\u0435 \u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u0442\u0435\u043B\u044F \u043F\u043E\u0441\u043B\u0435 challenge \u0432\u044B\u0448\u0435 \u2014 \u043E\u0441\u043D\u043E\u0432\u0430, \u043D\u0430 \u043A\u043E\u0442\u043E\u0440\u043E\u0439 \u0441\u0442\u0440\u043E\u0438\u0442\u0441\u044F \u043A\u0430\u0440\u0442\u0430 \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u043D\u0438\u0436\u0435.",
+    argument: "\u041A\u0430\u0440\u0442\u0430 \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u2014 \u0443\u0442\u0432\u0435\u0440\u0436\u0434\u0435\u043D\u0438\u044F, \u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F \u0438 \u043E\u0442\u043D\u043E\u0448\u0435\u043D\u0438\u044F \u043F\u043E\u0434\u0434\u0435\u0440\u0436\u043A\u0438/\u0430\u0442\u0430\u043A\u0438, \u0434\u043E\u0441\u043B\u043E\u0432\u043D\u043E \u0438\u0437\u0432\u043B\u0435\u0447\u0451\u043D\u043D\u044B\u0435 \u0438\u0437 \u0440\u0430\u0437\u0434\u0435\u043B\u043E\u0432 \u0432\u044B\u0448\u0435.",
+    hypotheses: "\u0424\u0430\u043B\u044C\u0441\u0438\u0444\u0438\u0446\u0438\u0440\u0443\u0435\u043C\u044B\u0435 \u0433\u0438\u043F\u043E\u0442\u0435\u0437\u044B, \u0432\u044B\u0432\u0435\u0434\u0435\u043D\u043D\u044B\u0435 \u0438\u0437 \u043A\u0430\u0440\u0442\u044B \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442\u043E\u0432 \u0432\u044B\u0448\u0435 \u2014 \u043F\u0440\u043E\u0432\u0435\u0440\u043A\u0438, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0441\u0438\u043B\u044C\u043D\u0435\u0435 \u0432\u0441\u0435\u0433\u043E \u0441\u0434\u0432\u0438\u043D\u0443\u0442 \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442.",
+    interview: "\u0413\u0438\u0434 \u0438\u043D\u0442\u0435\u0440\u0432\u044C\u044E, \u0432\u044B\u043D\u043E\u0441\u044F\u0449\u0438\u0439 \u0430\u0440\u0433\u0443\u043C\u0435\u043D\u0442 \u0438 \u0433\u0438\u043F\u043E\u0442\u0435\u0437\u044B \u0432\u044B\u0448\u0435 \u0432 \u043F\u043E\u043B\u0435\u0432\u0443\u044E \u0440\u0430\u0431\u043E\u0442\u0443.",
+    agenda: "\u041E\u0442\u043A\u0440\u044B\u0442\u044B\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B \u0438 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0435 \u0448\u0430\u0433\u0438 \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u044F, \u0432\u044B\u0442\u0435\u043A\u0430\u044E\u0449\u0438\u0435 \u0438\u0437 \u0432\u0441\u0435\u0433\u043E \u0432\u044B\u0448\u0435.",
+    connections: "\u0413\u0434\u0435 \u043C\u044B\u0448\u043B\u0435\u043D\u0438\u0435 \u044D\u0442\u043E\u0439 \u0441\u0435\u0441\u0441\u0438\u0438 \u0441\u0432\u044F\u0437\u0430\u043D\u043E \u0441 \u0434\u0440\u0443\u0433\u0438\u043C\u0438 \u0441\u0435\u0441\u0441\u0438\u044F\u043C\u0438 \u0438 \u0437\u0430\u043C\u0435\u0442\u043A\u0430\u043C\u0438 \u0445\u0440\u0430\u043D\u0438\u043B\u0438\u0449\u0430.",
+    logbook: "\u0425\u0440\u043E\u043D\u043E\u043B\u043E\u0433\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u0441\u043B\u0435\u0434 \u043A\u0430\u0436\u0434\u043E\u0433\u043E \u0448\u0430\u0433\u0430, \u043F\u043E\u0440\u043E\u0434\u0438\u0432\u0448\u0435\u0433\u043E \u0440\u0430\u0437\u0434\u0435\u043B\u044B \u0432\u044B\u0448\u0435."
+  },
   exploration: {
     chosenFraming: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u0444\u0440\u0435\u0439\u043C\u0438\u043D\u0433:",
     assumptions: "\u0418\u043C\u043F\u043B\u0438\u0446\u0438\u0442\u043D\u044B\u0435 \u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F",
@@ -3650,6 +3858,11 @@ var ru = {
     assumptions: "\u0414\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F",
     supports: "\u043F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442",
     attacks: "\u043E\u043F\u0440\u043E\u0432\u0435\u0440\u0433\u0430\u0435\u0442",
+    tests: "\u043F\u0440\u043E\u0432\u0435\u0440\u044F\u0435\u0442",
+    evidence: "\u0414\u0430\u043D\u043D\u044B\u0435",
+    source: "\u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A",
+    projection: "\u041F\u0440\u043E\u0435\u043A\u0446\u0438\u044F {note} \u2014 \u0440\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u0443\u0439\u0442\u0435 \u0442\u0430\u043C, \u0430 \u043D\u0435 \u0437\u0434\u0435\u0441\u044C.",
+    staleBanner: '\u26A0 \u041E\u0441\u043D\u043E\u0432\u0430 \u044D\u0442\u043E\u0439 \u043A\u0430\u0440\u0442\u044B \u0438\u0437\u043C\u0435\u043D\u0438\u043B\u0430\u0441\u044C \u043F\u043E\u0441\u043B\u0435 \u043F\u0440\u0438\u043D\u044F\u0442\u0438\u044F ({changed}) \u2014 \u0437\u0430\u043F\u0443\u0441\u0442\u0438\u0442\u0435 "Design \xB7 argument map" \u0437\u0430\u043D\u043E\u0432\u043E, \u0447\u0442\u043E\u0431\u044B \u043E\u0431\u043D\u043E\u0432\u0438\u0442\u044C \u0435\u0451.',
     largeMapHint: "\u041A\u0430\u0440\u0442\u0430 \u0441\u0442\u0430\u043D\u043E\u0432\u0438\u0442\u0441\u044F \u0431\u043E\u043B\u044C\u0448\u043E\u0439 \u2014 \u043E\u0442\u043A\u0440\u043E\u0439\u0442\u0435 \u0435\u0451 \u043A\u0430\u043A Canvas \u0434\u043B\u044F \u043B\u0443\u0447\u0448\u0435\u0433\u043E \u043E\u0431\u0437\u043E\u0440\u0430 (\u043A\u043E\u043C\u0430\u043D\u0434\u0430: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -3738,8 +3951,8 @@ var ru = {
     keySources: "\u041A\u043B\u044E\u0447\u0435\u0432\u044B\u0435 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438",
     subQuestions: "\u041F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u044B",
     subQuestionsNote: "(\u0442\u0430\u043A \u0431\u044B\u043B \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u0432\u043E\u043F\u0440\u043E\u0441; \u043D\u043E\u043C\u0435\u0440\u0430 \u0443\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u043D\u0430 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438, \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0435 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443)",
-    subQuestionsNoteWithHypotheses: "(\u0442\u0430\u043A \u0431\u044B\u043B \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u0432\u043E\u043F\u0440\u043E\u0441; \u043D\u043E\u043C\u0435\u0440\u0430 \u0443\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u043D\u0430 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438, \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0435 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443, \u0434\u0430\u043B\u0435\u0435 \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u0433\u0438\u043F\u043E\u0442\u0435\u0437\u0430 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443)",
-    hypothesisLabel: "\u0413\u0438\u043F\u043E\u0442\u0435\u0437\u0430"
+    subQuestionsNoteWithExpectations: "(\u0442\u0430\u043A \u0431\u044B\u043B \u0440\u0430\u0437\u0434\u0435\u043B\u0451\u043D \u0432\u043E\u043F\u0440\u043E\u0441; \u043D\u043E\u043C\u0435\u0440\u0430 \u0443\u043A\u0430\u0437\u044B\u0432\u0430\u044E\u0442 \u043D\u0430 \u0438\u0441\u0442\u043E\u0447\u043D\u0438\u043A\u0438, \u043D\u0430\u0439\u0434\u0435\u043D\u043D\u044B\u0435 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443, \u0434\u0430\u043B\u0435\u0435 \u0441\u043B\u0435\u0434\u0443\u0435\u0442 \u043E\u0436\u0438\u0434\u0430\u043D\u0438\u0435 \u043F\u043E \u043A\u0430\u0436\u0434\u043E\u043C\u0443 \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u0443)",
+    expectationLabel: "\u041E\u0436\u0438\u0434\u0430\u043D\u0438\u0435"
   },
   references: {
     heading: "\u0421\u043F\u0438\u0441\u043E\u043A \u043B\u0438\u0442\u0435\u0440\u0430\u0442\u0443\u0440\u044B"
@@ -3880,6 +4093,9 @@ var ru = {
     contentsEmpty: "_(\u0432 \u044D\u0442\u043E\u0439 \u043F\u0430\u043F\u043A\u0435 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0434\u0440\u0443\u0433\u0438\u0445 \u0437\u0430\u043C\u0435\u0442\u043E\u043A)_"
   },
   logbook: {
+    stepFork: "\u0424\u043E\u0440\u043A",
+    forkedFrom: "\u043E\u0442\u0432\u0435\u0442\u0432\u043B\u0435\u043D\u043E \u043E\u0442 {note} \u043D\u0430 {section}",
+    forkedTo: "\u043E\u0442\u0432\u0435\u0442\u0432\u043B\u0435\u043D\u043E \u0432 {note} \u043D\u0430 {section}",
     stepBeliefs: "\u0423\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044F",
     stepResearch: "\u0418\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u0435",
     stepLibrary: "\u0411\u0438\u0431\u043B\u0438\u043E\u0442\u0435\u043A\u0430",
@@ -3943,6 +4159,25 @@ var zh = {
     connections: "\u5173\u8054",
     contents: "\u76EE\u5F55"
   },
+  sectionIntros: {
+    objective: "\u672C\u9879\u76EE\u60F3\u8981\u5F04\u6E05\u7684\u95EE\u9898 \u2014 \u4E0B\u65B9\u5404\u4F1A\u8BDD\u5171\u540C\u6307\u5411\u7684\u7F57\u76D8\u3002",
+    context: "\u5F00\u59CB\u65F6\u63D0\u4F9B\u7684\u80CC\u666F\uFF0C\u4E3A\u4E4B\u540E\u6BCF\u4E00\u6B65\u5982\u4F55\u89E3\u8BFB\u95EE\u9898\u5B9A\u4E0B\u6846\u67B6\u3002",
+    contents: "\u9879\u76EE\u7684\u4F1A\u8BDD\u4E0E\u7B14\u8BB0\u4E00\u89C8 \u2014 \u540E\u7EED\u5185\u5BB9\u7684\u5730\u56FE\u3002",
+    exploration: "\u68C0\u7D22\u4E4B\u524D\u7684\u95EE\u9898\u63A2\u7D22\uFF1A\u4E3A\u4E0B\u65B9\u68C0\u7D22\u6B65\u9AA4\u94FA\u8DEF\u7684\u6846\u67B6\u3001\u5047\u5B9A\u4E0E\u65B9\u5411\u3002",
+    lenses: "\u5728\u4E0A\u65B9\u63A2\u7D22\u4E4B\u540E\u9009\u5B9A\u7684\u7406\u8BBA\u900F\u955C\uFF0C\u4E3A\u4E0B\u65B9\u5404\u8282\u89E3\u8BFB\u7ED3\u679C\u7740\u8272\u3002",
+    framework: "\u68C0\u7D22\u80CC\u540E\u7684\u7406\u8BBA\u6846\u67B6\uFF1A\u5F15\u5BFC\u4E0B\u65B9\u5B50\u95EE\u9898\u7684\u6784\u5FF5\u4E0E\u7EF4\u5EA6\u3002",
+    subquestions: "\u4E0A\u65B9\u95EE\u9898\u4E3A\u68C0\u7D22\u6240\u505A\u7684\u62C6\u5206\uFF0C\u6BCF\u6761\u90FD\u9644\u6709\u5728\u7ED3\u679C\u51FA\u73B0\u4E4B\u524D\u63D0\u51FA\u7684\u9884\u671F\u3002",
+    searchstrategy: "\u6587\u732E\u5982\u4F55\u68C0\u7D22 \u2014 \u4E0B\u65B9\u7EFC\u5408\u80CC\u540E\u7684\u65B9\u6CD5\u3002",
+    synthesis: "\u5DF2\u627E\u5230\u6587\u732E\u7684\u7ED3\u8BBA\uFF08\u6309\u8BC1\u636E\u5F3A\u5EA6\u5206\u7EA7\uFF09\u2014 \u4E0B\u65B9\u6311\u6218\u4E0E\u8BBA\u8BC1\u6240\u4F9D\u636E\u7684\u7ED3\u679C\u3002",
+    challenge: "\u9488\u5BF9\u4E0A\u65B9\u7EFC\u5408\u63D0\u51FA\u7684\u53CD\u9A73\u4E0E\u76F2\u70B9\uFF1B\u7ECF\u53D7\u4F4F\u8003\u9A8C\u7684\u5185\u5BB9\u6ECB\u517B\u4E0B\u65B9\u7684\u4FE1\u5FF5\u3002",
+    beliefs: "\u7ECF\u8FC7\u4E0A\u65B9\u6311\u6218\u540E\u7814\u7A76\u8005\u7684\u5DE5\u4F5C\u4FE1\u5FF5 \u2014 \u4E0B\u65B9\u8BBA\u8BC1\u56FE\u6784\u5EFA\u7684\u5730\u57FA\u3002",
+    argument: "\u8BBA\u8BC1\u56FE \u2014 \u4ECE\u4E0A\u65B9\u5404\u8282\u9010\u5B57\u63D0\u53D6\u7684\u4E3B\u5F20\u3001\u5047\u5B9A\u53CA\u652F\u6301/\u53CD\u5BF9\u5173\u7CFB\u3002",
+    hypotheses: "\u7531\u4E0A\u65B9\u8BBA\u8BC1\u56FE\u63A8\u5BFC\u51FA\u7684\u53EF\u8BC1\u4F2A\u5047\u8BBE \u2014 \u6700\u80FD\u64BC\u52A8\u8BBA\u8BC1\u7684\u68C0\u9A8C\u3002",
+    interview: "\u5C06\u4E0A\u65B9\u8BBA\u8BC1\u4E0E\u5047\u8BBE\u5E26\u5165\u7530\u91CE\u5DE5\u4F5C\u7684\u8BBF\u8C08\u6307\u5357\u3002",
+    agenda: "\u7531\u4E0A\u8FF0\u4E00\u5207\u5F15\u51FA\u7684\u672A\u89E3\u95EE\u9898\u4E0E\u4E0B\u4E00\u6B65\u7814\u7A76\u8BA1\u5212\u3002",
+    connections: "\u672C\u4F1A\u8BDD\u7684\u601D\u8003\u4E0E\u5E93\u4E2D\u5176\u4ED6\u4F1A\u8BDD\u3001\u7B14\u8BB0\u76F8\u8FDE\u4E4B\u5904\u3002",
+    logbook: "\u751F\u6210\u4E0A\u65B9\u5404\u8282\u7684\u6BCF\u4E00\u6B65\u7684\u65F6\u95F4\u987A\u5E8F\u8BB0\u5F55\u3002"
+  },
   exploration: {
     chosenFraming: "\u9009\u5B9A\u7684\u6846\u67B6\uFF1A",
     assumptions: "\u9690\u542B\u5047\u8BBE",
@@ -3981,6 +4216,11 @@ var zh = {
     assumptions: "\u5047\u8BBE",
     supports: "\u652F\u6301",
     attacks: "\u53CD\u9A73",
+    tests: "\u68C0\u9A8C",
+    evidence: "\u8BC1\u636E",
+    source: "\u6765\u6E90",
+    projection: "{note} \u7684\u6295\u5F71 \u2014 \u8BF7\u5728\u6E90\u7B14\u8BB0\u4E2D\u7F16\u8F91\uFF0C\u800C\u4E0D\u662F\u5728\u8FD9\u91CC\u3002",
+    staleBanner: '\u26A0 \u6B64\u56FE\u7684\u4F9D\u636E\u5728\u91C7\u7EB3\u540E\u5DF2\u53D1\u751F\u53D8\u5316\uFF08{changed}\uFF09\u2014 \u8BF7\u91CD\u65B0\u8FD0\u884C "Design \xB7 argument map" \u4EE5\u5237\u65B0\u3002',
     largeMapHint: "\u8FD9\u5F20\u56FE\u6B63\u5728\u53D8\u5927\u2014\u2014\u8BF7\u4EE5 Canvas \u5F62\u5F0F\u6253\u5F00\u4EE5\u83B7\u5F97\u66F4\u597D\u7684\u6982\u89C8\uFF08\u547D\u4EE4\uFF1A\u201CArgument \u2014 open as Canvas\u201D\uFF09\u3002"
   },
   interview: {
@@ -4069,8 +4309,8 @@ var zh = {
     keySources: "\u5173\u952E\u6587\u732E",
     subQuestions: "\u5B50\u95EE\u9898",
     subQuestionsNote: "\uFF08\u95EE\u9898\u7684\u62C6\u5206\u65B9\u5F0F\uFF1B\u7F16\u53F7\u6307\u5411\u5404\u5B50\u95EE\u9898\u6240\u5F97\u7684\u6587\u732E\uFF09",
-    subQuestionsNoteWithHypotheses: "\uFF08\u95EE\u9898\u7684\u62C6\u5206\u65B9\u5F0F\uFF1B\u7F16\u53F7\u6307\u5411\u5404\u5B50\u95EE\u9898\u6240\u5F97\u7684\u6587\u732E\uFF0C\u968F\u540E\u662F\u5404\u5B50\u95EE\u9898\u5BF9\u5E94\u7684\u5047\u8BBE\uFF09",
-    hypothesisLabel: "\u5047\u8BBE"
+    subQuestionsNoteWithExpectations: "\uFF08\u95EE\u9898\u7684\u62C6\u5206\u65B9\u5F0F\uFF1B\u7F16\u53F7\u6307\u5411\u5404\u5B50\u95EE\u9898\u6240\u5F97\u7684\u6587\u732E\uFF0C\u968F\u540E\u662F\u5404\u5B50\u95EE\u9898\u5BF9\u5E94\u7684\u9884\u671F\uFF09",
+    expectationLabel: "\u9884\u671F"
   },
   references: {
     heading: "\u53C2\u8003\u6587\u732E"
@@ -4211,6 +4451,9 @@ var zh = {
     contentsEmpty: "_\uFF08\u6B64\u6587\u4EF6\u5939\u4E2D\u6682\u65E0\u5176\u4ED6\u7B14\u8BB0\uFF09_"
   },
   logbook: {
+    stepFork: "\u5206\u53C9",
+    forkedFrom: "\u81EA {note} \u5728 {section} \u5904\u5206\u53C9",
+    forkedTo: "\u5206\u53C9\u81F3 {note}\uFF08{section} \u5904\uFF09",
     stepBeliefs: "\u4FE1\u5FF5",
     stepResearch: "\u7814\u7A76",
     stepLibrary: "\u6587\u5E93",
@@ -4274,6 +4517,25 @@ var hi = {
     connections: "\u0938\u0902\u092C\u0902\u0927",
     contents: "\u0905\u0928\u0941\u0915\u094D\u0930\u092E\u0923\u093F\u0915\u093E"
   },
+  sectionIntros: {
+    objective: "\u092F\u0939 \u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u094D\u092F\u093E \u091C\u093E\u0928\u0928\u093E \u091A\u093E\u0939\u0924\u0940 \u0939\u0948 \u2014 \u0935\u0939 \u0926\u093F\u0936\u093E-\u0938\u0942\u091A\u0915 \u091C\u093F\u0938\u0915\u0940 \u0913\u0930 \u0928\u0940\u091A\u0947 \u0915\u0947 \u0938\u0924\u094D\u0930 \u0938\u0902\u0915\u0947\u0924 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964",
+    context: "\u0906\u0930\u0902\u092D \u092E\u0947\u0902 \u0926\u0940 \u0917\u0908 \u092A\u0943\u0937\u094D\u0920\u092D\u0942\u092E\u093F; \u092F\u0939 \u0924\u092F \u0915\u0930\u0924\u0940 \u0939\u0948 \u0915\u093F \u0906\u0917\u0947 \u0915\u093E \u0939\u0930 \u091A\u0930\u0923 \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0915\u0948\u0938\u0947 \u092A\u0922\u093C\u0924\u093E \u0939\u0948\u0964",
+    contents: "\u092A\u0930\u093F\u092F\u094B\u091C\u0928\u093E \u0915\u0947 \u0938\u0924\u094D\u0930 \u0914\u0930 \u0928\u094B\u091F\u094D\u0938 \u090F\u0915 \u0928\u091C\u093C\u0930 \u092E\u0947\u0902 \u2014 \u0906\u0917\u0947 \u0915\u0940 \u0938\u093E\u092E\u0917\u094D\u0930\u0940 \u0915\u093E \u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930\u0964",
+    exploration: "\u0916\u094B\u091C \u0938\u0947 \u092A\u0939\u0932\u0947 \u0938\u092E\u0938\u094D\u092F\u093E-\u0905\u0928\u094D\u0935\u0947\u0937\u0923: \u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917, \u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901 \u0914\u0930 \u0926\u093F\u0936\u093E\u090F\u0901 \u091C\u094B \u0928\u0940\u091A\u0947 \u0915\u0947 \u0916\u094B\u091C-\u091A\u0930\u0923\u094B\u0902 \u0915\u0940 \u0924\u0948\u092F\u093E\u0930\u0940 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902\u0964",
+    lenses: "\u090A\u092A\u0930 \u0915\u0947 \u0905\u0928\u094D\u0935\u0947\u0937\u0923 \u0915\u0947 \u092C\u093E\u0926 \u091A\u0941\u0928\u0947 \u0917\u090F \u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u0932\u0947\u0902\u0938; \u092F\u0947 \u0924\u092F \u0915\u0930\u0924\u0947 \u0939\u0948\u0902 \u0915\u093F \u0928\u0940\u091A\u0947 \u0915\u0947 \u0916\u0902\u0921 \u0928\u093F\u0937\u094D\u0915\u0930\u094D\u0937\u094B\u0902 \u0915\u0940 \u0935\u094D\u092F\u093E\u0916\u094D\u092F\u093E \u0915\u0948\u0938\u0947 \u0915\u0930\u0947\u0902\u0964",
+    framework: "\u0916\u094B\u091C \u0915\u0947 \u092A\u0940\u091B\u0947 \u0915\u093E \u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u0922\u093E\u0901\u091A\u093E: \u0938\u0902\u0930\u091A\u0928\u093E \u0914\u0930 \u0906\u092F\u093E\u092E \u091C\u094B \u0928\u0940\u091A\u0947 \u0915\u0947 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928\u094B\u0902 \u0915\u093E \u092E\u093E\u0930\u094D\u0917\u0926\u0930\u094D\u0936\u0928 \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964",
+    subquestions: "\u090A\u092A\u0930 \u0915\u0947 \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0916\u094B\u091C \u0915\u0947 \u0932\u093F\u090F \u0910\u0938\u0947 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0915\u093F\u092F\u093E \u0917\u092F\u093E; \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0915\u0947 \u0938\u093E\u0925 \u092A\u0930\u093F\u0923\u093E\u092E\u094B\u0902 \u0938\u0947 \u092A\u0939\u0932\u0947 \u0935\u094D\u092F\u0915\u094D\u0924 \u0915\u0940 \u0917\u0908 \u0905\u092A\u0947\u0915\u094D\u0937\u093E \u0939\u0948\u0964",
+    searchstrategy: "\u0938\u093E\u0939\u093F\u0924\u094D\u092F \u0915\u0948\u0938\u0947 \u0916\u094B\u091C\u093E \u0917\u092F\u093E \u2014 \u0928\u0940\u091A\u0947 \u0915\u0947 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 \u0915\u0947 \u092A\u0940\u091B\u0947 \u0915\u0940 \u0935\u093F\u0927\u093F\u0964",
+    synthesis: "\u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924 \u0915\u094D\u092F\u093E \u0915\u0939\u0924\u0947 \u0939\u0948\u0902, \u092A\u094D\u0930\u092E\u093E\u0923-\u092C\u0932 \u0915\u0947 \u0905\u0928\u0941\u0938\u093E\u0930 \u0936\u094D\u0930\u0947\u0923\u0940\u092C\u0926\u094D\u0927 \u2014 \u0935\u0947 \u092A\u0930\u093F\u0923\u093E\u092E \u091C\u093F\u0928\u0938\u0947 \u0928\u0940\u091A\u0947 \u091A\u0941\u0928\u094C\u0924\u0940 \u0914\u0930 \u0924\u0930\u094D\u0915 \u0915\u093E\u092E \u0915\u0930\u0924\u0947 \u0939\u0948\u0902\u0964",
+    challenge: "\u090A\u092A\u0930 \u0915\u0947 \u0938\u0902\u0936\u094D\u0932\u0947\u0937\u0923 \u0915\u0947 \u0935\u093F\u0930\u0941\u0926\u094D\u0927 \u0906\u092A\u0924\u094D\u0924\u093F\u092F\u093E\u0901 \u0914\u0930 \u0905\u0902\u0927-\u092C\u093F\u0902\u0926\u0941; \u091C\u094B \u091F\u093F\u0915\u0924\u093E \u0939\u0948 \u0935\u0939 \u0928\u0940\u091A\u0947 \u0915\u0940 \u0927\u093E\u0930\u0923\u093E\u0913\u0902 \u0915\u094B \u092A\u094B\u0937\u093F\u0924 \u0915\u0930\u0924\u093E \u0939\u0948\u0964",
+    beliefs: "\u090A\u092A\u0930 \u0915\u0940 \u091A\u0941\u0928\u094C\u0924\u0940 \u0915\u0947 \u092C\u093E\u0926 \u0936\u094B\u0927\u0915\u0930\u094D\u0924\u093E \u0915\u0940 \u0915\u093E\u0930\u094D\u092F-\u0927\u093E\u0930\u0923\u093E\u090F\u0901 \u2014 \u0935\u0939 \u0906\u0927\u093E\u0930 \u091C\u093F\u0938 \u092A\u0930 \u0928\u0940\u091A\u0947 \u0915\u093E \u0924\u0930\u094D\u0915-\u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930 \u092C\u0928\u0924\u093E \u0939\u0948\u0964",
+    argument: "\u0924\u0930\u094D\u0915-\u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930 \u2014 \u0926\u093E\u0935\u0947, \u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901 \u0914\u0930 \u0938\u092E\u0930\u094D\u0925\u0928/\u0906\u0915\u094D\u0930\u092E\u0923 \u0938\u0902\u092C\u0902\u0927, \u090A\u092A\u0930 \u0915\u0947 \u0916\u0902\u0921\u094B\u0902 \u0938\u0947 \u0936\u092C\u094D\u0926\u0936\u0903 \u0928\u093F\u0915\u093E\u0932\u0947 \u0917\u090F\u0964",
+    hypotheses: "\u090A\u092A\u0930 \u0915\u0947 \u0924\u0930\u094D\u0915-\u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930 \u0938\u0947 \u0935\u094D\u092F\u0941\u0924\u094D\u092A\u0928\u094D\u0928 \u092E\u093F\u0925\u094D\u092F\u093E\u0915\u0930\u0923\u0940\u092F \u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E\u090F\u0901 \u2014 \u0935\u0947 \u092A\u0930\u0940\u0915\u094D\u0937\u0923 \u091C\u094B \u0924\u0930\u094D\u0915 \u0915\u094B \u0938\u092C\u0938\u0947 \u0905\u0927\u093F\u0915 \u0939\u093F\u0932\u093E\u090F\u0901\u0917\u0947\u0964",
+    interview: "\u090F\u0915 \u0938\u093E\u0915\u094D\u0937\u093E\u0924\u094D\u0915\u093E\u0930 \u092E\u093E\u0930\u094D\u0917\u0926\u0930\u094D\u0936\u093F\u0915\u093E \u091C\u094B \u090A\u092A\u0930 \u0915\u0947 \u0924\u0930\u094D\u0915 \u0914\u0930 \u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E\u0913\u0902 \u0915\u094B \u0915\u094D\u0937\u0947\u0924\u094D\u0930-\u0915\u093E\u0930\u094D\u092F \u0924\u0915 \u0932\u0947 \u091C\u093E\u0924\u0940 \u0939\u0948\u0964",
+    agenda: "\u0916\u0941\u0932\u0947 \u092A\u094D\u0930\u0936\u094D\u0928 \u0914\u0930 \u0905\u0917\u0932\u0947 \u0936\u094B\u0927-\u091A\u0930\u0923 \u091C\u094B \u090A\u092A\u0930 \u0915\u0940 \u0938\u092E\u0917\u094D\u0930 \u0938\u093E\u092E\u0917\u094D\u0930\u0940 \u0938\u0947 \u0928\u093F\u0915\u0932\u0924\u0947 \u0939\u0948\u0902\u0964",
+    connections: "\u091C\u0939\u093E\u0901 \u0907\u0938 \u0938\u0924\u094D\u0930 \u0915\u0940 \u0938\u094B\u091A \u0935\u0949\u0932\u094D\u091F \u0915\u0947 \u0905\u0928\u094D\u092F \u0938\u0924\u094D\u0930\u094B\u0902 \u0914\u0930 \u0928\u094B\u091F\u094D\u0938 \u0938\u0947 \u091C\u0941\u0921\u093C\u0924\u0940 \u0939\u0948\u0964",
+    logbook: "\u0939\u0930 \u0909\u0938 \u091A\u0930\u0923 \u0915\u093E \u0915\u093E\u0932\u093E\u0928\u0941\u0915\u094D\u0930\u092E\u093F\u0915 \u0905\u092D\u093F\u0932\u0947\u0916 \u091C\u093F\u0938\u0928\u0947 \u090A\u092A\u0930 \u0915\u0947 \u0916\u0902\u0921 \u0909\u0924\u094D\u092A\u0928\u094D\u0928 \u0915\u093F\u090F\u0964"
+  },
   exploration: {
     chosenFraming: "\u091A\u0941\u0928\u0940 \u0917\u0908 \u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917:",
     assumptions: "\u0905\u0902\u0924\u0930\u094D\u0928\u093F\u0939\u093F\u0924 \u092A\u0942\u0930\u094D\u0935\u0927\u093E\u0930\u0923\u093E\u090F\u0901",
@@ -4312,6 +4574,11 @@ var hi = {
     assumptions: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
     supports: "\u0938\u092E\u0930\u094D\u0925\u0928 \u0915\u0930\u0924\u093E \u0939\u0948",
     attacks: "\u0916\u0902\u0921\u0928 \u0915\u0930\u0924\u093E \u0939\u0948",
+    tests: "\u092A\u0930\u0916\u0924\u093E \u0939\u0948",
+    evidence: "\u0938\u093E\u0915\u094D\u0937\u094D\u092F",
+    source: "\u0938\u094D\u0930\u094B\u0924",
+    projection: "{note} \u0915\u093E \u092A\u094D\u0930\u0915\u094D\u0937\u0947\u092A\u0923 \u2014 \u0938\u0902\u092A\u093E\u0926\u0928 \u0935\u0939\u0940\u0902 \u0915\u0930\u0947\u0902, \u092F\u0939\u093E\u0901 \u0928\u0939\u0940\u0902\u0964",
+    staleBanner: '\u26A0 \u0907\u0938 \u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930 \u0915\u093E \u0906\u0927\u093E\u0930 \u0905\u092A\u0928\u093E\u0928\u0947 \u0915\u0947 \u092C\u093E\u0926 \u092C\u0926\u0932 \u0917\u092F\u093E \u0939\u0948 ({changed}) \u2014 \u0924\u093E\u091C\u093C\u093E \u0915\u0930\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F "Design \xB7 argument map" \u092B\u093F\u0930 \u091A\u0932\u093E\u090F\u0901\u0964',
     largeMapHint: "\u092F\u0939 \u092E\u093E\u0928\u091A\u093F\u0924\u094D\u0930 \u092C\u0921\u093C\u093E \u0939\u094B \u0930\u0939\u093E \u0939\u0948 \u2014 \u092C\u0947\u0939\u0924\u0930 \u0905\u0935\u0932\u094B\u0915\u0928 \u0915\u0947 \u0932\u093F\u090F \u0907\u0938\u0947 Canvas \u0915\u0947 \u0930\u0942\u092A \u092E\u0947\u0902 \u0916\u094B\u0932\u0947\u0902 (\u0915\u092E\u093E\u0902\u0921: \u201CArgument \u2014 open as Canvas\u201D)\u0964"
   },
   interview: {
@@ -4400,8 +4667,8 @@ var hi = {
     keySources: "\u092A\u094D\u0930\u092E\u0941\u0916 \u0938\u094D\u0930\u094B\u0924",
     subQuestions: "\u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928",
     subQuestionsNote: "(\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0907\u0938 \u092A\u094D\u0930\u0915\u093E\u0930 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0915\u093F\u092F\u093E \u0917\u092F\u093E; \u0938\u0902\u0916\u094D\u092F\u093E\u090F\u0901 \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u0947 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0915\u0940 \u0913\u0930 \u0938\u0902\u0915\u0947\u0924 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902)",
-    subQuestionsNoteWithHypotheses: "(\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0907\u0938 \u092A\u094D\u0930\u0915\u093E\u0930 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0915\u093F\u092F\u093E \u0917\u092F\u093E; \u0938\u0902\u0916\u094D\u092F\u093E\u090F\u0901 \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u0947 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0915\u0940 \u0913\u0930 \u0938\u0902\u0915\u0947\u0924 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902, \u0907\u0938\u0915\u0947 \u092C\u093E\u0926 \u092A\u094D\u0930\u0924\u093F \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E \u0926\u0940 \u0917\u0908 \u0939\u0948)",
-    hypothesisLabel: "\u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E"
+    subQuestionsNoteWithExpectations: "(\u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u094B \u0907\u0938 \u092A\u094D\u0930\u0915\u093E\u0930 \u0935\u093F\u092D\u093E\u091C\u093F\u0924 \u0915\u093F\u092F\u093E \u0917\u092F\u093E; \u0938\u0902\u0916\u094D\u092F\u093E\u090F\u0901 \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u0938\u0947 \u092A\u094D\u0930\u093E\u092A\u094D\u0924 \u0938\u094D\u0930\u094B\u0924\u094B\u0902 \u0915\u0940 \u0913\u0930 \u0938\u0902\u0915\u0947\u0924 \u0915\u0930\u0924\u0940 \u0939\u0948\u0902, \u0907\u0938\u0915\u0947 \u092C\u093E\u0926 \u092A\u094D\u0930\u0924\u093F \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928 \u0905\u092A\u0947\u0915\u094D\u0937\u093E \u0926\u0940 \u0917\u0908 \u0939\u0948)",
+    expectationLabel: "\u0905\u092A\u0947\u0915\u094D\u0937\u093E"
   },
   references: {
     heading: "\u0938\u0902\u0926\u0930\u094D\u092D"
@@ -4542,6 +4809,9 @@ var hi = {
     contentsEmpty: "_(\u0907\u0938 \u092B\u093C\u094B\u0932\u094D\u0921\u0930 \u092E\u0947\u0902 \u0905\u092D\u0940 \u0924\u0915 \u0915\u094B\u0908 \u0905\u0928\u094D\u092F \u0928\u094B\u091F \u0928\u0939\u0940\u0902 \u0939\u0948)_"
   },
   logbook: {
+    stepFork: "\u092B\u093C\u094B\u0930\u094D\u0915",
+    forkedFrom: "{note} \u0938\u0947 {section} \u092A\u0930 \u092B\u093C\u094B\u0930\u094D\u0915 \u0915\u093F\u092F\u093E \u0917\u092F\u093E",
+    forkedTo: "{note} \u0915\u0940 \u0913\u0930 {section} \u092A\u0930 \u092B\u093C\u094B\u0930\u094D\u0915 \u0915\u093F\u092F\u093E \u0917\u092F\u093E",
     stepBeliefs: "\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901",
     stepResearch: "\u0936\u094B\u0927",
     stepLibrary: "\u0932\u093E\u0907\u092C\u094D\u0930\u0947\u0930\u0940",
@@ -4605,6 +4875,25 @@ var ar = {
     connections: "\u0627\u0644\u0631\u0648\u0627\u0628\u0637",
     contents: "\u0627\u0644\u0641\u0647\u0631\u0633"
   },
+  sectionIntros: {
+    objective: "\u0645\u0627 \u064A\u0633\u0639\u0649 \u0647\u0630\u0627 \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0644\u0627\u0643\u062A\u0634\u0627\u0641\u0647 \u2014 \u0627\u0644\u0628\u0648\u0635\u0644\u0629 \u0627\u0644\u062A\u064A \u062A\u0634\u064A\u0631 \u0625\u0644\u064A\u0647\u0627 \u0627\u0644\u062C\u0644\u0633\u0627\u062A \u0623\u062F\u0646\u0627\u0647.",
+    context: "\u062E\u0644\u0641\u064A\u0629 \u0642\u064F\u062F\u0650\u0651\u0645\u062A \u0641\u064A \u0627\u0644\u0628\u062F\u0627\u064A\u0629\u061B \u062A\u064F\u0624\u0637\u0650\u0651\u0631 \u0643\u064A\u0641 \u062A\u0642\u0631\u0623 \u0643\u0644 \u062E\u0637\u0648\u0629 \u0644\u0627\u062D\u0642\u0629 \u0627\u0644\u0633\u0624\u0627\u0644.",
+    contents: "\u062C\u0644\u0633\u0627\u062A \u0627\u0644\u0645\u0634\u0631\u0648\u0639 \u0648\u0645\u0644\u0627\u062D\u0638\u0627\u062A\u0647 \u0641\u064A \u0644\u0645\u062D\u0629 \u2014 \u062E\u0631\u064A\u0637\u0629 \u0645\u0627 \u064A\u0644\u064A.",
+    exploration: "\u0627\u0633\u062A\u0643\u0634\u0627\u0641 \u0627\u0644\u0645\u0634\u0643\u0644\u0629 \u0642\u0628\u0644 \u0623\u064A \u0628\u062D\u062B: \u0623\u064F\u0637\u0631 \u0648\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A \u0648\u0627\u062A\u062C\u0627\u0647\u0627\u062A \u062A\u064F\u0645\u0647\u0650\u0651\u062F \u0644\u062E\u0637\u0648\u0627\u062A \u0627\u0644\u0628\u062D\u062B \u0623\u062F\u0646\u0627\u0647.",
+    lenses: "\u0639\u062F\u0633\u0627\u062A \u0646\u0638\u0631\u064A\u0629 \u0627\u062E\u062A\u064A\u0631\u062A \u0628\u0639\u062F \u0627\u0644\u0627\u0633\u062A\u0643\u0634\u0627\u0641 \u0623\u0639\u0644\u0627\u0647\u061B \u062A\u0635\u0628\u063A \u0643\u064A\u0641\u064A\u0629 \u062A\u0641\u0633\u064A\u0631 \u0627\u0644\u0623\u0642\u0633\u0627\u0645 \u0627\u0644\u062A\u0627\u0644\u064A\u0629 \u0644\u0644\u0646\u062A\u0627\u0626\u062C.",
+    framework: "\u0627\u0644\u0625\u0637\u0627\u0631 \u0627\u0644\u0646\u0638\u0631\u064A \u0648\u0631\u0627\u0621 \u0627\u0644\u0628\u062D\u062B: \u0627\u0644\u0645\u0641\u0647\u0648\u0645 \u0648\u0627\u0644\u0623\u0628\u0639\u0627\u062F \u0627\u0644\u062A\u064A \u062A\u0648\u062C\u0650\u0651\u0647 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0641\u0631\u0639\u064A\u0629 \u0623\u062F\u0646\u0627\u0647.",
+    subquestions: "\u0647\u0643\u0630\u0627 \u0642\u064F\u0633\u0650\u0651\u0645 \u0627\u0644\u0633\u0624\u0627\u0644 \u0623\u0639\u0644\u0627\u0647 \u0644\u0644\u0628\u062D\u062B\u060C \u0648\u0644\u0643\u0644\u064D\u0651 \u062A\u0648\u0642\u0639 \u0635\u064A\u063A \u0642\u0628\u0644 \u0638\u0647\u0648\u0631 \u0627\u0644\u0646\u062A\u0627\u0626\u062C.",
+    searchstrategy: "\u0643\u064A\u0641 \u0628\u064F\u062D\u062B\u062A \u0627\u0644\u0623\u062F\u0628\u064A\u0627\u062A \u2014 \u0627\u0644\u0645\u0646\u0647\u062C \u0648\u0631\u0627\u0621 \u0627\u0644\u062A\u0648\u0644\u064A\u0641 \u0623\u062F\u0646\u0627\u0647.",
+    synthesis: "\u0645\u0627 \u062A\u0642\u0648\u0644\u0647 \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0645\u0648\u062C\u0648\u062F\u0629\u060C \u0645\u062F\u0631\u064E\u0651\u062C\u0629 \u0628\u062D\u0633\u0628 \u0642\u0648\u0629 \u0627\u0644\u062F\u0644\u064A\u0644 \u2014 \u0627\u0644\u0646\u062A\u0627\u0626\u062C \u0627\u0644\u062A\u064A \u064A\u0639\u0645\u0644 \u0628\u0647\u0627 \u0627\u0644\u062A\u062D\u062F\u064A \u0648\u0627\u0644\u062D\u062C\u0627\u062C \u0623\u062F\u0646\u0627\u0647.",
+    challenge: "\u0627\u0639\u062A\u0631\u0627\u0636\u0627\u062A \u0648\u0646\u0642\u0627\u0637 \u0639\u0645\u064A\u0627\u0621 \u0641\u064A \u0645\u0648\u0627\u062C\u0647\u0629 \u0627\u0644\u062A\u0648\u0644\u064A\u0641 \u0623\u0639\u0644\u0627\u0647\u061B \u0645\u0627 \u064A\u0635\u0645\u062F \u064A\u063A\u0630\u064A \u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A \u0623\u062F\u0646\u0627\u0647.",
+    beliefs: "\u0642\u0646\u0627\u0639\u0627\u062A \u0627\u0644\u0628\u0627\u062D\u062B \u0627\u0644\u0639\u0645\u0644\u064A\u0629 \u0628\u0639\u062F \u0627\u0644\u062A\u062D\u062F\u064A \u0623\u0639\u0644\u0627\u0647 \u2014 \u0627\u0644\u0623\u0633\u0627\u0633 \u0627\u0644\u0630\u064A \u062A\u0628\u0646\u064A \u0639\u0644\u064A\u0647 \u062E\u0631\u064A\u0637\u0629 \u0627\u0644\u062D\u062C\u0627\u062C \u0623\u062F\u0646\u0627\u0647.",
+    argument: "\u062E\u0631\u064A\u0637\u0629 \u0627\u0644\u062D\u062C\u0627\u062C \u2014 \u0627\u062F\u0639\u0627\u0621\u0627\u062A \u0648\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A \u0648\u0639\u0644\u0627\u0642\u0627\u062A \u062F\u0639\u0645/\u0647\u062C\u0648\u0645\u060C \u0645\u0633\u062A\u062E\u0631\u062C\u0629 \u062D\u0631\u0641\u064A\u064B\u0627 \u0645\u0646 \u0627\u0644\u0623\u0642\u0633\u0627\u0645 \u0623\u0639\u0644\u0627\u0647.",
+    hypotheses: "\u0641\u0631\u0636\u064A\u0627\u062A \u0642\u0627\u0628\u0644\u0629 \u0644\u0644\u062F\u062D\u0636 \u0645\u0634\u062A\u0642\u0629 \u0645\u0646 \u062E\u0631\u064A\u0637\u0629 \u0627\u0644\u062D\u062C\u0627\u062C \u0623\u0639\u0644\u0627\u0647 \u2014 \u0627\u0644\u0627\u062E\u062A\u0628\u0627\u0631\u0627\u062A \u0627\u0644\u0623\u0643\u062B\u0631 \u062A\u062D\u0631\u064A\u0643\u064B\u0627 \u0644\u0644\u062D\u062C\u0629.",
+    interview: "\u062F\u0644\u064A\u0644 \u0645\u0642\u0627\u0628\u0644\u0629 \u064A\u062D\u0645\u0644 \u0627\u0644\u062D\u062C\u0629 \u0648\u0627\u0644\u0641\u0631\u0636\u064A\u0627\u062A \u0623\u0639\u0644\u0627\u0647 \u0625\u0644\u0649 \u0627\u0644\u0639\u0645\u0644 \u0627\u0644\u0645\u064A\u062F\u0627\u0646\u064A.",
+    agenda: "\u0623\u0633\u0626\u0644\u0629 \u0645\u0641\u062A\u0648\u062D\u0629 \u0648\u062E\u0637\u0648\u0627\u062A \u0628\u062D\u062B\u064A\u0629 \u062A\u0627\u0644\u064A\u0629 \u062A\u0646\u0628\u062B\u0642 \u0645\u0646 \u0643\u0644 \u0645\u0627 \u0633\u0628\u0642.",
+    connections: "\u062D\u064A\u062B \u064A\u062A\u0635\u0644 \u062A\u0641\u0643\u064A\u0631 \u0647\u0630\u0647 \u0627\u0644\u062C\u0644\u0633\u0629 \u0628\u062C\u0644\u0633\u0627\u062A \u0648\u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0623\u062E\u0631\u0649 \u0641\u064A \u0627\u0644\u0642\u0628\u0648.",
+    logbook: "\u0627\u0644\u0623\u062B\u0631 \u0627\u0644\u0632\u0645\u0646\u064A \u0644\u0643\u0644 \u062E\u0637\u0648\u0629 \u0623\u0646\u062A\u062C\u062A \u0627\u0644\u0623\u0642\u0633\u0627\u0645 \u0623\u0639\u0644\u0627\u0647."
+  },
   exploration: {
     chosenFraming: "\u0627\u0644\u062A\u0623\u0637\u064A\u0631 \u0627\u0644\u0645\u062E\u062A\u0627\u0631:",
     assumptions: "\u0627\u0644\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A \u0627\u0644\u0636\u0645\u0646\u064A\u0629",
@@ -4643,6 +4932,11 @@ var ar = {
     assumptions: "\u0627\u0644\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A",
     supports: "\u064A\u062F\u0639\u0645",
     attacks: "\u064A\u0639\u0627\u0631\u0636",
+    tests: "\u064A\u062E\u062A\u0628\u0631",
+    evidence: "\u0627\u0644\u0623\u062F\u0644\u0629",
+    source: "\u0627\u0644\u0645\u0635\u062F\u0631",
+    projection: "\u0625\u0633\u0642\u0627\u0637 \u0644\u0640 {note} \u2014 \u062D\u0631\u0650\u0651\u0631 \u0647\u0646\u0627\u0643 \u0644\u0627 \u0647\u0646\u0627.",
+    staleBanner: '\u26A0 \u062A\u063A\u064A\u0651\u0631 \u0623\u0633\u0627\u0633 \u0647\u0630\u0647 \u0627\u0644\u062E\u0631\u064A\u0637\u0629 \u0645\u0646\u0630 \u0627\u0639\u062A\u0645\u0627\u062F\u0647\u0627 ({changed}) \u2014 \u0623\u0639\u062F \u062A\u0634\u063A\u064A\u0644 "Design \xB7 argument map" \u0644\u062A\u062D\u062F\u064A\u062B\u0647\u0627.',
     largeMapHint: "\u0647\u0630\u0647 \u0627\u0644\u062E\u0631\u064A\u0637\u0629 \u062A\u0643\u0628\u0631 \u2014 \u0627\u0641\u062A\u062D\u0647\u0627 \u0643\u0640 Canvas \u0644\u0646\u0638\u0631\u0629 \u0639\u0627\u0645\u0629 \u0623\u0641\u0636\u0644 (\u0627\u0644\u0623\u0645\u0631: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -4731,8 +5025,8 @@ var ar = {
     keySources: "\u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0631\u0626\u064A\u0633\u064A\u0629",
     subQuestions: "\u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0641\u0631\u0639\u064A\u0629",
     subQuestionsNote: "(\u0647\u0643\u0630\u0627 \u0642\u064F\u0633\u0650\u0651\u0645 \u0627\u0644\u0633\u0624\u0627\u0644\u061B \u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u062A\u0634\u064A\u0631 \u0625\u0644\u0649 \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u062A\u064A \u0623\u0633\u0641\u0631 \u0639\u0646\u0647\u0627 \u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A)",
-    subQuestionsNoteWithHypotheses: "(\u0647\u0643\u0630\u0627 \u0642\u064F\u0633\u0650\u0651\u0645 \u0627\u0644\u0633\u0624\u0627\u0644\u061B \u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u062A\u0634\u064A\u0631 \u0625\u0644\u0649 \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u062A\u064A \u0623\u0633\u0641\u0631 \u0639\u0646\u0647\u0627 \u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A\u060C \u0645\u062A\u0628\u0648\u0639\u0629 \u0628\u0627\u0644\u0641\u0631\u0636\u064A\u0629 \u0644\u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A)",
-    hypothesisLabel: "\u0627\u0644\u0641\u0631\u0636\u064A\u0629"
+    subQuestionsNoteWithExpectations: "(\u0647\u0643\u0630\u0627 \u0642\u064F\u0633\u0650\u0651\u0645 \u0627\u0644\u0633\u0624\u0627\u0644\u061B \u0627\u0644\u0623\u0631\u0642\u0627\u0645 \u062A\u0634\u064A\u0631 \u0625\u0644\u0649 \u0627\u0644\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u062A\u064A \u0623\u0633\u0641\u0631 \u0639\u0646\u0647\u0627 \u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A\u060C \u0645\u062A\u0628\u0648\u0639\u0629 \u0628\u0627\u0644\u062A\u0648\u0642\u0639 \u0644\u0643\u0644 \u0633\u0624\u0627\u0644 \u0641\u0631\u0639\u064A)",
+    expectationLabel: "\u0627\u0644\u062A\u0648\u0642\u0639"
   },
   references: {
     heading: "\u0627\u0644\u0645\u0631\u0627\u062C\u0639"
@@ -4873,6 +5167,9 @@ var ar = {
     contentsEmpty: "_(\u0644\u0627 \u062A\u0648\u062C\u062F \u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0623\u062E\u0631\u0649 \u0628\u0639\u062F \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u062C\u0644\u062F)_"
   },
   logbook: {
+    stepFork: "\u062A\u0641\u0631\u064A\u0639",
+    forkedFrom: "\u062A\u0641\u0631\u064E\u0651\u0639 \u0645\u0646 {note} \u0639\u0646\u062F {section}",
+    forkedTo: "\u062A\u0641\u0631\u064E\u0651\u0639 \u0625\u0644\u0649 {note} \u0639\u0646\u062F {section}",
     stepBeliefs: "\u0627\u0644\u0642\u0646\u0627\u0639\u0627\u062A",
     stepResearch: "\u0627\u0644\u0628\u062D\u062B",
     stepLibrary: "\u0627\u0644\u0645\u0643\u062A\u0628\u0629",
@@ -4936,6 +5233,25 @@ var ja = {
     connections: "\u3064\u306A\u304C\u308A",
     contents: "\u76EE\u6B21"
   },
+  sectionIntros: {
+    objective: "\u3053\u306E\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u304C\u660E\u3089\u304B\u306B\u3057\u305F\u3044\u3053\u3068 \u2014 \u4E0B\u306E\u5404\u30BB\u30C3\u30B7\u30E7\u30F3\u304C\u6307\u3057\u793A\u3059\u7F85\u91DD\u76E4\u3002",
+    context: "\u958B\u59CB\u6642\u306B\u4E0E\u3048\u3089\u308C\u305F\u80CC\u666F\u3002\u4EE5\u964D\u306E\u5404\u30B9\u30C6\u30C3\u30D7\u304C\u554F\u3044\u3092\u3069\u3046\u8AAD\u3080\u304B\u3092\u67A0\u3065\u3051\u308B\u3002",
+    contents: "\u30D7\u30ED\u30B8\u30A7\u30AF\u30C8\u306E\u30BB\u30C3\u30B7\u30E7\u30F3\u3068\u30CE\u30FC\u30C8\u306E\u4E00\u89A7 \u2014 \u4EE5\u4E0B\u306B\u7D9A\u304F\u3082\u306E\u306E\u5730\u56F3\u3002",
+    exploration: "\u691C\u7D22\u524D\u306E\u554F\u984C\u63A2\u7D22\u3002\u4E0B\u306E\u691C\u7D22\u30B9\u30C6\u30C3\u30D7\u3092\u6E96\u5099\u3059\u308B\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0\u30FB\u524D\u63D0\u30FB\u65B9\u5411\u6027\u3002",
+    lenses: "\u4E0A\u306E\u63A2\u7D22\u306E\u5F8C\u306B\u9078\u3070\u308C\u305F\u7406\u8AD6\u30EC\u30F3\u30BA\u3002\u4E0B\u306E\u30BB\u30AF\u30B7\u30E7\u30F3\u306B\u3088\u308B\u77E5\u898B\u306E\u89E3\u91C8\u3092\u5F69\u308B\u3002",
+    framework: "\u691C\u7D22\u306E\u80CC\u5F8C\u306B\u3042\u308B\u7406\u8AD6\u7684\u67A0\u7D44\u307F\u3002\u4E0B\u306E\u4E0B\u4F4D\u306E\u554F\u3044\u3092\u5C0E\u304F\u69CB\u6210\u6982\u5FF5\u3068\u6B21\u5143\u3002",
+    subquestions: "\u4E0A\u306E\u554F\u3044\u3092\u691C\u7D22\u306E\u305F\u3081\u306B\u5206\u5272\u3057\u305F\u3082\u306E\u3002\u305D\u308C\u305E\u308C\u306B\u7D50\u679C\u304C\u51FA\u308B\u524D\u306B\u8FF0\u3079\u305F\u4E88\u60F3\u304C\u4ED8\u304F\u3002",
+    searchstrategy: "\u6587\u732E\u3092\u3069\u3046\u691C\u7D22\u3057\u305F\u304B \u2014 \u4E0B\u306E\u7D71\u5408\u306E\u80CC\u5F8C\u306B\u3042\u308B\u65B9\u6CD5\u3002",
+    synthesis: "\u898B\u3064\u304B\u3063\u305F\u6587\u732E\u304C\u8A9E\u308B\u3053\u3068\uFF08\u30A8\u30D3\u30C7\u30F3\u30B9\u306E\u5F37\u3055\u3067\u683C\u4ED8\u3051\uFF09\u2014 \u4E0B\u306E\u30C1\u30E3\u30EC\u30F3\u30B8\u3068\u8AD6\u8A3C\u304C\u6271\u3046\u7D50\u679C\u3002",
+    challenge: "\u4E0A\u306E\u7D71\u5408\u3078\u306E\u53CD\u8AD6\u3068\u76F2\u70B9\u3002\u6301\u3061\u3053\u305F\u3048\u305F\u3082\u306E\u304C\u4E0B\u306E\u4FE1\u5FF5\u3092\u990A\u3046\u3002",
+    beliefs: "\u4E0A\u306E\u30C1\u30E3\u30EC\u30F3\u30B8\u3092\u7D4C\u305F\u7814\u7A76\u8005\u306E\u4F5C\u696D\u4FE1\u5FF5 \u2014 \u4E0B\u306E\u8AD6\u8A3C\u30DE\u30C3\u30D7\u304C\u7BC9\u304F\u571F\u53F0\u3002",
+    argument: "\u8AD6\u8A3C\u30DE\u30C3\u30D7 \u2014 \u4E0A\u306E\u30BB\u30AF\u30B7\u30E7\u30F3\u304B\u3089\u9010\u8A9E\u7684\u306B\u62BD\u51FA\u3057\u305F\u4E3B\u5F35\u30FB\u524D\u63D0\u3068\u652F\u6301/\u653B\u6483\u306E\u95A2\u4FC2\u3002",
+    hypotheses: "\u4E0A\u306E\u8AD6\u8A3C\u30DE\u30C3\u30D7\u304B\u3089\u5C0E\u3044\u305F\u53CD\u8A3C\u53EF\u80FD\u306A\u4EEE\u8AAC \u2014 \u8AD6\u8A3C\u3092\u6700\u3082\u52D5\u304B\u3059\u691C\u8A3C\u3002",
+    interview: "\u4E0A\u306E\u8AD6\u8A3C\u3068\u4EEE\u8AAC\u3092\u30D5\u30A3\u30FC\u30EB\u30C9\u30EF\u30FC\u30AF\u3078\u904B\u3076\u30A4\u30F3\u30BF\u30D3\u30E5\u30FC\u30AC\u30A4\u30C9\u3002",
+    agenda: "\u4E0A\u306E\u3059\u3079\u3066\u304B\u3089\u5C0E\u304B\u308C\u308B\u672A\u89E3\u6C7A\u306E\u554F\u3044\u3068\u6B21\u306E\u7814\u7A76\u30B9\u30C6\u30C3\u30D7\u3002",
+    connections: "\u3053\u306E\u30BB\u30C3\u30B7\u30E7\u30F3\u306E\u601D\u8003\u304C\u4FDD\u7BA1\u5EAB\u5185\u306E\u4ED6\u306E\u30BB\u30C3\u30B7\u30E7\u30F3\u3084\u30CE\u30FC\u30C8\u3068\u3064\u306A\u304C\u308B\u5834\u6240\u3002",
+    logbook: "\u4E0A\u306E\u30BB\u30AF\u30B7\u30E7\u30F3\u3092\u751F\u3093\u3060\u5404\u30B9\u30C6\u30C3\u30D7\u306E\u6642\u7CFB\u5217\u306E\u8A18\u9332\u3002"
+  },
   exploration: {
     chosenFraming: "\u9078\u629E\u3057\u305F\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0:",
     assumptions: "\u6697\u9ED9\u306E\u524D\u63D0",
@@ -4974,6 +5290,11 @@ var ja = {
     assumptions: "\u524D\u63D0",
     supports: "\u652F\u6301",
     attacks: "\u53CD\u99C1",
+    tests: "\u691C\u8A3C\u3059\u308B",
+    evidence: "\u30A8\u30D3\u30C7\u30F3\u30B9",
+    source: "\u51FA\u5178",
+    projection: "{note} \u306E\u6295\u5F71 \u2014 \u7DE8\u96C6\u306F\u5143\u306E\u30CE\u30FC\u30C8\u3067\u884C\u3063\u3066\u304F\u3060\u3055\u3044\u3002",
+    staleBanner: '\u26A0 \u3053\u306E\u30DE\u30C3\u30D7\u306E\u57FA\u76E4\u304C\u63A1\u7528\u5F8C\u306B\u5909\u66F4\u3055\u308C\u307E\u3057\u305F\uFF08{changed}\uFF09\u2014 "Design \xB7 argument map" \u3092\u518D\u5B9F\u884C\u3057\u3066\u66F4\u65B0\u3057\u3066\u304F\u3060\u3055\u3044\u3002',
     largeMapHint: "\u3053\u306E\u30DE\u30C3\u30D7\u306F\u5927\u304D\u304F\u306A\u3063\u3066\u3044\u307E\u3059 \u2014 \u5168\u4F53\u3092\u898B\u6E21\u3059\u306B\u306F Canvas \u3068\u3057\u3066\u958B\u3044\u3066\u304F\u3060\u3055\u3044\uFF08\u30B3\u30DE\u30F3\u30C9\uFF1A\u201CArgument \u2014 open as Canvas\u201D\uFF09\u3002"
   },
   interview: {
@@ -5062,8 +5383,8 @@ var ja = {
     keySources: "\u4E3B\u8981\u6587\u732E",
     subQuestions: "\u4E0B\u4F4D\u306E\u554F\u3044",
     subQuestionsNote: "\uFF08\u554F\u3044\u306E\u5206\u5272\u306E\u4ED5\u65B9\u3002\u756A\u53F7\u306F\u5404\u4E0B\u4F4D\u306E\u554F\u3044\u304C\u5F97\u305F\u6587\u732E\u3092\u6307\u3059\uFF09",
-    subQuestionsNoteWithHypotheses: "\uFF08\u554F\u3044\u306E\u5206\u5272\u306E\u4ED5\u65B9\u3002\u756A\u53F7\u306F\u5404\u4E0B\u4F4D\u306E\u554F\u3044\u304C\u5F97\u305F\u6587\u732E\u3092\u6307\u3057\u3001\u305D\u306E\u5F8C\u306B\u4E0B\u4F4D\u306E\u554F\u3044\u3054\u3068\u306E\u4EEE\u8AAC\u304C\u7D9A\u304F\uFF09",
-    hypothesisLabel: "\u4EEE\u8AAC"
+    subQuestionsNoteWithExpectations: "\uFF08\u554F\u3044\u306E\u5206\u5272\u306E\u4ED5\u65B9\u3002\u756A\u53F7\u306F\u5404\u4E0B\u4F4D\u306E\u554F\u3044\u304C\u5F97\u305F\u6587\u732E\u3092\u6307\u3057\u3001\u305D\u306E\u5F8C\u306B\u4E0B\u4F4D\u306E\u554F\u3044\u3054\u3068\u306E\u4E88\u60F3\u304C\u7D9A\u304F\uFF09",
+    expectationLabel: "\u4E88\u60F3"
   },
   references: {
     heading: "\u53C2\u8003\u6587\u732E"
@@ -5204,6 +5525,9 @@ var ja = {
     contentsEmpty: "_\uFF08\u3053\u306E\u30D5\u30A9\u30EB\u30C0\u306B\u306F\u307E\u3060\u4ED6\u306E\u30CE\u30FC\u30C8\u304C\u306A\u3044\uFF09_"
   },
   logbook: {
+    stepFork: "\u30D5\u30A9\u30FC\u30AF",
+    forkedFrom: "{note} \u304B\u3089 {section} \u3067\u5206\u5C90",
+    forkedTo: "{note} \u3078 {section} \u3067\u5206\u5C90",
     stepBeliefs: "\u4FE1\u5FF5",
     stepResearch: "\u8ABF\u67FB",
     stepLibrary: "\u30E9\u30A4\u30D6\u30E9\u30EA",
@@ -5267,6 +5591,25 @@ var ko = {
     connections: "\uC5F0\uACB0",
     contents: "\uBAA9\uCC28"
   },
+  sectionIntros: {
+    objective: "\uC774 \uD504\uB85C\uC81D\uD2B8\uAC00 \uC54C\uC544\uB0B4\uB824\uB294 \uAC83 \u2014 \uC544\uB798 \uC138\uC158\uB4E4\uC774 \uAC00\uB9AC\uD0A4\uB294 \uB098\uCE68\uBC18.",
+    context: "\uC2DC\uC791 \uC2DC \uC81C\uACF5\uB41C \uBC30\uACBD. \uC774\uD6C4 \uBAA8\uB4E0 \uB2E8\uACC4\uAC00 \uC9C8\uBB38\uC744 \uC77D\uB294 \uD2C0\uC774 \uB41C\uB2E4.",
+    contents: "\uD504\uB85C\uC81D\uD2B8\uC758 \uC138\uC158\uACFC \uB178\uD2B8\uB97C \uD55C\uB208\uC5D0 \u2014 \uC544\uB798 \uB0B4\uC6A9\uC758 \uC9C0\uB3C4.",
+    exploration: "\uAC80\uC0C9 \uC804 \uBB38\uC81C \uD0D0\uC0C9: \uC544\uB798 \uAC80\uC0C9 \uB2E8\uACC4\uB97C \uC900\uBE44\uD558\uB294 \uD504\uB808\uC774\uBC0D\xB7\uAC00\uC815\xB7\uBC29\uD5A5.",
+    lenses: "\uC704 \uD0D0\uC0C9 \uD6C4 \uC120\uD0DD\uD55C \uC774\uB860\uC801 \uB80C\uC988. \uC544\uB798 \uC139\uC158\uC774 \uACB0\uACFC\uB97C \uD574\uC11D\uD558\uB294 \uBC29\uC2DD\uC744 \uBB3C\uB4E4\uC778\uB2E4.",
+    framework: "\uAC80\uC0C9 \uB4A4\uC5D0 \uC788\uB294 \uC774\uB860\uC801 \uD2C0: \uC544\uB798 \uD558\uC704 \uC9C8\uBB38\uC744 \uC774\uB044\uB294 \uAD6C\uC131\uAC1C\uB150\uACFC \uCC28\uC6D0.",
+    subquestions: "\uC704 \uC9C8\uBB38\uC744 \uAC80\uC0C9\uC744 \uC704\uD574 \uB098\uB208 \uAC83. \uAC01 \uD56D\uBAA9\uC5D0\uB294 \uACB0\uACFC\uAC00 \uB098\uC624\uAE30 \uC804\uC5D0 \uBC1D\uD78C \uC608\uC0C1\uC774 \uBD99\uB294\uB2E4.",
+    searchstrategy: "\uBB38\uD5CC\uC744 \uC5B4\uB5BB\uAC8C \uAC80\uC0C9\uD588\uB294\uAC00 \u2014 \uC544\uB798 \uC885\uD569\uC758 \uBC29\uBC95.",
+    synthesis: "\uCC3E\uC740 \uBB38\uD5CC\uC774 \uB9D0\uD558\uB294 \uAC83(\uC99D\uAC70 \uAC15\uB3C4\uB85C \uB4F1\uAE09\uD654) \u2014 \uC544\uB798 \uCC4C\uB9B0\uC9C0\uC640 \uB17C\uC99D\uC774 \uB2E4\uB8E8\uB294 \uACB0\uACFC.",
+    challenge: "\uC704 \uC885\uD569\uC5D0 \uB300\uD55C \uBC18\uB860\uACFC \uB9F9\uC810. \uC0B4\uC544\uB0A8\uC740 \uAC83\uC774 \uC544\uB798 \uC2E0\uB150\uC744 \uD0A4\uC6B4\uB2E4.",
+    beliefs: "\uC704 \uCC4C\uB9B0\uC9C0\uB97C \uAC70\uCE5C \uC5F0\uAD6C\uC790\uC758 \uC791\uC5C5 \uC2E0\uB150 \u2014 \uC544\uB798 \uB17C\uC99D \uC9C0\uB3C4\uAC00 \uC313\uB294 \uD1A0\uB300.",
+    argument: "\uB17C\uC99D \uC9C0\uB3C4 \u2014 \uC704 \uC139\uC158\uC5D0\uC11C \uCD95\uC790\uC801\uC73C\uB85C \uCD94\uCD9C\uD55C \uC8FC\uC7A5\xB7\uAC00\uC815\uACFC \uC9C0\uC9C0/\uACF5\uACA9 \uAD00\uACC4.",
+    hypotheses: "\uC704 \uB17C\uC99D \uC9C0\uB3C4\uC5D0\uC11C \uB3C4\uCD9C\uD55C \uBC18\uC99D \uAC00\uB2A5\uD55C \uAC00\uC124 \u2014 \uB17C\uC99D\uC744 \uAC00\uC7A5 \uD06C\uAC8C \uC6C0\uC9C1\uC77C \uAC80\uC99D.",
+    interview: "\uC704 \uB17C\uC99D\uACFC \uAC00\uC124\uC744 \uD604\uC7A5 \uC5F0\uAD6C\uB85C \uAC00\uC838\uAC00\uB294 \uC778\uD130\uBDF0 \uAC00\uC774\uB4DC.",
+    agenda: "\uC704 \uBAA8\uB4E0 \uAC83\uC5D0\uC11C \uC774\uC5B4\uC9C0\uB294 \uC5F4\uB9B0 \uC9C8\uBB38\uACFC \uB2E4\uC74C \uC5F0\uAD6C \uB2E8\uACC4.",
+    connections: "\uC774 \uC138\uC158\uC758 \uC0AC\uACE0\uAC00 \uBCF4\uAD00\uD568\uC758 \uB2E4\uB978 \uC138\uC158\xB7\uB178\uD2B8\uC640 \uC774\uC5B4\uC9C0\uB294 \uACF3.",
+    logbook: "\uC704 \uC139\uC158\uB4E4\uC744 \uB9CC\uB4E4\uC5B4 \uB0B8 \uAC01 \uB2E8\uACC4\uC758 \uC2DC\uAC04\uC21C \uAE30\uB85D."
+  },
   exploration: {
     chosenFraming: "\uC120\uD0DD\uD55C \uD504\uB808\uC774\uBC0D:",
     assumptions: "\uC554\uBB35\uC801 \uAC00\uC815",
@@ -5305,6 +5648,11 @@ var ko = {
     assumptions: "\uAC00\uC815",
     supports: "\uC9C0\uC9C0",
     attacks: "\uBC18\uBC15",
+    tests: "\uAC80\uC99D",
+    evidence: "\uC99D\uAC70",
+    source: "\uCD9C\uCC98",
+    projection: "{note}\uC758 \uD22C\uC601 \u2014 \uC5EC\uAE30\uAC00 \uC544\uB2C8\uB77C \uC6D0\uBCF8\uC5D0\uC11C \uD3B8\uC9D1\uD558\uC138\uC694.",
+    staleBanner: '\u26A0 \uC774 \uC9C0\uB3C4\uC758 \uAE30\uBC18\uC774 \uCC44\uD0DD \uC774\uD6C4 \uBCC0\uACBD\uB418\uC5C8\uC2B5\uB2C8\uB2E4({changed}) \u2014 "Design \xB7 argument map"\uB97C \uB2E4\uC2DC \uC2E4\uD589\uD574 \uAC31\uC2E0\uD558\uC138\uC694.',
     largeMapHint: "\uC774 \uC9C0\uB3C4\uAC00 \uCEE4\uC9C0\uACE0 \uC788\uC2B5\uB2C8\uB2E4 \u2014 \uB354 \uB098\uC740 \uAC1C\uC694\uB97C \uC704\uD574 Canvas\uB85C \uC5EC\uC138\uC694 (\uBA85\uB839: \u201CArgument \u2014 open as Canvas\u201D)."
   },
   interview: {
@@ -5393,8 +5741,8 @@ var ko = {
     keySources: "\uD575\uC2EC \uCD9C\uCC98",
     subQuestions: "\uD558\uC704 \uC9C8\uBB38",
     subQuestionsNote: "(\uC9C8\uBB38\uC774 \uC774\uB807\uAC8C \uBD84\uD574\uB418\uC5C8\uC73C\uBA70, \uBC88\uD638\uB294 \uAC01 \uD558\uC704 \uC9C8\uBB38\uC5D0\uC11C \uB3C4\uCD9C\uB41C \uCD9C\uCC98\uB97C \uAC00\uB9AC\uD0B5\uB2C8\uB2E4)",
-    subQuestionsNoteWithHypotheses: "(\uC9C8\uBB38\uC774 \uC774\uB807\uAC8C \uBD84\uD574\uB418\uC5C8\uC73C\uBA70, \uBC88\uD638\uB294 \uAC01 \uD558\uC704 \uC9C8\uBB38\uC5D0\uC11C \uB3C4\uCD9C\uB41C \uCD9C\uCC98\uB97C \uAC00\uB9AC\uD0A4\uACE0, \uADF8 \uB4A4\uC5D0 \uD558\uC704 \uC9C8\uBB38\uBCC4 \uAC00\uC124\uC774 \uC774\uC5B4\uC9D1\uB2C8\uB2E4)",
-    hypothesisLabel: "\uAC00\uC124"
+    subQuestionsNoteWithExpectations: "(\uC9C8\uBB38\uC774 \uC774\uB807\uAC8C \uBD84\uD574\uB418\uC5C8\uC73C\uBA70, \uBC88\uD638\uB294 \uAC01 \uD558\uC704 \uC9C8\uBB38\uC5D0\uC11C \uB3C4\uCD9C\uB41C \uCD9C\uCC98\uB97C \uAC00\uB9AC\uD0A4\uACE0, \uADF8 \uB4A4\uC5D0 \uD558\uC704 \uC9C8\uBB38\uBCC4 \uC608\uC0C1\uC774 \uC774\uC5B4\uC9D1\uB2C8\uB2E4)",
+    expectationLabel: "\uC608\uC0C1"
   },
   references: {
     heading: "\uCC38\uACE0\uBB38\uD5CC"
@@ -5535,6 +5883,9 @@ var ko = {
     contentsEmpty: "_(\uC774 \uD3F4\uB354\uC5D0 \uC544\uC9C1 \uB2E4\uB978 \uB178\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4)_"
   },
   logbook: {
+    stepFork: "\uD3EC\uD06C",
+    forkedFrom: "{note}\uC5D0\uC11C {section} \uC9C0\uC810\uC5D0 \uBD84\uAE30",
+    forkedTo: "{note}(\uC73C)\uB85C {section} \uC9C0\uC810\uC5D0 \uBD84\uAE30",
     stepBeliefs: "\uC2E0\uB150",
     stepResearch: "\uC5F0\uAD6C",
     stepLibrary: "\uB77C\uC774\uBE0C\uB7EC\uB9AC",
@@ -5804,7 +6155,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   }
   renderSearchSources(containerEl) {
     new import_obsidian.Setting(containerEl).setName("Search provider").setDesc(
-      'Provider for the single-source "Quick search (single provider)" command. The "Ask a question (AI \xB7 multi-source)" command always combines OpenAlex + Semantic Scholar, regardless of this choice.'
+      'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 ask a question" command always combines OpenAlex + Semantic Scholar, regardless of this choice.'
     ).addDropdown((d) => {
       d.addOption("openalex", "OpenAlex (free)").addOption("semanticscholar", "Semantic Scholar (free, optional key)").addOption("consensus", "Consensus (API key)").setValue(this.plugin.settings.provider).onChange(async (v) => {
         this.plugin.settings.provider = v;
@@ -5813,7 +6164,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       });
     });
     new import_obsidian.Setting(containerEl).setName("Contact e-mail (OpenAlex)").setDesc(
-      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Ask a question (AI \xB7 multi-source)". Not sent anywhere else.`
+      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Evidence \xB7 ask a question". Not sent anywhere else.`
     ).addText(
       (t2) => t2.setPlaceholder("you@example.com").setValue(this.plugin.settings.openAlexMailto).onChange(async (v) => {
         this.plugin.settings.openAlexMailto = v.trim();
@@ -5841,7 +6192,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     new import_obsidian.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
       createFragment((f) => {
         f.appendText(
-          'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Ask a question (AI \xB7 multi-source)". Request at '
+          'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 ask a question". Request at '
         );
         f.createEl("a", {
           text: "semanticscholar.org/product/api",
@@ -5930,7 +6281,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(containerEl).setName("Library file (.bib)").setDesc(
-      'Optional. Vault-relative path of your own BibTeX library \u2014 for example a Zotero Better BibTeX auto-export. Parallax only reads it (the file stays yours). Commands: "Library \u2014 insert citation" (fuzzy picker), "Library \u2014 update references" (per note/project, with a preview before anything changes) and "Library \u2014 read .bib library" (reload). Leave empty to turn this off.'
+      'Optional. Vault-relative path of your own BibTeX library \u2014 for example a Zotero Better BibTeX auto-export. Parallax only reads it (the file stays yours). Commands: "Library \xB7 insert citation" (fuzzy picker), "Library \xB7 update references (note / project)" (with a preview before anything changes) and "Library \xB7 read .bib library" (reload). Leave empty to turn this off.'
     ).addText(
       (t2) => t2.setPlaceholder("references/library.bib").setValue(this.plugin.settings.libraryPath).onChange(async (v) => {
         this.plugin.settings.libraryPath = v.trim();
@@ -6035,7 +6386,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         new import_obsidian.Setting(containerEl).setName("Mistral API key").setDesc(
           createFragment((f) => {
             f.appendText(
-              'Enables the "Ask a question (AI \xB7 multi-source)" command: question \u2192 sub-questions \u2192 multi-source search \u2192 rerank \u2192 AI synthesis. Without a key it falls back to multi-source search + fusion. Get one at '
+              'Enables the "Evidence \xB7 ask a question" command: question \u2192 sub-questions \u2192 multi-source search \u2192 rerank \u2192 AI synthesis. Without a key it falls back to multi-source search + fusion. Get one at '
             );
             f.createEl("a", { text: "console.mistral.ai", href: "https://console.mistral.ai/" });
             f.appendText(". Stored locally (EU); never shared.");
@@ -6051,7 +6402,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         this.chatModelRow(containerEl, "mistral");
     }
     new import_obsidian.Setting(containerEl).setName("Embeddings provider").setDesc(
-      'Which provider computes the rerank embeddings for "Ask a question (AI \xB7 multi-source)". "Same as LLM provider" follows the choice above. Anthropic has no embeddings API \u2014 with Anthropic as LLM provider, pick one here or the rerank falls back to the fusion order.'
+      'Which provider computes the rerank embeddings for "Evidence \xB7 ask a question". "Same as LLM provider" follows the choice above. Anthropic has no embeddings API \u2014 with Anthropic as LLM provider, pick one here or the rerank falls back to the fusion order.'
     ).addDropdown(
       (d) => d.addOption("", "Same as LLM provider").addOption("mistral", "Mistral").addOption("openai", "OpenAI").addOption("google", "Google").addOption("local", "Local (Ollama/LM Studio)").addOption("openai-compat", "Custom (OpenAI-compatible)").setValue(this.plugin.settings.embedProvider).onChange(async (v) => {
         this.plugin.settings.embedProvider = v;
@@ -6304,7 +6655,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   // Pipeline phases — optional stages of the research process (in run order).
   renderPipelinePhases(containerEl) {
     new import_obsidian.Setting(containerEl).setName("Theoretical framework phase").then((s) => this.markUses(s, "ai")).setDesc(
-      'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Build theoretical framework" command runs this regardless of this toggle.'
+      'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Theory \xB7 framework" command runs this regardless of this toggle.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchFrameworkPhase).onChange(async (v) => {
         this.plugin.settings.researchFrameworkPhase = v;
@@ -6320,7 +6671,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(containerEl).setName("Cross-sector evidence").then((s) => this.markUses(s, "ai")).setDesc(
-      'When the topic evidence is thin within its own domain, also search analogous sectors (e.g. healthcare, public administration, education) and offer the hits as clearly-labelled transfer evidence. Only fires on thin evidence; the "force cross-sector" command runs it regardless.'
+      'When the topic evidence is thin within its own domain, also search analogous sectors (e.g. healthcare, public administration, education) and offer the hits as clearly-labelled transfer evidence. Only fires on thin evidence; the "Force cross-sector evidence" toggle in the Ask window runs it regardless.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchCrossSector).onChange(async (v) => {
         this.plugin.settings.researchCrossSector = v;
@@ -6361,7 +6712,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(containerEl).setName("Auto-deepen findings").then((s) => this.markUses(s, "ai")).setDesc(
-      'After the synthesis, automatically add a deepening under each finding (specific numbers, methods, mechanisms) drawing on \u2014 and citing \u2014 the whole bibliography. Off by default; adds one LLM call per finding (a run with 6 findings adds 6 calls). The "Deepen selected finding(s)" command works regardless. The usage summary after each run reports the total tokens spent.'
+      'After the synthesis, automatically add a deepening under each finding (specific numbers, methods, mechanisms) drawing on \u2014 and citing \u2014 the whole bibliography. Off by default; adds one LLM call per finding (a run with 6 findings adds 6 calls). The "Evidence \xB7 deepen finding" command works regardless. The usage summary after each run reports the total tokens spent.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchAutoDeepen).onChange(async (v) => {
         this.plugin.settings.researchAutoDeepen = v;
@@ -6381,7 +6732,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   // <details> element is absorbed into the shared accordion (tier 3: never auto-opens).
   renderAdvanced(adv) {
     new import_obsidian.Setting(adv).setName("Multi-source search: how many papers to keep").setHeading();
-    new import_obsidian.Setting(adv).setName("Max results").setDesc('Upper bound on how many reranked papers "Ask a question (AI \xB7 multi-source)" returns. The selection is weighted, so this is just the ceiling.').addText(
+    new import_obsidian.Setting(adv).setName("Max results").setDesc('Upper bound on how many reranked papers "Evidence \xB7 ask a question" returns. The selection is weighted, so this is just the ceiling.').addText(
       (t2) => t2.setValue(String(this.plugin.settings.researchMaxResults)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
@@ -6418,7 +6769,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     new import_obsidian.Setting(adv).setName("Debug logging").setDesc(
-      'Write a "Parallax debug" note with what "Ask a question (AI \xB7 multi-source)" did (sub-questions, queries, per-source result counts). Handy on mobile, where the dev console is out of reach.'
+      'Write a "Parallax debug" note with what "Evidence \xB7 ask a question" did (sub-questions, queries, per-source result counts). Handy on mobile, where the dev console is out of reach.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.debugLogging).onChange(async (v) => {
         this.plugin.settings.debugLogging = v;
@@ -6617,15 +6968,17 @@ function applyModalChrome(modal) {
 
 // src/search-modal.ts
 var SearchModal = class extends import_obsidian3.Modal {
-  constructor(app, initialQuery, supportsMedicalFilters, onSubmit, hint, rephrase) {
+  constructor(app, initialQuery, supportsMedicalFilters, onSubmit, hint, rephrase, offerCrossSector = false) {
     super(app);
     this.filters = {};
     this.submitted = false;
+    this.crossSector = false;
     this.query = initialQuery;
     this.supportsMedicalFilters = supportsMedicalFilters;
     this.onSubmit = onSubmit;
     this.hint = hint;
     this.rephrase = rephrase;
+    this.offerCrossSector = offerCrossSector;
   }
   onOpen() {
     const { contentEl } = this;
@@ -6667,6 +7020,11 @@ var SearchModal = class extends import_obsidian3.Modal {
         t2.setValue(false).onChange((v) => this.filters.humanOnly = v || void 0);
       });
     }
+    if (this.offerCrossSector) {
+      new import_obsidian3.Setting(details).setName("Force cross-sector evidence").setDesc("Always add analogous evidence from other sectors, labelled separately.").addToggle((t2) => {
+        t2.setValue(false).onChange((v) => this.crossSector = v);
+      });
+    }
     const buttons = new import_obsidian3.Setting(contentEl);
     buttons.addButton((b) => {
       b.setButtonText("Rephrase for search (uses AI)");
@@ -6699,7 +7057,7 @@ var SearchModal = class extends import_obsidian3.Modal {
     const q = this.query.trim();
     if (!q) return;
     this.submitted = true;
-    this.onSubmit({ query: q, filters: this.filters });
+    this.onSubmit({ query: q, filters: this.filters, ...this.crossSector ? { crossSector: true } : {} });
     this.close();
   }
   onClose() {
@@ -7650,11 +8008,11 @@ function renderSubQuestionsList(result) {
   const items = result.subQuestions.map((s, i) => {
     const notes = s.sources && s.sources.length ? ` ${cite(s.sources.map((n) => `[${n}]`).join(""))}` : "";
     const lines = [`${i + 1}. ${collapseWhitespace(s.query)}${notes}`];
-    if (s.hypothesis) lines.push(`   - *${t().decompose.hypothesisLabel}:* ${collapseWhitespace(s.hypothesis)}`);
+    if (s.expectation) lines.push(`   - *${t().decompose.expectationLabel}:* ${collapseWhitespace(s.expectation)}`);
     return lines.join("\n");
   });
-  const hasHypotheses = result.subQuestions.some((s) => s.hypothesis);
-  const note = hasHypotheses ? `*${t().decompose.subQuestionsNoteWithHypotheses}*` : `*${t().decompose.subQuestionsNote}*`;
+  const hasExpectations = result.subQuestions.some((s) => s.expectation);
+  const note = hasExpectations ? `*${t().decompose.subQuestionsNoteWithExpectations}*` : `*${t().decompose.subQuestionsNote}*`;
   return [note, ...items].join("\n");
 }
 function buildSessionSynthesisBody(result) {
@@ -9337,6 +9695,108 @@ function extractBulletsUnderHeading(body, headingMatch) {
   }
   return out;
 }
+var EXPECTATION_LABELS = [
+  .../* @__PURE__ */ new Set([
+    ...Object.values(ARTIFACT_STRINGS).map((s) => s.decompose.expectationLabel),
+    "\u0627\u0644\u0641\u0631\u0636\u064A\u0629",
+    "Hypothese",
+    "Hypothesis",
+    "Hip\xF3tesis",
+    "Hypoth\xE8se",
+    "\u092A\u0930\u093F\u0915\u0932\u094D\u092A\u0928\u093E",
+    "Ipotesi",
+    "\u4EEE\u8AAC",
+    "\uAC00\uC124",
+    "Hip\xF3tese",
+    "\u0413\u0438\u043F\u043E\u0442\u0435\u0437\u0430",
+    "\u5047\u8BBE"
+  ])
+];
+function stripCitationMarkers(text) {
+  return text.replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
+}
+function parseSubquestionExpectations(body) {
+  const section = extractSection(body, "subquestions");
+  if (!section.trim()) return [];
+  const out = [];
+  let query = "";
+  for (const line of section.split("\n")) {
+    const item = /^\s*(?:\d+\.|[-*])\s+(.+)$/.exec(line);
+    if (!item) continue;
+    const text = item[1].trim();
+    if (!text.startsWith("*")) {
+      query = stripCitationMarkers(text);
+      continue;
+    }
+    let inner = text.slice(1).trim();
+    if (inner.endsWith("*")) inner = inner.slice(0, -1).trim();
+    const label = EXPECTATION_LABELS.find((l) => inner.toLowerCase().startsWith(l.toLowerCase()));
+    if (!label) continue;
+    const rest = inner.slice(label.length).replace(/^[:：]/, "").replace(/^\*/, "").trim();
+    if (rest && query) out.push({ query, expectation: rest });
+  }
+  return out;
+}
+var ARTEFACT_DEPENDENCIES = {
+  challenge: ["synthesis", "beliefs"],
+  argument: ["exploration", "synthesis", "challenge", "beliefs"],
+  hypotheses: ["argument", "beliefs", "agenda", "subquestions"],
+  interview: ["subquestions", "synthesis", "beliefs", "argument"],
+  agenda: ["synthesis", "beliefs"]
+};
+function upstreamFingerprints(body, artefactId) {
+  var _a;
+  const out = {};
+  for (const dep of (_a = ARTEFACT_DEPENDENCIES[artefactId]) != null ? _a : []) {
+    const content = extractSection(body, dep);
+    if (content.trim()) out[dep] = sectionFingerprint(content);
+  }
+  return out;
+}
+function staleSections(body, basedOn) {
+  if (!basedOn) return [];
+  const out = [];
+  for (const [artefact, deps] of Object.entries(basedOn)) {
+    if (!isSectionId(artefact) || !deps || typeof deps !== "object") continue;
+    if (!extractSection(body, artefact).trim()) continue;
+    const changed = [];
+    for (const [dep, recorded] of Object.entries(deps)) {
+      if (!isSectionId(dep) || typeof recorded !== "string") continue;
+      const current = extractSection(body, dep);
+      if (!current.trim() || sectionFingerprint(current) !== recorded) changed.push(dep);
+    }
+    if (changed.length > 0) out.push({ artefact, changed });
+  }
+  return out;
+}
+function forkNoteBody(body, revisedId) {
+  const revisedRank = CANONICAL_SECTION_ORDER.indexOf(revisedId);
+  const lines = body.split("\n");
+  const headingIdxs = [];
+  for (let i = 0; i < lines.length; i++) {
+    if (/^##\s+/.test(lines[i])) headingIdxs.push(i);
+  }
+  const preamble = headingIdxs.length > 0 ? lines.slice(0, headingIdxs[0]) : lines;
+  const synthesisUpstream = CANONICAL_SECTION_ORDER.indexOf("synthesis") < revisedRank;
+  const logbookRank = CANONICAL_SECTION_ORDER.indexOf("logbook");
+  const kept = [];
+  const parts = [];
+  let keepChain = false;
+  for (let h = 0; h < headingIdxs.length; h++) {
+    const start = headingIdxs[h];
+    const end = h + 1 < headingIdxs.length ? headingIdxs[h + 1] : lines.length;
+    const rank = headingRank(lines[start]);
+    if (rank !== null) {
+      keepChain = rank === REFERENCES_RANK ? synthesisUpstream : rank < revisedRank && rank !== logbookRank;
+      if (keepChain && rank !== REFERENCES_RANK) kept.push(CANONICAL_SECTION_ORDER[rank]);
+    }
+    if (keepChain) parts.push(lines.slice(start, end).join("\n").replace(/\s+$/, ""));
+  }
+  const head = preamble.join("\n").replace(/\s+$/, "");
+  const rebuilt = [...head ? [head] : [], ...parts].join("\n\n");
+  return { body: `${rebuilt.replace(/\n{3,}/g, "\n\n")}
+`, kept };
+}
 function unionStrings(existing, add) {
   const out = Array.isArray(existing) ? existing.filter((x) => typeof x === "string") : [];
   const seen = new Set(out.map((s) => s.toLowerCase()));
@@ -9364,7 +9824,15 @@ function sectionEditState(body, headingOrId) {
   return sectionFingerprint(extractSection(body, headingOrId)) === hash ? "machine" : "edited";
 }
 function needsOverwriteConfirmation(state) {
-  return state === "edited" || state === "unstamped";
+  return state !== "absent";
+}
+function dependentArtefacts(body, sectionId) {
+  const out = [];
+  for (const [artefact, deps] of Object.entries(ARTEFACT_DEPENDENCIES)) {
+    if (!deps.includes(sectionId)) continue;
+    if (extractSection(body, artefact).trim()) out.push(artefact);
+  }
+  return out;
 }
 var CANONICAL_SECTION_ORDER = [
   "objective",
@@ -9379,9 +9847,11 @@ var CANONICAL_SECTION_ORDER = [
   "challenge",
   "beliefs",
   "argument",
+  // Hypotheses sit directly after the argument map they are derived from (AU_E130_S1,
+  // owner decision) — not after the interview/agenda like before.
+  "hypotheses",
   "interview",
   "agenda",
-  "hypotheses",
   "connections",
   "logbook"
 ];
@@ -9406,11 +9876,29 @@ function sectionInsertionLine(lines, id) {
   }
   return -1;
 }
+function sectionIntroLine(id) {
+  return `*${t().sectionIntros[id]}*`;
+}
+var ALL_INTRO_LINES = new Set(
+  Object.values(ARTIFACT_STRINGS).flatMap((s) => Object.values(s.sectionIntros).map((v) => `*${v}*`))
+);
+function isSectionIntroLine(line) {
+  return ALL_INTRO_LINES.has(line.trim());
+}
+function prependSectionIntro(id, content) {
+  var _a;
+  const firstLine = (_a = content.trimStart().split("\n", 1)[0]) != null ? _a : "";
+  if (isSectionIntroLine(firstLine)) return content;
+  return `${sectionIntroLine(id)}
+
+${content.trimStart()}`;
+}
 function upsertSection(body, headingOrId, content, fingerprintContent) {
   const lines = body.split("\n");
   const { heading, id } = resolveHeading(headingOrId);
-  const headingLine = id ? `## ${heading} ${sectionMarker(id, sectionFingerprint(fingerprintContent != null ? fingerprintContent : content))}` : `## ${heading}`;
-  const block2 = [headingLine, "", content.trimEnd()];
+  const withIntro = id ? prependSectionIntro(id, content) : content;
+  const headingLine = id ? `## ${heading} ${sectionMarker(id, sectionFingerprint(fingerprintContent != null ? fingerprintContent : withIntro))}` : `## ${heading}`;
+  const block2 = [headingLine, "", withIntro.trimEnd()];
   const startIdx = findHeadingLine(lines, headingOrId);
   if (startIdx === -1) {
     const insertBefore = sectionInsertionLine(lines, id);
@@ -9444,6 +9932,9 @@ function appendToSection(body, headingOrId, line) {
   const headingLine = id ? `## ${heading} ${sectionMarker(id)}` : `## ${heading}`;
   const startIdx = findHeadingLine(lines, headingOrId);
   if (startIdx === -1) {
+    const firstContent = id ? `${sectionIntroLine(id)}
+
+${line.trimEnd()}` : line.trimEnd();
     const insertBefore = sectionInsertionLine(lines, id);
     if (insertBefore === -1) {
       const base = body.replace(/\s+$/, "");
@@ -9451,10 +9942,10 @@ function appendToSection(body, headingOrId, line) {
 
 ` : ""}${headingLine}
 
-${line.trimEnd()}
+${firstContent}
 `;
     }
-    const rebuilt2 = [...lines.slice(0, insertBefore), "", headingLine, "", line.trimEnd(), "", ...lines.slice(insertBefore)].join("\n");
+    const rebuilt2 = [...lines.slice(0, insertBefore), "", headingLine, "", firstContent, "", ...lines.slice(insertBefore)].join("\n");
     return `${rebuilt2.replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "").replace(/\s+$/, "")}
 `;
   }
@@ -9538,6 +10029,7 @@ function hasOwnText(sectionContent) {
   const block2 = markerBlock(lines);
   return lines.some((line, i) => {
     if (block2 && i >= block2.start && i <= block2.end) return false;
+    if (isSectionIntroLine(line)) return false;
     return line.trim() !== "";
   });
 }
@@ -9547,7 +10039,10 @@ function isScaffoldReplaceable(sectionContent) {
   const block2 = markerBlock(lines);
   if (!block2) return false;
   const blockLines = lines.slice(block2.start, block2.end + 1).filter((l) => l.trim() !== "");
-  const outside = lines.some((line, i) => (i < block2.start || i > block2.end) && line.trim() !== "");
+  const outside = lines.some(
+    // The section intro (AU_E130_S3) is machine wayfinding — it never blocks a rewrite.
+    (line, i) => (i < block2.start || i > block2.end) && line.trim() !== "" && !isSectionIntroLine(line)
+  );
   return !outside && blockLines.length <= 3;
 }
 
@@ -9771,13 +10266,6 @@ function moreActions() {
       commandId: "ask-research-question",
       label: "Quick search (single provider)",
       description: "Insert references from one provider \u2014 keyless, no AI, the fastest way to real sources.",
-      step: "evidence"
-    },
-    {
-      commandId: "research-question-cross-sector",
-      label: "Ask a question \u2014 force cross-sector evidence",
-      requires: "ai",
-      description: "Full research run that always adds analogous evidence from other sectors, labelled separately.",
       step: "evidence"
     },
     {
@@ -10323,6 +10811,35 @@ function serializeGraphStore(store) {
   return `${JSON.stringify(store, null, 2)}
 `;
 }
+function forkRecordsForNote(store, note, newNote, kept) {
+  var _a, _b, _c, _d, _e;
+  const keptSet = new Set(kept);
+  let out = store;
+  const session = recordForNote(store, note);
+  if (session && keptSet.has("synthesis")) {
+    out = upsertSessionGraphRecord(out, { ...session, note: newNote });
+  }
+  const artefact = artefactRecordForNote(store, note);
+  if (artefact) {
+    const adoptions = {
+      ...((_a = artefact.adoptions) == null ? void 0 : _a.exploration) && keptSet.has("exploration") ? { exploration: artefact.adoptions.exploration } : {},
+      ...((_b = artefact.adoptions) == null ? void 0 : _b.theory) && keptSet.has("lenses") ? { theory: artefact.adoptions.theory } : {},
+      ...((_c = artefact.adoptions) == null ? void 0 : _c.challenge) && keptSet.has("challenge") ? { challenge: artefact.adoptions.challenge } : {},
+      ...((_d = artefact.adoptions) == null ? void 0 : _d.agenda) && keptSet.has("agenda") ? { agenda: artefact.adoptions.agenda } : {}
+    };
+    const basedOn = Object.fromEntries(Object.entries((_e = artefact.basedOn) != null ? _e : {}).filter(([k]) => keptSet.has(k)));
+    const patch = {
+      ...artefact.searchStrategy && keptSet.has("searchstrategy") ? { searchStrategy: artefact.searchStrategy } : {},
+      ...Object.keys(adoptions).length > 0 ? { adoptions } : {},
+      ...artefact.argumentStructure && keptSet.has("argument") ? { argumentStructure: artefact.argumentStructure } : {},
+      ...artefact.interviewGuide && keptSet.has("interview") ? { interviewGuide: artefact.interviewGuide } : {},
+      ...artefact.hypotheses && keptSet.has("hypotheses") ? { hypotheses: artefact.hypotheses } : {},
+      ...Object.keys(basedOn).length > 0 ? { basedOn } : {}
+    };
+    if (Object.keys(patch).length > 0) out = upsertSessionArtefactRecord(out, newNote, patch);
+  }
+  return out;
+}
 function resolveSourceKeys(indices, papers) {
   const out = [];
   const seen = /* @__PURE__ */ new Set();
@@ -10395,7 +10912,8 @@ function sanitizeArgumentStructure(raw) {
     const kind = e.kind === "claim" || e.kind === "assumption" ? e.kind : null;
     if (!id || !text || !kind || seenIds.has(id)) continue;
     seenIds.add(id);
-    nodes.push({ id, text, kind });
+    const source = typeof e.source === "string" ? e.source.trim() : "";
+    nodes.push({ id, text, kind, ...source ? { source } : {} });
   }
   if (nodes.length === 0) return void 0;
   const edges = [];
@@ -10408,7 +10926,19 @@ function sanitizeArgumentStructure(raw) {
     if (!kind || !seenIds.has(from) || !seenIds.has(to) || from === to) continue;
     edges.push({ from, to, kind });
   }
-  return { nodes, edges, adoptedAt: typeof obj.adoptedAt === "string" ? obj.adoptedAt : "" };
+  const evidence = [];
+  for (const entry of Array.isArray(obj.evidence) ? obj.evidence : []) {
+    if (!entry || typeof entry !== "object") continue;
+    const e = entry;
+    const id = typeof e.id === "string" ? e.id.trim() : "";
+    const text = typeof e.text === "string" ? e.text.trim() : "";
+    const to = typeof e.to === "string" ? e.to.trim() : "";
+    const kind = e.kind === "supports" || e.kind === "attacks" ? e.kind : null;
+    if (!id || !text || !kind || !seenIds.has(to)) continue;
+    const sourceKeys = Array.isArray(e.sourceKeys) ? e.sourceKeys.filter((k) => typeof k === "string") : [];
+    evidence.push({ id, text, to, kind, sourceKeys });
+  }
+  return { nodes, edges, ...evidence.length > 0 ? { evidence } : {}, adoptedAt: typeof obj.adoptedAt === "string" ? obj.adoptedAt : "" };
 }
 function sanitizeInterviewGuide(raw) {
   if (!raw || typeof raw !== "object") return void 0;
@@ -10445,20 +10975,22 @@ function sanitizeInterviewGuide(raw) {
   };
 }
 function upsertSessionArtefactRecord(store, note, patch) {
-  var _a, _b, _c, _d, _e, _f;
+  var _a, _b, _c, _d, _e, _f, _g, _h;
   const existing = artefactRecordForNote(store, note);
   const searchStrategy = (_a = patch.searchStrategy) != null ? _a : existing == null ? void 0 : existing.searchStrategy;
   const mergedAdoptions = { ...(_b = existing == null ? void 0 : existing.adoptions) != null ? _b : {}, ...(_c = patch.adoptions) != null ? _c : {} };
   const argumentStructure = sanitizeArgumentStructure((_d = patch.argumentStructure) != null ? _d : existing == null ? void 0 : existing.argumentStructure);
   const interviewGuide = sanitizeInterviewGuide((_e = patch.interviewGuide) != null ? _e : existing == null ? void 0 : existing.interviewGuide);
   const hypotheses = sanitizeHypothesisSet((_f = patch.hypotheses) != null ? _f : existing == null ? void 0 : existing.hypotheses);
+  const mergedBasedOn = { ...(_g = existing == null ? void 0 : existing.basedOn) != null ? _g : {}, ...(_h = patch.basedOn) != null ? _h : {} };
   const record = {
     note,
     ...searchStrategy ? { searchStrategy } : {},
     ...Object.keys(mergedAdoptions).length > 0 ? { adoptions: mergedAdoptions } : {},
     ...argumentStructure ? { argumentStructure } : {},
     ...interviewGuide ? { interviewGuide } : {},
-    ...hypotheses ? { hypotheses } : {}
+    ...hypotheses ? { hypotheses } : {},
+    ...Object.keys(mergedBasedOn).length > 0 ? { basedOn: mergedBasedOn } : {}
   };
   const artefacts = store.artefacts.filter((a) => a.note !== note);
   artefacts.push(record);
@@ -11157,8 +11689,8 @@ var SYSTEM3 = [
   "as a researcher would \u2014 drawing on review frameworks (PICO/PECO/SPIDER/PCC) where they fit.",
   "Write EVERY sub-question in English \u2014 the language of academic indexing \u2014 even when the",
   "input question is in another language; otherwise the search engines return almost nothing.",
-  "EVERY sub-question MUST include a non-empty 'hypothesis': one sentence stating the expected,",
-  "falsifiable answer (a directional prediction). Never omit the hypothesis field.",
+  "EVERY sub-question MUST include a non-empty 'expectation': one sentence stating the expected,",
+  "falsifiable answer (a directional prediction). Never omit the expectation field.",
   "Rules: produce ONLY searchable sub-questions; do NOT invent facts, sources, findings or citations.",
   "Deduplicate near-identical sub-questions. Respond with strict JSON only."
 ].join(" ");
@@ -11180,7 +11712,8 @@ function parseSubquestions(raw, max, log) {
     if (seen.has(key)) continue;
     seen.add(key);
     const sub = { query };
-    if (typeof e.hypothesis === "string" && e.hypothesis.trim()) sub.hypothesis = e.hypothesis.trim();
+    const expectation = typeof e.expectation === "string" ? e.expectation : typeof e.hypothesis === "string" ? e.hypothesis : "";
+    if (expectation.trim()) sub.expectation = expectation.trim();
     out.push(sub);
     if (out.length >= max) break;
   }
@@ -11200,8 +11733,8 @@ async function decomposeQuestion(question, chat, opts = {}) {
   const user = [
     `Research question: ${question}`,
     ...steer,
-    `Return JSON of the form {"subquestions":[{"query":"...","hypothesis":"..."}]}`,
-    `with 3 to ${max} entries. The "hypothesis" field is REQUIRED and non-empty for every entry.`
+    `Return JSON of the form {"subquestions":[{"query":"...","expectation":"..."}]}`,
+    `with 3 to ${max} entries. The "expectation" field is REQUIRED and non-empty for every entry.`
   ].join("\n");
   let raw;
   try {
@@ -11753,7 +12286,7 @@ async function orchestrate(question, deps, log, finalLimit, opts = {}) {
     progress == null ? void 0 : progress("Splitting question into sub-questions\u2026");
     subquestions = await deps.decompose(question, framework == null ? void 0 : framework.framework.dimensions);
     log == null ? void 0 : log(`decomposed into ${subquestions.length} sub-question(s)`, subquestions.map((s) => s.query));
-    if (subquestions.length === 1 && subquestions[0].query === question && !subquestions[0].hypothesis) {
+    if (subquestions.length === 1 && subquestions[0].query === question && !subquestions[0].expectation) {
       degradations.push({ step: "decompose", reason: "fell back to a single query (the original question)" });
     }
     if (opts.reviewSubQuestions) {
@@ -11846,7 +12379,7 @@ async function orchestrate(question, deps, log, finalLimit, opts = {}) {
         var _a2;
         if ((_a2 = p.fromQueries) == null ? void 0 : _a2.includes(s.query)) sources.push(idx + 1);
       });
-      const base = s.hypothesis ? { query: s.query, hypothesis: s.hypothesis } : { query: s.query };
+      const base = s.expectation ? { query: s.query, expectation: s.expectation } : { query: s.query };
       return sources.length > 0 ? { ...base, sources } : base;
     });
   }
@@ -12222,7 +12755,11 @@ var VaultAdapters = class {
       const parsed = JSON.parse(raw);
       const cp = parsed.checkpoint;
       if (cp && typeof cp.question === "string" && Array.isArray(cp.fusedPapers)) {
-        return { checkpoint: { ...cp, failedQueries: (_a = cp.failedQueries) != null ? _a : [] }, at: (_b = parsed.at) != null ? _b : 0 };
+        const subQuestions = Array.isArray(cp.subQuestions) ? cp.subQuestions.map((s) => {
+          const legacy = s.hypothesis;
+          return s.expectation || !legacy ? s : { query: s.query, expectation: legacy };
+        }) : cp.subQuestions;
+        return { checkpoint: { ...cp, subQuestions, failedQueries: (_a = cp.failedQueries) != null ? _a : [] }, at: (_b = parsed.at) != null ? _b : 0 };
       }
       return null;
     } catch (e) {
@@ -12430,55 +12967,52 @@ beliefs: []
   }
 };
 
+// src/commands.ts
+var import_obsidian13 = require("obsidian");
+
 // src/command-names.ts
 var COMMAND_NAMES = {
-  "open-workbench": "Open Parallax (sidebar)",
-  "research-question": "Ask a question (AI \xB7 multi-source)",
-  "cancel-research": "Stop current research run",
-  "explore-problem": "Explore the problem (before researching)",
-  "insert-scaffold": "Insert section to write yourself (no AI)",
-  "start-research-session": "Start research session (this note)",
-  "reorder-sections": "Reorder sections (canonical order)",
-  "start-research-project": "Start research project (folder)",
-  "new-project-session": "New question in this project",
-  "refresh-project-contents": "Refresh project contents",
-  "export-quadro-codebook": "Quadro \u2014 export codebook (from lenses)",
-  "export-quadro-starter-kit": "Quadro \u2014 export starter kit",
-  "clean-up-records": "Clean up records (missing notes)",
-  "build-knowledge-graph-spike": "Build knowledge graph (spike)",
-  "theory-lenses": "Explore theoretical lenses",
-  "challenge-framing": "Challenge my framing",
-  "map-argument": "Map the argument (propose-only)",
-  "argument-refresh-map": "Argument \u2014 refresh map (from records)",
-  "argument-open-canvas": "Argument \u2014 open as Canvas",
-  "design-interview-guide": "Design interview guide (propose-only)",
-  "interview-refresh": "Interview guide \u2014 refresh (from records)",
-  "interview-export": "Interview guide \u2014 export for fieldwork",
-  "propose-hypotheses": "Propose hypotheses (from the argument map)",
-  "hypotheses-refresh": "Hypotheses \u2014 refresh (from records)",
-  "find-validated-scales": "Find validated scales (for a construct)",
-  "export-preregistration": "Export pre-registration draft",
-  "connections-refresh-note": "Connections \u2014 refresh (this note)",
-  "connections-refresh-project": "Connections \u2014 refresh (this project)",
-  "resume-research": "Resume last research (rerank + synthesise)",
-  "confront-beliefs": "Confront beliefs with the synthesis",
-  "methodology-account": "Generate methodological account",
-  "research-agenda": "Propose research agenda (from the synthesis)",
-  "build-framework": "Build theoretical framework",
-  "research-question-cross-sector": "Ask a question \u2014 force cross-sector evidence",
-  "deepen-finding": "Deepen selected finding(s)",
-  "ask-research-question": "Quick search (single provider)",
-  "search-selection": "Quick search \u2014 selected text",
-  "register-bibliography-project": "Register \u2014 bibliography (this note's project)",
-  "register-bridge-papers": "Register \u2014 bridge papers across projects",
-  "register-overview": "Register \u2014 authors & orphans",
-  "register-export-bibtex": "Register \u2014 export BibTeX",
-  "library-refresh": "Library \u2014 read .bib library",
-  "library-insert-citation": "Library \u2014 insert citation",
-  "library-update-note": "Library \u2014 update references (this note)",
-  "library-update-project": "Library \u2014 update references (this project)",
-  "export-session": "Export research session (portable)",
-  "export-project": "Export research project (portable)"
+  "open-workbench": "Open sidebar",
+  "research-question": "Evidence \xB7 ask a question",
+  "cancel-research": "Evidence \xB7 stop current run",
+  "explore-problem": "Explore \xB7 problem",
+  "insert-scaffold": "Session \xB7 insert section (no AI)",
+  "start-research-session": "Session \xB7 start research session",
+  "reorder-sections": "Session \xB7 reorder sections",
+  "start-research-project": "Project \xB7 start (folder)",
+  "new-project-session": "Project \xB7 new question",
+  "refresh-project-contents": "Project \xB7 refresh contents",
+  "export-quadro": "Export \xB7 Quadro (codebook / starter kit)",
+  "refresh-from-records": "Session \xB7 refresh section from records",
+  "connections-refresh": "Session \xB7 refresh connections (note / project)",
+  "library-update": "Library \xB7 update references (note / project)",
+  "clean-up-records": "Maintenance \xB7 clean up records",
+  "build-knowledge-graph-spike": "Maintenance \xB7 knowledge graph (spike)",
+  "theory-lenses": "Theory \xB7 lenses",
+  "challenge-framing": "Challenge \xB7 framing",
+  "map-argument": "Design \xB7 argument map",
+  "argument-open-canvas": "Design \xB7 argument canvas",
+  "argument-relayout-canvas": "Design \xB7 argument canvas re-layout",
+  "design-interview-guide": "Design \xB7 interview guide",
+  "interview-export": "Export \xB7 interview guide (fieldwork)",
+  "propose-hypotheses": "Design \xB7 hypotheses",
+  "find-validated-scales": "Design \xB7 validated scales",
+  "export-preregistration": "Export \xB7 pre-registration draft",
+  "resume-research": "Evidence \xB7 resume last research",
+  "confront-beliefs": "Challenge \xB7 beliefs",
+  "methodology-account": "Design \xB7 methodological account",
+  "research-agenda": "Design \xB7 research agenda",
+  "build-framework": "Theory \xB7 framework",
+  "deepen-finding": "Evidence \xB7 deepen finding",
+  "ask-research-question": "Evidence \xB7 quick search",
+  "register-bibliography-project": "Register \xB7 bibliography (this project)",
+  "register-bridge-papers": "Register \xB7 bridge papers",
+  "register-overview": "Register \xB7 authors & orphans",
+  "register-export-bibtex": "Register \xB7 export BibTeX",
+  "library-refresh": "Library \xB7 read .bib library",
+  "library-insert-citation": "Library \xB7 insert citation",
+  "export-session": "Export \xB7 session (portable)",
+  "export-project": "Export \xB7 project (portable)"
 };
 
 // src/workbench-view.ts
@@ -12547,6 +13081,8 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian12.ItemView {
     super(leaf);
     /** Path the panel was last rendered for — guards against re-rendering on every focus change (E69). */
     this.lastRenderedPath = null;
+    /** Stale artefacts of the rendered note (AU_E131_S5): section id → changed bases. */
+    this.staleArtefacts = /* @__PURE__ */ new Map();
     /** Project member note paths from the last render (D10) — a change to one of these also matters. */
     this.lastRenderedProjectMemberPaths = [];
     /** Pending debounce timer for `metadataCache.on("changed")` (D10). */
@@ -12610,6 +13146,7 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian12.ItemView {
     this.lastRenderedPath = (_a = file == null ? void 0 : file.path) != null ? _a : null;
     if (!file) {
       this.lastRenderedProjectMemberPaths = [];
+      this.staleArtefacts = /* @__PURE__ */ new Map();
       this.renderOnboarding(root);
       const emptyState = deriveSessionState(null, "");
       this.renderSteps(root, emptyState, recommendActions(emptyState));
@@ -12617,6 +13154,7 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian12.ItemView {
     }
     const session = parseSession((_b = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _b.frontmatter);
     const body = await this.app.vault.cachedRead(file);
+    this.staleArtefacts = session ? await this.plugin.staleArtefactsForNote(file, body) : /* @__PURE__ */ new Map();
     const state = deriveSessionState(session, body);
     const recommended = recommendActions(state);
     this.renderWorkflowStrip(root, state);
@@ -12917,6 +13455,13 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian12.ItemView {
     const card = wrap.createDiv({ cls: "consensus-workbench-card" });
     card.createDiv({ cls: "consensus-workbench-card-title", text: a.label });
     card.createDiv({ cls: "consensus-workbench-card-desc", text: a.description });
+    const changed = a.scaffoldSection ? this.staleArtefacts.get(a.scaffoldSection) : void 0;
+    if (changed) {
+      card.createDiv({
+        cls: "consensus-workbench-card-desc consensus-workbench-stale",
+        text: `\u26A0 Basis changed since adoption (${changed.map((c) => sectionHeading(c)).join(", ")}) \u2014 re-run this step to refresh the section.`
+      });
+    }
     const buttons = card.createDiv({ cls: "consensus-workbench-card-buttons" });
     if (a.scaffoldSection) {
       const section = a.scaffoldSection;
@@ -13013,6 +13558,21 @@ async function revealWorkbench(plugin) {
 }
 
 // src/commands.ts
+var VariantPickModal = class extends import_obsidian13.FuzzySuggestModal {
+  constructor(app, items) {
+    super(app);
+    this.items = items;
+  }
+  getItems() {
+    return this.items;
+  }
+  getItemText(item) {
+    return item.label;
+  }
+  onChooseItem(item) {
+    item.run();
+  }
+};
 function registerCommands(plugin) {
   plugin.addCommand({
     id: "open-workbench",
@@ -13075,16 +13635,13 @@ function registerCommands(plugin) {
     callback: () => void plugin.refreshProjectContents()
   });
   plugin.addCommand({
-    id: "export-quadro-codebook",
-    name: COMMAND_NAMES["export-quadro-codebook"],
+    id: "export-quadro",
+    name: COMMAND_NAMES["export-quadro"],
     icon: "book-open-check",
-    callback: () => void plugin.exportQuadroCodebook()
-  });
-  plugin.addCommand({
-    id: "export-quadro-starter-kit",
-    name: COMMAND_NAMES["export-quadro-starter-kit"],
-    icon: "package-plus",
-    callback: () => void plugin.exportQuadroStarterKit()
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "Codebook (from lenses)", run: () => void plugin.exportQuadroCodebook() },
+      { label: "Starter kit", run: () => void plugin.exportQuadroStarterKit() }
+    ]).open()
   });
   plugin.addCommand({
     id: "clean-up-records",
@@ -13119,10 +13676,14 @@ function registerCommands(plugin) {
     callback: () => void plugin.mapArgumentFlow()
   });
   plugin.addCommand({
-    id: "argument-refresh-map",
-    name: COMMAND_NAMES["argument-refresh-map"],
+    id: "refresh-from-records",
+    name: COMMAND_NAMES["refresh-from-records"],
     icon: "refresh-cw",
-    callback: () => void plugin.refreshArgumentMap()
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "Argument map", run: () => void plugin.refreshArgumentMap() },
+      { label: "Interview guide", run: () => void plugin.refreshInterviewGuide() },
+      { label: "Hypotheses", run: () => void plugin.refreshHypotheses() }
+    ]).open()
   });
   plugin.addCommand({
     id: "argument-open-canvas",
@@ -13131,16 +13692,16 @@ function registerCommands(plugin) {
     callback: () => void plugin.openArgumentCanvas()
   });
   plugin.addCommand({
+    id: "argument-relayout-canvas",
+    name: COMMAND_NAMES["argument-relayout-canvas"],
+    icon: "layout-grid",
+    callback: () => void plugin.relayoutArgumentCanvasFlow()
+  });
+  plugin.addCommand({
     id: "design-interview-guide",
     name: COMMAND_NAMES["design-interview-guide"],
     icon: "mic",
     callback: () => void plugin.designInterviewGuideFlow()
-  });
-  plugin.addCommand({
-    id: "interview-refresh",
-    name: COMMAND_NAMES["interview-refresh"],
-    icon: "refresh-cw",
-    callback: () => void plugin.refreshInterviewGuide()
   });
   plugin.addCommand({
     id: "interview-export",
@@ -13155,12 +13716,6 @@ function registerCommands(plugin) {
     callback: () => void plugin.proposeHypothesesFlow()
   });
   plugin.addCommand({
-    id: "hypotheses-refresh",
-    name: COMMAND_NAMES["hypotheses-refresh"],
-    icon: "refresh-cw",
-    callback: () => void plugin.refreshHypotheses()
-  });
-  plugin.addCommand({
     id: "find-validated-scales",
     name: COMMAND_NAMES["find-validated-scales"],
     icon: "ruler",
@@ -13173,16 +13728,13 @@ function registerCommands(plugin) {
     callback: () => void plugin.exportPreregistration()
   });
   plugin.addCommand({
-    id: "connections-refresh-note",
-    name: COMMAND_NAMES["connections-refresh-note"],
+    id: "connections-refresh",
+    name: COMMAND_NAMES["connections-refresh"],
     icon: "link",
-    callback: () => void plugin.refreshConnections("note")
-  });
-  plugin.addCommand({
-    id: "connections-refresh-project",
-    name: COMMAND_NAMES["connections-refresh-project"],
-    icon: "link",
-    callback: () => void plugin.refreshConnections("project")
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "This note", run: () => void plugin.refreshConnections("note") },
+      { label: "This project", run: () => void plugin.refreshConnections("project") }
+    ]).open()
   });
   plugin.addCommand({
     id: "resume-research",
@@ -13215,12 +13767,6 @@ function registerCommands(plugin) {
     callback: () => plugin.promptAndResearch("", { frameworkOnly: true })
   });
   plugin.addCommand({
-    id: "research-question-cross-sector",
-    name: COMMAND_NAMES["research-question-cross-sector"],
-    icon: "git-compare",
-    callback: () => plugin.promptAndResearch("", { crossSectorForce: true })
-  });
-  plugin.addCommand({
     id: "deepen-finding",
     name: COMMAND_NAMES["deepen-finding"],
     icon: "list-tree",
@@ -13231,15 +13777,6 @@ function registerCommands(plugin) {
     name: COMMAND_NAMES["ask-research-question"],
     icon: "search",
     callback: () => plugin.promptAndSearch("")
-  });
-  plugin.addCommand({
-    id: "search-selection",
-    name: COMMAND_NAMES["search-selection"],
-    icon: "search",
-    editorCallback: (editor) => {
-      const selection = editor.getSelection().trim();
-      plugin.promptAndSearch(selection);
-    }
   });
   plugin.addCommand({
     id: "register-bibliography-project",
@@ -13272,14 +13809,12 @@ function registerCommands(plugin) {
     callback: () => void plugin.insertCitationFromLibrary()
   });
   plugin.addCommand({
-    id: "library-update-note",
-    name: COMMAND_NAMES["library-update-note"],
-    callback: () => void plugin.updateReferencesFromLibrary("note")
-  });
-  plugin.addCommand({
-    id: "library-update-project",
-    name: COMMAND_NAMES["library-update-project"],
-    callback: () => void plugin.updateReferencesFromLibrary("project")
+    id: "library-update",
+    name: COMMAND_NAMES["library-update"],
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "This note", run: () => void plugin.updateReferencesFromLibrary("note") },
+      { label: "This project", run: () => void plugin.updateReferencesFromLibrary("project") }
+    ]).open()
   });
   plugin.addCommand({
     id: "export-session",
@@ -13304,7 +13839,7 @@ function registerRibbons(plugin) {
 }
 
 // src/subquestion-review-modal.ts
-var import_obsidian13 = require("obsidian");
+var import_obsidian14 = require("obsidian");
 function parseSubQuestionLines(text) {
   const seen = /* @__PURE__ */ new Set();
   const out = [];
@@ -13318,33 +13853,33 @@ function parseSubQuestionLines(text) {
   }
   return out;
 }
-function reconcileHypotheses(edited, original) {
+function reconcileExpectations(edited, original) {
   const norm = (q) => q.toLowerCase().replace(/\s+/g, " ").trim();
-  const hypByQuery = new Map(original.map((s) => [norm(s.query), s.hypothesis]));
+  const expByQuery = new Map(original.map((s) => [norm(s.query), s.expectation]));
   return edited.map((s) => {
-    const hyp = hypByQuery.get(norm(s.query));
-    return hyp ? { query: s.query, hypothesis: hyp } : s;
+    const exp = expByQuery.get(norm(s.query));
+    return exp ? { query: s.query, expectation: exp } : s;
   });
 }
 function collectSubQuestions(fieldValues, original) {
-  return reconcileHypotheses(parseSubQuestionLines(fieldValues.join("\n")), original);
+  return reconcileExpectations(parseSubQuestionLines(fieldValues.join("\n")), original);
 }
 function buildSubQuestionsBlock(question, subs) {
   const items = subs.map(
-    (s) => s.hypothesis ? `- ${s.query}
-	- *${t().decompose.hypothesisLabel}: ${s.hypothesis}*` : `- ${s.query}`
+    (s) => s.expectation ? `- ${s.query}
+	- *${t().decompose.expectationLabel}: ${s.expectation}*` : `- ${s.query}`
   );
   return `**${t().decompose.subQuestions}** \u2014 *${question}*
 
 ${items.join("\n")}
 `;
 }
-var SubQuestionReviewModal = class extends import_obsidian13.Modal {
+var SubQuestionReviewModal = class extends import_obsidian14.Modal {
   constructor(app, subs, framework, onSubmit) {
     super(app);
     this.resolved = false;
     this.original = subs;
-    this.rows = subs.map((s) => ({ text: s.query, hypothesis: s.hypothesis }));
+    this.rows = subs.map((s) => ({ text: s.query, expectation: s.expectation }));
     this.framework = framework;
     this.onSubmit = onSubmit;
   }
@@ -13367,19 +13902,19 @@ var SubQuestionReviewModal = class extends import_obsidian13.Modal {
     }
     this.rowsEl = contentEl.createDiv();
     this.renderRows(false);
-    if (!import_obsidian13.Platform.isMobile) {
+    if (!import_obsidian14.Platform.isMobile) {
       window.setTimeout(() => {
         var _a, _b;
         return (_b = (_a = this.rowsEl) == null ? void 0 : _a.querySelector("textarea")) == null ? void 0 : _b.focus();
       }, 0);
     }
-    new import_obsidian13.Setting(contentEl).addButton(
+    new import_obsidian14.Setting(contentEl).addButton(
       (b) => b.setButtonText("Add sub-question").onClick(() => {
         this.rows.push({ text: "" });
         this.renderRows(true);
       })
     );
-    new import_obsidian13.Setting(contentEl).addButton(
+    new import_obsidian14.Setting(contentEl).addButton(
       (b) => b.setButtonText("Search these").setCta().onClick(() => this.submit("search"))
     ).addButton(
       (b) => b.setButtonText("Insert into note").setTooltip("Land the sub-questions at the bottom of the note to refine them there \u2014 stops this run.").onClick(() => this.submit("insert"))
@@ -13396,13 +13931,13 @@ var SubQuestionReviewModal = class extends import_obsidian13.Modal {
       ta.value = row.text;
       ta.addEventListener("input", () => row.text = ta.value);
       makeAutoGrowTextarea(ta, 2);
-      new import_obsidian13.ExtraButtonComponent(rowEl).setIcon("x").setTooltip("Remove").onClick(() => {
+      new import_obsidian14.ExtraButtonComponent(rowEl).setIcon("x").setTooltip("Remove").onClick(() => {
         this.rows.splice(i, 1);
         this.renderRows(false);
       });
-      if (row.hypothesis) {
+      if (row.expectation) {
         rowsEl.createEl("p", {
-          text: `${t().decompose.hypothesisLabel}: ${row.hypothesis}`,
+          text: `${t().decompose.expectationLabel}: ${row.expectation}`,
           cls: "consensus-subq-hypothesis"
         });
       }
@@ -13433,7 +13968,7 @@ var SubQuestionReviewModal = class extends import_obsidian13.Modal {
 };
 
 // src/framework-handoff-modal.ts
-var import_obsidian14 = require("obsidian");
+var import_obsidian15 = require("obsidian");
 function parseDimensionLines(text) {
   const seen = /* @__PURE__ */ new Set();
   const out = [];
@@ -13447,7 +13982,7 @@ function parseDimensionLines(text) {
   }
   return out;
 }
-var FrameworkHandoffModal = class extends import_obsidian14.Modal {
+var FrameworkHandoffModal = class extends import_obsidian15.Modal {
   constructor(app, framework, onChoice) {
     super(app);
     this.resolved = false;
@@ -13468,7 +14003,7 @@ var FrameworkHandoffModal = class extends import_obsidian14.Modal {
       text: `${count} seminal source(s). Edit the dimensions below, then continue to the literature research or just insert the framework.`,
       cls: "consensus-handoff-hint"
     });
-    stackSetting(new import_obsidian14.Setting(contentEl)).setName("Dimensions (steer the sub-questions)").setDesc("One analytical dimension per line.").addTextArea((ta) => {
+    stackSetting(new import_obsidian15.Setting(contentEl)).setName("Dimensions (steer the sub-questions)").setDesc("One analytical dimension per line.").addTextArea((ta) => {
       const MIN_ROWS = 4;
       ta.inputEl.rows = rowsForLines(this.framework.dimensions.length, MIN_ROWS);
       ta.setValue(this.dimensionsText).onChange((v) => {
@@ -13477,7 +14012,7 @@ var FrameworkHandoffModal = class extends import_obsidian14.Modal {
       });
       ta.inputEl.addClass("consensus-handoff-input");
     });
-    new import_obsidian14.Setting(contentEl).addButton(
+    new import_obsidian15.Setting(contentEl).addButton(
       (b) => b.setButtonText("Continue to literature research").setCta().onClick(() => this.choose("research"))
     ).addButton((b) => b.setButtonText("Insert framework only").onClick(() => this.choose("insert")));
   }
@@ -13636,8 +14171,8 @@ function explorationAdoptionRecord(question, choice) {
 }
 
 // src/exploration-modal.ts
-var import_obsidian15 = require("obsidian");
-var ExplorationModal = class extends import_obsidian15.Modal {
+var import_obsidian16 = require("obsidian");
+var ExplorationModal = class extends import_obsidian16.Modal {
   constructor(app, originalQuestion, result, landing, onChoice) {
     super(app);
     this.resolved = false;
@@ -13662,7 +14197,7 @@ var ExplorationModal = class extends import_obsidian15.Modal {
     this.renderReadOnly(contentEl, "Competing definitions", this.result.definitions);
     this.renderReadOnly(contentEl, "Disciplines / theoretical traditions", this.result.lenses);
     this.renderDirections(contentEl);
-    stackSetting(new import_obsidian15.Setting(contentEl)).setName("Research question (framing)").setDesc("Edit, or pick a reformulation below.").addTextArea((ta) => {
+    stackSetting(new import_obsidian16.Setting(contentEl)).setName("Research question (framing)").setDesc("Edit, or pick a reformulation below.").addTextArea((ta) => {
       this.framingInput = ta;
       ta.setValue(this.framing).onChange((v) => this.framing = v);
       ta.inputEl.addClass("consensus-handoff-input");
@@ -13671,7 +14206,7 @@ var ExplorationModal = class extends import_obsidian15.Modal {
     if (this.result.questionVariants.length > 0) {
       contentEl.createEl("p", { text: "Reformulations (click to use):", cls: "consensus-handoff-hint" });
       for (const variant of this.result.questionVariants) {
-        new import_obsidian15.Setting(contentEl).setName(variant).addButton(
+        new import_obsidian16.Setting(contentEl).setName(variant).addButton(
           (b) => b.setButtonText("Use").onClick(() => {
             var _a, _b;
             this.framing = variant;
@@ -13684,7 +14219,7 @@ var ExplorationModal = class extends import_obsidian15.Modal {
     if (this.result.searchTermSeeds.length > 0) {
       contentEl.createEl("h3", { text: "Missed search terms (widen the search)" });
       for (const seed of this.result.searchTermSeeds) {
-        new import_obsidian15.Setting(contentEl).setName(seed).addToggle(
+        new import_obsidian16.Setting(contentEl).setName(seed).addToggle(
           (t2) => t2.setValue(this.selectedSeeds.has(seed)).onChange((on) => {
             if (on) this.selectedSeeds.add(seed);
             else this.selectedSeeds.delete(seed);
@@ -13692,12 +14227,12 @@ var ExplorationModal = class extends import_obsidian15.Modal {
         );
       }
     }
-    stackSetting(new import_obsidian15.Setting(contentEl)).setName("First beliefs (optional)").setDesc("What do you think now? Lands in the inserted block.").addTextArea((ta) => {
+    stackSetting(new import_obsidian16.Setting(contentEl)).setName("First beliefs (optional)").setDesc("What do you think now? Lands in the inserted block.").addTextArea((ta) => {
       ta.setValue(this.beliefs).onChange((v) => this.beliefs = v);
       ta.inputEl.addClass("consensus-handoff-input");
       makeAutoGrowTextarea(ta.inputEl, 3);
     });
-    const actions = new import_obsidian15.Setting(contentEl).addButton(
+    const actions = new import_obsidian16.Setting(contentEl).addButton(
       (b) => b.setButtonText("Research with these choices").setCta().onClick(() => this.choose("research"))
     );
     if (this.landing === "cursor") {
@@ -13898,8 +14433,8 @@ function theoryAdoptionRecord(result, choice) {
 }
 
 // src/theory-modal.ts
-var import_obsidian16 = require("obsidian");
-var TheoryModal = class extends import_obsidian16.Modal {
+var import_obsidian17 = require("obsidian");
+var TheoryModal = class extends import_obsidian17.Modal {
   constructor(app, result, landing, onChoice) {
     super(app);
     this.resolved = false;
@@ -13919,7 +14454,7 @@ var TheoryModal = class extends import_obsidian16.Modal {
     if (this.result.lenses.length > 0) {
       contentEl.createEl("h3", { text: "Lenses (select to search with)" });
       for (const lens of this.result.lenses) {
-        new import_obsidian16.Setting(contentEl).setName(`${lens.name}${lens.tradition ? ` \u2014 ${lens.tradition}` : ""}`).setDesc(
+        new import_obsidian17.Setting(contentEl).setName(`${lens.name}${lens.tradition ? ` \u2014 ${lens.tradition}` : ""}`).setDesc(
           [lens.why && `Why here: ${lens.why}`, lens.predicts && `Predicts: ${lens.predicts}`].filter(Boolean).join(" \xB7 ")
         ).addToggle(
           (t2) => t2.setValue(this.selected.has(lens.name)).onChange((on) => {
@@ -13934,14 +14469,14 @@ var TheoryModal = class extends import_obsidian16.Modal {
     this.renderReadOnly(contentEl, "Conspicuously absent", this.result.absent);
     this.renderReadOnly(contentEl, "Competing explanations", this.result.competing);
     this.renderReadOnly(contentEl, "Cross-domain connections", this.result.crossDomain);
-    const actions = new import_obsidian16.Setting(contentEl).addButton(
+    const actions = new import_obsidian17.Setting(contentEl).addButton(
       (b) => b.setButtonText("Research with these lenses").setCta().onClick(() => this.choose("research"))
     );
     if (this.result.lenses.length >= 2) {
       actions.addButton(
         (b) => b.setButtonText("One session per lens").onClick(() => {
           if (this.selected.size < 2) {
-            new import_obsidian16.Notice("Select at least two lenses to fan out \u2014 one lens fits a single session.");
+            new import_obsidian17.Notice("Select at least two lenses to fan out \u2014 one lens fits a single session.");
             return;
           }
           this.choose("fan-out");
@@ -14043,7 +14578,7 @@ ${synthesis}`;
 }
 
 // src/belief-modal.ts
-var import_obsidian17 = require("obsidian");
+var import_obsidian18 = require("obsidian");
 function verdictToStatus(verdict) {
   if (verdict === "ondersteunt") return "ondersteund";
   if (verdict === "spreekt tegen") return "weersproken";
@@ -14054,7 +14589,7 @@ var VERDICT_LABEL = {
   "spreekt tegen": "Contradicts",
   neutraal: "Neutral"
 };
-var BeliefModal = class extends import_obsidian17.Modal {
+var BeliefModal = class extends import_obsidian18.Modal {
   constructor(app, proposals, onChoice) {
     super(app);
     this.resolved = false;
@@ -14076,7 +14611,7 @@ var BeliefModal = class extends import_obsidian17.Modal {
       contentEl.createEl("h3", { text: "Proposals (select to adopt)" });
       for (const p of actionable) {
         const status = verdictToStatus(p.verdict);
-        new import_obsidian17.Setting(contentEl).setName(`${VERDICT_LABEL[p.verdict]}: ${p.claim}`).setDesc([p.reason, status && `\u2192 status: ${status}`].filter(Boolean).join(" \xB7 ")).addToggle(
+        new import_obsidian18.Setting(contentEl).setName(`${VERDICT_LABEL[p.verdict]}: ${p.claim}`).setDesc([p.reason, status && `\u2192 status: ${status}`].filter(Boolean).join(" \xB7 ")).addToggle(
           (t2) => t2.setValue(this.selected.has(p.claim)).onChange((on) => {
             if (on) this.selected.add(p.claim);
             else this.selected.delete(p.claim);
@@ -14091,7 +14626,7 @@ var BeliefModal = class extends import_obsidian17.Modal {
       const ul = contentEl.createEl("ul");
       for (const p of neutral) ul.createEl("li", { text: `${p.claim}${p.reason ? ` \u2014 ${p.reason}` : ""}` });
     }
-    new import_obsidian17.Setting(contentEl).addButton(
+    new import_obsidian18.Setting(contentEl).addButton(
       (b) => b.setButtonText("Adopt selected").setCta().onClick(() => this.apply())
     ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.resolveAndClose(null)));
   }
@@ -14120,8 +14655,8 @@ var BeliefModal = class extends import_obsidian17.Modal {
 };
 
 // src/confirm-modal.ts
-var import_obsidian18 = require("obsidian");
-var ConfirmModal = class extends import_obsidian18.Modal {
+var import_obsidian19 = require("obsidian");
+var ConfirmModal = class extends import_obsidian19.Modal {
   constructor(app, title, message, labels, onChoice) {
     super(app);
     this.title = title;
@@ -14137,7 +14672,7 @@ var ConfirmModal = class extends import_obsidian18.Modal {
     for (const line of this.message.split("\n")) {
       contentEl.createEl("p", { text: line });
     }
-    new import_obsidian18.Setting(contentEl).addButton((b) => b.setButtonText(this.labels.confirmText).onClick(() => this.choose(true))).addButton((b) => b.setButtonText(this.labels.cancelText).onClick(() => this.choose(false)));
+    new import_obsidian19.Setting(contentEl).addButton((b) => b.setButtonText(this.labels.confirmText).onClick(() => this.choose(true))).addButton((b) => b.setButtonText(this.labels.cancelText).onClick(() => this.choose(false)));
   }
   choose(confirmed) {
     this.resolve(confirmed);
@@ -14153,12 +14688,13 @@ var ConfirmModal = class extends import_obsidian18.Modal {
     this.resolve(false);
   }
 };
-var OverwriteChoiceModal = class extends import_obsidian18.Modal {
-  constructor(app, title, message, onChoice) {
+var OverwriteChoiceModal = class extends import_obsidian19.Modal {
+  constructor(app, title, message, onChoice, forkNote) {
     super(app);
     this.title = title;
     this.message = message;
     this.onChoice = onChoice;
+    this.forkNote = forkNote;
     this.resolved = false;
   }
   choose(choice) {
@@ -14172,7 +14708,13 @@ var OverwriteChoiceModal = class extends import_obsidian18.Modal {
     applyModalChrome(this);
     contentEl.createEl("h2", { text: this.title });
     contentEl.createEl("p", { text: this.message });
-    new import_obsidian18.Setting(contentEl).addButton((b) => b.setButtonText("Keep mine").onClick(() => this.choose("keep"))).addButton((b) => b.setButtonText("Append below").onClick(() => this.choose("append"))).addButton((b) => {
+    if (this.forkNote) contentEl.createEl("p", { text: this.forkNote, cls: "consensus-review-hint" });
+    const buttons = new import_obsidian19.Setting(contentEl);
+    buttons.addButton((b) => b.setButtonText("Keep mine").onClick(() => this.choose("keep")));
+    if (this.forkNote) {
+      buttons.addButton((b) => b.setButtonText("Fork session").onClick(() => this.choose("fork")));
+    }
+    buttons.addButton((b) => b.setButtonText("Append below").onClick(() => this.choose("append"))).addButton((b) => {
       b.setButtonText("Replace").onClick(() => this.choose("replace"));
       b.buttonEl.addClass("mod-warning");
     });
@@ -14344,7 +14886,7 @@ function challengeAdoptionRecord(result, choice) {
 }
 
 // src/challenge-modal.ts
-var import_obsidian19 = require("obsidian");
+var import_obsidian20 = require("obsidian");
 var DIMENSION_LABEL = {
   conceptueel: "Conceptual",
   methodologisch: "Methodological",
@@ -14352,7 +14894,7 @@ var DIMENSION_LABEL = {
   empirisch: "Empirical",
   praktisch: "Practical"
 };
-var ChallengeModal = class extends import_obsidian19.Modal {
+var ChallengeModal = class extends import_obsidian20.Modal {
   constructor(app, result, landing, onChoice) {
     super(app);
     this.resolved = false;
@@ -14380,7 +14922,7 @@ var ChallengeModal = class extends import_obsidian19.Modal {
       contentEl.createEl("h3", { text: "If your hypothesis is wrong\u2026" });
       contentEl.createEl("p", { text: this.result.inversion });
     }
-    const actions = new import_obsidian19.Setting(contentEl).addButton(
+    const actions = new import_obsidian20.Setting(contentEl).addButton(
       (b) => b.setButtonText("Record (+ selected as beliefs)").setCta().onClick(() => this.choose("record"))
     );
     if (this.landing === "cursor") {
@@ -14391,7 +14933,7 @@ var ChallengeModal = class extends import_obsidian19.Modal {
     }
   }
   renderChallenge(parent, c) {
-    new import_obsidian19.Setting(parent).setName(c.challenge).setDesc(c.action ? `Action: ${c.action}` : "").addToggle(
+    new import_obsidian20.Setting(parent).setName(c.challenge).setDesc(c.action ? `Action: ${c.action}` : "").addToggle(
       (t2) => t2.setValue(this.selected.has(c.challenge)).onChange((on) => {
         if (on) this.selected.add(c.challenge);
         else this.selected.delete(c.challenge);
@@ -14418,8 +14960,7 @@ var ChallengeModal = class extends import_obsidian19.Modal {
 var MAX_ARGUMENT_CLAIMS = 8;
 var MAX_ARGUMENT_ASSUMPTIONS = 8;
 var MAX_ARGUMENT_EDGES = 20;
-var LARGE_MAP_THRESHOLD = 15;
-var MERMAID_TEXT_MAX = 60;
+var MAX_ARGUMENT_EVIDENCE = 12;
 function cleanNodeId(v) {
   return typeof v === "string" ? v.replace(/[^A-Za-z0-9_-]/g, "") : "";
 }
@@ -14448,7 +14989,8 @@ function parseArgumentStructure(raw, log) {
     if (perKind[e.kind] >= caps[e.kind]) continue;
     seenIds.add(key);
     perKind[e.kind] += 1;
-    nodes.push({ id, text, kind: e.kind });
+    const source = str(e.source).slice(0, 60);
+    nodes.push({ id, text, kind: e.kind, ...source ? { source } : {} });
   }
   if (nodes.length === 0) {
     log == null ? void 0 : log("empty result \u2014 argument: no valid nodes");
@@ -14469,41 +15011,49 @@ function parseArgumentStructure(raw, log) {
     seenEdges.add(key);
     edges.push({ from, to, kind: e.kind });
   }
-  return { nodes, edges, adoptedAt: "" };
+  const evidence = [];
+  const seenEvidence = /* @__PURE__ */ new Set();
+  for (const entry of Array.isArray(p.evidence) ? p.evidence : []) {
+    if (evidence.length >= MAX_ARGUMENT_EVIDENCE) break;
+    if (!entry || typeof entry !== "object") continue;
+    const e = entry;
+    const finding = typeof e.finding === "string" ? e.finding.trim().toUpperCase() : "";
+    const to = cleanNodeId(e.to);
+    if (!/^F\d+$/.test(finding) || !isEdgeKind(e.kind) || !knownIds.has(to)) continue;
+    const key = `${finding}|${to}|${e.kind}`;
+    if (seenEvidence.has(key)) continue;
+    seenEvidence.add(key);
+    evidence.push({ id: finding, text: "", to, kind: e.kind, sourceKeys: [] });
+  }
+  return { nodes, edges, ...evidence.length > 0 ? { evidence } : {}, adoptedAt: "" };
+}
+function resolveArgumentEvidence(structure, findings) {
+  var _a;
+  const evidence = ((_a = structure.evidence) != null ? _a : []).map((ev) => {
+    const finding = findings[Number(ev.id.slice(1)) - 1];
+    return finding ? { ...ev, text: finding.claim, sourceKeys: [...finding.sourceKeys] } : null;
+  }).filter((ev) => ev !== null);
+  const rest = { nodes: structure.nodes, edges: structure.edges, adoptedAt: structure.adoptedAt };
+  return { ...rest, ...evidence.length > 0 ? { evidence } : {} };
 }
 function filterArgumentStructure(structure, adoptedIds) {
+  var _a;
   const nodes = structure.nodes.filter((n) => adoptedIds.has(n.id));
   const kept = new Set(nodes.map((n) => n.id));
   const edges = structure.edges.filter((e) => kept.has(e.from) && kept.has(e.to));
-  return { nodes, edges, adoptedAt: structure.adoptedAt };
-}
-function mermaidText(text) {
-  const cleaned = text.replace(/["`]/g, "'").replace(/[<>]/g, "").replace(/\s+/g, " ").trim();
-  return cleaned.length > MERMAID_TEXT_MAX ? `${cleaned.slice(0, MERMAID_TEXT_MAX - 1).trimEnd()}\u2026` : cleaned;
-}
-function buildArgumentMermaid(structure, labels) {
-  const lines = ["flowchart TD"];
-  lines.push("  classDef claim fill:#cfe0f5,stroke:#3b6ea5,color:#16324f;");
-  lines.push("  classDef assumption fill:#f5e6c8,stroke:#a5813b,color:#4f3d16;");
-  for (const n of structure.nodes) {
-    lines.push(
-      n.kind === "claim" ? `  ${n.id}["${mermaidText(n.text)}"]:::claim` : `  ${n.id}("${mermaidText(n.text)}"):::assumption`
-    );
-  }
-  for (const e of structure.edges) {
-    lines.push(
-      e.kind === "supports" ? `  ${e.from} -- ${mermaidText(labels.supports)} --> ${e.to}` : `  ${e.from} -. ${mermaidText(labels.attacks)} .-> ${e.to}`
-    );
-  }
-  return lines.join("\n");
+  const evidence = ((_a = structure.evidence) != null ? _a : []).filter((ev) => kept.has(ev.to));
+  return { nodes, edges, ...evidence.length > 0 ? { evidence } : {}, adoptedAt: structure.adoptedAt };
 }
 function buildArgumentBody(structure, labels) {
+  var _a;
   const lines = [];
   const group = (kind, heading) => {
     const items = structure.nodes.filter((n) => n.kind === kind);
     if (items.length === 0) return;
     lines.push(`*${heading}*`);
-    items.forEach((n, i) => lines.push(`${i + 1}. [${n.id}] ${n.text}`));
+    items.forEach(
+      (n, i) => lines.push(`${i + 1}. [${n.id}] ${n.text}${n.source ? ` \u2014 _${labels.source}: ${n.source}_` : ""}`)
+    );
     lines.push("");
   };
   group("claim", labels.claims);
@@ -14514,19 +15064,36 @@ function buildArgumentBody(structure, labels) {
     }
     lines.push("");
   }
-  lines.push("```mermaid", buildArgumentMermaid(structure, labels), "```");
-  if (structure.nodes.length > LARGE_MAP_THRESHOLD) {
-    lines.push("", `_${labels.largeMapHint}_`);
+  const evidence = (_a = structure.evidence) != null ? _a : [];
+  if (evidence.length > 0) {
+    lines.push(`*${labels.evidence}*`);
+    for (const ev of evidence) {
+      lines.push(`- [${ev.id}] ${ev.kind === "supports" ? labels.supports : labels.attacks} [${ev.to}]: ${ev.text}`);
+    }
+    lines.push("");
   }
   return lines.join("\n").trimEnd();
+}
+function normalizeForMatch(s) {
+  return s.toLowerCase().replace(/[*_`#>[\]()"'\u201c\u201d\u2018\u2019«»-]/g, " ").replace(/\s+/g, " ").trim();
+}
+function verbatimInSource(text, source) {
+  const t2 = normalizeForMatch(text);
+  return t2.length > 0 && normalizeForMatch(source).includes(t2);
 }
 var SYSTEM8 = [
   "You are a careful analyst making the LOGICAL STRUCTURE of a researcher's thinking explicit \u2014 to clarify it, not to judge it.",
   "From the session content, extract the central CLAIMS and the ASSUMPTIONS beneath them, and map which supports or attacks which.",
+  "You EXTRACT, you never author (AU_E129_S9): every node's text MUST be a statement that already appears in the session content \u2014",
+  "quote it, at most trimmed at the edges for length, meaning unchanged. Do NOT rename, merge, reformulate or invent statements;",
+  "when the content offers few explicit claims, return fewer nodes rather than inventing any.",
+  'For every node also return "source": a short locator of where the statement appears \u2014 "beliefs:<n>", "synthesis", "exploration", "challenge" or "question".',
   `Propose at most ${MAX_ARGUMENT_CLAIMS} claims and ${MAX_ARGUMENT_ASSUMPTIONS} assumptions (nodes), and at most ${MAX_ARGUMENT_EDGES} relations (edges).`,
-  'Return strict JSON: {"nodes":[{"id":"C1","text":"one claim or assumption","kind":"claim|assumption"}],',
-  '"edges":[{"from":"A1","to":"C1","kind":"supports|attacks"}]}.',
+  'Return strict JSON: {"nodes":[{"id":"C1","text":"one claim or assumption","kind":"claim|assumption","source":"beliefs:2"}],',
+  '"edges":[{"from":"A1","to":"C1","kind":"supports|attacks"}],',
+  '"evidence":[{"finding":"F2","to":"C1","kind":"supports|attacks"}]}.',
   `Ids: claims "C1","C2",\u2026; assumptions "A1","A2",\u2026. Every edge's "from" and "to" MUST be ids that occur in "nodes".`,
+  `When the context lists numbered findings (F1, F2, \u2026), also link each finding that clearly bears on a claim via "evidence" (at most ${MAX_ARGUMENT_EVIDENCE}; use ONLY finding numbers that appear in the context). Omit "evidence" when no findings are listed.`,
   "Do NOT answer the question, do NOT search literature, do NOT invent findings, sources or citations.",
   "Write the node texts in the SAME language as the session's question. Respond with strict JSON only."
 ].join(" ");
@@ -14552,16 +15119,18 @@ async function proposeArgumentStructure(context, chat, log) {
 }
 
 // src/argument-modal.ts
-var import_obsidian20 = require("obsidian");
-var ArgumentModal = class extends import_obsidian20.Modal {
-  constructor(app, structure, onChoice) {
+var import_obsidian21 = require("obsidian");
+var ArgumentModal = class extends import_obsidian21.Modal {
+  constructor(app, structure, onChoice, noteBody = "") {
     super(app);
     this.resolved = false;
     this.structure = structure;
     this.onChoice = onChoice;
+    this.noteBody = noteBody;
     this.selected = new Set(structure.nodes.map((n) => n.id));
   }
   onOpen() {
+    var _a;
     const { contentEl } = this;
     applyModalChrome(this);
     contentEl.createEl("h2", { text: "Argument structure \u2014 map the reasoning" });
@@ -14582,7 +15151,19 @@ var ArgumentModal = class extends import_obsidian20.Modal {
         list.createEl("li", { text: `[${e.from}] ${e.kind === "supports" ? "supports" : "attacks"} [${e.to}]` });
       }
     }
-    new import_obsidian20.Setting(contentEl).addButton(
+    const evidence = (_a = this.structure.evidence) != null ? _a : [];
+    if (evidence.length > 0) {
+      contentEl.createEl("h3", { text: "Evidence (follows its claim)" });
+      contentEl.createEl("p", {
+        text: "Findings from the synthesis, linked to the claim they bear on. An evidence link is recorded only when its claim is adopted.",
+        cls: "consensus-handoff-hint"
+      });
+      const list = contentEl.createEl("ul");
+      for (const ev of evidence) {
+        list.createEl("li", { text: `[${ev.id}] ${ev.kind === "supports" ? "supports" : "attacks"} [${ev.to}]: ${ev.text}` });
+      }
+    }
+    new import_obsidian21.Setting(contentEl).addButton(
       (b) => b.setButtonText("Adopt (selected elements)").setCta().onClick(() => this.adopt())
     ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
   }
@@ -14593,12 +15174,18 @@ var ArgumentModal = class extends import_obsidian20.Modal {
     for (const n of items) this.renderNode(parent, n);
   }
   renderNode(parent, node) {
-    new import_obsidian20.Setting(parent).setName(`[${node.id}] ${node.text}`).addToggle(
+    const parts = [];
+    if (node.source) parts.push(`source: ${node.source}`);
+    if (this.noteBody && !verbatimInSource(node.text, this.noteBody)) {
+      parts.push("\u26A0 not found verbatim in the note \u2014 may be paraphrased or invented");
+    }
+    const setting = new import_obsidian21.Setting(parent).setName(`[${node.id}] ${node.text}`).addToggle(
       (t2) => t2.setValue(this.selected.has(node.id)).onChange((on) => {
         if (on) this.selected.add(node.id);
         else this.selected.delete(node.id);
       })
     );
+    if (parts.length > 0) setting.setDesc(parts.join(" \xB7 "));
   }
   adopt() {
     this.resolve(filterArgumentStructure(this.structure, this.selected));
@@ -14618,15 +15205,22 @@ var ArgumentModal = class extends import_obsidian20.Modal {
 // src/argument-canvas.ts
 var CANVAS_NODE_WIDTH = 320;
 var CANVAS_NODE_HEIGHT = 120;
-var CANVAS_X_GAP = 380;
-var CANVAS_Y_GAP = 220;
-var CANVAS_MAX_PER_ROW = 4;
+var CANVAS_X_GAP = 440;
+var CANVAS_Y_GAP = 320;
+var CANVAS_TOWERS_PER_ROW = 3;
+var CANVAS_TOWER_X_PITCH = 2 * CANVAS_X_GAP + 220;
 var CLAIM_COLOR = "5";
 var ASSUMPTION_COLOR = "3";
+var HYPOTHESIS_COLOR = "6";
 var SUPPORTS_COLOR = "4";
 var ATTACKS_COLOR = "1";
 var ARGUMENT_EDGE_ID_PREFIX = "arg-";
-var OWNED_NODE_ID = /^[CA]\d+$/;
+var ARGUMENT_CANVAS_SUFFIX = " \u2014 argument.canvas";
+function sessionNotePathForArgumentCanvas(canvasPath) {
+  if (!canvasPath.endsWith(ARGUMENT_CANVAS_SUFFIX)) return null;
+  return `${canvasPath.slice(0, -ARGUMENT_CANVAS_SUFFIX.length)}.md`;
+}
+var OWNED_NODE_ID = /^[CAHF]\d+$/;
 function argumentEdgeId(from, to, kind) {
   return `${ARGUMENT_EDGE_ID_PREFIX}${from}-${to}-${kind}`;
 }
@@ -14649,60 +15243,244 @@ function serializeCanvas(canvas) {
   return `${JSON.stringify(canvas, null, "	")}
 `;
 }
+var LAYOUT_SWEEPS = 3;
+function orderForLayout(structure) {
+  let claims = structure.nodes.filter((n) => n.kind === "claim");
+  let assumptions = structure.nodes.filter((n) => n.kind === "assumption");
+  const neighbours = /* @__PURE__ */ new Map();
+  const link = (a, b) => {
+    var _a;
+    const list = (_a = neighbours.get(a)) != null ? _a : [];
+    list.push(b);
+    neighbours.set(a, list);
+  };
+  for (const e of structure.edges) {
+    link(e.from, e.to);
+    link(e.to, e.from);
+  }
+  const sweep = (group, other) => {
+    const otherPos = new Map(other.map((n, i) => [n.id, i]));
+    return group.map((n, i) => {
+      var _a;
+      const linked = ((_a = neighbours.get(n.id)) != null ? _a : []).map((id) => otherPos.get(id)).filter((v) => v !== void 0);
+      const key = linked.length > 0 ? linked.reduce((a, b) => a + b, 0) / linked.length : i;
+      return { n, key, i };
+    }).sort((a, b) => a.key - b.key || a.i - b.i).map((entry) => entry.n);
+  };
+  for (let s = 0; s < LAYOUT_SWEEPS; s++) {
+    assumptions = sweep(assumptions, claims);
+    claims = sweep(claims, assumptions);
+  }
+  return { claims, assumptions };
+}
 function storedGeometry(node) {
   if (!node) return null;
   const nums = [node.x, node.y, node.width, node.height];
   if (!nums.every((v) => typeof v === "number" && Number.isFinite(v))) return null;
   return { x: node.x, y: node.y, width: node.width, height: node.height };
 }
-function buildArgumentCanvas(structure, labels, existing = null) {
-  var _a, _b, _c;
-  const currentIds = new Set(structure.nodes.map((n) => n.id));
+var LEGEND_NODE_ID = "parallax-legend";
+var STALE_NODE_ID = "parallax-stale";
+function basisNodeId(h) {
+  const m = /\b([CA]\d+)\b/i.exec(h.basis);
+  return m ? m[1].toUpperCase() : null;
+}
+function buildArgumentCanvas(structure, labels, existing = null, hypotheses = null, staleNote = null) {
+  var _a, _b, _c, _d, _e;
   const existingById = /* @__PURE__ */ new Map();
   for (const n of (_a = existing == null ? void 0 : existing.nodes) != null ? _a : []) existingById.set(n.id, n);
-  const claims = structure.nodes.filter((n) => n.kind === "claim");
-  const assumptions = structure.nodes.filter((n) => n.kind === "assumption");
-  const claimRows = Math.ceil(claims.length / CANVAS_MAX_PER_ROW);
+  const { claims, assumptions } = orderForLayout(structure);
   const nodes = [];
-  const place = (group, rowOffset, color) => {
-    group.forEach((n, i) => {
-      const col = i % CANVAS_MAX_PER_ROW;
-      const row = rowOffset + Math.floor(i / CANVAS_MAX_PER_ROW);
-      const kept = storedGeometry(existingById.get(n.id));
-      nodes.push({
-        id: n.id,
-        type: "text",
-        text: n.text,
-        x: kept ? kept.x : col * CANVAS_X_GAP,
-        y: kept ? kept.y : row * CANVAS_Y_GAP,
-        width: kept ? kept.width : CANVAS_NODE_WIDTH,
-        height: kept ? kept.height : CANVAS_NODE_HEIGHT,
-        color
-      });
+  const pushNode = (id, text, x, y, color) => {
+    const kept = storedGeometry(existingById.get(id));
+    nodes.push({
+      id,
+      type: "text",
+      text,
+      x: kept ? kept.x : x,
+      y: kept ? kept.y : y,
+      width: kept ? kept.width : CANVAS_NODE_WIDTH,
+      height: kept ? kept.height : CANVAS_NODE_HEIGHT,
+      color
     });
   };
-  place(claims, 0, CLAIM_COLOR);
-  place(assumptions, claimRows, ASSUMPTION_COLOR);
-  for (const n of (_b = existing == null ? void 0 : existing.nodes) != null ? _b : []) {
-    if (currentIds.has(n.id) || OWNED_NODE_ID.test(n.id)) continue;
+  const evidence = (_b = structure.evidence) != null ? _b : [];
+  const hyps = (_c = hypotheses == null ? void 0 : hypotheses.hypotheses) != null ? _c : [];
+  const hypothesisLinks = [];
+  const claimIndex = new Map(claims.map((c, i) => [c.id, i]));
+  const primaryClaimOf = (a) => {
+    const cols = structure.edges.filter((e) => e.from === a.id || e.to === a.id).map((e) => claimIndex.get(e.from === a.id ? e.to : e.from)).filter((v) => v !== void 0);
+    return cols.length > 0 ? claims[Math.round(cols.reduce((x, y) => x + y, 0) / cols.length)].id : void 0;
+  };
+  const assumptionTower = /* @__PURE__ */ new Map();
+  for (const a of assumptions) {
+    const c = primaryClaimOf(a);
+    if (c) assumptionTower.set(a.id, c);
+  }
+  const byUpper = new Map(structure.nodes.map((n) => [n.id.toUpperCase(), n.id]));
+  const hypAnchor = /* @__PURE__ */ new Map();
+  for (const h of hyps) {
+    const basis = basisNodeId(h);
+    const anchorId = basis ? byUpper.get(basis) : void 0;
+    if (anchorId) {
+      hypAnchor.set(h.id, anchorId);
+      hypothesisLinks.push({ from: h.id, to: anchorId });
+    }
+  }
+  const towerOfNode = (id) => claimIndex.has(id) ? id : assumptionTower.get(id);
+  const pack = (cells) => {
+    const rows = [];
+    for (let i = 0; i < cells.length; i += 2) rows.push(cells.slice(i, i + 2));
+    return rows;
+  };
+  const towerRowsFor = (claimNode) => {
+    const evCells = evidence.filter((ev) => towerOfNode(ev.to) === claimNode.id).map((ev) => ({ id: ev.id, text: ev.text, color: ev.kind === "supports" ? SUPPORTS_COLOR : ATTACKS_COLOR }));
+    const aCells = assumptions.filter((a) => assumptionTower.get(a.id) === claimNode.id).map((a) => ({ id: a.id, text: a.text, color: ASSUMPTION_COLOR }));
+    const hCells = hyps.filter((h) => {
+      const anchor = hypAnchor.get(h.id);
+      return anchor !== void 0 && towerOfNode(anchor) === claimNode.id;
+    }).map((h) => ({ id: h.id, text: h.text, color: HYPOTHESIS_COLOR }));
+    return { above: pack(evCells), below: [...pack(aCells), ...pack(hCells)] };
+  };
+  let gridTop = 0;
+  let deepest = 0;
+  claims.forEach((c, i) => {
+    const col = i % CANVAS_TOWERS_PER_ROW;
+    if (i > 0 && col === 0) {
+      gridTop = deepest + 2;
+      deepest = gridTop;
+    }
+    const baseX = col * CANVAS_TOWER_X_PITCH;
+    const { above, below } = towerRowsFor(c);
+    const claimRow = gridTop + above.length;
+    above.forEach(
+      (rowCells, r) => rowCells.forEach((cell, k) => pushNode(cell.id, cell.text, baseX + k * CANVAS_X_GAP, (gridTop + r) * CANVAS_Y_GAP, cell.color))
+    );
+    pushNode(c.id, c.text, baseX + CANVAS_X_GAP / 2, claimRow * CANVAS_Y_GAP, CLAIM_COLOR);
+    below.forEach(
+      (rowCells, r) => rowCells.forEach((cell, k) => pushNode(cell.id, cell.text, baseX + k * CANVAS_X_GAP, (claimRow + 1 + r) * CANVAS_Y_GAP, cell.color))
+    );
+    deepest = Math.max(deepest, claimRow + below.length);
+  });
+  const placedIds = new Set(nodes.map((n) => n.id));
+  const leftovers = [
+    ...assumptions.filter((a) => !placedIds.has(a.id)).map((a) => ({ id: a.id, text: a.text, color: ASSUMPTION_COLOR })),
+    ...hyps.filter((h) => !placedIds.has(h.id)).map((h) => ({ id: h.id, text: h.text, color: HYPOTHESIS_COLOR })),
+    ...evidence.filter((ev) => !placedIds.has(ev.id)).map((ev) => ({ id: ev.id, text: ev.text, color: ev.kind === "supports" ? SUPPORTS_COLOR : ATTACKS_COLOR }))
+  ];
+  const leftoverTop = deepest + 2;
+  const leftoverPerRow = CANVAS_TOWERS_PER_ROW * 2;
+  leftovers.forEach(
+    (cell, i) => pushNode(
+      cell.id,
+      cell.text,
+      i % leftoverPerRow * CANVAS_X_GAP,
+      (leftoverTop + Math.floor(i / leftoverPerRow)) * CANVAS_Y_GAP,
+      cell.color
+    )
+  );
+  {
+    const legendText = [
+      `\u{1F4C4} ${labels.projection}`,
+      "",
+      `\u{1F7E6} ${labels.claims}`,
+      `\u{1F7E8} ${labels.assumptions}`,
+      `\u{1F7EA} ${labels.hypotheses}`,
+      `\u{1F7E9}\u{1F7E5} ${labels.evidence}`,
+      "",
+      `\u{1F7E2} ${labels.supports} \xB7 \u{1F534} ${labels.attacks} \xB7 \u{1F7E3} ${labels.tests}`
+    ].join("\n");
+    const kept = storedGeometry(existingById.get(LEGEND_NODE_ID));
+    nodes.push({
+      id: LEGEND_NODE_ID,
+      type: "text",
+      text: legendText,
+      x: kept ? kept.x : 0,
+      y: kept ? kept.y : -2 * CANVAS_Y_GAP,
+      width: kept ? kept.width : CANVAS_NODE_WIDTH + 160,
+      height: kept ? kept.height : 300
+    });
+  }
+  if (staleNote) {
+    const kept = storedGeometry(existingById.get(STALE_NODE_ID));
+    nodes.push({
+      id: STALE_NODE_ID,
+      type: "text",
+      text: staleNote,
+      x: kept ? kept.x : 0,
+      y: kept ? kept.y : -2 * CANVAS_Y_GAP - 220,
+      width: kept ? kept.width : CANVAS_NODE_WIDTH + 160,
+      height: kept ? kept.height : 160,
+      color: ATTACKS_COLOR
+    });
+  }
+  const generatedIds = new Set(nodes.map((n) => n.id));
+  for (const n of (_d = existing == null ? void 0 : existing.nodes) != null ? _d : []) {
+    if (generatedIds.has(n.id) || OWNED_NODE_ID.test(n.id)) continue;
+    if (n.id === STALE_NODE_ID) continue;
     nodes.push(n);
   }
   const nodeIds = new Set(nodes.map((n) => n.id));
-  const edges = structure.edges.map((e) => ({
-    id: argumentEdgeId(e.from, e.to, e.kind),
-    fromNode: e.from,
-    fromSide: "bottom",
-    toNode: e.to,
-    toSide: "top",
-    color: e.kind === "supports" ? SUPPORTS_COLOR : ATTACKS_COLOR,
-    label: e.kind === "supports" ? labels.supports : labels.attacks
-  }));
-  for (const e of (_c = existing == null ? void 0 : existing.edges) != null ? _c : []) {
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const sidesFor = (fromId, toId) => {
+    const a = byId.get(fromId);
+    const b = byId.get(toId);
+    if (!a || !b) return { fromSide: "bottom", toSide: "top" };
+    const dx = b.x + b.width / 2 - (a.x + a.width / 2);
+    const dy = b.y + b.height / 2 - (a.y + a.height / 2);
+    if (Math.abs(dy) * 2 >= Math.abs(dx)) {
+      return dy >= 0 ? { fromSide: "bottom", toSide: "top" } : { fromSide: "top", toSide: "bottom" };
+    }
+    return dx > 0 ? { fromSide: "right", toSide: "left" } : { fromSide: "left", toSide: "right" };
+  };
+  const edges = structure.edges.map((e) => {
+    const sides = sidesFor(e.from, e.to);
+    return {
+      id: argumentEdgeId(e.from, e.to, e.kind),
+      fromNode: e.from,
+      fromSide: sides.fromSide,
+      toNode: e.to,
+      toSide: sides.toSide,
+      color: e.kind === "supports" ? SUPPORTS_COLOR : ATTACKS_COLOR,
+      label: e.kind === "supports" ? labels.supports : labels.attacks
+    };
+  });
+  for (const ev of evidence) {
+    const sides = sidesFor(ev.id, ev.to);
+    edges.push({
+      id: argumentEdgeId(ev.id, ev.to, ev.kind),
+      fromNode: ev.id,
+      fromSide: sides.fromSide,
+      toNode: ev.to,
+      toSide: sides.toSide,
+      color: ev.kind === "supports" ? SUPPORTS_COLOR : ATTACKS_COLOR,
+      label: ev.kind === "supports" ? labels.supports : labels.attacks
+    });
+  }
+  for (const link of hypothesisLinks) {
+    const sides = sidesFor(link.from, link.to);
+    edges.push({
+      id: argumentEdgeId(link.from, link.to, "tests"),
+      fromNode: link.from,
+      fromSide: sides.fromSide,
+      toNode: link.to,
+      toSide: sides.toSide,
+      color: HYPOTHESIS_COLOR,
+      label: labels.tests
+    });
+  }
+  for (const e of (_e = existing == null ? void 0 : existing.edges) != null ? _e : []) {
     if (e.id.startsWith(ARGUMENT_EDGE_ID_PREFIX)) continue;
     if (!nodeIds.has(e.fromNode) || !nodeIds.has(e.toNode)) continue;
     edges.push(e);
   }
   return { nodes, edges };
+}
+function relayoutArgumentCanvas(structure, labels, existing, hypotheses = null, staleNote = null) {
+  if (!existing) return buildArgumentCanvas(structure, labels, null, hypotheses, staleNote);
+  const argumentIds = new Set(structure.nodes.map((n) => n.id));
+  const userNodes = existing.nodes.filter((n) => !argumentIds.has(n.id) && !OWNED_NODE_ID.test(n.id));
+  return buildArgumentCanvas(structure, labels, { nodes: userNodes, edges: existing.edges }, hypotheses, staleNote);
 }
 
 // src/hypotheses.ts
@@ -14713,6 +15491,9 @@ var SYSTEM9 = [
   "and, when present, the researcher's open beliefs and new research questions with a method fit.",
   "Propose sharp, testable hypotheses that would confirm or refute the load-bearing claims and",
   "the attacked assumptions \u2014 those are where a test changes the argument most.",
+  "When search expectations per sub-question are provided (predictions stated BEFORE the research",
+  "ran), treat them as candidates: rework the ones the argument map bears out into falsifiable",
+  "hypotheses, and silently drop the ones it does not support.",
   'Return strict JSON: {"hypotheses":[{"hypothesis":"a falsifiable statement, directional where possible",',
   '"basis":"the element it operationalizes \u2014 a node id like C1/A2, or the belief/question text",',
   '"rationale":"ONE line: the variables involved and the expected direction"}]}.',
@@ -14774,8 +15555,8 @@ function buildHypothesesBody(set) {
 }
 
 // src/hypothesis-modal.ts
-var import_obsidian21 = require("obsidian");
-var HypothesisModal = class extends import_obsidian21.Modal {
+var import_obsidian22 = require("obsidian");
+var HypothesisModal = class extends import_obsidian22.Modal {
   constructor(app, proposal, onChoice) {
     super(app);
     this.resolved = false;
@@ -14793,9 +15574,9 @@ var HypothesisModal = class extends import_obsidian21.Modal {
     });
     this.proposal.hypotheses.forEach((h, i) => {
       const desc = [h.basis ? `basis: ${h.basis}` : "", h.rationale].filter(Boolean).join(" \u2014 ");
-      new import_obsidian21.Setting(contentEl).setName(`${h.id} \u2014 ${h.text}`).setDesc(desc).addToggle((toggle) => toggle.setValue(this.selected[i]).onChange((v) => this.selected[i] = v));
+      new import_obsidian22.Setting(contentEl).setName(`${h.id} \u2014 ${h.text}`).setDesc(desc).addToggle((toggle) => toggle.setValue(this.selected[i]).onChange((v) => this.selected[i] = v));
     });
-    new import_obsidian21.Setting(contentEl).addButton(
+    new import_obsidian22.Setting(contentEl).addButton(
       (b) => b.setButtonText("Adopt hypotheses").setCta().onClick(() => {
         const adopted = renumberHypotheses(this.proposal.hypotheses.filter((_, i) => this.selected[i]));
         this.resolve(adopted.length > 0 ? { hypotheses: adopted, adoptedAt: "" } : null);
@@ -14841,8 +15622,8 @@ function rankInstrumentPapers(papers, max = MAX_INSTRUMENT_RESULTS) {
 }
 
 // src/construct-modal.ts
-var import_obsidian22 = require("obsidian");
-var ConstructModal = class extends import_obsidian22.Modal {
+var import_obsidian23 = require("obsidian");
+var ConstructModal = class extends import_obsidian23.Modal {
   constructor(app, initialConstruct, onSubmit) {
     super(app);
     this.submitted = false;
@@ -14868,8 +15649,8 @@ var ConstructModal = class extends import_obsidian22.Modal {
         this.submit();
       }
     });
-    if (!import_obsidian22.Platform.isMobile) window.setTimeout(() => input.focus(), 0);
-    new import_obsidian22.Setting(contentEl).addButton((b) => b.setButtonText("Search scales").setCta().onClick(() => this.submit()));
+    if (!import_obsidian23.Platform.isMobile) window.setTimeout(() => input.focus(), 0);
+    new import_obsidian23.Setting(contentEl).addButton((b) => b.setButtonText("Search scales").setCta().onClick(() => this.submit()));
   }
   submit() {
     const construct = this.construct.trim();
@@ -14943,8 +15724,8 @@ function buildPreregistrationDraft(input) {
 }
 
 // src/interview-modal.ts
-var import_obsidian23 = require("obsidian");
-var InterviewModal = class extends import_obsidian23.Modal {
+var import_obsidian24 = require("obsidian");
+var InterviewModal = class extends import_obsidian24.Modal {
   constructor(app, guide, onChoice) {
     super(app);
     this.resolved = false;
@@ -14964,7 +15745,7 @@ var InterviewModal = class extends import_obsidian23.Modal {
       contentEl.createEl("p", { text: `Opening: ${this.guide.opening}`, cls: "consensus-handoff-hint" });
     }
     for (const q of this.guide.questions) this.renderQuestion(contentEl, q);
-    new import_obsidian23.Setting(contentEl).addButton(
+    new import_obsidian24.Setting(contentEl).addButton(
       (b) => b.setButtonText("Adopt (selected questions)").setCta().onClick(() => this.adopt())
     ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
   }
@@ -14977,7 +15758,7 @@ var InterviewModal = class extends import_obsidian23.Modal {
       other: "other"
     };
     const provenance = `\u2190 ${chrome[q.source.kind]}${q.source.ref ? `: ${q.source.ref}` : ""}`;
-    new import_obsidian23.Setting(parent).setName(`[${q.id}] ${q.text}`).setDesc(provenance).addToggle(
+    new import_obsidian24.Setting(parent).setName(`[${q.id}] ${q.text}`).setDesc(provenance).addToggle(
       (t2) => t2.setValue(this.selected.has(q.id)).onChange((on) => {
         if (on) this.selected.add(q.id);
         else this.selected.delete(q.id);
@@ -15047,8 +15828,8 @@ function buildConnectionsBody(inputs) {
 }
 
 // src/research-design-modal.ts
-var import_obsidian24 = require("obsidian");
-var ResearchDesignModal = class extends import_obsidian24.Modal {
+var import_obsidian25 = require("obsidian");
+var ResearchDesignModal = class extends import_obsidian25.Modal {
   constructor(app, agenda, onChoice) {
     super(app);
     this.resolved = false;
@@ -15071,7 +15852,7 @@ var ResearchDesignModal = class extends import_obsidian24.Modal {
       const original = this.agenda.newQuestions.map((q) => ({ method: q.method, rationale: q.methodRationale }));
       this.agenda.newQuestions.forEach((q, i) => {
         var _a;
-        new import_obsidian24.Setting(contentEl).setName(q.question).setDesc((_a = q.methodRationale) != null ? _a : "").addDropdown((d) => {
+        new import_obsidian25.Setting(contentEl).setName(q.question).setDesc((_a = q.methodRationale) != null ? _a : "").addDropdown((d) => {
           var _a2;
           d.addOption("", "\u2014 no method fit \u2014");
           for (const m of ["qualitative", "quantitative", "mixed"]) d.addOption(m, methodFitLabel(m));
@@ -15081,7 +15862,7 @@ var ResearchDesignModal = class extends import_obsidian24.Modal {
           });
         });
       });
-      new import_obsidian24.Setting(contentEl).setName("Start new session with").setDesc("Optional \u2014 choose one question to open a fresh research session with.").addDropdown((d) => {
+      new import_obsidian25.Setting(contentEl).setName("Start new session with").setDesc("Optional \u2014 choose one question to open a fresh research session with.").addDropdown((d) => {
         var _a;
         d.addOption("", "\u2014 none \u2014");
         for (const { question: q } of this.agenda.newQuestions) d.addOption(q, q.length > 60 ? `${q.slice(0, 57)}\u2026` : q);
@@ -15094,7 +15875,7 @@ var ResearchDesignModal = class extends import_obsidian24.Modal {
       for (const d of this.agenda.designs) ul.createEl("li", { text: `${d.design}${d.rationale ? ` \u2014 ${d.rationale}` : ""}` });
     }
     this.renderList(contentEl, "Benodigde data / meetinstrumenten", this.agenda.data);
-    new import_obsidian24.Setting(contentEl).addButton(
+    new import_obsidian25.Setting(contentEl).addButton(
       (b) => b.setButtonText("Add agenda to session").setCta().onClick(() => this.choose("record"))
     );
   }
@@ -15591,7 +16372,7 @@ var DEGRADATION_STEP_LABEL = {
   synthesis: "synthesis",
   rerank: "rerank"
 };
-var ParallaxPlugin = class extends import_obsidian25.Plugin {
+var ParallaxPlugin = class extends import_obsidian26.Plugin {
   constructor() {
     super(...arguments);
     /**
@@ -15622,7 +16403,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     this.researchCache = null;
     /** Platform adapter: wraps Obsidian's requestUrl as HttpRequestFn. */
     this.httpRequest = async (options) => {
-      const response = await (0, import_obsidian25.requestUrl)({
+      const response = await (0, import_obsidian26.requestUrl)({
         url: options.url,
         method: options.method,
         headers: options.headers,
@@ -15676,7 +16457,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
    */
   beginFlow(label) {
     if (this.flowInFlight) {
-      new import_obsidian25.Notice(
+      new import_obsidian26.Notice(
         `Another Parallax action is still running (${this.flowInFlight}) \u2014 wait for it to finish.`,
         6e3
       );
@@ -15705,7 +16486,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async runAssistantStep(opts) {
     if (!this.beginFlow(opts.flowLabel)) return null;
     const log = createLogger(this.settings.debugLogging);
-    const loading = new import_obsidian25.Notice(opts.loadingText, 0);
+    const loading = new import_obsidian26.Notice(opts.loadingText, 0);
     let result;
     try {
       result = await opts.run(log);
@@ -15783,28 +16564,20 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
    */
   cancelResearch() {
     if (!this.currentRunCancellation || this.currentRunCancellation.cancelled) {
-      new import_obsidian25.Notice("No research is running to stop.", 4e3);
+      new import_obsidian26.Notice("No research is running to stop.", 4e3);
       return;
     }
     this.currentRunCancellation.cancel();
-    new import_obsidian25.Notice("Stopping research\u2026", 3e3);
+    new import_obsidian26.Notice("Stopping research\u2026", 3e3);
   }
   /** Open the question modal, then run the search on submit. Public: called from {@link registerCommands}. */
   promptAndSearch(initialQuery) {
     const provider = getProvider(this.settings.provider);
     if (provider.requiresApiKey && !this.settings.apiKey) {
-      new import_obsidian25.Notice(`Set your ${provider.label} API key in the plugin settings first.`);
+      new import_obsidian26.Notice(`Set your ${provider.label} API key in the plugin settings first.`);
       return;
     }
     const seed = initialQuery || this.activeSelection();
-    const rephrase = this.llm.isConfigured() ? (text) => {
-      var _a, _b;
-      return rephraseSearchQuery(
-        this.llmChatFn("decompose"),
-        text,
-        sessionTopic((_b = (_a = this.activeSession()) == null ? void 0 : _a.session) != null ? _b : null) || void 0
-      );
-    } : void 0;
     new SearchModal(
       this.app,
       seed,
@@ -15814,40 +16587,77 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
         void this.runSearch(submission.query, submission.filters);
       },
       void 0,
-      rephrase
+      this.searchRephrase()
     ).open();
+  }
+  /**
+   * The Rephrase-for-search callback (AU_E124_S3) every {@link SearchModal} shares: an AI
+   * rewrite into a concise English query, with the session topic riding along (AU_E124_S7)
+   * so implicit references like "this question" resolve to the session's actual subject.
+   * Built in ONE place (AU_E124_S8): only quick search used to pass it, so the Rephrase
+   * button in every other Ask Parallax modal (Explore, Start research, challenge, …)
+   * falsely claimed "No AI provider configured". Undefined must mean exactly that.
+   */
+  searchRephrase() {
+    if (!this.llm.isConfigured()) return void 0;
+    return (text) => {
+      var _a, _b;
+      return rephraseSearchQuery(
+        this.llmChatFn("decompose"),
+        text,
+        sessionTopic((_b = (_a = this.activeSession()) == null ? void 0 : _a.session) != null ? _b : null) || void 0
+      );
+    };
   }
   /** Research pipeline: prompt for a question, then run the multi-source AI pipeline. Public: called from {@link registerCommands}. */
   promptAndResearch(initialQuery, opts = {}) {
     var _a;
     if ((opts.frameworkOnly || opts.crossSectorForce) && !this.llm.isConfigured()) {
       const what = opts.frameworkOnly ? "Building a theoretical framework" : "Forcing cross-sector evidence";
-      new import_obsidian25.Notice(`${what} needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.`);
+      new import_obsidian26.Notice(`${what} needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.`);
       return;
     }
     const session = (_a = this.activeSession()) == null ? void 0 : _a.session;
     void this.promptSeed(initialQuery).then((seed) => {
-      new SearchModal(this.app, seed, false, (submission) => {
-        if (!submission) return;
-        const extra = session && !opts.frameworkOnly ? unionStrings(session.seeds, session.lenses) : [];
-        void this.runResearchFlow(submission.query, submission.filters, {
-          ...opts,
-          ...extra.length ? { extraSearchTerms: extra } : {}
-        });
-      }).open();
+      new SearchModal(
+        this.app,
+        seed,
+        false,
+        (submission) => {
+          if (!submission) return;
+          const extra = session && !opts.frameworkOnly ? unionStrings(session.seeds, session.lenses) : [];
+          void this.runResearchFlow(submission.query, submission.filters, {
+            ...opts,
+            // AU_E132_S1: the modal's cross-sector toggle replaces the old separate command.
+            ...submission.crossSector ? { crossSectorForce: true } : {},
+            ...extra.length ? { extraSearchTerms: extra } : {}
+          });
+        },
+        void 0,
+        this.searchRephrase(),
+        // Offer the toggle on a full research run; framework-only has no evidence phase.
+        !opts.frameworkOnly && !opts.crossSectorForce
+      ).open();
     });
   }
   /** Exploration research assistant (E42): prompt for a question, then explore it before searching. Public: called from {@link registerCommands}. */
   promptAndExplore(initialQuery) {
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Exploring the problem needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Exploring the problem needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     void this.promptSeed(initialQuery).then((seed) => {
-      new SearchModal(this.app, seed, false, (submission) => {
-        if (!submission) return;
-        void this.runExploreFlow(submission.query, submission.filters);
-      }).open();
+      new SearchModal(
+        this.app,
+        seed,
+        false,
+        (submission) => {
+          if (!submission) return;
+          void this.runExploreFlow(submission.query, submission.filters);
+        },
+        void 0,
+        this.searchRephrase()
+      ).open();
     });
   }
   /**
@@ -15869,7 +16679,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     if (!step) return;
     const { result } = step;
     if (!result) {
-      new import_obsidian25.Notice("Could not explore the problem \u2014 feel free to start research directly.", 6e3);
+      new import_obsidian26.Notice("Could not explore the problem \u2014 feel free to start research directly.", 6e3);
       return;
     }
     const session = this.activeSession();
@@ -15887,7 +16697,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
           void (async () => {
             const created = await this.newSessionNearActiveNote(choice.framing || question);
             if (!created) return;
-            new import_obsidian25.Notice(`Exploration landed in a new session: "${created.basename}".`);
+            new import_obsidian26.Notice(`Exploration landed in a new session: "${created.basename}".`);
             await this.recordExplorationInSession(created, question, result, choice);
           })();
         }
@@ -15900,7 +16710,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   /** Record the exploration artefact + chosen framing/seeds into the active research session (E46). */
   async recordExplorationInSession(file, question, result, choice) {
     const writeMode = await this.confirmArtefactOverwrite(file, "exploration", "exploration");
-    if (!writeMode) return;
+    if (!writeMode || writeMode === "fork") return;
     const fields = { seeds: choice.searchTermSeeds };
     if (choice.framing && choice.framing !== question) fields.framing = choice.framing;
     await this.sessionStore.setSessionFields(file, fields);
@@ -15917,7 +16727,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     await this.vaultAdapters.persistSessionArtefactRecord(file, {
       adoptions: { exploration: explorationAdoptionRecord(question, choice) }
     });
-    new import_obsidian25.Notice("Exploration added to the session.");
+    new import_obsidian26.Notice("Exploration added to the session.");
   }
   /**
    * S1 (AU_E86_S1): an Explore run from a project HUB (no active session) that resolves to
@@ -15931,7 +16741,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async recordExplorationAsNewProjectSession(hubFile, hub, question, result, choice) {
     const created = await this.newSessionInHubProject(hubFile, hub, question);
     if (!created) return;
-    new import_obsidian25.Notice(`Exploration landed in a new session: "${created.basename}".`);
+    new import_obsidian26.Notice(`Exploration landed in a new session: "${created.basename}".`);
     await this.recordExplorationInSession(created, question, result, choice);
   }
   /**
@@ -15951,31 +16761,77 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     return this.createSessionNote(question, folder, projectId, { silent: true });
   }
   /**
-   * Ask before a machine re-run overwrites a hand-edited THINK-artefact section (AU_E87_S2 —
-   * bewerkings-respect, docs/artefacten-architectuur.md §3.3). Reads the section's {@link
-   * SectionEditState} via {@link SessionStore.sectionEditState}; `needsOverwriteConfirmation`
-   * decides whether that state warrants a Replace/Keep {@link ConfirmModal} ("edited"/
-   * "unstamped") or a silent proceed ("machine"/"absent", exactly as before this story). Returns
-   * false when the researcher chose Keep — the caller then does nothing further (no front-matter
-   * merge, no logbook entry, no Notice), so a kept section isn't half-overwritten by its own
+   * Ask before a machine re-run overwrites an EXISTING THINK-artefact section (AU_E87_S2 —
+   * bewerkings-respect; sharpened by AU_E131_S3, owner decision: every existing section asks,
+   * machine-pristine too — only an absent section writes silently). Returns null when the
+   * researcher chose Keep — the caller then does nothing further (no front-matter merge, no
+   * logbook entry, no Notice), so a kept section isn't half-overwritten by its own
    * side-effects; a "kept" Notice explains how to re-run later.
+   *
+   * `opts.preapproved` (AU_E131_S3): the pre-run gate's earlier answer + the section state it
+   * was given for — honoured without re-asking unless the state changed during the run.
+   * `opts.offerFork` (AU_E131_S4): the section id being revised; when it has dependent
+   * adoptions in the note, the dialog offers "Fork session" and this returns "fork" — the
+   * caller then hands off to {@link forkSessionFromRevision} instead of writing.
    */
-  async confirmArtefactOverwrite(file, headingOrId, artefactLabel) {
+  async confirmArtefactOverwrite(file, headingOrId, artefactLabel, opts = {}) {
     const state = await this.sessionStore.sectionEditState(file, headingOrId);
     if (!needsOverwriteConfirmation(state)) return "write";
+    if (opts.preapproved && opts.preapproved.state === state) return opts.preapproved.mode;
+    const machine = state === "machine";
+    const title = machine ? `Your ${artefactLabel} already exists` : `Your ${artefactLabel} is hand-edited`;
+    const message = machine ? "Parallax wrote this section and it has not been edited since. Replace it with the new proposal, append the proposal below it, or keep it as it is." : "This section looks hand-edited since Parallax last wrote it here. Replace drops your edit in favour of the new proposal; Append keeps your text and adds the proposal below it.";
+    const dependents = opts.offerFork ? dependentArtefacts(await this.app.vault.read(file), opts.offerFork) : [];
+    const forkNote = dependents.length > 0 ? `${dependents.length} later section(s) build on this one (${dependents.map((d) => sectionHeading(d)).join(", ")}) \u2014 revising it in place orphans them. Fork session starts a new session note from this point: everything above this section is copied, the section itself and everything below start fresh there.` : void 0;
     const choice = await new Promise((resolve) => {
-      new OverwriteChoiceModal(
-        this.app,
-        `Your ${artefactLabel} is hand-edited`,
-        "This section looks hand-edited since Parallax last wrote it here. Replace drops your edit in favour of the new proposal; Append keeps your text and adds the proposal below it.",
-        resolve
-      ).open();
+      new OverwriteChoiceModal(this.app, title, message, resolve, forkNote).open();
     });
     if (choice === "keep") {
-      new import_obsidian25.Notice(`Kept your edited ${artefactLabel} \u2014 run the research assistant again to replace or append.`, 6e3);
+      new import_obsidian26.Notice(`Kept your ${artefactLabel} \u2014 run the research assistant again to replace or append.`, 6e3);
       return null;
     }
+    if (choice === "fork") return "fork";
     return choice === "append" ? "append" : "write";
+  }
+  /**
+   * Fork a session note from a revision point (AU_E131_S4, owner decision: a fork is always
+   * a NEW session note): copy everything upstream of `revisedId` — body sections (pure split
+   * in {@link forkNoteBody}), the graph-store records of the kept artefacts, and the
+   * front-matter (beliefs cleared when they are downstream of the revision) — into a fresh
+   * note next to the original, cross-linked via the context section and logbook lines on
+   * both sides. The revised section and everything below start fresh in the fork: run the
+   * revising step again there (the section is absent, so no gate).
+   */
+  async forkSessionFromRevision(file, revisedId, artefactLabel) {
+    try {
+      const body = await this.app.vault.read(file);
+      const { body: forkBody, kept } = forkNoteBody(body, revisedId);
+      const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
+      let path = `${folder}${file.basename} \u2014 fork.md`;
+      for (let n = 2; this.app.vault.getAbstractFileByPath(path); n++) path = `${folder}${file.basename} \u2014 fork ${n}.md`;
+      const created = await this.app.vault.create(path, forkBody);
+      if (!kept.includes("beliefs")) {
+        await this.app.fileManager.processFrontMatter(created, (fm) => {
+          fm.beliefs = [];
+        });
+      }
+      const graphPath = this.vaultAdapters.graphStorePath();
+      const vaultStore = this.vaultAdapters.vaultStore();
+      const store = parseGraphStore(await vaultStore.read(graphPath));
+      const next = forkRecordsForNote(store, file.path, created.path, kept);
+      if (next !== store) {
+        await this.vaultAdapters.backupBeforeOverwrite(vaultStore, graphPath);
+        await vaultStore.write(graphPath, serializeGraphStore(next));
+      }
+      await this.sessionStore.appendSessionSection(created, "context", `${t().project.parentSessionLabel}: [[${file.basename}]]`);
+      const section = sectionHeading(revisedId);
+      await this.sessionStore.logEvent(created, t().logbook.stepFork, fmt(t().logbook.forkedFrom, { note: `[[${file.basename}]]`, section }));
+      await this.sessionStore.logEvent(file, t().logbook.stepFork, fmt(t().logbook.forkedTo, { note: `[[${created.basename}]]`, section }));
+      await this.app.workspace.getLeaf(true).openFile(created);
+      new import_obsidian26.Notice(`Forked to "${created.basename}" \u2014 run the ${artefactLabel} step again there; the section starts fresh in the fork.`, 8e3);
+    } catch (e) {
+      notifyError("Forking the session", e);
+    }
   }
   /** Write an artefact section per the edit-respect decision: replace, or append below (AU_E121_S1). */
   async writeArtefact(file, headingOrId, content, mode) {
@@ -15990,11 +16846,11 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async insertScaffold(id) {
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a note first \u2014 the section is inserted there.");
+      new import_obsidian26.Notice("Open a note first \u2014 the section is inserted there.");
       return;
     }
     if (!id) {
-      const picker = new class extends import_obsidian25.FuzzySuggestModal {
+      const picker = new class extends import_obsidian26.FuzzySuggestModal {
         constructor(app, onPick) {
           super(app);
           this.onPick = onPick;
@@ -16015,11 +16871,11 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     }
     const existing = extractSection(await this.app.vault.read(file), id);
     if (!isScaffoldReplaceable(existing)) {
-      new import_obsidian25.Notice(`The "${sectionHeading(id)}" section already has content \u2014 nothing inserted or replaced.`);
+      new import_obsidian26.Notice(`The "${sectionHeading(id)}" section already has content \u2014 nothing inserted or replaced.`);
       return;
     }
     await this.sessionStore.writeSessionSection(file, id, buildScaffoldBody(id));
-    new import_obsidian25.Notice(`"${sectionHeading(id)}" inserted \u2014 write it in your own words and delete the hint.`);
+    new import_obsidian26.Notice(`"${sectionHeading(id)}" inserted \u2014 write it in your own words and delete the hint.`);
   }
   /**
    * Put the active note's existing sections in the canonical reading order (AU_E123_S2).
@@ -16029,7 +16885,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async reorderSections() {
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a note first \u2014 its sections are reordered there.");
+      new import_obsidian26.Notice("Open a note first \u2014 its sections are reordered there.");
       return;
     }
     let moved = 0;
@@ -16038,7 +16894,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       moved = result.moved;
       return result.body;
     });
-    new import_obsidian25.Notice(
+    new import_obsidian26.Notice(
       moved === 0 ? "Sections are already in the canonical order \u2014 nothing changed." : `Reordered ${moved} section${moved === 1 ? "" : "s"} into the canonical order.`
     );
   }
@@ -16052,7 +16908,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
    */
   activeNoteFile() {
     var _a, _b, _c;
-    return (_c = (_b = (_a = this.app.workspace.getActiveViewOfType(import_obsidian25.MarkdownView)) == null ? void 0 : _a.file) != null ? _b : this.app.workspace.getActiveFile()) != null ? _c : this.lastMarkdownFile;
+    return (_c = (_b = (_a = this.app.workspace.getActiveViewOfType(import_obsidian26.MarkdownView)) == null ? void 0 : _a.file) != null ? _b : this.app.workspace.getActiveFile()) != null ? _c : this.lastMarkdownFile;
   }
   /**
    * The current editor selection, trimmed — used to seed a research/explore prompt (E69, item 5).
@@ -16062,13 +16918,13 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
    */
   activeSelection() {
     var _a;
-    const active = this.app.workspace.getActiveViewOfType(import_obsidian25.MarkdownView);
+    const active = this.app.workspace.getActiveViewOfType(import_obsidian26.MarkdownView);
     const fromActive = (_a = active == null ? void 0 : active.editor) == null ? void 0 : _a.getSelection().trim();
     if (fromActive) return fromActive;
     if (this.lastMarkdownFile) {
       for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
         const view = leaf.view;
-        if (view instanceof import_obsidian25.MarkdownView && view.file === this.lastMarkdownFile) {
+        if (view instanceof import_obsidian26.MarkdownView && view.file === this.lastMarkdownFile) {
           const sel = view.editor.getSelection().trim();
           if (sel) return sel;
         }
@@ -16152,32 +17008,39 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async refreshProjectContents() {
     const hubFile = this.resolveActiveHubFile();
     if (!hubFile) {
-      new import_obsidian25.Notice("Open a project hub or a session within a project first.");
+      new import_obsidian26.Notice("Open a project hub or a session within a project first.");
       return;
     }
     const folder = hubFile.parent && hubFile.parent.path !== "/" ? hubFile.parent.path : "";
     await this.writeHubContents(hubFile, folder);
-    new import_obsidian25.Notice("Project contents refreshed.");
+    new import_obsidian26.Notice("Project contents refreshed.");
   }
   /** Mark the active note as a research session (front-matter), prompting for the question. Public: called from {@link registerCommands}. */
   startResearchSession() {
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a note to use as the research session.");
+      new import_obsidian26.Notice("Open a note to use as the research session.");
       return;
     }
-    new SearchModal(this.app, this.activeSelection(), false, (submission) => {
-      if (!submission) return;
-      const question = submission.query.trim();
-      if (!question) return;
-      void this.app.fileManager.processFrontMatter(file, (fm) => {
-        fm[SESSION_FLAG] = true;
-        fm.question = question;
-        if (!Array.isArray(fm.seeds)) fm.seeds = [];
-        if (!Array.isArray(fm.lenses)) fm.lenses = [];
-        if (!Array.isArray(fm.beliefs)) fm.beliefs = [];
-      }).then(() => new import_obsidian25.Notice("Research session started \u2014 the research assistants now write into this note.")).catch((e) => notifyError("Starting the session", e));
-    }).open();
+    new SearchModal(
+      this.app,
+      this.activeSelection(),
+      false,
+      (submission) => {
+        if (!submission) return;
+        const question = submission.query.trim();
+        if (!question) return;
+        void this.app.fileManager.processFrontMatter(file, (fm) => {
+          fm[SESSION_FLAG] = true;
+          fm.question = question;
+          if (!Array.isArray(fm.seeds)) fm.seeds = [];
+          if (!Array.isArray(fm.lenses)) fm.lenses = [];
+          if (!Array.isArray(fm.beliefs)) fm.beliefs = [];
+        }).then(() => new import_obsidian26.Notice("Research session started \u2014 the research assistants now write into this note.")).catch((e) => notifyError("Starting the session", e));
+      },
+      void 0,
+      this.searchRephrase()
+    ).open();
   }
   /** The active note + its parsed session, iff it is a research session — else null. */
   activeSession() {
@@ -16197,23 +17060,23 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async confrontBeliefsFlow() {
     var _a, _b, _c, _d, _e;
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Confronting beliefs needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Confronting beliefs needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then confront your beliefs.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then confront your beliefs.');
       return;
     }
     const { file, session } = active;
     if (session.beliefs.length === 0) {
-      new import_obsidian25.Notice('No beliefs captured yet \u2014 capture some via "Explore the problem" first, then confront them.');
+      new import_obsidian26.Notice('No beliefs captured yet \u2014 capture some via "Explore the problem" first, then confront them.');
       return;
     }
     let synthesis = shouldPreferLastResearch((_b = (_a = this.lastResearch) == null ? void 0 : _a.notePath) != null ? _b : null, file.path) ? (_e = (_d = (_c = this.lastResearch) == null ? void 0 : _c.summary) == null ? void 0 : _d.trim()) != null ? _e : "" : "";
     if (!synthesis) synthesis = extractSection(await this.app.vault.read(file), "synthesis");
     if (!synthesis) {
-      new import_obsidian25.Notice('No synthesis yet \u2014 run "Ask a question" in this session first, then confront your beliefs.');
+      new import_obsidian26.Notice('No synthesis yet \u2014 run "Evidence \xB7 ask a question" in this session first, then confront your beliefs.');
       return;
     }
     const step = await this.runAssistantStep({
@@ -16225,7 +17088,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     if (!step) return;
     const { result: proposals } = step;
     if (proposals.length === 0) {
-      new import_obsidian25.Notice("The synthesis yielded no proposals for your beliefs.", 6e3);
+      new import_obsidian26.Notice("The synthesis yielded no proposals for your beliefs.", 6e3);
       return;
     }
     new BeliefModal(this.app, proposals, (updates) => {
@@ -16241,7 +17104,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       void this.sessionStore.applyBeliefs(file, updates).then(async () => {
         const summary = appendBeliefTransitions(fmt(t().logbook.beliefsUpdated, { n: updates.length }), transitions);
         await this.sessionStore.logEvent(file, t().logbook.stepBeliefs, summary);
-        new import_obsidian25.Notice(`Updated ${updates.length} belief(s).`);
+        new import_obsidian26.Notice(`Updated ${updates.length} belief(s).`);
       });
     }).open();
   }
@@ -16258,14 +17121,14 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async writeQuadroFiles(root, files) {
     const dirs = /* @__PURE__ */ new Set();
     for (const f of files) {
-      const full = (0, import_obsidian25.normalizePath)(`${root}/${f.path}`);
+      const full = (0, import_obsidian26.normalizePath)(`${root}/${f.path}`);
       const parts = full.split("/").slice(0, -1);
       for (let i = 1; i <= parts.length; i++) dirs.add(parts.slice(0, i).join("/"));
     }
     for (const dir of [...dirs].sort((a, b) => a.length - b.length)) {
       if (!this.app.vault.getAbstractFileByPath(dir)) await this.app.vault.createFolder(dir);
     }
-    for (const f of files) await this.vaultAdapters.writeVaultFile((0, import_obsidian25.normalizePath)(`${root}/${f.path}`), f.content);
+    for (const f of files) await this.vaultAdapters.writeVaultFile((0, import_obsidian26.normalizePath)(`${root}/${f.path}`), f.content);
     return files.length;
   }
   /**
@@ -16314,18 +17177,18 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async exportQuadroCodebook() {
     const seeds = await this.quadroSeeds();
     if (!seeds) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Start research session" first.');
       return;
     }
     if (seeds.lenses.length === 0) {
-      new import_obsidian25.Notice('No adopted theoretical lenses yet \u2014 run "Explore theoretical lenses" and adopt the lenses you want to code with.');
+      new import_obsidian26.Notice('No adopted theoretical lenses yet \u2014 run "Explore theoretical lenses" and adopt the lenses you want to code with.');
       return;
     }
     try {
       const safeName = safeFileName(seeds.file.basename).trim() || t().project.exportFolderFallback;
       const root = `Exports/${safeName}/quadro-codebook`;
       const n = await this.writeQuadroFiles(root, renderCodebook(seeds.lenses));
-      new import_obsidian25.Notice(`Quadro codebook exported: ${n} code file(s) \u2192 ${root}/`);
+      new import_obsidian26.Notice(`Quadro codebook exported: ${n} code file(s) \u2192 ${root}/`);
     } catch (e) {
       notifyError("Exporting the Quadro codebook", e);
     }
@@ -16338,11 +17201,11 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async exportQuadroStarterKit() {
     const seeds = await this.quadroSeeds();
     if (!seeds) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Start research session" first.');
       return;
     }
     if (seeds.lenses.length === 0 && seeds.questions.length === 0) {
-      new import_obsidian25.Notice('Nothing to hand off yet \u2014 adopt theoretical lenses and/or run "Propose research agenda (from the synthesis)" first.');
+      new import_obsidian26.Notice('Nothing to hand off yet \u2014 adopt theoretical lenses and/or run "Propose research agenda (from the synthesis)" first.');
       return;
     }
     if (seeds.questions.length === 0) {
@@ -16352,7 +17215,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     new QuadroKitModal(this.app, seeds.questions, (selected) => {
       if (!selected) return;
       if (selected.length === 0 && seeds.lenses.length === 0) {
-        new import_obsidian25.Notice("Nothing selected \u2014 the kit would be empty. Tick at least one question.");
+        new import_obsidian26.Notice("Nothing selected \u2014 the kit would be empty. Tick at least one question.");
         return;
       }
       void this.writeStarterKit(seeds.file, seeds.lenses, selected);
@@ -16369,7 +17232,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
         date
       });
       const n = await this.writeQuadroFiles(root, files);
-      new import_obsidian25.Notice(`Quadro starter kit exported: ${n} file(s) \u2192 ${root}/`);
+      new import_obsidian26.Notice(`Quadro starter kit exported: ${n} file(s) \u2192 ${root}/`);
     } catch (e) {
       notifyError("Exporting the Quadro starter kit", e);
     }
@@ -16386,14 +17249,14 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       const settingsPath = QUADRO_CONVENTIONS.settingsPath;
       const dataJson = await adapter.exists(settingsPath) ? await adapter.read(settingsPath) : null;
       const folders = parseQuadroFolders(dataJson);
-      const progressPath = (0, import_obsidian25.normalizePath)(`${folders.analysis}/${QUADRO_CONVENTIONS.progressFileName}`);
+      const progressPath = (0, import_obsidian26.normalizePath)(`${folders.analysis}/${QUADRO_CONVENTIONS.progressFileName}`);
       const progress = await adapter.exists(progressPath) ? parseQuadroProgress(await adapter.read(progressPath)) : null;
       const codebook = codebookStatsFromPaths(
         folders.codes,
         this.app.vault.getMarkdownFiles().map((f) => f.path)
       );
-      const extractionsRoot = this.app.vault.getAbstractFileByPath((0, import_obsidian25.normalizePath)(folders.extractions));
-      const extractionTypes = extractionsRoot instanceof import_obsidian25.TFolder ? extractionsRoot.children.filter((c) => c instanceof import_obsidian25.TFolder).length : null;
+      const extractionsRoot = this.app.vault.getAbstractFileByPath((0, import_obsidian26.normalizePath)(folders.extractions));
+      const extractionTypes = extractionsRoot instanceof import_obsidian26.TFolder ? extractionsRoot.children.filter((c) => c instanceof import_obsidian26.TFolder).length : null;
       return renderQdaSection({
         root: folders.analysis,
         date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
@@ -16412,8 +17275,8 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
    * slow down or block the rename itself (console.warn only, same policy as the graph writes).
    */
   async onVaultRename(file, oldPath) {
-    const isMarkdown = file instanceof import_obsidian25.TFile && file.extension === "md";
-    if (!isMarkdown && !(file instanceof import_obsidian25.TFolder)) return;
+    const isMarkdown = file instanceof import_obsidian26.TFile && file.extension === "md";
+    if (!isMarkdown && !(file instanceof import_obsidian26.TFolder)) return;
     try {
       const vaultStore = this.vaultAdapters.vaultStore();
       const graphPath = this.vaultAdapters.graphStorePath();
@@ -16444,20 +17307,20 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       const existing = new Set(this.app.vault.getMarkdownFiles().map((f) => f.path));
       const groups = scanOrphans(graph, register, existing);
       if (groups.length === 0) {
-        new import_obsidian25.Notice("No orphaned records \u2014 everything points at existing notes.");
+        new import_obsidian26.Notice("No orphaned records \u2014 everything points at existing notes.");
         return;
       }
       new RecordHygieneModal(this.app, groups, (selection) => {
         void (async () => {
           const result = applyPrune(graph, register, selection);
           if (result.removedGraphRecords + result.removedOccurrences === 0) {
-            new import_obsidian25.Notice("Nothing selected \u2014 no records were removed.");
+            new import_obsidian26.Notice("Nothing selected \u2014 no records were removed.");
             return;
           }
           await vaultStore.write(graphPath, serializeGraphStore(graph));
           await this.vaultAdapters.backupBeforeOverwrite(vaultStore, this.settings.registerPath);
           await saveRegister(vaultStore, this.settings.registerPath, register);
-          new import_obsidian25.Notice(
+          new import_obsidian26.Notice(
             `Cleaned up: ${result.removedGraphRecords} session record(s), ${result.removedOccurrences} dead reference entr${result.removedOccurrences === 1 ? "y" : "ies"}, ${result.removedReferences} fully orphaned reference(s) removed.`,
             8e3
           );
@@ -16507,7 +17370,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
           fmt(t().logbook.lensSessionsCreated, { n: String(links.length), links: links.join(" \xB7 ") })
         );
       }
-      new import_obsidian25.Notice(`Created ${links.length} lens session(s) \u2014 run the research step in each at your own pace.`);
+      new import_obsidian26.Notice(`Created ${links.length} lens session(s) \u2014 run the research step in each at your own pace.`);
     } catch (e) {
       notifyError("Creating lens sessions", e);
     }
@@ -16529,7 +17392,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async generateMethodologyAccount() {
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then generate the account.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then generate the account.');
       return;
     }
     const { file, session } = active;
@@ -16537,10 +17400,10 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     const qda = await this.gatherQdaSection();
     const doc = assembleMethodologyAccount(session, body, `[[${file.basename}]]`, qda);
     const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
-    const targetPath = (0, import_obsidian25.normalizePath)(`${folder ? `${folder}/` : ""}${file.basename} \u2014 methodologische verantwoording.md`);
+    const targetPath = (0, import_obsidian26.normalizePath)(`${folder ? `${folder}/` : ""}${file.basename} \u2014 methodologische verantwoording.md`);
     try {
       const existing = this.app.vault.getAbstractFileByPath(targetPath);
-      if (existing instanceof import_obsidian25.TFile) await this.app.vault.modify(existing, doc);
+      if (existing instanceof import_obsidian26.TFile) await this.app.vault.modify(existing, doc);
       else {
         await this.app.vault.create(targetPath, doc);
         await this.refreshHubContentsForFolder(folder);
@@ -16550,22 +17413,29 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       return;
     }
     const written = this.app.vault.getAbstractFileByPath(targetPath);
-    if (written instanceof import_obsidian25.TFile) await this.app.workspace.getLeaf(true).openFile(written);
+    if (written instanceof import_obsidian26.TFile) await this.app.workspace.getLeaf(true).openFile(written);
     await this.sessionStore.logEvent(file, t().logbook.stepAccount, t().logbook.accountGenerated);
-    new import_obsidian25.Notice("Methodological account generated.");
+    new import_obsidian26.Notice("Methodological account generated.");
   }
   // ── Challenge research assistant (E49) ──
   /** Challenge research assistant (E49): prompt for a question, then challenge its framing. Public: called from {@link registerCommands}. */
   promptAndChallenge(initialQuery) {
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Challenging the framing needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Challenging the framing needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     void this.promptSeed(initialQuery).then((seed) => {
-      new SearchModal(this.app, seed, false, (submission) => {
-        if (!submission) return;
-        void this.runChallengeFlow(submission.query);
-      }).open();
+      new SearchModal(
+        this.app,
+        seed,
+        false,
+        (submission) => {
+          if (!submission) return;
+          void this.runChallengeFlow(submission.query);
+        },
+        void 0,
+        this.searchRephrase()
+      ).open();
     });
   }
   /**
@@ -16590,7 +17460,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
     if (!step) return;
     const { result } = step;
     if (!result) {
-      new import_obsidian25.Notice("Could not challenge the framing \u2014 feel free to start research directly.", 6e3);
+      new import_obsidian26.Notice("Could not challenge the framing \u2014 feel free to start research directly.", 6e3);
       return;
     }
     const session = this.activeSession();
@@ -16605,7 +17475,7 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
         void (async () => {
           const created = await this.newSessionNearActiveNote(question);
           if (!created) return;
-          new import_obsidian25.Notice(`Challenge landed in a new session: "${created.basename}".`);
+          new import_obsidian26.Notice(`Challenge landed in a new session: "${created.basename}".`);
           await this.recordChallengeInSession(created, question, result, choice);
         })();
       } else if (hub && file && target === "new-project-session") {
@@ -16621,13 +17491,13 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
   async recordChallengeAsNewProjectSession(hubFile, hub, question, result, choice) {
     const created = await this.newSessionInHubProject(hubFile, hub, question);
     if (!created) return;
-    new import_obsidian25.Notice(`Challenge landed in a new session: "${created.basename}".`);
+    new import_obsidian26.Notice(`Challenge landed in a new session: "${created.basename}".`);
     await this.recordChallengeInSession(created, question, result, choice);
   }
   /** Record the challenge artefact + adopt the ticked challenges as open beliefs (E49). */
   async recordChallengeInSession(file, _question, result, choice) {
     const writeMode = await this.confirmArtefactOverwrite(file, "challenge", "challenge");
-    if (!writeMode) return;
+    if (!writeMode || writeMode === "fork") return;
     await this.writeArtefact(file, "challenge", buildChallengeBody(result), writeMode);
     const adopted = choice.adopted.map((claim) => ({ claim, status: "open" }));
     if (adopted.length > 0) await this.sessionStore.addBeliefs(file, adopted);
@@ -16637,9 +17507,10 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       `${fmt(t().logbook.challengesSummary, { n: result.challenges.length })}${adopted.length ? fmt(t().logbook.challengesAdopted, { n: adopted.length }) : ""}`
     );
     await this.vaultAdapters.persistSessionArtefactRecord(file, {
-      adoptions: { challenge: challengeAdoptionRecord(result, choice) }
+      adoptions: { challenge: challengeAdoptionRecord(result, choice) },
+      basedOn: { challenge: upstreamFingerprints(await this.app.vault.read(file), "challenge") }
     });
-    new import_obsidian25.Notice(
+    new import_obsidian26.Notice(
       adopted.length > 0 ? `Challenge added; recorded ${adopted.length} belief(s) to examine.` : "Challenge added to the session."
     );
   }
@@ -16653,18 +17524,29 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
    * event. Mirrors the Challenge research assistant flow. Public: called from {@link registerCommands}.
    */
   async mapArgumentFlow() {
+    var _a, _b;
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Mapping the argument needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Mapping the argument needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then map the argument.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then map the argument.');
       return;
     }
     const { file, session } = active;
+    const preState = await this.sessionStore.sectionEditState(file, "argument");
+    const preMode = await this.confirmArtefactOverwrite(file, "argument", "argument map", { offerFork: "argument" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.forkSessionFromRevision(file, "argument", "argument map");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
     const body = await this.app.vault.read(file);
-    const context = this.buildArgumentContext(session, body);
+    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
+    const findings = (_b = (_a = recordForNote(store, file.path)) == null ? void 0 : _a.findings) != null ? _b : [];
+    const context = this.buildArgumentContext(session, body, findings);
     const step = await this.runAssistantStep({
       flowLabel: "argument",
       loadingText: "Mapping the argument (claims, assumptions, relations)\u2026",
@@ -16672,27 +17554,38 @@ var ParallaxPlugin = class extends import_obsidian25.Plugin {
       run: (log) => proposeArgumentStructure(context, this.llmChatFn("argument", log), log)
     });
     if (!step) return;
-    const { result } = step;
-    if (!result) {
-      new import_obsidian25.Notice("Could not map the argument \u2014 try again once the session holds more thinking to map.", 6e3);
+    const { result: raw } = step;
+    if (!raw) {
+      new import_obsidian26.Notice("Could not map the argument \u2014 try again once the session holds more thinking to map.", 6e3);
       return;
     }
-    new ArgumentModal(this.app, result, (adopted) => {
-      if (!adopted || adopted.nodes.length === 0) return;
-      void this.recordArgumentInSession(file, adopted);
-    }).open();
+    const result = resolveArgumentEvidence(raw, findings);
+    new ArgumentModal(
+      this.app,
+      result,
+      (adopted) => {
+        if (!adopted || adopted.nodes.length === 0) return;
+        void this.recordArgumentInSession(file, adopted, preapproved);
+      },
+      body
+      // AU_E129_S9: lets the modal flag nodes that don't literally occur in the note
+    ).open();
   }
   /**
    * The session content the argument mapper reads (design §5): the question/framing, the
    * beliefs, and the synthesis + adopted-challenge sections when present. Long sections are
    * capped — the map needs the reasoning's shape, not every word of it.
    */
-  buildArgumentContext(session, body) {
+  buildArgumentContext(session, body, findings = []) {
     const cap = (s) => s.length > 4e3 ? `${s.slice(0, 4e3)}\u2026` : s;
     const parts = [`Research question: ${sessionTopic(session)}`];
     if (session.beliefs.length > 0) {
       parts.push(`Current beliefs:
 ${session.beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`);
+    }
+    if (findings.length > 0) {
+      parts.push(`Findings (numbered):
+${findings.map((f, i) => `F${i + 1}: ${cap(f.claim).slice(0, 400)}`).join("\n")}`);
     }
     for (const id of ["synthesis", "challenge", "exploration"]) {
       const section = extractSection(body, id);
@@ -16702,9 +17595,9 @@ ${cap(section)}`);
     return parts.join("\n\n");
   }
   /** Record the adopted argument map (AU_E103): section + graph-store record + logbook event. */
-  async recordArgumentInSession(file, adopted) {
-    const writeMode = await this.confirmArtefactOverwrite(file, "argument", "argument map");
-    if (!writeMode) return;
+  async recordArgumentInSession(file, adopted, preapproved) {
+    const writeMode = await this.confirmArtefactOverwrite(file, "argument", "argument map", { preapproved });
+    if (!writeMode || writeMode === "fork") return;
     const structure = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
     await this.writeArtefact(file, "argument", buildArgumentBody(structure, t().argument), writeMode);
     await this.sessionStore.logEvent(
@@ -16712,8 +17605,11 @@ ${cap(section)}`);
       t().logbook.stepArgument,
       fmt(t().logbook.argumentAdopted, { n: structure.nodes.length })
     );
-    await this.vaultAdapters.persistSessionArtefactRecord(file, { argumentStructure: structure });
-    new import_obsidian25.Notice(`Argument map recorded (${structure.nodes.length} element(s)).`);
+    await this.vaultAdapters.persistSessionArtefactRecord(file, {
+      argumentStructure: structure,
+      basedOn: { argument: upstreamFingerprints(await this.app.vault.read(file), "argument") }
+    });
+    new import_obsidian26.Notice(`Argument map recorded (${structure.nodes.length} element(s)).`);
   }
   /**
    * Regenerate the `## Argument structure` section from the stored graph-store record (AU_E103)
@@ -16726,19 +17622,19 @@ ${cap(section)}`);
     var _a;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a session note to refresh its argument map.");
+      new import_obsidian26.Notice("Open a session note to refresh its argument map.");
       return;
     }
     const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
     const structure = sanitizeArgumentStructure((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.argumentStructure);
     if (!structure) {
-      new import_obsidian25.Notice('No argument map recorded for this note yet \u2014 run "Map the argument" first.');
+      new import_obsidian26.Notice('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
       return;
     }
     const writeMode = await this.confirmArtefactOverwrite(file, "argument", "argument map");
-    if (!writeMode) return;
+    if (!writeMode || writeMode === "fork") return;
     await this.writeArtefact(file, "argument", buildArgumentBody(structure, t().argument), writeMode);
-    new import_obsidian25.Notice("Argument map regenerated from the stored record.");
+    new import_obsidian26.Notice("Argument map regenerated from the stored record.");
   }
   /**
    * Project the stored argument map onto a `.canvas` file next to the note (AU_E103_S3 — rung 2
@@ -16748,32 +17644,104 @@ ${cap(section)}`);
    * ConfirmModal is needed; a Notice says what was kept. Public: called from
    * {@link registerCommands}.
    */
+  /**
+   * The session note the argument-canvas commands should act on: the active note, or — when the
+   * user is looking at a generated "<note> — argument.canvas" (the natural place to invoke
+   * re-layout, AU_E128_S1 nawerk) — the session note resolved from the canvas filename.
+   */
+  argumentCanvasSessionNote() {
+    const file = this.activeNoteFile();
+    if (!file || file.extension !== "canvas") return file;
+    const notePath = sessionNotePathForArgumentCanvas(file.path);
+    if (!notePath) return null;
+    const note = this.app.vault.getAbstractFileByPath((0, import_obsidian26.normalizePath)(notePath));
+    return note instanceof import_obsidian26.TFile ? note : null;
+  }
+  /**
+   * Which adopted artefacts of a note rest on a CHANGED basis (AU_E131_S5): section id →
+   * the upstream sections whose fingerprint no longer matches the recorded `basedOn`.
+   * Feeds the workbench step cards and the canvas banner.
+   */
+  async staleArtefactsForNote(file, body) {
+    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
+    const record = artefactRecordForNote(store, file.path);
+    return new Map(staleSections(body, record == null ? void 0 : record.basedOn).map((e) => [e.artefact, e.changed]));
+  }
+  /**
+   * The canvas staleness banner text (AU_E131_S5), or null while the argument map's recorded
+   * basis still matches the note. Owner decision: staleness shows on the canvas too — "an
+   * easy place to inspect the project".
+   */
+  async argumentStaleNote(file, record) {
+    const stale = staleSections(await this.app.vault.read(file), record == null ? void 0 : record.basedOn).find((e) => e.artefact === "argument");
+    if (!stale) return null;
+    return fmt(t().argument.staleBanner, { changed: stale.changed.map((c) => sectionHeading(c)).join(", ") });
+  }
   async openArgumentCanvas() {
     var _a;
-    const file = this.activeNoteFile();
+    const file = this.argumentCanvasSessionNote();
     if (!file) {
-      new import_obsidian25.Notice("Open a session note to project its argument map onto a Canvas.");
+      new import_obsidian26.Notice("Open a session note to project its argument map onto a Canvas.");
       return;
     }
     const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const structure = sanitizeArgumentStructure((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.argumentStructure);
+    const record = artefactRecordForNote(store, file.path);
+    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
     if (!structure) {
-      new import_obsidian25.Notice('No argument map recorded for this note yet \u2014 run "Map the argument" first.');
+      new import_obsidian26.Notice('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
       return;
     }
+    const hypotheses = (_a = sanitizeHypothesisSet(record == null ? void 0 : record.hypotheses)) != null ? _a : null;
+    const staleNote = await this.argumentStaleNote(file, record);
     const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const path = (0, import_obsidian25.normalizePath)(`${folder}${file.basename} \u2014 argument.canvas`);
+    const path = (0, import_obsidian26.normalizePath)(`${folder}${file.basename}${ARGUMENT_CANVAS_SUFFIX}`);
     try {
       const existingFile = this.app.vault.getAbstractFileByPath(path);
-      const existing = parseCanvas(existingFile instanceof import_obsidian25.TFile ? await this.app.vault.read(existingFile) : null);
-      const canvas = buildArgumentCanvas(structure, t().argument, existing);
+      const existing = parseCanvas(existingFile instanceof import_obsidian26.TFile ? await this.app.vault.read(existingFile) : null);
+      const canvas = buildArgumentCanvas(structure, { ...t().argument, hypotheses: t().headings.hypotheses, projection: fmt(t().argument.projection, { note: `[[${file.basename}]]` }) }, existing, hypotheses, staleNote);
       const canvasFile = await this.vaultAdapters.writeVaultFile(path, serializeCanvas(canvas));
       await this.app.workspace.getLeaf(true).openFile(canvasFile);
-      new import_obsidian25.Notice(
+      new import_obsidian26.Notice(
         existing ? "Canvas updated \u2014 your positions and own nodes were kept." : `Argument canvas created: "${path}".`
       );
     } catch (e) {
       notifyError(`Writing the argument canvas to "${path}"`, e);
+    }
+  }
+  /**
+   * Re-layout the argument canvas (AU_E128_S1, explicit action): rebuild the argument nodes on
+   * fresh connectivity-ordered grid positions, discarding their stored geometry — the conscious
+   * counterpart of {@link openArgumentCanvas}, whose regeneration deliberately never moves what
+   * the user arranged. User-added nodes and edges survive with their geometry. Public: called
+   * from {@link registerCommands}.
+   */
+  async relayoutArgumentCanvasFlow() {
+    var _a;
+    const file = this.argumentCanvasSessionNote();
+    if (!file) {
+      new import_obsidian26.Notice("Open a session note (or its argument canvas) to re-layout the argument canvas.");
+      return;
+    }
+    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
+    const record = artefactRecordForNote(store, file.path);
+    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
+    if (!structure) {
+      new import_obsidian26.Notice('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
+      return;
+    }
+    const hypotheses = (_a = sanitizeHypothesisSet(record == null ? void 0 : record.hypotheses)) != null ? _a : null;
+    const staleNote = await this.argumentStaleNote(file, record);
+    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
+    const path = (0, import_obsidian26.normalizePath)(`${folder}${file.basename}${ARGUMENT_CANVAS_SUFFIX}`);
+    try {
+      const existingFile = this.app.vault.getAbstractFileByPath(path);
+      const existing = parseCanvas(existingFile instanceof import_obsidian26.TFile ? await this.app.vault.read(existingFile) : null);
+      const canvas = relayoutArgumentCanvas(structure, { ...t().argument, hypotheses: t().headings.hypotheses, projection: fmt(t().argument.projection, { note: `[[${file.basename}]]` }) }, existing, hypotheses, staleNote);
+      const canvasFile = await this.vaultAdapters.writeVaultFile(path, serializeCanvas(canvas));
+      await this.app.workspace.getLeaf(true).openFile(canvasFile);
+      new import_obsidian26.Notice("Canvas re-laid out \u2014 argument nodes repositioned by connectivity; your own nodes were kept.");
+    } catch (e) {
+      notifyError(`Re-laying out the argument canvas at "${path}"`, e);
     }
   }
   // ── Interview guide (AU_E105) ──
@@ -16788,15 +17756,23 @@ ${cap(section)}`);
    */
   async designInterviewGuideFlow() {
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Designing an interview guide needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Designing an interview guide needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then design the interview guide.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then design the interview guide.');
       return;
     }
     const { file, session } = active;
+    const preState = await this.sessionStore.sectionEditState(file, "interview");
+    const preMode = await this.confirmArtefactOverwrite(file, "interview", "interview guide", { offerFork: "interview" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.forkSessionFromRevision(file, "interview", "interview guide");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
     const body = await this.app.vault.read(file);
     const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
     const context = this.buildInterviewContext(
@@ -16814,12 +17790,12 @@ ${cap(section)}`);
     if (!step) return;
     const { result } = step;
     if (!result) {
-      new import_obsidian25.Notice("Could not design an interview guide \u2014 try again once the session holds more thinking to draw from.", 6e3);
+      new import_obsidian26.Notice("Could not design an interview guide \u2014 try again once the session holds more thinking to draw from.", 6e3);
       return;
     }
     new InterviewModal(this.app, result, (adopted) => {
       if (!adopted || adopted.questions.length === 0) return;
-      void this.recordInterviewInSession(file, adopted);
+      void this.recordInterviewInSession(file, adopted, preapproved);
     }).open();
   }
   /**
@@ -16867,9 +17843,9 @@ ${cap(synthesis)}`);
     return parts.join("\n\n");
   }
   /** Record the adopted interview guide (AU_E105): section + graph-store record + logbook event. */
-  async recordInterviewInSession(file, adopted) {
-    const writeMode = await this.confirmArtefactOverwrite(file, "interview", "interview guide");
-    if (!writeMode) return;
+  async recordInterviewInSession(file, adopted, preapproved) {
+    const writeMode = await this.confirmArtefactOverwrite(file, "interview", "interview guide", { preapproved });
+    if (!writeMode || writeMode === "fork") return;
     const guide = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
     await this.writeArtefact(file, "interview", buildInterviewBody(guide, t().interview), writeMode);
     await this.sessionStore.logEvent(
@@ -16877,8 +17853,11 @@ ${cap(synthesis)}`);
       t().logbook.stepInterview,
       fmt(t().logbook.interviewAdopted, { n: guide.questions.length })
     );
-    await this.vaultAdapters.persistSessionArtefactRecord(file, { interviewGuide: guide });
-    new import_obsidian25.Notice(`Interview guide recorded (${guide.questions.length} question(s)).`);
+    await this.vaultAdapters.persistSessionArtefactRecord(file, {
+      interviewGuide: guide,
+      basedOn: { interview: upstreamFingerprints(await this.app.vault.read(file), "interview") }
+    });
+    new import_obsidian26.Notice(`Interview guide recorded (${guide.questions.length} question(s)).`);
   }
   /**
    * Regenerate the `## Interview guide` section from the stored graph-store record (AU_E105) —
@@ -16890,19 +17869,19 @@ ${cap(synthesis)}`);
     var _a;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a session note to refresh its interview guide.");
+      new import_obsidian26.Notice("Open a session note to refresh its interview guide.");
       return;
     }
     const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
     const guide = sanitizeInterviewGuide((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.interviewGuide);
     if (!guide) {
-      new import_obsidian25.Notice('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
+      new import_obsidian26.Notice('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
       return;
     }
     const writeMode = await this.confirmArtefactOverwrite(file, "interview", "interview guide");
-    if (!writeMode) return;
+    if (!writeMode || writeMode === "fork") return;
     await this.writeArtefact(file, "interview", buildInterviewBody(guide, t().interview), writeMode);
-    new import_obsidian25.Notice("Interview guide regenerated from the stored record.");
+    new import_obsidian26.Notice("Interview guide regenerated from the stored record.");
   }
   /**
    * Write the stored interview guide as a PLAIN markdown fieldwork document next to the note
@@ -16915,21 +17894,21 @@ ${cap(synthesis)}`);
     var _a;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a session note to export its interview guide.");
+      new import_obsidian26.Notice("Open a session note to export its interview guide.");
       return;
     }
     const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
     const guide = sanitizeInterviewGuide((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.interviewGuide);
     if (!guide) {
-      new import_obsidian25.Notice('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
+      new import_obsidian26.Notice('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
       return;
     }
     const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const path = (0, import_obsidian25.normalizePath)(`${folder}${file.basename} \u2014 interview guide.md`);
+    const path = (0, import_obsidian26.normalizePath)(`${folder}${file.basename} \u2014 interview guide.md`);
     try {
       const exportFile = await this.vaultAdapters.writeVaultFile(path, buildFieldworkExport(guide, t().interview, file.basename));
       await this.app.workspace.getLeaf(true).openFile(exportFile);
-      new import_obsidian25.Notice(`Fieldwork guide written: "${path}".`);
+      new import_obsidian26.Notice(`Fieldwork guide written: "${path}".`);
     } catch (e) {
       notifyError(`Writing the fieldwork guide to "${path}"`, e);
     }
@@ -16945,12 +17924,12 @@ ${cap(synthesis)}`);
    */
   async proposeHypothesesFlow() {
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Proposing hypotheses needs a configured LLM provider \u2014 set it in the plugin settings first.");
+      new import_obsidian26.Notice("Proposing hypotheses needs a configured LLM provider \u2014 set it in the plugin settings first.");
       return;
     }
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then propose hypotheses.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then propose hypotheses.');
       return;
     }
     const { file, session } = active;
@@ -16958,10 +17937,19 @@ ${cap(synthesis)}`);
     const record = artefactRecordForNote(store, file.path);
     const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
     if (!structure) {
-      new import_obsidian25.Notice('No argument map yet \u2014 run "Map the argument (propose-only)" first: hypotheses are derived from its claims and assumptions.');
+      new import_obsidian26.Notice('No argument map yet \u2014 run "Design \xB7 argument map" first: hypotheses are derived from its claims and assumptions.');
       return;
     }
-    const context = this.buildHypothesesContext(session, structure, record);
+    const preState = await this.sessionStore.sectionEditState(file, "hypotheses");
+    const preMode = await this.confirmArtefactOverwrite(file, "hypotheses", "hypotheses", { offerFork: "hypotheses" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.forkSessionFromRevision(file, "hypotheses", "hypotheses");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
+    const noteBody = await this.app.vault.read(file);
+    const context = this.buildHypothesesContext(session, structure, record, noteBody);
     const step = await this.runAssistantStep({
       flowLabel: "hypotheses",
       loadingText: "Deriving falsifiable hypotheses from the argument map\u2026",
@@ -16971,20 +17959,23 @@ ${cap(synthesis)}`);
     if (!step) return;
     const { result } = step;
     if (!result) {
-      new import_obsidian25.Notice("Could not derive hypotheses \u2014 try again once the argument map holds more to test.", 6e3);
+      new import_obsidian26.Notice("Could not derive hypotheses \u2014 try again once the argument map holds more to test.", 6e3);
       return;
     }
     new HypothesisModal(this.app, result, (adopted) => {
       if (!adopted) return;
-      void this.recordHypothesesInSession(file, adopted);
+      void this.recordHypothesesInSession(file, adopted, preapproved);
     }).open();
   }
   /**
    * The session content the hypotheses proposer reads (AU_E111_S1): the question, the full
    * argument map (nodes + relations), the OPEN beliefs, and the agenda's new questions with
    * their method fit — quantitative-labelled questions are exactly where hypotheses belong.
+   * Since AU_E130_S2 also the per-sub-question search EXPECTATIONS, parsed from the note
+   * body (source of truth): candidates to rework into falsifiable hypotheses where the
+   * argument map bears them out.
    */
-  buildHypothesesContext(session, structure, record) {
+  buildHypothesesContext(session, structure, record, noteBody = "") {
     var _a, _b;
     const parts = [`Research question: ${sessionTopic(session)}`];
     parts.push(`Argument map nodes:
@@ -17006,12 +17997,19 @@ ${open.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`);
       parts.push(`New research questions:
 ${qs.join("\n")}`);
     }
+    const expectations = parseSubquestionExpectations(noteBody);
+    if (expectations.length > 0) {
+      const lines = expectations.map((e) => `- ${e.query}
+  expectation: ${e.expectation}`);
+      parts.push(`Search expectations per sub-question (stated BEFORE the research ran):
+${lines.join("\n")}`);
+    }
     return parts.join("\n\n");
   }
   /** Record the adopted hypotheses (AU_E111_S1): section + graph-store record + logbook event. */
-  async recordHypothesesInSession(file, adopted) {
-    const writeMode = await this.confirmArtefactOverwrite(file, "hypotheses", "hypotheses");
-    if (!writeMode) return;
+  async recordHypothesesInSession(file, adopted, preapproved) {
+    const writeMode = await this.confirmArtefactOverwrite(file, "hypotheses", "hypotheses", { preapproved });
+    if (!writeMode || writeMode === "fork") return;
     const set = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
     await this.writeArtefact(file, "hypotheses", buildHypothesesBody(set), writeMode);
     await this.sessionStore.logEvent(
@@ -17019,8 +18017,11 @@ ${qs.join("\n")}`);
       t().logbook.stepHypotheses,
       fmt(t().logbook.hypothesesAdopted, { n: set.hypotheses.length })
     );
-    await this.vaultAdapters.persistSessionArtefactRecord(file, { hypotheses: set });
-    new import_obsidian25.Notice(`Hypotheses recorded (${set.hypotheses.length}).`);
+    await this.vaultAdapters.persistSessionArtefactRecord(file, {
+      hypotheses: set,
+      basedOn: { hypotheses: upstreamFingerprints(await this.app.vault.read(file), "hypotheses") }
+    });
+    new import_obsidian26.Notice(`Hypotheses recorded (${set.hypotheses.length}).`);
   }
   /**
    * Regenerate the `## Hypotheses` section from the stored graph-store record (AU_E111_S1) —
@@ -17031,19 +18032,19 @@ ${qs.join("\n")}`);
     var _a;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a session note to refresh its hypotheses.");
+      new import_obsidian26.Notice("Open a session note to refresh its hypotheses.");
       return;
     }
     const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
     const set = sanitizeHypothesisSet((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.hypotheses);
     if (!set) {
-      new import_obsidian25.Notice('No hypotheses recorded for this note yet \u2014 run "Propose hypotheses" first.');
+      new import_obsidian26.Notice('No hypotheses recorded for this note yet \u2014 run "Propose hypotheses" first.');
       return;
     }
     const writeMode = await this.confirmArtefactOverwrite(file, "hypotheses", "hypotheses");
-    if (!writeMode) return;
+    if (!writeMode || writeMode === "fork") return;
     await this.writeArtefact(file, "hypotheses", buildHypothesesBody(set), writeMode);
-    new import_obsidian25.Notice("Hypotheses regenerated from the stored record.");
+    new import_obsidian26.Notice("Hypotheses regenerated from the stored record.");
   }
   /**
    * Find validated scales for a construct (AU_E111_S2): a fixed psychometric query fan-out
@@ -17057,13 +18058,13 @@ ${qs.join("\n")}`);
     new ConstructModal(this.app, prefill, (construct) => {
       if (!construct) return;
       void (async () => {
-        const loading = new import_obsidian25.Notice(`Searching validated scales for "${construct}"\u2026`, 0);
+        const loading = new import_obsidian26.Notice(`Searching validated scales for "${construct}"\u2026`, 0);
         try {
           const result = await fanOutSearch(buildScaleQueries(construct), ["openalex", "semanticscholar"], {}, this.settings, this.httpRequest);
           loading.hide();
           const papers = rankInstrumentPapers(result.papers);
           if (papers.length === 0) {
-            new import_obsidian25.Notice(`No measurement literature found for "${construct}" \u2014 try a sharper construct name.`);
+            new import_obsidian26.Notice(`No measurement literature found for "${construct}" \u2014 try a sharper construct name.`);
             return;
           }
           const ranked = { ...result, query: construct, papers };
@@ -17092,7 +18093,7 @@ ${qs.join("\n")}`);
     var _a, _b, _c;
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then export the pre-registration draft.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then export the pre-registration draft.');
       return;
     }
     const { file, session } = active;
@@ -17122,11 +18123,11 @@ ${qs.join("\n")}`);
       date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10)
     });
     const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const path = (0, import_obsidian25.normalizePath)(`${folder}${file.basename} \u2014 preregistration.md`);
+    const path = (0, import_obsidian26.normalizePath)(`${folder}${file.basename} \u2014 preregistration.md`);
     try {
       const exportFile = await this.vaultAdapters.writeVaultFile(path, draft);
       await this.app.workspace.getLeaf(true).openFile(exportFile);
-      new import_obsidian25.Notice(`Pre-registration draft written: "${path}".`);
+      new import_obsidian26.Notice(`Pre-registration draft written: "${path}".`);
     } catch (e) {
       notifyError(`Writing the pre-registration draft to "${path}"`, e);
     }
@@ -17146,12 +18147,12 @@ ${qs.join("\n")}`);
     var _a, _b, _c;
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then refresh its connections.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then refresh its connections.');
       return;
     }
     const { file, session } = active;
     if (scope === "project" && !session.project) {
-      new import_obsidian25.Notice("This note does not belong to a project \u2014 refresh its connections per note instead.");
+      new import_obsidian26.Notice("This note does not belong to a project \u2014 refresh its connections per note instead.");
       return;
     }
     const memberFiles = [];
@@ -17190,14 +18191,14 @@ ${qs.join("\n")}`);
         continue;
       }
       const target = this.app.vault.getAbstractFileByPath(m.path);
-      if (!(target instanceof import_obsidian25.TFile)) continue;
+      if (!(target instanceof import_obsidian26.TFile)) continue;
       const writeMode = await this.confirmArtefactOverwrite(target, "connections", "connections");
-      if (!writeMode) continue;
+      if (!writeMode || writeMode === "fork") continue;
       await this.writeArtefact(target, "connections", body, writeMode);
       updated++;
     }
     if (updated === 0) {
-      new import_obsidian25.Notice("No connections to write yet \u2014 sessions link up once they share sources, a hub or a follow-up.");
+      new import_obsidian26.Notice("No connections to write yet \u2014 sessions link up once they share sources, a hub or a follow-up.");
       return;
     }
     await this.sessionStore.logEvent(
@@ -17205,7 +18206,7 @@ ${qs.join("\n")}`);
       t().logbook.stepConnections,
       fmt(t().logbook.connectionsRefreshed, { n: updated })
     );
-    new import_obsidian25.Notice(`Connections refreshed in ${updated} note(s)${skipped > 0 ? ` (${skipped} without connections skipped)` : ""}.`);
+    new import_obsidian26.Notice(`Connections refreshed in ${updated} note(s)${skipped > 0 ? ` (${skipped} without connections skipped)` : ""}.`);
   }
   // ── Research Design research assistant (E50) ──
   /**
@@ -17218,21 +18219,29 @@ ${qs.join("\n")}`);
   async generateResearchDesign() {
     var _a, _b, _c, _d, _e;
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Proposing a research agenda needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Proposing a research agenda needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then propose the agenda.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then propose the agenda.');
       return;
     }
     const { file, session } = active;
     let synthesis = shouldPreferLastResearch((_b = (_a = this.lastResearch) == null ? void 0 : _a.notePath) != null ? _b : null, file.path) ? (_e = (_d = (_c = this.lastResearch) == null ? void 0 : _c.summary) == null ? void 0 : _d.trim()) != null ? _e : "" : "";
     if (!synthesis) synthesis = extractSection(await this.app.vault.read(file), "synthesis");
     if (!synthesis) {
-      new import_obsidian25.Notice('No synthesis yet \u2014 run "Ask a question" in this session first, then propose the agenda.');
+      new import_obsidian26.Notice('No synthesis yet \u2014 run "Evidence \xB7 ask a question" in this session first, then propose the agenda.');
       return;
     }
+    const preState = await this.sessionStore.sectionEditState(file, "agenda");
+    const preMode = await this.confirmArtefactOverwrite(file, "agenda", "research agenda", { offerFork: "agenda" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.forkSessionFromRevision(file, "agenda", "research agenda");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
     const step = await this.runAssistantStep({
       flowLabel: "research design",
       loadingText: "Deriving a research agenda from the synthesis\u2026",
@@ -17242,14 +18251,14 @@ ${qs.join("\n")}`);
     if (!step) return;
     const { result: agenda } = step;
     if (!agenda) {
-      new import_obsidian25.Notice("Could not derive a research agenda from the synthesis.", 6e3);
+      new import_obsidian26.Notice("Could not derive a research agenda from the synthesis.", 6e3);
       return;
     }
     new ResearchDesignModal(this.app, agenda, (choice) => {
       if (!choice) return;
       void (async () => {
-        const writeMode = await this.confirmArtefactOverwrite(file, "agenda", "research agenda");
-        if (!writeMode) return;
+        const writeMode = await this.confirmArtefactOverwrite(file, "agenda", "research agenda", { preapproved });
+        if (!writeMode || writeMode === "fork") return;
         await this.writeArtefact(file, "agenda", renderResearchAgenda(agenda), writeMode);
         await this.sessionStore.logEvent(
           file,
@@ -17257,9 +18266,10 @@ ${qs.join("\n")}`);
           `${fmt(t().logbook.newQuestionsProposed, { n: agenda.newQuestions.length })}${choice.startSessionWith ? t().logbook.sessionStarted : ""}`
         );
         await this.vaultAdapters.persistSessionArtefactRecord(file, {
-          adoptions: { agenda: agendaAdoptionRecord(agenda, choice) }
+          adoptions: { agenda: agendaAdoptionRecord(agenda, choice) },
+          basedOn: { agenda: upstreamFingerprints(await this.app.vault.read(file), "agenda") }
         });
-        new import_obsidian25.Notice("Research agenda added to the session.");
+        new import_obsidian26.Notice("Research agenda added to the session.");
         if (choice.startSessionWith) this.startFollowUpResearch(choice.startSessionWith, file, session);
       })();
     }).open();
@@ -17279,7 +18289,7 @@ ${qs.join("\n")}`);
       const created = await this.sessionStore.createSessionNote(question, folderPath, project, opts);
       await this.refreshHubContentsForFolder(folderPath);
       await this.app.workspace.getLeaf(true).openFile(created);
-      if (!opts.silent) new import_obsidian25.Notice("New session created.");
+      if (!opts.silent) new import_obsidian26.Notice("New session created.");
       return created;
     } catch (e) {
       notifyError("Creating the new session", e);
@@ -17326,7 +18336,8 @@ ${qs.join("\n")}`);
           });
         })();
       },
-      hint
+      hint,
+      this.searchRephrase()
     ).open();
   }
   /**
@@ -17337,13 +18348,13 @@ ${qs.join("\n")}`);
   async startHypothesisFollowUp(text, sourcePath) {
     var _a;
     const file = this.app.vault.getAbstractFileByPath(sourcePath);
-    if (!(file instanceof import_obsidian25.TFile)) {
-      new import_obsidian25.Notice("Could not find this hypothesis's source session.");
+    if (!(file instanceof import_obsidian26.TFile)) {
+      new import_obsidian26.Notice("Could not find this hypothesis's source session.");
       return;
     }
     const session = parseSession((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter);
     if (!session) {
-      new import_obsidian25.Notice("This hypothesis's source is no longer a research session.");
+      new import_obsidian26.Notice("This hypothesis's source is no longer a research session.");
       return;
     }
     this.startFollowUpResearch(text, file, session);
@@ -17369,19 +18380,19 @@ ${qs.join("\n")}`);
    * what the writer was actually working in.
    */
   async createProject(name, objective = "", moveNote = false) {
-    const folder = (0, import_obsidian25.normalizePath)(safeFileName(name).trim() || "Project");
+    const folder = (0, import_obsidian26.normalizePath)(safeFileName(name).trim() || "Project");
     try {
       if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
-      const hubPath = (0, import_obsidian25.normalizePath)(`${folder}/${folder}${t().project.hubFileSuffix}.md`);
+      const hubPath = (0, import_obsidian26.normalizePath)(`${folder}/${folder}${t().project.hubFileSuffix}.md`);
       if (this.app.vault.getAbstractFileByPath(hubPath)) {
-        new import_obsidian25.Notice("This project already exists.");
+        new import_obsidian26.Notice("This project already exists.");
         return;
       }
       const hub = await this.app.vault.create(hubPath, renderProjectHub(name, objective));
       const moved = moveNote ? await this.moveNoteIntoProject(name, folder) : null;
       await this.writeHubContents(hub, folder);
       await this.app.workspace.getLeaf(false).openFile(moved != null ? moved : hub);
-      new import_obsidian25.Notice(moved ? `Project "${name}" created \u2014 "${moved.basename}" moved in.` : `Project "${name}" created.`);
+      new import_obsidian26.Notice(moved ? `Project "${name}" created \u2014 "${moved.basename}" moved in.` : `Project "${name}" created.`);
     } catch (e) {
       notifyError("Creating the project", e);
     }
@@ -17400,9 +18411,9 @@ ${qs.join("\n")}`);
     if (!file || file.extension !== "md") return null;
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
     if (!noteEligibleForProjectMove(fm, file.path)) return null;
-    const newPath = (0, import_obsidian25.normalizePath)(`${folder}/${file.name}`);
+    const newPath = (0, import_obsidian26.normalizePath)(`${folder}/${file.name}`);
     if (this.app.vault.getAbstractFileByPath(newPath)) {
-      new import_obsidian25.Notice(`A note named "${file.name}" already exists in "${projectName}" \u2014 kept "${file.basename}" where it was.`, 6e3);
+      new import_obsidian26.Notice(`A note named "${file.name}" already exists in "${projectName}" \u2014 kept "${file.basename}" where it was.`, 6e3);
       return null;
     }
     await this.sessionStore.moveNoteIntoProject(file, newPath, projectName);
@@ -17413,7 +18424,7 @@ ${qs.join("\n")}`);
     var _a, _b;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a project note or a session within the project.");
+      new import_obsidian26.Notice("Open a project note or a session within the project.");
       return;
     }
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
@@ -17421,7 +18432,7 @@ ${qs.join("\n")}`);
     const session = parseSession(fm);
     const projectId = hub ? resolveProjectId(hub, file.basename) : (_b = session == null ? void 0 : session.project) != null ? _b : "";
     if (!projectId) {
-      new import_obsidian25.Notice("This note doesn't belong to a project \u2014 start a research project first.");
+      new import_obsidian26.Notice("This note doesn't belong to a project \u2014 start a research project first.");
       return;
     }
     const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
@@ -17437,21 +18448,29 @@ ${qs.join("\n")}`);
           const question = submission.query.trim();
           if (question) void this.createSessionNote(question, folder, projectId);
         },
-        hint
+        hint,
+        this.searchRephrase()
       ).open();
     });
   }
   /** Theory research assistant (E45): prompt for a question, then propose theoretical lenses. Public: called from {@link registerCommands}. */
   promptAndTheory(initialQuery) {
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Proposing theoretical lenses needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Proposing theoretical lenses needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     void this.promptSeed(initialQuery).then((seed) => {
-      new SearchModal(this.app, seed, false, (submission) => {
-        if (!submission) return;
-        void this.runTheoryFlow(submission.query, submission.filters);
-      }).open();
+      new SearchModal(
+        this.app,
+        seed,
+        false,
+        (submission) => {
+          if (!submission) return;
+          void this.runTheoryFlow(submission.query, submission.filters);
+        },
+        void 0,
+        this.searchRephrase()
+      ).open();
     });
   }
   /**
@@ -17472,7 +18491,7 @@ ${qs.join("\n")}`);
     if (!step) return;
     const { result } = step;
     if (!result) {
-      new import_obsidian25.Notice("Could not propose theoretical lenses \u2014 feel free to start research directly.", 6e3);
+      new import_obsidian26.Notice("Could not propose theoretical lenses \u2014 feel free to start research directly.", 6e3);
       return;
     }
     const session = this.activeSession();
@@ -17494,7 +18513,7 @@ ${qs.join("\n")}`);
           void (async () => {
             const created = await this.newSessionNearActiveNote(question);
             if (!created) return;
-            new import_obsidian25.Notice(`Theoretical lenses landed in a new session: "${created.basename}".`);
+            new import_obsidian26.Notice(`Theoretical lenses landed in a new session: "${created.basename}".`);
             await this.recordTheoryInSession(created, result, choice);
           })();
         }
@@ -17512,13 +18531,13 @@ ${qs.join("\n")}`);
   async recordTheoryAsNewProjectSession(hubFile, hub, question, result, choice) {
     const created = await this.newSessionInHubProject(hubFile, hub, question);
     if (!created) return;
-    new import_obsidian25.Notice(`Theoretical lenses landed in a new session: "${created.basename}".`);
+    new import_obsidian26.Notice(`Theoretical lenses landed in a new session: "${created.basename}".`);
     await this.recordTheoryInSession(created, result, choice);
   }
   /** Record the lenses artefact + chosen lenses into the active research session (E46_S2). */
   async recordTheoryInSession(file, result, choice) {
     const writeMode = await this.confirmArtefactOverwrite(file, "lenses", "theoretical lenses");
-    if (!writeMode) return;
+    if (!writeMode || writeMode === "fork") return;
     if (choice.lenses.length > 0) await this.sessionStore.setSessionFields(file, { lenses: choice.lenses });
     await this.writeArtefact(file, "lenses", buildTheoryBody(result, choice), writeMode);
     await this.sessionStore.logEvent(
@@ -17527,7 +18546,7 @@ ${qs.join("\n")}`);
       `${fmt(t().logbook.lensesChosen, { n: choice.lenses.length })}${result.eliminated.length ? fmt(t().logbook.lensesEliminated, { n: result.eliminated.length }) : ""}`
     );
     await this.vaultAdapters.persistSessionArtefactRecord(file, { adoptions: { theory: theoryAdoptionRecord(result, choice) } });
-    new import_obsidian25.Notice("Theoretical lenses added to the session.");
+    new import_obsidian26.Notice("Theoretical lenses added to the session.");
   }
   async runResearchFlow(question, filters, opts = {}) {
     var _a, _b, _c, _d, _e, _f;
@@ -17536,7 +18555,7 @@ ${qs.join("\n")}`);
     const reentrant = !!opts.presetFramework;
     if (!reentrant) {
       if (this.flowInFlight) {
-        new import_obsidian25.Notice(
+        new import_obsidian26.Notice(
           "Research is already running \u2014 wait for it to finish. (A long search phase can look frozen; follow progress in the notice bottom-right.)",
           6e3
         );
@@ -17550,7 +18569,7 @@ ${qs.join("\n")}`);
       if (hubFile && hub) {
         const created = await this.newSessionInHubProject(hubFile, hub, question);
         if (created) {
-          new import_obsidian25.Notice(`Landed in a new session: "${created.basename}".`);
+          new import_obsidian26.Notice(`Landed in a new session: "${created.basename}".`);
           opts = {
             ...opts,
             sessionOverride: {
@@ -17566,7 +18585,7 @@ ${qs.join("\n")}`);
     const sessionHasBeliefs = ((_d = sessionAtStart == null ? void 0 : sessionAtStart.session.beliefs.length) != null ? _d : 0) > 0;
     const log = createLogger(this.settings.debugLogging);
     const note = isResume ? "Resuming (rerank \u2192 synthesis on the found sources)\u2026" : opts.frameworkOnly ? "Building theoretical framework (construct \u2192 conceptual search \u2192 framework)\u2026" : opts.crossSectorForce ? "Researching with forced cross-sector evidence\u2026" : this.llm.isConfigured() ? "Researching (decompose \u2192 search \u2192 rerank \u2192 synthesise)\u2026" : "Searching OpenAlex + Semantic Scholar (configure an LLM provider for AI synthesis)\u2026";
-    const loading = new import_obsidian25.Notice(note, 0);
+    const loading = new import_obsidian26.Notice(note, 0);
     let activeNotice = loading;
     let stepNumber = 0;
     let lastPhase = null;
@@ -17577,7 +18596,7 @@ ${qs.join("\n")}`);
       }
       const labelled = `Step ${stepNumber} \u2014 ${phase}`;
       if (activeNotice) activeNotice.setMessage(labelled);
-      else activeNotice = new import_obsidian25.Notice(labelled, 0);
+      else activeNotice = new import_obsidian26.Notice(labelled, 0);
       this.setRunPhase(labelled);
     };
     const cancellation = reentrant && this.currentRunCancellation ? this.currentRunCancellation : createCancellationToken();
@@ -17593,7 +18612,7 @@ ${qs.join("\n")}`);
         progress,
         // AU_E110_S1: retry visibility — a short-lived toast NEXT TO the persistent step
         // notice, so a long network-retry window reads as "still working", not a freeze.
-        onLlmRetry: (message) => new import_obsidian25.Notice(message, 4e3),
+        onLlmRetry: (message) => new import_obsidian26.Notice(message, 4e3),
         // E43 checkpoint: cache the fused union + context so a dropped connection can resume.
         onSearchComplete: (checkpoint) => {
           this.researchCache = { checkpoint, at: Date.now() };
@@ -17605,7 +18624,7 @@ ${qs.join("\n")}`);
       activeNotice = null;
       if (result.papers.length === 0) {
         await this.writeDebugLog(log, true);
-        new import_obsidian25.Notice(
+        new import_obsidian26.Notice(
           opts.frameworkOnly ? "Could not build a theoretical framework for that question." : "No papers found for that question."
         );
         return;
@@ -17623,7 +18642,7 @@ ${qs.join("\n")}`);
         if (choice) result.framework = { ...result.framework, dimensions: choice.dimensions };
       }
       if (this.settings.researchAutoDeepen && !opts.frameworkOnly && !isResume && result.synthesis && result.summary) {
-        const deepening = new import_obsidian25.Notice("Deepening findings\u2026", 0);
+        const deepening = new import_obsidian26.Notice("Deepening findings\u2026", 0);
         try {
           await this.autoDeepen(
             result,
@@ -17639,13 +18658,13 @@ ${qs.join("\n")}`);
       if (log.totalUsage > 0) {
         const usageLine = `LLM usage: ~${log.totalUsage} tokens over ${log.callCount} call${log.callCount === 1 ? "" : "s"}.`;
         log(usageLine);
-        new import_obsidian25.Notice(usageLine, 6e3);
+        new import_obsidian26.Notice(usageLine, 6e3);
       }
       if (!opts.frameworkOnly && result.degradations && result.degradations.length > 0) {
         const synthesisDegraded = result.degradations.some((d) => d.step === "synthesis");
         const resumeHint = synthesisDegraded && this.researchCache ? " Run \u201CResume last research\u201D once you're back online \u2014 the found sources are reused." : "";
         const summary = result.degradations.map((d) => `${DEGRADATION_STEP_LABEL[d.step]} (${d.reason})`).join("; ");
-        new import_obsidian25.Notice(`Research completed with issues: ${summary}. Details in the debug log.${resumeHint}`, 1e4);
+        new import_obsidian26.Notice(`Research completed with issues: ${summary}. Details in the debug log.${resumeHint}`, 1e4);
       }
       if (!opts.frameworkOnly && result.summary && (!result.degradations || result.degradations.length === 0)) {
         this.researchCache = null;
@@ -17667,7 +18686,7 @@ ${qs.join("\n")}`);
         if (result.synthesis) {
           await this.vaultAdapters.persistSessionGraphRecord(sessionFile, result.synthesis, result.papers, result.subQuestions);
         } else {
-          new import_obsidian25.Notice(
+          new import_obsidian26.Notice(
             "Synthesis landed as prose (structured output could not be parsed) \u2014 no findings/provenance recorded for this run. Re-running the research step usually fixes this.",
             8e3
           );
@@ -17678,10 +18697,10 @@ ${qs.join("\n")}`);
           t().logbook.stepResearch,
           `${fmt(t().logbook.synthesisOver, { n: (_f = strat == null ? void 0 : strat.keptCount) != null ? _f : result.papers.length })}${strat && !strat.resumed ? fmt(t().logbook.searchTerms, { n: strat.queries.length }) : ""}`
         );
-        new import_obsidian25.Notice("Synthesis added to the session.");
-        if (sessionHasBeliefs) new import_obsidian25.Notice('Tip: weigh your beliefs via "Confront beliefs".', 6e3);
+        new import_obsidian26.Notice("Synthesis added to the session.");
+        if (sessionHasBeliefs) new import_obsidian26.Notice('Tip: weigh your beliefs via "Confront beliefs".', 6e3);
       }
-      if (log.enabled) new import_obsidian25.Notice('Research debug written to "Parallax debug.md".', 4e3);
+      if (log.enabled) new import_obsidian26.Notice('Research debug written to "Parallax debug.md".', 4e3);
       new ResultsModal(
         this.app,
         result,
@@ -17695,7 +18714,7 @@ ${qs.join("\n")}`);
       if (e instanceof ResearchCancelledError) {
         const suppress = this.suppressCancelNotice;
         this.suppressCancelNotice = false;
-        if (!suppress) new import_obsidian25.Notice("Research cancelled.");
+        if (!suppress) new import_obsidian26.Notice("Research cancelled.");
         return;
       }
       notifyError("Research", e, { log });
@@ -17725,11 +18744,11 @@ ${qs.join("\n")}`);
   resumeResearch() {
     const cache = this.researchCache;
     if (!cache) {
-      new import_obsidian25.Notice("No research to resume \u2014 run \u201CAsk a question\u201D first.", 6e3);
+      new import_obsidian26.Notice("No research to resume \u2014 run \u201CAsk a question\u201D first.", 6e3);
       return;
     }
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Resuming needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Resuming needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     void this.runResearchFlow(cache.checkpoint.question, {}, { resumeFrom: cache.checkpoint });
@@ -17769,16 +18788,16 @@ ${qs.join("\n")}`);
    * BOTTOM of the active note — a predictable spot instead of the cursor (AU_E114_S3).
    */
   async insertSubQuestionsBlock(question, subs) {
-    const view = this.app.workspace.getActiveViewOfType(import_obsidian25.MarkdownView);
+    const view = this.app.workspace.getActiveViewOfType(import_obsidian26.MarkdownView);
     const file = view == null ? void 0 : view.file;
     if (!view || !file) {
-      new import_obsidian25.Notice("Open a note to land the sub-questions in.");
+      new import_obsidian26.Notice("Open a note to land the sub-questions in.");
       return;
     }
     await this.app.vault.process(file, (body) => `${body.replace(/\s+$/, "")}
 
 ${buildSubQuestionsBlock(question, subs)}`);
-    new import_obsidian25.Notice("Sub-questions added at the bottom of the note \u2014 refine them there, then start the research again.");
+    new import_obsidian26.Notice("Sub-questions added at the bottom of the note \u2014 refine them there, then start the research again.");
   }
   /**
    * Deepen the selected finding(s) from the last research (E21). Matches the
@@ -17790,30 +18809,30 @@ ${buildSubQuestionsBlock(question, subs)}`);
   async deepenSelection(editor) {
     var _a, _b, _c, _d, _e;
     if (!this.llm.isConfigured()) {
-      new import_obsidian25.Notice("Deepening a finding needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      new import_obsidian26.Notice("Deepening a finding needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
       return;
     }
     const activeSessionNotePath = (_b = (_a = this.activeSession()) == null ? void 0 : _a.file.path) != null ? _b : null;
     if (!canDeepenFromLastResearch((_d = (_c = this.lastResearch) == null ? void 0 : _c.notePath) != null ? _d : null, activeSessionNotePath)) {
-      new import_obsidian25.Notice("The last research belongs to another session \u2014 run research in this session first, then deepen.");
+      new import_obsidian26.Notice("The last research belongs to another session \u2014 run research in this session first, then deepen.");
       return;
     }
     const last = this.lastResearch;
     if (!(last == null ? void 0 : last.synthesis) || last.synthesis.findings.length === 0) {
-      new import_obsidian25.Notice('Run "Research a question" first \u2014 there are no structured findings to deepen yet.');
+      new import_obsidian26.Notice('Run "Research a question" first \u2014 there are no structured findings to deepen yet.');
       return;
     }
     const selection = editor.getSelection().trim();
     if (!selection) {
-      new import_obsidian25.Notice("Select the finding(s) you want to deepen.");
+      new import_obsidian26.Notice("Select the finding(s) you want to deepen.");
       return;
     }
     const findings = matchFindings(selection, last.synthesis.findings);
     if (findings.length === 0) {
-      new import_obsidian25.Notice("No matching findings from the last research in the selection.");
+      new import_obsidian26.Notice("No matching findings from the last research in the selection.");
       return;
     }
-    const loading = new import_obsidian25.Notice(`Deepening ${findings.length} finding(s)\u2026`, 0);
+    const loading = new import_obsidian26.Notice(`Deepening ${findings.length} finding(s)\u2026`, 0);
     const allSources = buildNumberedSources(last.papers);
     const chat = this.llmChatFn();
     const fulltext = await this.fetchOaFulltext(last.papers, (_e = last.synthesis.readingRecommendations) != null ? _e : []);
@@ -17833,13 +18852,13 @@ ${buildSubQuestionsBlock(question, subs)}`);
     }
     loading.hide();
     if (items.length === 0) {
-      new import_obsidian25.Notice("Could not deepen the selected finding(s).");
+      new import_obsidian26.Notice("Could not deepen the selected finding(s).");
       return;
     }
     editor.replaceSelection(assembleDeepened(selection, items));
     const fulltextSourceCount = Object.values(fulltext).filter((e) => e.text).length;
     this.patchAbstractsDisclosureInEditor(editor, fulltextSourceCount);
-    new import_obsidian25.Notice(`Inserted ${items.length} deepening(s).`);
+    new import_obsidian26.Notice(`Inserted ${items.length} deepening(s).`);
   }
   /**
    * Patch the "gebaseerd op abstracts" disclosure line already written earlier in the note
@@ -17900,7 +18919,7 @@ ${buildSubQuestionsBlock(question, subs)}`);
           reasoningEffort: resolveStepReasoning(this.settings, step),
           // AU_E110_S1: retry visibility for the research assistant flows (they show a single
           // persistent loading notice; without this a retry window looks frozen).
-          onRetry: (message) => new import_obsidian25.Notice(message, 4e3)
+          onRetry: (message) => new import_obsidian26.Notice(message, 4e3)
         }
       );
     };
@@ -17971,13 +18990,13 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   }
   async runSearch(query, filters) {
     const provider = getProvider(this.settings.provider);
-    const loading = new import_obsidian25.Notice(`Searching ${provider.label}\u2026`, 0);
+    const loading = new import_obsidian26.Notice(`Searching ${provider.label}\u2026`, 0);
     try {
       const raw = await provider.search(query, filters, this.settings, this.httpRequest);
       const result = { ...raw, papers: dedupeByTitleFingerprint(raw.papers) };
       loading.hide();
       if (result.papers.length === 0) {
-        new import_obsidian25.Notice("No papers found for that question.");
+        new import_obsidian26.Notice("No papers found for that question.");
         return;
       }
       new ResultsModal(
@@ -18002,7 +19021,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
    * with dedupe (DOI/URL/title) when present.
    */
   async handleResult(result, papers, format, action) {
-    const loading = new import_obsidian25.Notice("Verifying references\u2026", 0);
+    const loading = new import_obsidian26.Notice("Verifying references\u2026", 0);
     await this.verifyPapers(papers);
     loading.hide();
     const entries = formatReferenceEntries(result, papers, {
@@ -18012,13 +19031,13 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     });
     if (action === "copy") {
       await navigator.clipboard.writeText(joinReferenceBlocks(entries, format) + "\n");
-      new import_obsidian25.Notice("References copied to clipboard.");
+      new import_obsidian26.Notice("References copied to clipboard.");
       return;
     }
-    const view = this.app.workspace.getActiveViewOfType(import_obsidian25.MarkdownView);
+    const view = this.app.workspace.getActiveViewOfType(import_obsidian26.MarkdownView);
     const file = view == null ? void 0 : view.file;
     if (!view || !file) {
-      new import_obsidian25.Notice("Open a note to add the references to.");
+      new import_obsidian26.Notice("Open a note to add the references to.");
       return;
     }
     const heading = t().references.heading;
@@ -18036,7 +19055,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
       skipped = r.skipped;
       return r.body;
     });
-    new import_obsidian25.Notice(
+    new import_obsidian26.Notice(
       added > 0 ? `${added} reference(s) added to "## ${heading}".${skipped > 0 ? ` ${skipped} already there.` : ""}` : "All selected references are already in the note."
     );
     if (added > 0 && this.settings.registerEnabled) {
@@ -18070,7 +19089,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
       await this.vaultAdapters.backupBeforeOverwrite(store, this.settings.registerPath);
       await saveRegister(store, this.settings.registerPath, register);
       if (alreadyUsed.length > 0) {
-        new import_obsidian25.Notice(formatAlreadyUsed(alreadyUsed), 8e3);
+        new import_obsidian26.Notice(formatAlreadyUsed(alreadyUsed), 8e3);
       }
     } catch (e) {
       notifyError("Updating the citation register", e);
@@ -18089,14 +19108,14 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   /** UC7 — bibliography for the active note's project. Public: called from {@link registerCommands}. */
   async sliceBibliography() {
     var _a, _b;
-    const file = (_a = this.app.workspace.getActiveViewOfType(import_obsidian25.MarkdownView)) == null ? void 0 : _a.file;
+    const file = (_a = this.app.workspace.getActiveViewOfType(import_obsidian26.MarkdownView)) == null ? void 0 : _a.file;
     if (!file) {
-      new import_obsidian25.Notice("Open a note to derive its project from.");
+      new import_obsidian26.Notice("Open a note to derive its project from.");
       return;
     }
     const project = resolveProject(file.path, (_b = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _b.frontmatter);
     if (!project) {
-      new import_obsidian25.Notice("This note has no project (set frontmatter `project:` or put it in a folder).");
+      new import_obsidian26.Notice("This note has no project (set frontmatter `project:` or put it in a folder).");
       return;
     }
     const register = await this.loadRegisterSafely();
@@ -18132,18 +19151,18 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   async refreshLibrary() {
     const path = this.settings.libraryPath.trim();
     if (!path) {
-      new import_obsidian25.Notice("Set a .bib library path in the plugin settings first.");
+      new import_obsidian26.Notice("Set a .bib library path in the plugin settings first.");
       return null;
     }
-    const raw = await this.vaultAdapters.vaultStore().read((0, import_obsidian25.normalizePath)(path));
+    const raw = await this.vaultAdapters.vaultStore().read((0, import_obsidian26.normalizePath)(path));
     if (raw === null) {
-      new import_obsidian25.Notice(`Library file not found: ${path}`);
+      new import_obsidian26.Notice(`Library file not found: ${path}`);
       return null;
     }
     const result = loadLibrary(raw);
     this.library = result;
     const skipped = result.skipped > 0 ? ` (${result.skipped} entr${result.skipped === 1 ? "y" : "ies"} skipped)` : "";
-    new import_obsidian25.Notice(`Library: ${result.entries.length} sources read from ${path}${skipped}.`);
+    new import_obsidian26.Notice(`Library: ${result.entries.length} sources read from ${path}${skipped}.`);
     return result;
   }
   /**
@@ -18154,7 +19173,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   async readLibraryQuiet() {
     const path = this.settings.libraryPath.trim();
     if (!path) return null;
-    const raw = await this.vaultAdapters.vaultStore().read((0, import_obsidian25.normalizePath)(path));
+    const raw = await this.vaultAdapters.vaultStore().read((0, import_obsidian26.normalizePath)(path));
     if (raw === null) return null;
     const result = loadLibrary(raw);
     this.library = result;
@@ -18169,16 +19188,16 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   async insertCitationFromLibrary() {
     var _a;
     if (!this.settings.libraryPath.trim()) {
-      new import_obsidian25.Notice("Set a .bib library path in the plugin settings first.");
+      new import_obsidian26.Notice("Set a .bib library path in the plugin settings first.");
       return;
     }
     const library = (_a = this.library) != null ? _a : await this.readLibraryQuiet();
     if (!library) {
-      new import_obsidian25.Notice(`Library file not found: ${this.settings.libraryPath.trim()}`);
+      new import_obsidian26.Notice(`Library file not found: ${this.settings.libraryPath.trim()}`);
       return;
     }
     if (library.entries.length === 0) {
-      new import_obsidian25.Notice("Your .bib library has no usable entries.");
+      new import_obsidian26.Notice("Your .bib library has no usable entries.");
       return;
     }
     new LibraryPickerModal(this.app, library.entries, (entry) => {
@@ -18186,9 +19205,9 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     }).open();
   }
   async insertLibraryEntry(entry) {
-    const view = this.app.workspace.getActiveViewOfType(import_obsidian25.MarkdownView);
+    const view = this.app.workspace.getActiveViewOfType(import_obsidian26.MarkdownView);
     if (!view) {
-      new import_obsidian25.Notice("Open a note to insert references into.");
+      new import_obsidian26.Notice("Open a note to insert references into.");
       return;
     }
     const paper = entry.paper;
@@ -18211,17 +19230,17 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   async updateReferencesFromLibrary(scope) {
     var _a;
     if (!this.settings.libraryPath.trim()) {
-      new import_obsidian25.Notice("Set a .bib library path in the plugin settings first.");
+      new import_obsidian26.Notice("Set a .bib library path in the plugin settings first.");
       return;
     }
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a note first.");
+      new import_obsidian26.Notice("Open a note first.");
       return;
     }
     const library = await this.readLibraryQuiet();
     if (!library) {
-      new import_obsidian25.Notice(`Library file not found: ${this.settings.libraryPath.trim()}`);
+      new import_obsidian26.Notice(`Library file not found: ${this.settings.libraryPath.trim()}`);
       return;
     }
     let updateScope;
@@ -18232,7 +19251,7 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     } else {
       const project = resolveProject(file.path, (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter);
       if (!project) {
-        new import_obsidian25.Notice("This note does not belong to a project.");
+        new import_obsidian26.Notice("This note does not belong to a project.");
         return;
       }
       updateScope = { project };
@@ -18242,11 +19261,11 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
     const register = await this.vaultAdapters.loadRegisterGuarded(store, this.settings.registerPath);
     const plan = buildLibraryUpdatePlan(register, library.entries, updateScope);
     if (plan.matched === 0) {
-      new import_obsidian25.Notice("No register references in this scope match your library.");
+      new import_obsidian26.Notice("No register references in this scope match your library.");
       return;
     }
     if (plan.changes.length === 0) {
-      new import_obsidian25.Notice(`Up to date: ${plan.matched} reference(s) already match your library.`);
+      new import_obsidian26.Notice(`Up to date: ${plan.matched} reference(s) already match your library.`);
       return;
     }
     const confirmed = await new Promise((resolve) => {
@@ -18264,7 +19283,7 @@ ${formatUpdatePreview(plan)}`,
     await this.vaultAdapters.backupBeforeOverwrite(store, this.settings.registerPath);
     await saveRegister(store, this.settings.registerPath, register);
     await this.sessionStore.logEvent(file, t().logbook.stepLibrary, fmt(t().logbook.libraryUpdated, { n: touched }));
-    new import_obsidian25.Notice(`Updated ${touched} reference(s) from your library.`);
+    new import_obsidian26.Notice(`Updated ${touched} reference(s) from your library.`);
   }
   async loadRegisterSafely() {
     return loadRegister(this.vaultAdapters.vaultStore(), this.settings.registerPath);
@@ -18316,7 +19335,7 @@ ${formatUpdatePreview(plan)}`,
   async exportSession() {
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian25.Notice('No research session yet \u2014 run "Start research session" first, then export it.');
+      new import_obsidian26.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then export it.');
       return;
     }
     const { file, session } = active;
@@ -18335,7 +19354,7 @@ ${formatUpdatePreview(plan)}`,
         if (f.relativePath === sessionExportAccountFile()) accountFile = written;
       }
       if (accountFile) await this.app.workspace.getLeaf(true).openFile(accountFile);
-      new import_obsidian25.Notice(`Session exported to "${folder}/".`);
+      new import_obsidian26.Notice(`Session exported to "${folder}/".`);
     } catch (e) {
       notifyError(`Writing the session export to "${folder}/"`, e);
     }
@@ -18351,14 +19370,14 @@ ${formatUpdatePreview(plan)}`,
     var _a, _b, _c, _d, _e;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a project note or a session within the project.");
+      new import_obsidian26.Notice("Open a project note or a session within the project.");
       return;
     }
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
     const hub = parseProjectHub(fm);
     const projectId = hub ? resolveProjectId(hub, file.basename) : (_c = (_b = parseSession(fm)) == null ? void 0 : _b.project) != null ? _c : "";
     if (!projectId) {
-      new import_obsidian25.Notice("This note doesn't belong to a project \u2014 start a research project first.");
+      new import_obsidian26.Notice("This note doesn't belong to a project \u2014 start a research project first.");
       return;
     }
     const memberFiles = [];
@@ -18372,7 +19391,7 @@ ${formatUpdatePreview(plan)}`,
       }
     }
     if (memberFiles.length === 0) {
-      new import_obsidian25.Notice("This project has no session notes to export yet.");
+      new import_obsidian26.Notice("This project has no session notes to export yet.");
       return;
     }
     let hubObjective = "";
@@ -18405,7 +19424,7 @@ ${formatUpdatePreview(plan)}`,
       const indexMd = buildProjectIndexMarkdown(projectId, indexEntries, hubObjective);
       const indexFile = await this.vaultAdapters.writeVaultFile(`${projectFolder}/${PROJECT_EXPORT_INDEX_FILE}`, indexMd);
       await this.app.workspace.getLeaf(true).openFile(indexFile);
-      new import_obsidian25.Notice(`Project exported: ${indexEntries.length} session(s) to "${projectFolder}/".`);
+      new import_obsidian26.Notice(`Project exported: ${indexEntries.length} session(s) to "${projectFolder}/".`);
     } catch (e) {
       notifyError(`Writing the project export to "${projectFolder}/"`, e);
     }
@@ -18420,14 +19439,14 @@ ${formatUpdatePreview(plan)}`,
     var _a, _b, _c, _d;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian25.Notice("Open a project note or a session within the project.");
+      new import_obsidian26.Notice("Open a project note or a session within the project.");
       return;
     }
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
     const hub = parseProjectHub(fm);
     const projectId = hub ? resolveProjectId(hub, file.basename) : (_c = (_b = parseSession(fm)) == null ? void 0 : _b.project) != null ? _c : "";
     if (!projectId) {
-      new import_obsidian25.Notice("This note doesn't belong to a project \u2014 start a research project first.");
+      new import_obsidian26.Notice("This note doesn't belong to a project \u2014 start a research project first.");
       return;
     }
     const notes = [];
@@ -18457,7 +19476,7 @@ ${formatUpdatePreview(plan)}`,
       await this.vaultAdapters.writeVaultFile(`${folder}/${safe} \u2014 graph.json`, json);
       const note = await this.vaultAdapters.writeVaultFile(`${folder}/${safe} \u2014 kennisgraph.md`, report);
       await this.app.workspace.getLeaf(true).openFile(note);
-      new import_obsidian25.Notice(`Knowledge-graph spike: ${graph.nodes.length} nodes, ${graph.edges.length} edges, ${gaps.length} gap(s).`);
+      new import_obsidian26.Notice(`Knowledge-graph spike: ${graph.nodes.length} nodes, ${graph.edges.length} edges, ${gaps.length} gap(s).`);
     } catch (e) {
       notifyError(
         `Writing the knowledge-graph spike to "${folder}/" (check that the folder is writable and not synced/locked)`,

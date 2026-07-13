@@ -1,7 +1,7 @@
 {
 	"id": "consensus-research",
 	"name": "Parallax",
-	"version": "0.23.0",
+	"version": "0.24.0",
 	"minAppVersion": "1.5.0",
 	"description": "Where research thinking takes shape: explore before you search, develop a question through multiple theoretical lenses, weigh OpenAlex & Semantic Scholar evidence, and keep a methodological account.",
 	"author": "Max Kloosterman",

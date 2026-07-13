@@ -6274,10 +6274,30 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         this.refreshBadges();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Register file").setDesc("Vault-relative path of the register JSON.").addText(
+    new import_obsidian.Setting(containerEl).setName("Register file").setDesc(
+      "Vault-relative path of the register JSON. The research records (research-graph.json) live in the same folder. \u26A0 Obsidian Sync does NOT sync hidden folders (names starting with a dot) \u2014 with the default .consensus-research/ location, the register and records stay per-device while your notes do sync. Pick a visible folder (e.g. Parallax/citations.json) and use the move action below to have them travel along."
+    ).addText(
       (t2) => t2.setPlaceholder(".consensus-research/citations.json").setValue(this.plugin.settings.registerPath).onChange(async (v) => {
         this.plugin.settings.registerPath = v.trim() || ".consensus-research/citations.json";
         await this.plugin.saveSettings();
+      })
+    );
+    new import_obsidian.Setting(containerEl).setName("Move register & records to the configured folder").setDesc(
+      "Moves citations.json, research-graph.json and its backup from their current folder to the folder of the path configured above. Nothing is overwritten \u2014 a file that already exists at the target is skipped and reported."
+    ).addButton(
+      (b) => b.setButtonText("Move now").onClick(async () => {
+        b.setDisabled(true);
+        try {
+          const result = await this.plugin.migrateStoreTo(this.plugin.settings.registerPath);
+          new import_obsidian.Notice(
+            result.moved.length > 0 ? `Moved: ${result.moved.join(", ")}.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}` : `Nothing to move.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}`,
+            8e3
+          );
+        } catch (e) {
+          new import_obsidian.Notice(`Move failed: ${e instanceof Error ? e.message : String(e)}`, 8e3);
+        } finally {
+          b.setDisabled(false);
+        }
       })
     );
     new import_obsidian.Setting(containerEl).setName("Library file (.bib)").setDesc(
@@ -12767,6 +12787,43 @@ var VaultAdapters = class {
       return null;
     }
   }
+  /**
+   * Move the register + research records out of the hidden default folder into the folder
+   * of `toRegisterPath` (AU_E133_S2). The default `.consensus-research/` is a hidden folder
+   * that Obsidian Sync does not sync — this is the one-click repair. Uses the low-level
+   * adapter throughout: hidden folders are invisible to the vault index. Existing target
+   * files are never overwritten (skipped + reported); moved files are removed at the source.
+   */
+  async migrateStoreDir(toRegisterPath) {
+    const adapter = this.deps.app.vault.adapter;
+    const slash = toRegisterPath.lastIndexOf("/");
+    const toDir = slash > 0 ? toRegisterPath.slice(0, slash) : "";
+    const fromDir = ".consensus-research";
+    const moved = [];
+    const skipped = [];
+    if (toDir === fromDir) return { moved, skipped };
+    const toBase = slash > 0 ? toRegisterPath.slice(slash + 1) : toRegisterPath;
+    const files = [
+      { from: `${fromDir}/citations.json`, to: toRegisterPath },
+      { from: `${fromDir}/research-graph.json`, to: toDir ? `${toDir}/research-graph.json` : "research-graph.json" },
+      { from: `${fromDir}/research-graph.json.bak`, to: toDir ? `${toDir}/research-graph.json.bak` : "research-graph.json.bak" }
+    ];
+    void toBase;
+    if (toDir && !await adapter.exists(toDir)) await adapter.mkdir(toDir);
+    for (const f of files) {
+      const name = f.from.slice(fromDir.length + 1);
+      if (!await adapter.exists(f.from)) continue;
+      if (await adapter.exists(f.to)) {
+        skipped.push(`${name} (already exists at the target)`);
+        continue;
+      }
+      const data = await adapter.read(f.from);
+      await adapter.write(f.to, data);
+      await adapter.remove(f.from);
+      moved.push(name);
+    }
+    return { moved, skipped };
+  }
   /** Path of the research-graph store (E68) — beside the citation register, so they travel together. */
   graphStorePath() {
     const registerPath = this.deps.settings().registerPath;
@@ -12987,6 +13044,7 @@ var COMMAND_NAMES = {
   "connections-refresh": "Session \xB7 refresh connections (note / project)",
   "library-update": "Library \xB7 update references (note / project)",
   "clean-up-records": "Maintenance \xB7 clean up records",
+  "rebuild-records": "Maintenance \xB7 rebuild records from note",
   "build-knowledge-graph-spike": "Maintenance \xB7 knowledge graph (spike)",
   "theory-lenses": "Theory \xB7 lenses",
   "challenge-framing": "Challenge \xB7 framing",
@@ -13648,6 +13706,12 @@ function registerCommands(plugin) {
     name: COMMAND_NAMES["clean-up-records"],
     icon: "eraser",
     callback: () => void plugin.runRecordCleanup()
+  });
+  plugin.addCommand({
+    id: "rebuild-records",
+    name: COMMAND_NAMES["rebuild-records"],
+    icon: "history",
+    callback: () => void plugin.rebuildRecordsFromNote()
   });
   if (plugin.settings.debugLogging) {
     plugin.addCommand({
@@ -14517,6 +14581,132 @@ var TheoryModal = class extends import_obsidian17.Modal {
     this.resolve(null);
   }
 };
+
+// src/record-rebuild.ts
+var locales = Object.values(ARTIFACT_STRINGS);
+function matchesLabel(text, labels) {
+  const t2 = text.trim().toLowerCase();
+  return labels.some((l) => l.toLowerCase() === t2);
+}
+var BASIS_LABELS = locales.map((s) => s.hypotheses.basisLabel);
+var TEST_LABELS = locales.map((s) => s.hypotheses.testLabel);
+function parseHypothesesSection(body) {
+  const section = extractSection(body, "hypotheses");
+  if (!section.trim()) return null;
+  const out = [];
+  for (const line of section.split("\n")) {
+    const top = /^-\s+\*\*(H\d+)\*\*\s+—\s+(.+)$/.exec(line.trim());
+    if (top) {
+      out.push({ id: top[1].toUpperCase(), text: top[2].trim(), basis: "", rationale: "" });
+      continue;
+    }
+    const sub = /^[-*]\s+\*(.+?):\*\s+(.+)$/.exec(line.trim());
+    if (!sub || out.length === 0) continue;
+    const last = out[out.length - 1];
+    if (matchesLabel(sub[1], BASIS_LABELS)) last.basis = sub[2].trim();
+    else if (matchesLabel(sub[1], TEST_LABELS)) last.rationale = sub[2].trim();
+  }
+  return out.length > 0 ? { hypotheses: out, adoptedAt: "" } : null;
+}
+var CLAIM_HEADINGS = locales.map((s) => s.argument.claims);
+var ASSUMPTION_HEADINGS = locales.map((s) => s.argument.assumptions);
+var EVIDENCE_HEADINGS = locales.map((s) => s.argument.evidence);
+var SUPPORTS_WORDS = locales.map((s) => s.argument.supports);
+var ATTACKS_WORDS = locales.map((s) => s.argument.attacks);
+var SOURCE_LABELS = locales.map((s) => s.argument.source);
+function splitNodeSource(text) {
+  const m = /^(.*?)\s+—\s+_([^:_]+):\s*([^_]+)_\s*$/.exec(text);
+  if (m && matchesLabel(m[2], SOURCE_LABELS)) return { text: m[1].trim(), source: m[3].trim() };
+  return { text: text.trim() };
+}
+function parseArgumentSection(body) {
+  const section = extractSection(body, "argument");
+  if (!section.trim()) return null;
+  const nodes = [];
+  const edges = [];
+  const evidence = [];
+  let kind = null;
+  let inEvidence = false;
+  for (const raw of section.split("\n")) {
+    const line = raw.trim();
+    const heading = /^\*(.+)\*$/.exec(line);
+    if (heading) {
+      if (matchesLabel(heading[1], CLAIM_HEADINGS)) kind = "claim", inEvidence = false;
+      else if (matchesLabel(heading[1], ASSUMPTION_HEADINGS)) kind = "assumption", inEvidence = false;
+      else if (matchesLabel(heading[1], EVIDENCE_HEADINGS)) kind = null, inEvidence = true;
+      continue;
+    }
+    const item = /^\d+\.\s+\[([CA]\d+)\]\s+(.+)$/.exec(line);
+    if (item && kind) {
+      const { text, source } = splitNodeSource(item[2]);
+      nodes.push({ id: item[1].toUpperCase(), text, kind, ...source ? { source } : {} });
+      continue;
+    }
+    const rel = /^-\s+\[([CAF]\d+)\]\s+(\S[^[]*?)\s+\[([CA]\d+)\](?::\s*(.+))?$/.exec(line);
+    if (!rel) continue;
+    const relKind = matchesLabel(rel[2], SUPPORTS_WORDS) ? "supports" : matchesLabel(rel[2], ATTACKS_WORDS) ? "attacks" : null;
+    if (!relKind) continue;
+    const from = rel[1].toUpperCase();
+    if (inEvidence && /^F\d+$/.test(from) && rel[4]) {
+      evidence.push({ id: from, text: rel[4].trim(), to: rel[3].toUpperCase(), kind: relKind, sourceKeys: [] });
+    } else if (!/^F\d+$/.test(from)) {
+      edges.push({ from, to: rel[3].toUpperCase(), kind: relKind });
+    }
+  }
+  if (nodes.length === 0) return null;
+  const known = new Set(nodes.map((n) => n.id));
+  return {
+    nodes,
+    edges: edges.filter((e) => known.has(e.from) && known.has(e.to)),
+    ...evidence.length > 0 ? { evidence: evidence.filter((ev) => known.has(ev.to)) } : {},
+    adoptedAt: ""
+  };
+}
+function parseSubquestionList(body) {
+  const section = extractSection(body, "subquestions");
+  if (!section.trim()) return [];
+  const out = [];
+  for (const line of section.split("\n")) {
+    const m = /^\s*\d+\.\s+(.+)$/.exec(line);
+    if (!m) continue;
+    const q = m[1].replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
+    if (q) out.push(q);
+  }
+  return out;
+}
+var STRENGTH_BY_WORD = new Map(
+  locales.flatMap(
+    (s) => Object.entries(s.synthesis.strengthLabels).map(
+      ([key, word]) => [word.toLowerCase(), key]
+    )
+  )
+);
+var EVIDENCE_PREFIXES = locales.map((s) => s.synthesis.evidenceInline.split("{strength}")[0].trim().toLowerCase());
+function parseFindingsFromSynthesis(body) {
+  const section = extractSection(body, "synthesis");
+  if (!section.trim()) return [];
+  const out = [];
+  for (const raw of section.split("\n")) {
+    const line = raw.trim();
+    const m = /^[-*]\s+(.+?)\s+—\s+\*([^*]+)\*(.*)$/.exec(line);
+    if (!m) continue;
+    const tag = m[2].trim().toLowerCase();
+    if (!EVIDENCE_PREFIXES.some((p) => tag.startsWith(p))) continue;
+    const afterPrefix = tag.slice(tag.indexOf(":") + 1).trim();
+    const strengthWord = afterPrefix.split(/[\s·]+/)[0];
+    const strength = STRENGTH_BY_WORD.get(strengthWord);
+    if (!strength) continue;
+    const claim = m[1].replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
+    if (!claim) continue;
+    const sourceKeys = [];
+    for (const doi of `${m[1]} ${m[3]}`.matchAll(/doi\.org\/([^\s)\]]+)/g)) {
+      const key = `doi:${decodeURIComponent(doi[1]).toLowerCase()}`;
+      if (!sourceKeys.includes(key)) sourceKeys.push(key);
+    }
+    out.push({ claim, strength, sourceKeys });
+  }
+  return out;
+}
 
 // src/belief.ts
 var SYSTEM6 = [
@@ -17656,6 +17846,68 @@ ${cap(section)}`);
     if (!notePath) return null;
     const note = this.app.vault.getAbstractFileByPath((0, import_obsidian26.normalizePath)(notePath));
     return note instanceof import_obsidian26.TFile ? note : null;
+  }
+  /**
+   * Rebuild the structured store records FROM the active session note (AU_E133_S1) —
+   * the recovery path when a device's research-graph.json lags behind (the hidden store
+   * folder does not sync across devices) or breaks. The note is the source of truth:
+   * hypotheses and argument map are re-parsed and REPLACE the store's records; findings
+   * are rebuilt best-effort from the synthesis and only written when no session record
+   * exists yet (never degrade a richer one). `basedOn` is deliberately not reconstructed
+   * (the adoption moment is unknowable) — no false staleness. Public: called from
+   * {@link registerCommands}.
+   */
+  /** AU_E133_S2: settings-tab delegate — move register + records to the configured folder. */
+  async migrateStoreTo(registerPath) {
+    return this.vaultAdapters.migrateStoreDir(registerPath);
+  }
+  async rebuildRecordsFromNote() {
+    const active = this.activeSession();
+    if (!active) {
+      new import_obsidian26.Notice("Open a session note first \u2014 rebuilding reads this note's sections back into the records.");
+      return;
+    }
+    const { file, session } = active;
+    const body = await this.app.vault.read(file);
+    const hypotheses = parseHypothesesSection(body);
+    const argument = parseArgumentSection(body);
+    const findings = parseFindingsFromSynthesis(body);
+    const graphPath = this.vaultAdapters.graphStorePath();
+    const vaultStore = this.vaultAdapters.vaultStore();
+    const store = parseGraphStore(await vaultStore.read(graphPath));
+    let next = store;
+    const rebuilt = [];
+    const skipped = [];
+    if (argument || hypotheses) {
+      next = upsertSessionArtefactRecord(next, file.path, {
+        ...argument ? { argumentStructure: argument } : {},
+        ...hypotheses ? { hypotheses } : {}
+      });
+      if (argument) rebuilt.push(`argument map (${argument.nodes.length} node(s))`);
+      if (hypotheses) rebuilt.push(`hypotheses (${hypotheses.hypotheses.length})`);
+    }
+    if (findings.length > 0) {
+      if (recordForNote(store, file.path)) {
+        skipped.push("findings (a session record already exists \u2014 kept)");
+      } else {
+        next = upsertSessionGraphRecord(next, {
+          note: file.path,
+          question: sessionTopic(session),
+          subQuestions: parseSubquestionList(body),
+          findings,
+          unanswered: [],
+          sources: []
+        });
+        rebuilt.push(`findings (${findings.length})`);
+      }
+    }
+    if (rebuilt.length === 0) {
+      new import_obsidian26.Notice(`Nothing to rebuild \u2014 no parseable argument, hypotheses or findings sections in this note.${skipped.length ? ` Skipped: ${skipped.join("; ")}.` : ""}`, 8e3);
+      return;
+    }
+    await this.vaultAdapters.backupBeforeOverwrite(vaultStore, graphPath);
+    await vaultStore.write(graphPath, serializeGraphStore(next));
+    new import_obsidian26.Notice(`Records rebuilt from the note: ${rebuilt.join(", ")}.${skipped.length ? ` Skipped: ${skipped.join("; ")}.` : ""}`, 8e3);
   }
   /**
    * Which adopted artefacts of a note rest on a CHANGED basis (AU_E131_S5): section id →

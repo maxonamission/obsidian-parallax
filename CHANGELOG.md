@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.24.0]
+
+**Your records now survive device sync — and can be rebuilt from the note.** Field test finding: hypotheses adopted on one device never showed on another. Cause: the register and the research records live in the hidden `.consensus-research/` folder by default, and Obsidian Sync does not sync hidden folders — your notes travelled, the structured records didn't. Two repairs. First, **Maintenance · rebuild records from note** re-parses the note's own sections back into the records (in any artifact language): the hypotheses and the argument map are restored exactly as written — the note is the source of truth — and the findings are rebuilt best-effort from the graded synthesis bullets (only when no richer record exists; recorded bases are not invented, so no false staleness). Second, the settings now spell out the sync trap under **Register file**, and a one-click **Move now** action moves the register, the records and their backup to a visible (and therefore syncing) folder of your choice — nothing is ever overwritten, skipped files are reported.
+
 ## [0.23.0]
 
 **The inline Mermaid diagram retires.** The `## Argument` section keeps its numbered claims, assumptions and relation lines — the searchable text — but no longer embeds the Mermaid mini-diagram: it truncated every node to 60 characters, depended on theme rendering, and duplicated what the Canvas now does better. The Canvas (“Design · argument canvas”) is the visual map from here on.

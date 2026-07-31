@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.28.0]
+
+**Your project map stays live in the graph.** A project hub lists its sessions, and that index now updates itself the moment a session is created — including a **forked** one. So a new question, or a branch you split off, shows up connected to the hub in Obsidian's graph straight away, with no manual "refresh contents" step. Open the local graph on a hub for a map of the whole project, or on a session to see its research branches as a tree. (The README's *Graph view* section now spells out how Parallax uses the graph: the native graph for the shape of your thinking — sessions, forks, lenses, the hub — and the argument canvas for the direction of the argument.)
+
 ## [0.27.0]
 
 **Re-running research can now branch instead of overwriting.** When you run "Research a question" again in a note that already holds a synthesis — and you have since built a challenge, an argument map or other reasoning on top of it — replacing the synthesis in place would leave that later work stranded on an answer that no longer exists. The run now offers **Fork session** at that point: the fresh framework, sub-questions and synthesis land in a **new** session note (branched from your framing and lenses), while the original note keeps its old synthesis and everything you built on it, fully intact. Deepening is re-pointed at the fork automatically, so you carry straight on there. As before, Fork only appears when there is downstream reasoning to protect; a first run, or one with nothing built on the synthesis yet, just writes normally. This completes the broad-fork work started in 0.26.0 — Fork now covers the framework and synthesis written by the research run itself, not only the hand-run assistant sections.

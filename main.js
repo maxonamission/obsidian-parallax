@@ -17839,6 +17839,15 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       })
     );
     this.registerEvent(this.app.vault.on("rename", (file, oldPath) => void this.onVaultRename(file, oldPath)));
+    this.app.workspace.onLayoutReady(() => {
+      this.registerEvent(
+        this.app.vault.on("create", (file) => {
+          if (!(file instanceof import_obsidian27.TFile) || file.extension !== "md") return;
+          const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
+          void this.refreshHubContentsForFolder(folder);
+        })
+      );
+    });
     this.registerView(WORKBENCH_VIEW_TYPE, (leaf) => new WorkbenchView(leaf, this));
     registerRibbons(this);
     registerCommands(this);

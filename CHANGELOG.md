@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.29.0]
+
+**Your reference library, both directions — and now in the graph.** Parallax has always been able to read a `.bib` export of your own library (a Better BibTeX auto-export from Zotero, say) and to export its citation register back out as `.bib` — but neither route was documented anywhere, so nobody knew. The README now has a *Your own library* section covering both: your library feeds the reference commands and the searches, and the sources you found through OpenAlex go back into Zotero with a single import. No plugin needed on either side; it's a plain file in a standard format.
+
+**Optional: link sources to your literature notes.** If another plugin keeps a note per reference — [ZotLit](https://github.com/aidenlx/zotlit), whose 2.0 just went stable, is the obvious one — the new **Literature note links** setting makes every source that matches your library carry a wikilink to that note. Your library then shows up in Obsidian's own graph: a paper cited in two sessions becomes a shared node between them, which is exactly the connection Parallax could previously only compute, never show. You supply the naming pattern (`@{{citekey}}`, or `Literature/@{{citekey}}` for a folder) because your own template decides what those files are called. Off by default. Parallax never writes or manages those notes — that stays the other tool's job — and a note that doesn't exist is simply an unresolved link, nothing breaks.
+
 ## [0.28.0]
 
 **Your project map stays live in the graph.** A project hub lists its sessions, and that index now updates itself the moment a session is created — including a **forked** one. So a new question, or a branch you split off, shows up connected to the hub in Obsidian's graph straight away, with no manual "refresh contents" step. Open the local graph on a hub for a map of the whole project, or on a session to see its research branches as a tree. (The README's *Graph view* section now spells out how Parallax uses the graph: the native graph for the shape of your thinking — sessions, forks, lenses, the hub — and the argument canvas for the direction of the argument.)

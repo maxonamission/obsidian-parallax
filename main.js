@@ -6386,6 +6386,14 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
+    new import_obsidian.Setting(containerEl).setName("Literature note links").setDesc(
+      "Optional. If another plugin keeps a note per reference (ZotLit, or any tool that writes one note per Zotero item), Parallax can link sources to those notes \u2014 so your library shows up in Obsidian's graph. Enter the naming pattern your template produces, with {{citekey}} where the key goes, for example @{{citekey}} or Literature/@{{citekey}}. Links only appear for sources that match your .bib library, and a note that does not exist is simply an unresolved link. Leave empty to turn this off."
+    ).addText(
+      (t2) => t2.setPlaceholder("@{{citekey}}").setValue(this.plugin.settings.literatureNotePattern).onChange(async (v) => {
+        this.plugin.settings.literatureNotePattern = v.trim();
+        await this.plugin.saveSettings();
+      })
+    );
   }
   renderAiResearch(containerEl) {
     new import_obsidian.Setting(containerEl).setName("LLM provider").setDesc(
@@ -7272,6 +7280,51 @@ function evidenceTierTag(tier) {
   return `[evidence: ${tier}]`;
 }
 
+// src/literature-note.ts
+var CITEKEY_PLACEHOLDER = "{{citekey}}";
+var UNSAFE_IN_CITEKEY = /[[\]|#^/\\]/;
+var UNSAFE_IN_TARGET = /[[\]|#^\\]/;
+function hasControlChars(value) {
+  var _a;
+  for (const ch of value) {
+    const code = (_a = ch.codePointAt(0)) != null ? _a : 0;
+    if (code < 32 || code === 127) return true;
+    if (code === 173 || code === 6158 || code === 65279) return true;
+    if (code >= 8203 && code <= 8207) return true;
+    if (code >= 8234 && code <= 8238) return true;
+    if (code >= 8288 && code <= 8292) return true;
+    if (code >= 8294 && code <= 8297) return true;
+  }
+  return false;
+}
+function isSafeCitekey(citekey) {
+  if (citekey.length === 0) return false;
+  if (UNSAFE_IN_CITEKEY.test(citekey) || hasControlChars(citekey)) return false;
+  if (/\s/.test(citekey)) return false;
+  return citekey !== "." && citekey !== "..";
+}
+function isSafeTarget(target) {
+  if (target.length === 0) return false;
+  if (UNSAFE_IN_TARGET.test(target) || hasControlChars(target)) return false;
+  if (target.startsWith("/")) return false;
+  return !target.split("/").includes("..");
+}
+function literatureNoteTarget(citekey, pattern) {
+  const key = (citekey != null ? citekey : "").trim();
+  const tpl = (pattern != null ? pattern : "").trim();
+  if (!tpl.includes(CITEKEY_PLACEHOLDER)) return void 0;
+  if (!isSafeCitekey(key)) return void 0;
+  const target = tpl.split(CITEKEY_PLACEHOLDER).join(key).trim();
+  return isSafeTarget(target) ? target : void 0;
+}
+function literatureNoteLink(citekey, pattern) {
+  const target = literatureNoteTarget(citekey, pattern);
+  if (target == null) return void 0;
+  if (!target.includes("/")) return `[[${target}]]`;
+  const label = target.slice(target.lastIndexOf("/") + 1);
+  return `[[${target}|${label}]]`;
+}
+
 // src/citation-register.ts
 var REGISTER_VERSION = 1;
 function emptyRegister() {
@@ -8064,10 +8117,15 @@ function renderFramework(fw) {
   }
   return lines.join("\n");
 }
+function literatureNoteSuffix(paper, opts) {
+  var _a;
+  const link = literatureNoteLink((_a = paper.library) == null ? void 0 : _a.citekey, opts.literatureNotePattern);
+  return link ? ` \xB7 ${link}` : "";
+}
 function formatOnePaper(paper, opts, index) {
   const authors = formatAuthors(paper.authors);
   const meta = metaTail(paper);
-  const marker = `${markerSuffix(paper)}${originSuffix(paper)}${evidenceTierSuffix(paper)}`;
+  const marker = `${markerSuffix(paper)}${originSuffix(paper)}${evidenceTierSuffix(paper)}${literatureNoteSuffix(paper, opts)}`;
   switch (opts.format) {
     case "compact":
       return `- ${titleLink(paper)} \u2014 ${authors}${meta ? ` (${meta})` : ""}${marker}`;
@@ -12371,19 +12429,21 @@ function projectsOf(record) {
 function notesOf(record) {
   return distinct(record.occurrences.map((o) => o.note));
 }
-function recordLine(record) {
+function recordLine(record, literatureNotePattern) {
   const authors = formatAuthors(record.authors);
   const yr = record.year != null ? ` (${record.year})` : "";
   const jr = record.journal ? ` *${record.journal}*.` : "";
   const link = record.url ? ` ${record.url}` : "";
   const marker = identifierMarker(record.identifier);
   const tail = marker ? ` ${marker}` : "";
-  return `- ${authors}${yr}. ${record.title}.${jr}${link}${tail}`;
+  const lit = literatureNoteLink(record.citekey, literatureNotePattern);
+  const litTail = lit ? ` \xB7 ${lit}` : "";
+  return `- ${authors}${yr}. ${record.title}.${jr}${link}${tail}${litTail}`;
 }
 function byTitle(a, b) {
   return a.title.localeCompare(b.title);
 }
-function bibliographyForProject(register, project) {
+function bibliographyForProject(register, project, literatureNotePattern) {
   const records = register.citations.filter((r) => projectsOf(r).includes(project)).sort(byTitle);
   const header = `# Bibliografie \u2014 ${project}
 
@@ -12394,13 +12454,13 @@ _Geen referenties voor dit project._
 `;
   return `${header}
 
-${records.map(recordLine).join("\n")}
+${records.map((r) => recordLine(r, literatureNotePattern)).join("\n")}
 `;
 }
 function findBridgePapers(register) {
   return register.citations.map((record) => ({ record, projects: projectsOf(record), notes: notesOf(record) })).filter((b) => b.notes.length >= 2 && b.projects.length >= 2).sort((a, b) => b.projects.length - a.projects.length || byTitle(a.record, b.record));
 }
-function bridgePapersMarkdown(register) {
+function bridgePapersMarkdown(register, literatureNotePattern) {
   const bridges = findBridgePapers(register);
   const header = "# Bridge-papers\n\nBronnen die in \u22652 notities \xE9n \u22652 projecten terugkomen \u2014 kandidaat-dwarsverbanden tussen projecten.";
   if (bridges.length === 0) return `${header}
@@ -12408,7 +12468,7 @@ function bridgePapersMarkdown(register) {
 _Nog geen bridge-papers._
 `;
   const blocks = bridges.map(
-    (b) => `${recordLine(b.record)}
+    (b) => `${recordLine(b.record, literatureNotePattern)}
   - projecten: ${b.projects.join(", ")}
   - notities: ${b.notes.join(", ")}`
   );
@@ -12432,7 +12492,7 @@ function authorIndex(register) {
 function orphans(register) {
   return register.citations.filter((r) => r.occurrences.length === 1).sort(byTitle);
 }
-function crossCutOverview(register) {
+function crossCutOverview(register, literatureNotePattern) {
   const authors = authorIndex(register);
   const orphanList = orphans(register);
   const parts = ["# Register-doorsnede \u2014 auteurs & wezen"];
@@ -12442,7 +12502,7 @@ function crossCutOverview(register) {
   );
   parts.push(`## Wezen \u2014 \xE9\xE9n keer gebruikt (${orphanList.length})`);
   parts.push(
-    orphanList.length === 0 ? "_Geen wezen._" : orphanList.map(recordLine).join("\n")
+    orphanList.length === 0 ? "_Geen wezen._" : orphanList.map((r) => recordLine(r, literatureNotePattern)).join("\n")
   );
   return parts.join("\n\n") + "\n";
 }
@@ -12891,17 +12951,17 @@ var ExportFlows = class {
       return;
     }
     const register = await this.deps.loadRegister();
-    await this.writeAndOpenSlice(`${t().project.bibliographySlicePrefix}-${project}`, bibliographyForProject(register, project));
+    await this.writeAndOpenSlice(`${t().project.bibliographySlicePrefix}-${project}`, bibliographyForProject(register, project, this.deps.literatureNotePattern()));
   }
   /** UC6 — sources that bridge ≥2 projects. */
   async sliceBridgePapers() {
     const register = await this.deps.loadRegister();
-    await this.writeAndOpenSlice("bridge-papers", bridgePapersMarkdown(register));
+    await this.writeAndOpenSlice("bridge-papers", bridgePapersMarkdown(register, this.deps.literatureNotePattern()));
   }
   /** UC9 — author landscape + orphan sources. */
   async sliceOverview() {
     const register = await this.deps.loadRegister();
-    await this.writeAndOpenSlice(t().project.registerOverviewFile, crossCutOverview(register));
+    await this.writeAndOpenSlice(t().project.registerOverviewFile, crossCutOverview(register, this.deps.literatureNotePattern()));
   }
   /**
    * BibTeX export (E2 — "Transparantie-kleinood"): the whole citation register as a `.bib`
@@ -17456,6 +17516,7 @@ var DEFAULT_SETTINGS = {
   registerEnabled: true,
   registerPath: ".consensus-research/citations.json",
   libraryPath: "",
+  literatureNotePattern: "",
   llmProvider: "mistral",
   embedProvider: "",
   mistralApiKey: "",
@@ -17759,6 +17820,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       vault: this.app.vault,
       adapters: this.vaultAdapters,
       loadRegister: () => this.loadRegisterSafely(),
+      literatureNotePattern: () => this.settings.literatureNotePattern,
       activeSession: () => this.activeSession(),
       activeNoteFile: () => this.activeNoteFile(),
       activeMarkdownFile: () => {
@@ -19944,7 +20006,8 @@ ${buildSubQuestionsBlock(question, subs)}`);
     const entries = formatReferenceEntries(result, papers, {
       format,
       insertQuestionHeading: this.settings.insertQuestionHeading,
-      includeAbstract: this.settings.includeAbstract
+      includeAbstract: this.settings.includeAbstract,
+      literatureNotePattern: this.settings.literatureNotePattern
     });
     if (action === "copy") {
       await navigator.clipboard.writeText(joinReferenceBlocks(entries, format) + "\n");
@@ -20103,7 +20166,8 @@ ${buildSubQuestionsBlock(question, subs)}`);
     const markdown = formatResult({ query: "", papers: [paper], raw: null }, [paper], {
       format: this.settings.defaultFormat,
       insertQuestionHeading: false,
-      includeAbstract: this.settings.includeAbstract
+      includeAbstract: this.settings.includeAbstract,
+      literatureNotePattern: this.settings.literatureNotePattern
     });
     view.editor.replaceSelection(markdown);
     if (this.settings.registerEnabled) await this.recordInRegister([paper], view);

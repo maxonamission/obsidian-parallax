@@ -6092,6 +6092,71 @@ function citationRegisterAttention(settings) {
   return null;
 }
 
+// src/secrets.ts
+var SECRET_FIELDS = [
+  { valueField: "apiKey", idField: "apiKeySecretId", defaultId: "consensus-research-consensus-api" },
+  { valueField: "openAlexApiKey", idField: "openAlexApiKeySecretId", defaultId: "consensus-research-openalex-api" },
+  { valueField: "semanticScholarApiKey", idField: "semanticScholarApiKeySecretId", defaultId: "consensus-research-semantic-scholar-api" },
+  { valueField: "mistralApiKey", idField: "mistralApiKeySecretId", defaultId: "consensus-research-mistral-api" },
+  { valueField: "openaiApiKey", idField: "openaiApiKeySecretId", defaultId: "consensus-research-openai-api" },
+  { valueField: "anthropicApiKey", idField: "anthropicApiKeySecretId", defaultId: "consensus-research-anthropic-api" },
+  { valueField: "googleApiKey", idField: "googleApiKeySecretId", defaultId: "consensus-research-google-api" },
+  { valueField: "localApiKey", idField: "localApiKeySecretId", defaultId: "consensus-research-local-api" },
+  { valueField: "openaiCompatApiKey", idField: "openaiCompatApiKeySecretId", defaultId: "consensus-research-openai-compat-api" }
+];
+var SECRET_FIELD_BY_VALUE = Object.fromEntries(
+  SECRET_FIELDS.map((f) => [f.valueField, f])
+);
+function isSecretStoreAvailable(store) {
+  const candidate = store;
+  return !!candidate && typeof candidate.getSecret === "function" && typeof candidate.setSecret === "function" && typeof candidate.listSecrets === "function";
+}
+function readSecret(id, store) {
+  var _a;
+  return id ? (_a = store.getSecret(id)) != null ? _a : "" : "";
+}
+function allocateSecretId(base, store) {
+  if (store.getSecret(base) === null) return base;
+  for (let n = 2; ; n++) {
+    const candidate = `${base}-${n}`;
+    if (store.getSecret(candidate) === null) return candidate;
+  }
+}
+function migratePlaintextKeys(settings, store) {
+  let changed = false;
+  for (const field2 of SECRET_FIELDS) {
+    const raw = settings[field2.valueField];
+    const plaintext = raw && raw.trim() ? raw : "";
+    if (!plaintext) continue;
+    const id = settings[field2.idField] || allocateSecretId(field2.defaultId, store);
+    try {
+      store.setSecret(id, plaintext);
+      if (store.getSecret(id) !== plaintext) continue;
+    } catch (e) {
+      continue;
+    }
+    settings[field2.idField] = id;
+    settings[field2.valueField] = "";
+    changed = true;
+  }
+  return { changed };
+}
+function resolveSecretSettings(settings, store) {
+  const resolved = { ...settings };
+  for (const field2 of SECRET_FIELDS) {
+    const id = resolved[field2.idField];
+    if (id) resolved[field2.valueField] = readSecret(id, store);
+  }
+  return resolved;
+}
+function stripSecretValues(settings) {
+  const stripped = { ...settings };
+  for (const field2 of SECRET_FIELDS) {
+    if (stripped[field2.idField]) stripped[field2.valueField] = "";
+  }
+  return stripped;
+}
+
 // src/settings-tab.ts
 var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
@@ -6249,59 +6314,55 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("OpenAlex API key").setDesc(
-      createFragment((f) => {
-        f.appendText(
-          "Optional \u2014 works without one, but the anonymous daily allowance is tiny (about ten searches); a free key raises it to roughly a thousand per day. Create one at "
-        );
-        f.createEl("a", {
-          text: "openalex.org/settings/api",
-          href: "https://openalex.org/settings/api"
-        });
-        f.appendText(". Stored locally; sent only to OpenAlex.");
-      })
-    ).addText((t2) => {
-      t2.setPlaceholder("optional").setValue(this.plugin.settings.openAlexApiKey).onChange(async (v) => {
-        this.plugin.settings.openAlexApiKey = v.trim();
-        await this.plugin.saveSettings();
-      });
-      t2.inputEl.type = "password";
-    });
-    new import_obsidian.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
-      createFragment((f) => {
-        f.appendText(
-          'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 ask a question". Request at '
-        );
-        f.createEl("a", {
-          text: "semanticscholar.org/product/api",
-          href: "https://www.semanticscholar.org/product/api#api-key-form"
-        });
-        f.appendText(". Stored locally; never shared.");
-      })
-    ).addText((t2) => {
-      t2.setPlaceholder("optional").setValue(this.plugin.settings.semanticScholarApiKey).onChange(async (v) => {
-        this.plugin.settings.semanticScholarApiKey = v.trim();
-        await this.plugin.saveSettings();
-      });
-      t2.inputEl.type = "password";
-    });
-    new import_obsidian.Setting(containerEl).setName("Consensus API key").setDesc(
-      createFragment((f) => {
-        f.appendText("Only needed for the Consensus provider. Request access at ");
-        f.createEl("a", {
-          text: "consensus.app/home/api",
-          href: "https://consensus.app/home/api/"
-        });
-        f.appendText(".");
-      })
-    ).addText((t2) => {
-      t2.setPlaceholder("sk-\u2026").setValue(this.plugin.settings.apiKey).onChange(async (v) => {
-        this.plugin.settings.apiKey = v.trim();
-        await this.plugin.saveSettings();
-        this.refreshBadges();
-      });
-      t2.inputEl.type = "password";
-    });
+    this.addSecretComponent(
+      new import_obsidian.Setting(containerEl).setName("OpenAlex API key").setDesc(
+        createFragment((f) => {
+          f.appendText(
+            "Optional \u2014 works without one, but the anonymous daily allowance is tiny (about ten searches); a free key raises it to roughly a thousand per day. Create one at "
+          );
+          f.createEl("a", {
+            text: "openalex.org/settings/api",
+            href: "https://openalex.org/settings/api"
+          });
+          f.appendText(
+            ". Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced. Sent only to OpenAlex."
+          );
+        })
+      ),
+      SECRET_FIELD_BY_VALUE.openAlexApiKey
+    );
+    this.addSecretComponent(
+      new import_obsidian.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
+        createFragment((f) => {
+          f.appendText(
+            'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 ask a question". Request at '
+          );
+          f.createEl("a", {
+            text: "semanticscholar.org/product/api",
+            href: "https://www.semanticscholar.org/product/api#api-key-form"
+          });
+          f.appendText(
+            ". Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
+          );
+        })
+      ),
+      SECRET_FIELD_BY_VALUE.semanticScholarApiKey
+    );
+    this.addSecretComponent(
+      new import_obsidian.Setting(containerEl).setName("Consensus API key").setDesc(
+        createFragment((f) => {
+          f.appendText("Only needed for the Consensus provider. Request access at ");
+          f.createEl("a", {
+            text: "consensus.app/home/api",
+            href: "https://consensus.app/home/api/"
+          });
+          f.appendText(
+            ". Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
+          );
+        })
+      ),
+      SECRET_FIELD_BY_VALUE.apiKey
+    );
   }
   renderOutputLanguage(containerEl) {
     new import_obsidian.Setting(containerEl).setName("Artifact language").setDesc(
@@ -6407,42 +6468,15 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     );
     switch (this.plugin.settings.llmProvider) {
       case "openai":
-        this.apiKeyRow(
-          containerEl,
-          "OpenAI API key",
-          "platform.openai.com/api-keys",
-          "https://platform.openai.com/api-keys",
-          (s) => s.openaiApiKey,
-          (s, v) => {
-            s.openaiApiKey = v;
-          }
-        );
+        this.apiKeyRow(containerEl, "OpenAI API key", "platform.openai.com/api-keys", "https://platform.openai.com/api-keys", "openaiApiKey");
         this.chatModelRow(containerEl, "openai");
         break;
       case "anthropic":
-        this.apiKeyRow(
-          containerEl,
-          "Anthropic API key",
-          "console.anthropic.com",
-          "https://console.anthropic.com/settings/keys",
-          (s) => s.anthropicApiKey,
-          (s, v) => {
-            s.anthropicApiKey = v;
-          }
-        );
+        this.apiKeyRow(containerEl, "Anthropic API key", "console.anthropic.com", "https://console.anthropic.com/settings/keys", "anthropicApiKey");
         this.chatModelRow(containerEl, "anthropic");
         break;
       case "google":
-        this.apiKeyRow(
-          containerEl,
-          "Google API key",
-          "aistudio.google.com/apikey",
-          "https://aistudio.google.com/apikey",
-          (s) => s.googleApiKey,
-          (s, v) => {
-            s.googleApiKey = v;
-          }
-        );
+        this.apiKeyRow(containerEl, "Google API key", "aistudio.google.com/apikey", "https://aistudio.google.com/apikey", "googleApiKey");
         this.chatModelRow(containerEl, "google");
         break;
       case "local":
@@ -6455,13 +6489,12 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
             this.refreshBadges();
           })
         );
-        new import_obsidian.Setting(containerEl).setName("API key").setDesc("Optional \u2014 Ollama and LM Studio commonly run keyless. Never shared.").addText((t2) => {
-          t2.setPlaceholder("optional").setValue(this.plugin.settings.localApiKey).onChange(async (v) => {
-            this.plugin.settings.localApiKey = v.trim();
-            await this.plugin.saveSettings();
-          });
-          t2.inputEl.type = "password";
-        });
+        this.addSecretComponent(
+          new import_obsidian.Setting(containerEl).setName("API key").setDesc(
+            "Optional \u2014 Ollama and LM Studio commonly run keyless. Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device."
+          ),
+          SECRET_FIELD_BY_VALUE.localApiKey
+        );
         this.chatModelRow(containerEl, "local");
         break;
       case "openai-compat":
@@ -6473,13 +6506,12 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
             await this.plugin.saveSettings();
           })
         );
-        new import_obsidian.Setting(containerEl).setName("API key").setDesc("Optional \u2014 keyless is a valid config for a self-hosted server. Never shared.").addText((t2) => {
-          t2.setPlaceholder("optional").setValue(this.plugin.settings.openaiCompatApiKey).onChange(async (v) => {
-            this.plugin.settings.openaiCompatApiKey = v.trim();
-            await this.plugin.saveSettings();
-          });
-          t2.inputEl.type = "password";
-        });
+        this.addSecretComponent(
+          new import_obsidian.Setting(containerEl).setName("API key").setDesc(
+            "Optional \u2014 keyless is a valid config for a self-hosted server. Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
+          ),
+          SECRET_FIELD_BY_VALUE.openaiCompatApiKey
+        );
         new import_obsidian.Setting(containerEl).setName("Chat model").setDesc("Free text \u2014 no live catalogue for a custom endpoint. Examples: gpt-4o-mini, llama3.1.").addText(
           (t2) => t2.setPlaceholder("gpt-4o-mini").setValue(this.plugin.settings.openaiCompatChatModel).onChange(async (v) => {
             this.plugin.settings.openaiCompatChatModel = v.trim();
@@ -6489,22 +6521,20 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         );
         break;
       default:
-        new import_obsidian.Setting(containerEl).setName("Mistral API key").setDesc(
-          createFragment((f) => {
-            f.appendText(
-              'Enables the "Evidence \xB7 ask a question" command: question \u2192 sub-questions \u2192 multi-source search \u2192 rerank \u2192 AI synthesis. Without a key it falls back to multi-source search + fusion. Get one at '
-            );
-            f.createEl("a", { text: "console.mistral.ai", href: "https://console.mistral.ai/" });
-            f.appendText(". Stored locally (EU); never shared.");
-          })
-        ).addText((t2) => {
-          t2.setPlaceholder("optional").setValue(this.plugin.settings.mistralApiKey).onChange(async (v) => {
-            this.plugin.settings.mistralApiKey = v.trim();
-            await this.plugin.saveSettings();
-            this.refreshBadges();
-          });
-          t2.inputEl.type = "password";
-        });
+        this.addSecretComponent(
+          new import_obsidian.Setting(containerEl).setName("Mistral API key").setDesc(
+            createFragment((f) => {
+              f.appendText(
+                'Enables the "Evidence \xB7 ask a question" command: question \u2192 sub-questions \u2192 multi-source search \u2192 rerank \u2192 AI synthesis. Without a key it falls back to multi-source search + fusion. Get one at '
+              );
+              f.createEl("a", { text: "console.mistral.ai", href: "https://console.mistral.ai/" });
+              f.appendText(
+                ". Kept in Obsidian\u2019s secret storage on this device (EU key), not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
+              );
+            })
+          ),
+          SECRET_FIELD_BY_VALUE.mistralApiKey
+        );
         this.chatModelRow(containerEl, "mistral");
     }
     new import_obsidian.Setting(containerEl).setName("Embeddings provider").setDesc(
@@ -6524,40 +6554,13 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   renderEmbedProviderConfig(containerEl, provider) {
     switch (provider) {
       case "mistral":
-        this.apiKeyRow(
-          containerEl,
-          "Mistral API key (embeddings)",
-          "console.mistral.ai",
-          "https://console.mistral.ai/",
-          (s) => s.mistralApiKey,
-          (s, v) => {
-            s.mistralApiKey = v;
-          }
-        );
+        this.apiKeyRow(containerEl, "Mistral API key (embeddings)", "console.mistral.ai", "https://console.mistral.ai/", "mistralApiKey");
         break;
       case "openai":
-        this.apiKeyRow(
-          containerEl,
-          "OpenAI API key (embeddings)",
-          "platform.openai.com/api-keys",
-          "https://platform.openai.com/api-keys",
-          (s) => s.openaiApiKey,
-          (s, v) => {
-            s.openaiApiKey = v;
-          }
-        );
+        this.apiKeyRow(containerEl, "OpenAI API key (embeddings)", "platform.openai.com/api-keys", "https://platform.openai.com/api-keys", "openaiApiKey");
         break;
       case "google":
-        this.apiKeyRow(
-          containerEl,
-          "Google API key (embeddings)",
-          "aistudio.google.com/apikey",
-          "https://aistudio.google.com/apikey",
-          (s) => s.googleApiKey,
-          (s, v) => {
-            s.googleApiKey = v;
-          }
-        );
+        this.apiKeyRow(containerEl, "Google API key (embeddings)", "aistudio.google.com/apikey", "https://aistudio.google.com/apikey", "googleApiKey");
         break;
       case "local":
         new import_obsidian.Setting(containerEl).setName("Base URL (embeddings)").setDesc("The local server's API root, e.g. http://localhost:11434/v1 \u2014 from mobile, use the machine's LAN address.").addText(
@@ -6578,22 +6581,36 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         break;
     }
   }
-  /** A password-style API-key row with a console link; refreshes badges on change. */
-  apiKeyRow(containerEl, name, linkText, href, get, set) {
-    new import_obsidian.Setting(containerEl).setName(name).setDesc(
+  /**
+   * Attach a `SecretComponent` (Obsidian 1.11.4) to `setting` for one registry key (AU_E139_S3):
+   * it manages the value in `app.secretStorage` and hands back only the secret id, which we
+   * persist in `field.idField`. `onChange` keeps the in-memory `field.valueField` resolved so
+   * every provider/gate/badge path keeps reading `settings.*ApiKey` unchanged, then saves and
+   * refreshes the summary badges (a changed key can flip a needs-attention predicate — harmless
+   * for the keys that drive no badge). Uses `this.app.secretStorage`, not `this.plugin.app`.
+   */
+  addSecretComponent(setting, field2) {
+    setting.addComponent(
+      (el) => new import_obsidian.SecretComponent(this.app, el).setValue(this.plugin.settings[field2.idField]).onChange(async (id) => {
+        this.plugin.settings[field2.idField] = id;
+        this.plugin.settings[field2.valueField] = readSecret(id, this.app.secretStorage);
+        await this.plugin.saveSettings();
+        this.refreshBadges();
+      })
+    );
+  }
+  /** A secret-storage API-key row with a console link; refreshes badges on change. */
+  apiKeyRow(containerEl, name, linkText, href, valueField) {
+    const setting = new import_obsidian.Setting(containerEl).setName(name).setDesc(
       createFragment((f) => {
         f.appendText("Get one at ");
         f.createEl("a", { text: linkText, href });
-        f.appendText(". Stored locally; never shared.");
+        f.appendText(
+          ". Stored in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync between devices \u2014 enter it once per device, and rotate the key if it was previously synced."
+        );
       })
-    ).addText((t2) => {
-      t2.setPlaceholder("required").setValue(get(this.plugin.settings)).onChange(async (v) => {
-        set(this.plugin.settings, v.trim());
-        await this.plugin.saveSettings();
-        this.refreshBadges();
-      });
-      t2.inputEl.type = "password";
-    });
+    );
+    this.addSecretComponent(setting, SECRET_FIELD_BY_VALUE[valueField]);
   }
   /** The active provider's cached model catalogue (empty for Custom). */
   catalogFor(provider) {
@@ -17557,7 +17574,18 @@ var DEFAULT_SETTINGS = {
   researchAutoDeepen: false,
   researchReadingTips: true,
   researchOutputMode: "balanced",
-  debugLogging: false
+  debugLogging: false,
+  // Secret-storage id references (AU_E139_S3) — empty until a key is stored; the paired
+  // `*ApiKey` values are resolved from `app.secretStorage` at load and never persisted.
+  apiKeySecretId: "",
+  openAlexApiKeySecretId: "",
+  semanticScholarApiKeySecretId: "",
+  mistralApiKeySecretId: "",
+  openaiApiKeySecretId: "",
+  anthropicApiKeySecretId: "",
+  googleApiKeySecretId: "",
+  localApiKeySecretId: "",
+  openaiCompatApiKeySecretId: ""
 };
 
 // src/settings-migration.ts
@@ -17922,10 +17950,22 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   async loadSettings() {
     const loaded = await this.loadData();
     this.settings = resolveLoadedSettings(loaded);
+    const store = this.app.secretStorage;
+    if (isSecretStoreAvailable(store)) {
+      const { changed } = migratePlaintextKeys(this.settings, store);
+      this.settings = resolveSecretSettings(this.settings, store);
+      if (changed) {
+        await this.saveSettings();
+        new import_obsidian27.Notice(
+          "Parallax moved your API keys into Obsidian's secret storage. They're now kept per device and no longer sync with your vault \u2014 enter each key once on every other device you use, and rotate any key that was previously synced.",
+          12e3
+        );
+      }
+    }
     setArtifactLanguage(this.settings.artifactLanguage);
   }
   async saveSettings() {
-    await this.saveData(this.settings);
+    await this.saveData(stripSecretValues(this.settings));
   }
   /**
    * Set the live research run phase (E56) and route it to every progress surface: the

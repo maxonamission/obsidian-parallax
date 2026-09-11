@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.30.0]
+
+**Your API keys now live in Obsidian's secret storage, not your vault.** Every key Parallax uses — Consensus, OpenAlex, Semantic Scholar, and whichever AI provider you configure (Mistral, OpenAI, Anthropic, Google, a local server or a custom endpoint) — used to sit as plain text in the plugin's `data.json`, which travels with your vault when it syncs. They now go into Obsidian's own secret storage instead (the operating system's keychain on desktop), and the plugin keeps only a reference. Any key you had is moved there automatically the first time you open this version, and removed from `data.json`. Nothing changes in how the plugin works day to day. **One consequence to know about:** secret storage is per device and does not sync, so you enter each key once on every device you use Parallax on — and because your old keys did travel with the vault, it's worth rotating any key that mattered. This needs Obsidian 1.11.4 or newer (the minimum supported version steps up accordingly).
+
 ## [0.29.0]
 
 **Your reference library, both directions — and now in the graph.** Parallax has always been able to read a `.bib` export of your own library (a Better BibTeX auto-export from Zotero, say) and to export its citation register back out as `.bib` — but neither route was documented anywhere, so nobody knew. The README now has a *Your own library* section covering both: your library feeds the reference commands and the searches, and the sources you found through OpenAlex go back into Zotero with a single import. No plugin needed on either side; it's a plain file in a standard format.

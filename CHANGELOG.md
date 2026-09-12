@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.0]
+
+**Typing in a dialog on Android works properly again.** Open a dialog with a text field on an Android phone, tap the field, and the keyboard would cover everything below it — the Filters row, and the Rephrase and Search buttons. The dialog could not be scrolled either, so the only way through was to dismiss the keyboard, scroll, and bring it back. This is now fixed: while the keyboard is up, a dialog sizes itself to the space above it and scrolls, so every field and button stays reachable.
+
+The cause turned out to be older and broader than it looked. Parallax decided "is the keyboard open?" by checking whether the screen area had shrunk, which is what happens on iOS. **Android never reports it that way** — measured on a real phone, the reported screen height did not change by a single pixel with the keyboard up, while a different value (the bottom safe-area inset) jumped from 15 to 379 pixels. Every earlier round of keyboard fixes had therefore quietly done nothing on Android. Parallax now reads whichever signal the device actually moves, so both platforms are handled. This affects all six dialogs with a text field: the research question, the project name and objective, the framing and beliefs, the sub-question review, constructs, and framework dimensions.
+
 ## [0.30.0]
 
 **Your API keys now live in Obsidian's secret storage, not your vault.** Every key Parallax uses — Consensus, OpenAlex, Semantic Scholar, and whichever AI provider you configure (Mistral, OpenAI, Anthropic, Google, a local server or a custom endpoint) — used to sit as plain text in the plugin's `data.json`, which travels with your vault when it syncs. They now go into Obsidian's own secret storage instead (the operating system's keychain on desktop), and the plugin keeps only a reference. Any key you had is moved there automatically the first time you open this version, and removed from `data.json`. Nothing changes in how the plugin works day to day. **One consequence to know about:** secret storage is per device and does not sync, so you enter each key once on every device you use Parallax on — and because your old keys did travel with the vault, it's worth rotating any key that mattered. This needs Obsidian 1.11.4 or newer (the minimum supported version steps up accordingly).

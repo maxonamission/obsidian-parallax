@@ -7018,22 +7018,76 @@ var import_obsidian3 = require("obsidian");
 
 // src/modal-chrome.ts
 var import_obsidian2 = require("obsidian");
+
+// src/viewport-trace.ts
+function parseCssPx(value) {
+  const parsed = parseFloat((value != null ? value : "").trim());
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+var MAX_FOCUS_LENGTH = 60;
+function describeFocusedElement(el) {
+  const tag = el == null ? void 0 : el.tagName;
+  if (!tag) return "none";
+  const raw = typeof (el == null ? void 0 : el.className) === "string" ? el.className : "";
+  const classes = raw.trim().split(/\s+/).filter(Boolean);
+  const full = classes.length > 0 ? `${tag.toLowerCase()}.${classes.join(".")}` : tag.toLowerCase();
+  return full.length > MAX_FOCUS_LENGTH ? `${full.slice(0, MAX_FOCUS_LENGTH)}\u2026` : full;
+}
+function px(n) {
+  return `${Math.round(n * 100) / 100}px`;
+}
+function formatViewportSample(label, s) {
+  var _a;
+  const visual = s.visualHeight === null ? "visual none" : `visual ${s.visualHeight}@${(_a = s.visualOffsetTop) != null ? _a : 0}`;
+  return `${label} \xB7 window ${s.windowHeight} \xB7 ${visual} \xB7 content ${Math.round(s.contentTop)}+${Math.round(s.contentHeight)} \xB7 sheet ${Math.round(s.modalHeight)} \xB7 lift ${px(s.containerPaddingBottom)} \xB7 scroll ${Math.round(s.scrollTop)}/${Math.round(s.scrollHeight)} \xB7 safe-area ${px(s.safeAreaBottom)} \xB7 pad-bottom ${px(s.paddingBottom)} \xB7 focus ${s.focus}`;
+}
+var enabled = false;
+var MAX_LINES = 200;
+var lines = [];
+function setViewportTraceEnabled(value) {
+  enabled = value;
+}
+function isViewportTraceEnabled() {
+  return enabled;
+}
+function recordViewportLine(line) {
+  if (!enabled) return;
+  lines.push(line);
+  if (lines.length > MAX_LINES) lines.splice(0, lines.length - MAX_LINES);
+}
+function viewportTraceLines() {
+  return lines;
+}
+function formatViewportTraceNote(collected) {
+  return `# Parallax viewport trace
+
+${collected.map((l) => `- ${l}`).join("\n")}
+`;
+}
+
+// src/modal-chrome.ts
 var FOCUS_SCROLL_DELAY_MS = 280;
 var VIEWPORT_MARGIN_PX = 16;
 var KEYBOARD_THRESHOLD_PX = 100;
+function keyboardHeight(safeAreaInset, viewportHeight, layoutHeight) {
+  const fromInset = safeAreaInset > KEYBOARD_THRESHOLD_PX ? safeAreaInset : 0;
+  const shrink = layoutHeight - viewportHeight;
+  const fromViewport = shrink > KEYBOARD_THRESHOLD_PX ? shrink : 0;
+  return Math.max(fromInset, fromViewport);
+}
 function modalMaxHeight(viewportHeight, margin = VIEWPORT_MARGIN_PX) {
   return Math.max(0, viewportHeight - margin);
 }
-function keyboardCap(viewportHeight, layoutHeight, contentTop) {
-  if (viewportHeight >= layoutHeight - KEYBOARD_THRESHOLD_PX) return null;
-  return modalMaxHeight(viewportHeight - contentTop);
+function keyboardCap(keyboard, layoutHeight, modalChrome, margin = VIEWPORT_MARGIN_PX) {
+  if (keyboard <= 0) return null;
+  return modalMaxHeight(layoutHeight - keyboard - modalChrome, margin);
 }
 function rowsForLines(lineCount, minRows) {
   return Math.max(minRows, lineCount + 1);
 }
 function makeAutoGrowTextarea(textarea, minRows = 2) {
   textarea.rows = minRows;
-  textarea.setCssStyles({ minHeight: `calc(${minRows}lh + 0.75em)` });
+  textarea.setCssStyles({ minHeight: `calc(${minRows}lh + 0.75em)`, flexShrink: "0" });
   const resize = () => {
     textarea.setCssStyles({ height: "auto" });
     if (textarea.scrollHeight > 0) textarea.setCssStyles({ height: `${textarea.scrollHeight}px` });
@@ -7049,38 +7103,120 @@ function stackSetting(setting) {
   setting.settingEl.addClass("consensus-setting-stacked");
   return setting;
 }
+var KEYBOARD_SETTLE_DELAY_MS = 500;
+var VIEWPORT_TRACE_PATH = "Parallax viewport.md";
+function sampleViewport(modal) {
+  const { contentEl } = modal;
+  const vv = window.visualViewport;
+  const rect = contentEl.getBoundingClientRect();
+  const style = window.getComputedStyle(contentEl);
+  return {
+    modalHeight: modal.modalEl.getBoundingClientRect().height,
+    containerPaddingBottom: parseCssPx(window.getComputedStyle(modal.containerEl).paddingBottom),
+    windowHeight: window.innerHeight,
+    visualHeight: vv ? vv.height : null,
+    visualOffsetTop: vv ? vv.offsetTop : null,
+    contentTop: rect.top,
+    contentHeight: rect.height,
+    scrollTop: contentEl.scrollTop,
+    scrollHeight: contentEl.scrollHeight,
+    safeAreaBottom: parseCssPx(style.getPropertyValue("--safe-area-inset-bottom")),
+    paddingBottom: parseCssPx(style.paddingBottom),
+    focus: describeFocusedElement(contentEl.ownerDocument.activeElement)
+  };
+}
 function attachKeyboardAvoidance(modal) {
   const { contentEl } = modal;
   const vv = window.visualViewport;
-  const onViewportResize = () => {
-    if (!vv) return;
-    const cap = keyboardCap(vv.height, window.innerHeight, contentEl.getBoundingClientRect().top);
+  const trace = (label) => {
+    if (!isViewportTraceEnabled()) return;
+    recordViewportLine(formatViewportSample(label, sampleViewport(modal)));
+  };
+  const applyCap = () => {
+    var _a;
+    const inset = parseCssPx(window.getComputedStyle(contentEl).getPropertyValue("--safe-area-inset-bottom"));
+    const keyboard = keyboardHeight(inset, (_a = vv == null ? void 0 : vv.height) != null ? _a : window.innerHeight, window.innerHeight);
+    if (keyboard <= 0) {
+      modal.containerEl.setCssStyles({ paddingBottom: "" });
+      contentEl.setCssStyles({ maxHeight: "" });
+      return;
+    }
+    modal.containerEl.setCssStyles({ paddingBottom: `${keyboard}px` });
+    const chrome = Math.max(
+      0,
+      modal.modalEl.getBoundingClientRect().height - contentEl.getBoundingClientRect().height
+    );
+    const cap = keyboardCap(keyboard, window.innerHeight, chrome);
     contentEl.setCssStyles({ maxHeight: cap === null ? "" : `${cap}px` });
   };
-  if (vv) {
-    vv.addEventListener("resize", onViewportResize);
-    onViewportResize();
-  }
+  const onViewportResize = () => {
+    applyCap();
+    trace("viewport resize");
+  };
+  if (vv) vv.addEventListener("resize", onViewportResize);
+  const onWindowResize = () => {
+    applyCap();
+    trace("window resize");
+  };
+  window.addEventListener("resize", onWindowResize);
   let focusTimeout;
+  let settleTimeout;
+  let openTimeout;
+  const settle = (target, label) => {
+    window.clearTimeout(settleTimeout);
+    settleTimeout = window.setTimeout(() => {
+      applyCap();
+      trace(label);
+      target == null ? void 0 : target.scrollIntoView({ block: "center", behavior: "smooth" });
+    }, KEYBOARD_SETTLE_DELAY_MS);
+  };
   const onFocusIn = (e) => {
     const target = e.target;
     if (!(target instanceof HTMLInputElement) && !(target instanceof HTMLTextAreaElement)) return;
+    applyCap();
+    trace("focusin");
     window.clearTimeout(focusTimeout);
     focusTimeout = window.setTimeout(() => {
+      applyCap();
       target.scrollIntoView({ block: "center", behavior: "smooth" });
     }, FOCUS_SCROLL_DELAY_MS);
+    settle(target, "focusin+500");
   };
   contentEl.addEventListener("focusin", onFocusIn);
+  const onFocusOut = () => settle(null, "focusout+500");
+  contentEl.addEventListener("focusout", onFocusOut);
+  trace("modal open");
+  openTimeout = window.setTimeout(applyCap, KEYBOARD_SETTLE_DELAY_MS);
   return () => {
     if (vv) vv.removeEventListener("resize", onViewportResize);
+    window.removeEventListener("resize", onWindowResize);
     contentEl.removeEventListener("focusin", onFocusIn);
+    contentEl.removeEventListener("focusout", onFocusOut);
     window.clearTimeout(focusTimeout);
+    window.clearTimeout(settleTimeout);
+    window.clearTimeout(openTimeout);
     contentEl.setCssStyles({ maxHeight: "" });
+    modal.containerEl.setCssStyles({ paddingBottom: "" });
+    void writeViewportTrace(modal);
   };
 }
+async function writeViewportTrace(modal) {
+  const collected = viewportTraceLines();
+  if (!isViewportTraceEnabled() || collected.length === 0) return;
+  const body = formatViewportTraceNote(collected);
+  try {
+    const existing = modal.app.vault.getAbstractFileByPath(VIEWPORT_TRACE_PATH);
+    if (existing instanceof import_obsidian2.TFile) await modal.app.vault.modify(existing, body);
+    else await modal.app.vault.create(VIEWPORT_TRACE_PATH, body);
+  } catch (e) {
+  }
+}
+var chromed = /* @__PURE__ */ new WeakSet();
 function applyModalChrome(modal) {
   modal.modalEl.addClass("consensus-modal");
   if (!import_obsidian2.Platform.isMobile) return;
+  if (chromed.has(modal)) return;
+  chromed.add(modal);
   const cleanup = attachKeyboardAvoidance(modal);
   const originalOnClose = modal.onClose.bind(modal);
   modal.onClose = () => {
@@ -7756,15 +7892,15 @@ function strongestTier(sources, papers) {
 }
 function renderAbstract(s, question) {
   if (!s.headline && !s.summary) return "";
-  const lines = ["#### Samenvatting", ""];
+  const lines2 = ["#### Samenvatting", ""];
   const q = question == null ? void 0 : question.trim();
-  if (q) lines.push(`*Onderzoeksvraag: ${q}*`, "");
-  if (s.headline) lines.push(`**${s.headline}**`);
+  if (q) lines2.push(`*Onderzoeksvraag: ${q}*`, "");
+  if (s.headline) lines2.push(`**${s.headline}**`);
   if (s.summary) {
-    if (s.headline) lines.push("");
-    lines.push(s.summary);
+    if (s.headline) lines2.push("");
+    lines2.push(s.summary);
   }
-  return lines.join("\n");
+  return lines2.join("\n");
 }
 function abstractsDisclosureBaseLine() {
   return `*${t().synthesis.abstractsDisclosure}*`;
@@ -7779,55 +7915,55 @@ function nuanceAbstractsDisclosure(markdown, fulltextSourceCount) {
   return markdown.replace(abstractsDisclosureBaseLine(), abstractsDisclosureLine(fulltextSourceCount));
 }
 function renderSynthesis(s, papers = []) {
-  const lines = [];
+  const lines2 = [];
   if (s.findings.length > 0) {
-    lines.push("", `#### ${t().synthesis.findings}`);
+    lines2.push("", `#### ${t().synthesis.findings}`);
     for (const f of s.findings) {
       const cite = f.sources.length ? ` ${renderSources(f.sources)}` : "";
       const tier = strongestTier(f.sources, papers);
       const basis = tier ? ` \xB7 ${evidenceTierLabel(tier)}` : "";
       const grade = fmt(t().synthesis.evidenceInline, { strength: t().synthesis.strengthLabels[f.strength], tier: basis });
-      lines.push(`- ${f.claim} \u2014 *${grade}*${cite}`);
+      lines2.push(`- ${f.claim} \u2014 *${grade}*${cite}`);
     }
   }
   if (s.contradictions.length > 0) {
-    lines.push("", `#### ${t().synthesis.contradictions}`);
+    lines2.push("", `#### ${t().synthesis.contradictions}`);
     for (const c of s.contradictions) {
       const cite = c.sources.length ? ` ${renderSources(c.sources)}` : "";
-      lines.push(`- ${c.point}${cite}`);
+      lines2.push(`- ${c.point}${cite}`);
     }
   }
   if (s.practical) {
-    lines.push("", `#### ${t().synthesis.practical}`, "", s.practical);
+    lines2.push("", `#### ${t().synthesis.practical}`, "", s.practical);
   }
   if (s.followUps && s.followUps.length > 0) {
-    lines.push("", `#### ${t().synthesis.followUps}`);
-    for (const d of s.followUps) lines.push(`- ${d}`);
+    lines2.push("", `#### ${t().synthesis.followUps}`);
+    for (const d of s.followUps) lines2.push(`- ${d}`);
   }
   if (s.scope || s.evidenceNote) {
-    lines.push("", `#### ${t().synthesis.evidenceAndGaps}`);
+    lines2.push("", `#### ${t().synthesis.evidenceAndGaps}`);
     if (s.scope) {
-      lines.push("", fmt(t().synthesis.scopeCaveat, { note: s.scope.note }));
+      lines2.push("", fmt(t().synthesis.scopeCaveat, { note: s.scope.note }));
     }
-    if (s.evidenceNote) lines.push("", s.evidenceNote);
-    lines.push("", abstractsDisclosureLine());
+    if (s.evidenceNote) lines2.push("", s.evidenceNote);
+    lines2.push("", abstractsDisclosureLine());
   }
   if (s.unanswered && s.unanswered.length > 0) {
-    lines.push("", `#### ${t().synthesis.unanswered}`);
+    lines2.push("", `#### ${t().synthesis.unanswered}`);
     for (const u of s.unanswered) {
       const why = u.reason === "ontwerp-ontoereikend" ? t().synthesis.reasonDesignInsufficient : t().synthesis.reasonNotInvestigated;
       const design = u.designNeeded ? fmt(t().synthesis.designNeeded, { design: u.designNeeded }) : "";
-      lines.push(`- ${u.question} \u2014 ${why}.${design}`);
+      lines2.push(`- ${u.question} \u2014 ${why}.${design}`);
     }
   }
   if (s.readingRecommendations && s.readingRecommendations.length > 0) {
-    lines.push("", `#### ${t().synthesis.readingRecommendations}`, "", `*${t().synthesis.readingRecommendationsNote}*`);
+    lines2.push("", `#### ${t().synthesis.readingRecommendations}`, "", `*${t().synthesis.readingRecommendationsNote}*`);
     for (const r of s.readingRecommendations) {
-      lines.push(`- [${r.source}] ${r.reason} \u2014 ${renderOaBadge(papers[r.source - 1])}`);
+      lines2.push(`- [${r.source}] ${r.reason} \u2014 ${renderOaBadge(papers[r.source - 1])}`);
     }
   }
-  while (lines.length > 0 && lines[0] === "") lines.shift();
-  return lines.join("\n");
+  while (lines2.length > 0 && lines2[0] === "") lines2.shift();
+  return lines2.join("\n");
 }
 var STRUCTURED_BASE = [
   "You are a careful research assistant for a writer.",
@@ -8123,16 +8259,16 @@ function evidenceTierSuffix(paper) {
   return paper.evidenceTier ? ` \xB7 ${fmt(t().sources.evidenceTag, { label: evidenceTierLabel(paper.evidenceTier) })}` : "";
 }
 function renderFramework(fw) {
-  const lines = [`#### ${t().decompose.frameworkHeading} \u2014 ${collapseWhitespace(fw.construct)}`];
-  if (fw.definition) lines.push("", collapseWhitespace(fw.definition));
+  const lines2 = [`#### ${t().decompose.frameworkHeading} \u2014 ${collapseWhitespace(fw.construct)}`];
+  if (fw.definition) lines2.push("", collapseWhitespace(fw.definition));
   if (fw.dimensions.length > 0) {
-    lines.push("", t().decompose.dimensionsIntro);
-    for (const d of fw.dimensions) lines.push(`- ${collapseWhitespace(d)}`);
+    lines2.push("", t().decompose.dimensionsIntro);
+    for (const d of fw.dimensions) lines2.push(`- ${collapseWhitespace(d)}`);
   }
   if (fw.sources && fw.sources.length > 0) {
-    lines.push("", `${t().decompose.keySources}: ${fw.sources.map((n) => `[${n}]`).join("")}`);
+    lines2.push("", `${t().decompose.keySources}: ${fw.sources.map((n) => `[${n}]`).join("")}`);
   }
-  return lines.join("\n");
+  return lines2.join("\n");
 }
 function literatureNoteSuffix(paper, opts) {
   var _a;
@@ -8219,9 +8355,9 @@ function renderSubQuestionsList(result) {
   const cite = (text) => linkifyCitations(text, result.papers);
   const items = result.subQuestions.map((s, i) => {
     const notes = s.sources && s.sources.length ? ` ${cite(s.sources.map((n) => `[${n}]`).join(""))}` : "";
-    const lines = [`${i + 1}. ${collapseWhitespace(s.query)}${notes}`];
-    if (s.expectation) lines.push(`   - *${t().decompose.expectationLabel}:* ${collapseWhitespace(s.expectation)}`);
-    return lines.join("\n");
+    const lines2 = [`${i + 1}. ${collapseWhitespace(s.query)}${notes}`];
+    if (s.expectation) lines2.push(`   - *${t().decompose.expectationLabel}:* ${collapseWhitespace(s.expectation)}`);
+    return lines2.join("\n");
   });
   const hasExpectations = result.subQuestions.some((s) => s.expectation);
   const note = hasExpectations ? `*${t().decompose.subQuestionsNoteWithExpectations}*` : `*${t().decompose.subQuestionsNote}*`;
@@ -8240,15 +8376,15 @@ function buildSessionSynthesisBody(result) {
 function buildSessionFrameworkBody(result) {
   const fw = result.framework;
   if (!fw) return "";
-  const lines = [`**${collapseWhitespace(fw.construct)}**${fw.definition ? ` \u2014 ${collapseWhitespace(fw.definition)}` : ""}`];
+  const lines2 = [`**${collapseWhitespace(fw.construct)}**${fw.definition ? ` \u2014 ${collapseWhitespace(fw.definition)}` : ""}`];
   if (fw.dimensions.length > 0) {
-    lines.push("", t().decompose.dimensionsIntro);
-    for (const d of fw.dimensions) lines.push(`- ${collapseWhitespace(d)}`);
+    lines2.push("", t().decompose.dimensionsIntro);
+    for (const d of fw.dimensions) lines2.push(`- ${collapseWhitespace(d)}`);
   }
   if (fw.sources && fw.sources.length > 0) {
-    lines.push("", `${t().decompose.keySources}: ${linkifyCitations(fw.sources.map((n) => `[${n}]`).join(""), result.papers)}`);
+    lines2.push("", `${t().decompose.keySources}: ${linkifyCitations(fw.sources.map((n) => `[${n}]`).join(""), result.papers)}`);
   }
-  return lines.join("\n");
+  return lines2.join("\n");
 }
 function buildSessionSubQuestionsBody(result) {
   return renderSubQuestionsList(result);
@@ -8435,8 +8571,8 @@ function extractionTypeFolder(question, index) {
 }
 function renderExtractionTemplate(question) {
   const q = question.replace(/\s+/g, " ").replace(/"/g, "'").trim();
-  const lines = ["---", `research-question: "${q}"`, "supports: ", "contradicts: ", "conditions: ", "notes: ", "---", "", t().quadro.templateBodyNote, ""];
-  return lines.join("\n");
+  const lines2 = ["---", `research-question: "${q}"`, "supports: ", "contradicts: ", "conditions: ", "notes: ", "---", "", t().quadro.templateBodyNote, ""];
+  return lines2.join("\n");
 }
 function renderStarterKit(lenses, questions, provenance) {
   const files = [];
@@ -8583,11 +8719,11 @@ function renderQdaSection(input) {
   const hasAnything = input.progress !== null || input.codebook !== null && input.codebook.total > 0;
   if (!hasAnything) return null;
   const a = t().account;
-  const lines = [];
-  lines.push(fmt(a.qdaSourceLine, { root: input.root || "/", date: input.date }));
-  lines.push("");
+  const lines2 = [];
+  lines2.push(fmt(a.qdaSourceLine, { root: input.root || "/", date: input.date }));
+  lines2.push("");
   if (input.codebook !== null || input.progress !== null) {
-    lines.push(
+    lines2.push(
       `- ${fmt(a.qdaCodesLine, {
         total: String((_b = (_a = input.codebook) == null ? void 0 : _a.total) != null ? _b : 0),
         groups: String((_d = (_c = input.codebook) == null ? void 0 : _c.groups) != null ? _d : 0),
@@ -8600,7 +8736,7 @@ function renderQdaSection(input) {
     const { codesCreated, codeAssignments } = input.progress;
     if (codesCreated + codeAssignments > 0) {
       const ratio = codeAssignments > 0 ? (codesCreated / codeAssignments).toFixed(2) : "\u2014";
-      lines.push(
+      lines2.push(
         `- ${fmt(a.qdaSaturationLine, {
           created: String(codesCreated),
           assigned: String(codeAssignments),
@@ -8608,21 +8744,21 @@ function renderQdaSection(input) {
         })}`
       );
     }
-    lines.push(
+    lines2.push(
       `- ${fmt(a.qdaExtractionsLine, {
         types: String((_i = input.extractionTypes) != null ? _i : 0),
         created: String(input.progress.extractionsCreated),
         added: String(input.progress.paragraphsAdded)
       })}`
     );
-    lines.push(`- ${fmt(a.qdaDataLine, { n: String(input.progress.dataFilesRead) })}`);
+    lines2.push(`- ${fmt(a.qdaDataLine, { n: String(input.progress.dataFilesRead) })}`);
     if (input.progress.firstDate && input.progress.lastDate) {
-      lines.push(`- ${fmt(a.qdaPeriodLine, { first: input.progress.firstDate, last: input.progress.lastDate })}`);
+      lines2.push(`- ${fmt(a.qdaPeriodLine, { first: input.progress.firstDate, last: input.progress.lastDate })}`);
     }
   } else {
-    lines.push(`- ${t().account.notRecorded}`);
+    lines2.push(`- ${t().account.notRecorded}`);
   }
-  return lines.join("\n");
+  return lines2.join("\n");
 }
 
 // src/quadro-kit-modal.ts
@@ -8780,30 +8916,30 @@ ${synthesis}${beliefBlock}`;
   return parseResearchAgenda(raw, log);
 }
 function renderResearchAgenda(agenda) {
-  const lines = [];
+  const lines2 = [];
   const section = (heading, items) => {
     if (items.length === 0) return;
-    lines.push(`*${heading}*`);
-    for (const item of items) lines.push(`- ${item}`);
-    lines.push("");
+    lines2.push(`*${heading}*`);
+    for (const item of items) lines2.push(`- ${item}`);
+    lines2.push("");
   };
   section(t().agenda.gaps, agenda.gaps);
   section(t().agenda.limitations, agenda.limitations);
   if (agenda.newQuestions.length > 0) {
-    lines.push(`*${t().agenda.newQuestions}*`);
+    lines2.push(`*${t().agenda.newQuestions}*`);
     for (const q of agenda.newQuestions) {
       const aside = q.method ? ` *(${methodFitLabel(q.method)}${q.methodRationale ? ` \u2014 ${q.methodRationale}` : ""})*` : "";
-      lines.push(`- ${q.question}${aside}`);
+      lines2.push(`- ${q.question}${aside}`);
     }
-    lines.push("");
+    lines2.push("");
   }
   if (agenda.designs.length > 0) {
-    lines.push(`*${t().agenda.designs}*`);
-    for (const d of agenda.designs) lines.push(`- **${d.design}**${d.rationale ? ` \u2014 ${d.rationale}` : ""}`);
-    lines.push("");
+    lines2.push(`*${t().agenda.designs}*`);
+    for (const d of agenda.designs) lines2.push(`- **${d.design}**${d.rationale ? ` \u2014 ${d.rationale}` : ""}`);
+    lines2.push("");
   }
   section(t().agenda.data, agenda.data);
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 function agendaAdoptionRecord(agenda, choice) {
   const methodFits = agenda.newQuestions.filter((q) => q.method !== void 0).map((q) => ({ question: q.question, method: q.method, ...q.methodRationale ? { rationale: q.methodRationale } : {} }));
@@ -9692,14 +9828,14 @@ function safeStringify(data) {
     return String(data);
   }
 }
-function createLogger(enabled) {
-  const lines = [];
+function createLogger(enabled2) {
+  const lines2 = [];
   const fn = ((label, data) => {
-    if (!enabled) return;
-    lines.push(redactSecrets(data === void 0 ? label : `${label} \u2014 ${safeStringify(data)}`));
+    if (!enabled2) return;
+    lines2.push(redactSecrets(data === void 0 ? label : `${label} \u2014 ${safeStringify(data)}`));
   });
-  fn.lines = lines;
-  fn.enabled = enabled;
+  fn.lines = lines2;
+  fn.enabled = enabled2;
   fn.totalUsage = 0;
   fn.callCount = 0;
   fn.addUsage = (tokens) => {
@@ -9864,58 +10000,58 @@ function resolveHeading(headingOrId) {
   }
   return { heading: headingOrId, id: null };
 }
-function findHeadingLine(lines, headingOrId) {
+function findHeadingLine(lines2, headingOrId) {
   const { heading, id } = resolveHeading(headingOrId);
   if (id) {
     const re = markerRegex(id);
-    const byMarker = lines.findIndex((l) => /^##\s+/.test(l) && re.test(l));
+    const byMarker = lines2.findIndex((l) => /^##\s+/.test(l) && re.test(l));
     if (byMarker !== -1) return byMarker;
   }
-  const byText = lines.findIndex((l) => l.trim() === `## ${heading}`);
+  const byText = lines2.findIndex((l) => l.trim() === `## ${heading}`);
   if (byText !== -1) return byText;
   if (id) {
     for (const lang of ARTIFACT_LANGUAGES) {
       const localized = ARTIFACT_STRINGS[lang].headings[id];
-      const byLocalizedText = lines.findIndex((l) => l.trim() === `## ${localized}`);
+      const byLocalizedText = lines2.findIndex((l) => l.trim() === `## ${localized}`);
       if (byLocalizedText !== -1) return byLocalizedText;
     }
   }
   for (const alias of id && LEGACY_HEADINGS[id] || []) {
-    const byLegacyText = lines.findIndex((l) => l.trim() === `## ${alias}`);
+    const byLegacyText = lines2.findIndex((l) => l.trim() === `## ${alias}`);
     if (byLegacyText !== -1) return byLegacyText;
   }
   return -1;
 }
-function stampedHash(lines, headingIdx, id) {
+function stampedHash(lines2, headingIdx, id) {
   var _a;
   if (headingIdx === -1 || !id) return null;
-  const m = markerRegex(id).exec(lines[headingIdx]);
+  const m = markerRegex(id).exec(lines2[headingIdx]);
   return (_a = m == null ? void 0 : m[1]) != null ? _a : null;
 }
 function extractSection(body, headingOrId) {
-  const lines = body.split("\n");
-  const start = findHeadingLine(lines, headingOrId);
+  const lines2 = body.split("\n");
+  const start = findHeadingLine(lines2, headingOrId);
   if (start === -1) return "";
-  let end = lines.length;
-  for (let i = start + 1; i < lines.length; i++) {
-    if (/^##\s+/.test(lines[i])) {
+  let end = lines2.length;
+  for (let i = start + 1; i < lines2.length; i++) {
+    if (/^##\s+/.test(lines2[i])) {
       end = i;
       break;
     }
   }
-  return lines.slice(start + 1, end).join("\n").trim();
+  return lines2.slice(start + 1, end).join("\n").trim();
 }
 function extractBulletsUnderHeading(body, headingMatch) {
-  const lines = body.split("\n");
-  const start = lines.findIndex((l) => {
+  const lines2 = body.split("\n");
+  const start = lines2.findIndex((l) => {
     const m = l.match(/^#{1,6}\s+(.*)$/);
     return m ? headingMatch(m[1].trim()) : false;
   });
   if (start === -1) return [];
   const out = [];
-  for (let i = start + 1; i < lines.length; i++) {
-    if (/^#{1,6}\s/.test(lines[i])) break;
-    const m = lines[i].trim().match(/^[-*]\s+(.*)$/);
+  for (let i = start + 1; i < lines2.length; i++) {
+    if (/^#{1,6}\s/.test(lines2[i])) break;
+    const m = lines2[i].trim().match(/^[-*]\s+(.*)$/);
     if (m && m[1].trim()) out.push(m[1].trim());
   }
   return out;
@@ -9996,12 +10132,12 @@ function staleSections(body, basedOn) {
 }
 function forkNoteBody(body, revisedId) {
   const revisedRank = CANONICAL_SECTION_ORDER.indexOf(revisedId);
-  const lines = body.split("\n");
+  const lines2 = body.split("\n");
   const headingIdxs = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (/^##\s+/.test(lines[i])) headingIdxs.push(i);
+  for (let i = 0; i < lines2.length; i++) {
+    if (/^##\s+/.test(lines2[i])) headingIdxs.push(i);
   }
-  const preamble = headingIdxs.length > 0 ? lines.slice(0, headingIdxs[0]) : lines;
+  const preamble = headingIdxs.length > 0 ? lines2.slice(0, headingIdxs[0]) : lines2;
   const synthesisUpstream = CANONICAL_SECTION_ORDER.indexOf("synthesis") < revisedRank;
   const logbookRank = CANONICAL_SECTION_ORDER.indexOf("logbook");
   const kept = [];
@@ -10009,13 +10145,13 @@ function forkNoteBody(body, revisedId) {
   let keepChain = false;
   for (let h = 0; h < headingIdxs.length; h++) {
     const start = headingIdxs[h];
-    const end = h + 1 < headingIdxs.length ? headingIdxs[h + 1] : lines.length;
-    const rank = headingRank(lines[start]);
+    const end = h + 1 < headingIdxs.length ? headingIdxs[h + 1] : lines2.length;
+    const rank = headingRank(lines2[start]);
     if (rank !== null) {
       keepChain = rank === REFERENCES_RANK ? synthesisUpstream : rank < revisedRank && rank !== logbookRank;
       if (keepChain && rank !== REFERENCES_RANK) kept.push(CANONICAL_SECTION_ORDER[rank]);
     }
-    if (keepChain) parts.push(lines.slice(start, end).join("\n").replace(/\s+$/, ""));
+    if (keepChain) parts.push(lines2.slice(start, end).join("\n").replace(/\s+$/, ""));
   }
   const head = preamble.join("\n").replace(/\s+$/, "");
   const rebuilt = [...head ? [head] : [], ...parts].join("\n\n");
@@ -10040,11 +10176,11 @@ function sectionFingerprint(content) {
   return (hash >>> 0).toString(16).padStart(8, "0");
 }
 function sectionEditState(body, headingOrId) {
-  const lines = body.split("\n");
-  const idx = findHeadingLine(lines, headingOrId);
+  const lines2 = body.split("\n");
+  const idx = findHeadingLine(lines2, headingOrId);
   if (idx === -1) return "absent";
   const { id } = resolveHeading(headingOrId);
-  const hash = stampedHash(lines, idx, id);
+  const hash = stampedHash(lines2, idx, id);
   if (!hash) return "unstamped";
   return sectionFingerprint(extractSection(body, headingOrId)) === hash ? "machine" : "edited";
 }
@@ -10107,12 +10243,12 @@ function headingRank(line) {
   const text = line.replace(/^##\s+/, "").replace(/<!--.*?-->/g, "").trim();
   return REFERENCES_HEADINGS.has(text) ? REFERENCES_RANK : null;
 }
-function sectionInsertionLine(lines, id) {
+function sectionInsertionLine(lines2, id) {
   const rank = id ? CANONICAL_SECTION_ORDER.indexOf(id) : -1;
   if (rank === -1) return -1;
-  for (let i = 0; i < lines.length; i++) {
-    if (!/^##\s+/.test(lines[i])) continue;
-    const r = headingRank(lines[i]);
+  for (let i = 0; i < lines2.length; i++) {
+    if (!/^##\s+/.test(lines2[i])) continue;
+    const r = headingRank(lines2[i]);
     if (r !== null && r > rank) return i;
   }
   return -1;
@@ -10135,14 +10271,14 @@ function prependSectionIntro(id, content) {
 ${content.trimStart()}`;
 }
 function upsertSection(body, headingOrId, content, fingerprintContent) {
-  const lines = body.split("\n");
+  const lines2 = body.split("\n");
   const { heading, id } = resolveHeading(headingOrId);
   const withIntro = id ? prependSectionIntro(id, content) : content;
   const headingLine = id ? `## ${heading} ${sectionMarker(id, sectionFingerprint(fingerprintContent != null ? fingerprintContent : withIntro))}` : `## ${heading}`;
   const block2 = [headingLine, "", withIntro.trimEnd()];
-  const startIdx = findHeadingLine(lines, headingOrId);
+  const startIdx = findHeadingLine(lines2, headingOrId);
   if (startIdx === -1) {
-    const insertBefore = sectionInsertionLine(lines, id);
+    const insertBefore = sectionInsertionLine(lines2, id);
     if (insertBefore === -1) {
       const base = body.replace(/\s+$/, "");
       return `${base ? `${base}
@@ -10150,33 +10286,33 @@ function upsertSection(body, headingOrId, content, fingerprintContent) {
 ` : ""}${block2.join("\n")}
 `;
     }
-    const rebuilt2 = [...lines.slice(0, insertBefore), "", ...block2, "", ...lines.slice(insertBefore)].join("\n");
+    const rebuilt2 = [...lines2.slice(0, insertBefore), "", ...block2, "", ...lines2.slice(insertBefore)].join("\n");
     return `${rebuilt2.replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "").replace(/\s+$/, "")}
 `;
   }
-  let endIdx = lines.length;
-  for (let i = startIdx + 1; i < lines.length; i++) {
-    if (/^##\s+/.test(lines[i])) {
+  let endIdx = lines2.length;
+  for (let i = startIdx + 1; i < lines2.length; i++) {
+    if (/^##\s+/.test(lines2[i])) {
       endIdx = i;
       break;
     }
   }
-  const before = lines.slice(0, startIdx);
-  const after = lines.slice(endIdx);
+  const before = lines2.slice(0, startIdx);
+  const after = lines2.slice(endIdx);
   const rebuilt = [...before, ...block2, "", ...after].join("\n");
   return `${rebuilt.replace(/\n{3,}/g, "\n\n").replace(/\s+$/, "")}
 `;
 }
 function appendToSection(body, headingOrId, line) {
-  const lines = body.split("\n");
+  const lines2 = body.split("\n");
   const { heading, id } = resolveHeading(headingOrId);
   const headingLine = id ? `## ${heading} ${sectionMarker(id)}` : `## ${heading}`;
-  const startIdx = findHeadingLine(lines, headingOrId);
+  const startIdx = findHeadingLine(lines2, headingOrId);
   if (startIdx === -1) {
     const firstContent = id ? `${sectionIntroLine(id)}
 
 ${line.trimEnd()}` : line.trimEnd();
-    const insertBefore = sectionInsertionLine(lines, id);
+    const insertBefore = sectionInsertionLine(lines2, id);
     if (insertBefore === -1) {
       const base = body.replace(/\s+$/, "");
       return `${base ? `${base}
@@ -10186,39 +10322,39 @@ ${line.trimEnd()}` : line.trimEnd();
 ${firstContent}
 `;
     }
-    const rebuilt2 = [...lines.slice(0, insertBefore), "", headingLine, "", firstContent, "", ...lines.slice(insertBefore)].join("\n");
+    const rebuilt2 = [...lines2.slice(0, insertBefore), "", headingLine, "", firstContent, "", ...lines2.slice(insertBefore)].join("\n");
     return `${rebuilt2.replace(/\n{3,}/g, "\n\n").replace(/^\n+/, "").replace(/\s+$/, "")}
 `;
   }
-  let endIdx = lines.length;
-  for (let i = startIdx + 1; i < lines.length; i++) {
-    if (/^##\s+/.test(lines[i])) {
+  let endIdx = lines2.length;
+  for (let i = startIdx + 1; i < lines2.length; i++) {
+    if (/^##\s+/.test(lines2[i])) {
       endIdx = i;
       break;
     }
   }
   let insertAt = startIdx + 1;
   for (let i = startIdx + 1; i < endIdx; i++) {
-    if (lines[i].trim() !== "") insertAt = i + 1;
+    if (lines2[i].trim() !== "") insertAt = i + 1;
   }
-  const rebuilt = [...lines.slice(0, insertAt), line.trimEnd(), ...lines.slice(insertAt)].join("\n");
+  const rebuilt = [...lines2.slice(0, insertAt), line.trimEnd(), ...lines2.slice(insertAt)].join("\n");
   return `${rebuilt.replace(/\n{3,}/g, "\n\n").replace(/\s+$/, "")}
 `;
 }
 function reorderSectionsCanonically(body) {
-  const lines = body.split("\n");
+  const lines2 = body.split("\n");
   const headingIdxs = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (/^##\s+/.test(lines[i])) headingIdxs.push(i);
+  for (let i = 0; i < lines2.length; i++) {
+    if (/^##\s+/.test(lines2[i])) headingIdxs.push(i);
   }
   if (headingIdxs.length < 2) return { body, moved: 0 };
-  const preamble = lines.slice(0, headingIdxs[0]);
+  const preamble = lines2.slice(0, headingIdxs[0]);
   const chains = [];
   for (let h = 0; h < headingIdxs.length; h++) {
     const start = headingIdxs[h];
-    const end = h + 1 < headingIdxs.length ? headingIdxs[h + 1] : lines.length;
-    const rank = headingRank(lines[start]);
-    const block2 = lines.slice(start, end);
+    const end = h + 1 < headingIdxs.length ? headingIdxs[h + 1] : lines2.length;
+    const rank = headingRank(lines2[start]);
+    const block2 = lines2.slice(start, end);
     if (rank === null && chains.length > 0) {
       chains[chains.length - 1].lines.push(...block2);
     } else {
@@ -10256,19 +10392,19 @@ function buildScaffoldBody(id) {
 > ${s.hints[id]}
 > ${SCAFFOLD_MARKER}`;
 }
-function markerBlock(lines) {
-  const idx = lines.findIndex((l) => l.includes(SCAFFOLD_MARKER));
+function markerBlock(lines2) {
+  const idx = lines2.findIndex((l) => l.includes(SCAFFOLD_MARKER));
   if (idx === -1) return null;
   let start = idx;
-  while (start > 0 && lines[start - 1].trim().startsWith(">")) start--;
+  while (start > 0 && lines2[start - 1].trim().startsWith(">")) start--;
   let end = idx;
-  while (end < lines.length - 1 && lines[end + 1].trim().startsWith(">")) end++;
+  while (end < lines2.length - 1 && lines2[end + 1].trim().startsWith(">")) end++;
   return { start, end };
 }
 function hasOwnText(sectionContent) {
-  const lines = sectionContent.split("\n");
-  const block2 = markerBlock(lines);
-  return lines.some((line, i) => {
+  const lines2 = sectionContent.split("\n");
+  const block2 = markerBlock(lines2);
+  return lines2.some((line, i) => {
     if (block2 && i >= block2.start && i <= block2.end) return false;
     if (isSectionIntroLine(line)) return false;
     return line.trim() !== "";
@@ -10276,11 +10412,11 @@ function hasOwnText(sectionContent) {
 }
 function isScaffoldReplaceable(sectionContent) {
   if (sectionContent.trim() === "") return true;
-  const lines = sectionContent.split("\n");
-  const block2 = markerBlock(lines);
+  const lines2 = sectionContent.split("\n");
+  const block2 = markerBlock(lines2);
   if (!block2) return false;
-  const blockLines = lines.slice(block2.start, block2.end + 1).filter((l) => l.trim() !== "");
-  const outside = lines.some(
+  const blockLines = lines2.slice(block2.start, block2.end + 1).filter((l) => l.trim() !== "");
+  const outside = lines2.some(
     // The section intro (AU_E130_S3) is machine wayfinding — it never blocks a rewrite.
     (line, i) => (i < block2.start || i > block2.end) && line.trim() !== "" && !isSectionIntroLine(line)
   );
@@ -10593,8 +10729,8 @@ function shouldRerenderOnChange(changedPath, renderedNotePath, projectMemberPath
 function recentLog(body, n) {
   const log = extractSection(body, "logbook");
   if (!log) return [];
-  const lines = log.split("\n").map((l) => l.trim()).filter((l) => l.startsWith("- "));
-  return lines.slice(Math.max(0, lines.length - n));
+  const lines2 = log.split("\n").map((l) => l.trim()).filter((l) => l.startsWith("- "));
+  return lines2.slice(Math.max(0, lines2.length - n));
 }
 
 // src/project.ts
@@ -10745,19 +10881,19 @@ function provenanceLabel(q, labels) {
   return `\u2190 ${kind}${q.source.ref ? `: ${q.source.ref}` : ""}`;
 }
 function buildInterviewBody(guide, labels) {
-  const lines = [];
+  const lines2 = [];
   if (guide.opening) {
-    lines.push(`_${labels.opening}: ${guide.opening}_`, "");
+    lines2.push(`_${labels.opening}: ${guide.opening}_`, "");
   }
   guide.questions.forEach((q, i) => {
-    lines.push(`${i + 1}. [${q.id}] ${q.text} \u2014 _${provenanceLabel(q, labels)}_`);
-    for (const probe of q.probes) lines.push(`   - ${probe}`);
+    lines2.push(`${i + 1}. [${q.id}] ${q.text} \u2014 _${provenanceLabel(q, labels)}_`);
+    for (const probe of q.probes) lines2.push(`   - ${probe}`);
   });
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 function buildFieldworkExport(guide, labels, noteBasename) {
   const fillIn = "______________________";
-  const lines = [
+  const lines2 = [
     `# ${noteBasename} \u2014 interview guide`,
     "",
     `${labels.exportDateLine} ${fillIn}`,
@@ -10765,17 +10901,17 @@ function buildFieldworkExport(guide, labels, noteBasename) {
     `${labels.exportRespondentLine} ${fillIn}`,
     ""
   ];
-  if (guide.opening) lines.push(`_${labels.opening}: ${guide.opening}_`, "");
+  if (guide.opening) lines2.push(`_${labels.opening}: ${guide.opening}_`, "");
   guide.questions.forEach((q, i) => {
-    lines.push(`## ${i + 1}. ${q.text}`, "");
+    lines2.push(`## ${i + 1}. ${q.text}`, "");
     if (q.probes.length > 0) {
-      lines.push(`_${labels.probes}_`, "");
-      for (const probe of q.probes) lines.push(`- ${probe}`);
-      lines.push("");
+      lines2.push(`_${labels.probes}_`, "");
+      for (const probe of q.probes) lines2.push(`- ${probe}`);
+      lines2.push("");
     }
   });
-  lines.push("---", "", `_${labels.exportClosing}_`);
-  return `${lines.join("\n").trimEnd()}
+  lines2.push("---", "", `_${labels.exportClosing}_`);
+  return `${lines2.join("\n").trimEnd()}
 `;
 }
 var SYSTEM2 = [
@@ -11310,9 +11446,9 @@ function applyLibraryUpdatePlan(register, plan) {
   return touched.size;
 }
 function formatUpdatePreview(plan, cap = 12) {
-  const lines = plan.changes.slice(0, cap).map((c) => `\u2022 ${c.citekey} \u2014 ${c.field}: "${truncate(c.from, 40)}" \u2192 "${truncate(c.to, 40)}"`);
-  if (plan.changes.length > cap) lines.push(`\u2026 and ${plan.changes.length - cap} more change(s)`);
-  return lines.join("\n");
+  const lines2 = plan.changes.slice(0, cap).map((c) => `\u2022 ${c.citekey} \u2014 ${c.field}: "${truncate(c.from, 40)}" \u2192 "${truncate(c.to, 40)}"`);
+  if (plan.changes.length > cap) lines2.push(`\u2026 and ${plan.changes.length - cap} more change(s)`);
+  return lines2.join("\n");
 }
 function truncate(text, max) {
   return text.length > max ? `${text.slice(0, max - 1)}\u2026` : text;
@@ -12083,26 +12219,26 @@ function artefactSummary(exportDoc) {
   return fmt(t().exportBundle.artefactsPresent, { present, total: SESSION_EXPORT_SECTION_IDS.length });
 }
 function buildProjectIndexMarkdown(project, entries, hubObjective) {
-  const lines = [`# Portable export \u2014 ${project}`, ""];
+  const lines2 = [`# Portable export \u2014 ${project}`, ""];
   if (hubObjective && hubObjective.trim()) {
-    lines.push(`## ${t().headings.objective}`, "", hubObjective.trim(), "");
+    lines2.push(`## ${t().headings.objective}`, "", hubObjective.trim(), "");
   }
-  lines.push(fmt(t().exportBundle.sessionsExported, { n: entries.length }), "");
+  lines2.push(fmt(t().exportBundle.sessionsExported, { n: entries.length }), "");
   if (entries.length === 0) {
-    lines.push(t().exportBundle.noSessions);
-    return `${lines.join("\n")}
+    lines2.push(t().exportBundle.noSessions);
+    return `${lines2.join("\n")}
 `;
   }
   for (const e of entries) {
-    lines.push(`## [${e.title}](${e.folderName}/${sessionExportAccountFile()})`);
-    lines.push("");
-    lines.push(`- ${artefactSummary(e.exportDoc)}`);
-    lines.push(`- Bevindingen: ${e.exportDoc.findings.length}`);
-    lines.push(`- Bibliografie: ${e.exportDoc.bibliography.length} bron(nen)`);
-    lines.push(`- JSON: [${SESSION_EXPORT_JSON_FILE}](${e.folderName}/${SESSION_EXPORT_JSON_FILE})`);
-    lines.push("");
+    lines2.push(`## [${e.title}](${e.folderName}/${sessionExportAccountFile()})`);
+    lines2.push("");
+    lines2.push(`- ${artefactSummary(e.exportDoc)}`);
+    lines2.push(`- Bevindingen: ${e.exportDoc.findings.length}`);
+    lines2.push(`- Bibliografie: ${e.exportDoc.bibliography.length} bron(nen)`);
+    lines2.push(`- JSON: [${SESSION_EXPORT_JSON_FILE}](${e.folderName}/${SESSION_EXPORT_JSON_FILE})`);
+    lines2.push("");
   }
-  return `${lines.join("\n").trimEnd()}
+  return `${lines2.join("\n").trimEnd()}
 `;
 }
 
@@ -12263,7 +12399,7 @@ function noteLink(label, note) {
 }
 function renderGraphReport(graph, gaps, jsonBytes) {
   const stats = graphStats(graph);
-  const lines = [
+  const lines2 = [
     `# ${fmt(t().graph.reportTitle, { project: graph.project })}`,
     "",
     t().graph.reportIntro,
@@ -12277,35 +12413,35 @@ function renderGraphReport(graph, gaps, jsonBytes) {
     ""
   ];
   if (gaps.length === 0) {
-    lines.push(t().graph.noGaps, "");
+    lines2.push(t().graph.noGaps, "");
   } else {
     for (const sev of ["hoog", "midden", "info"]) {
       const group = gaps.filter((g) => g.severity === sev);
       if (group.length === 0) continue;
-      lines.push(`### ${gapHeading(sev)} (${group.length})`, "");
-      for (const g of group) lines.push(`- ${g.message.replace(/^(.*?): "(.*)"$/, (_, p, l) => `${p}: ${noteLink(l, g.note)}`)}`);
-      lines.push("");
+      lines2.push(`### ${gapHeading(sev)} (${group.length})`, "");
+      for (const g of group) lines2.push(`- ${g.message.replace(/^(.*?): "(.*)"$/, (_, p, l) => `${p}: ${noteLink(l, g.note)}`)}`);
+      lines2.push("");
     }
   }
-  lines.push(`## ${t().graph.nodesPerType}`, "");
+  lines2.push(`## ${t().graph.nodesPerType}`, "");
   for (const type of ["vraag", "deelvraag", "hypothese", "bevinding", "bron", "lens"]) {
     const group = graph.nodes.filter((n) => n.type === type);
     if (group.length === 0) continue;
-    lines.push(`### ${t().graph.nodeTypeLabels[type]} (${group.length})`, "");
+    lines2.push(`### ${t().graph.nodeTypeLabels[type]} (${group.length})`, "");
     for (const n of group) {
       const meta = n.meta ? ` _(${Object.entries(n.meta).map(([k, v]) => `${k}: ${v}`).join(", ")})_` : "";
-      lines.push(`- ${noteLink(n.label, n.note)}${meta}`);
+      lines2.push(`- ${noteLink(n.label, n.note)}${meta}`);
     }
-    lines.push("");
+    lines2.push("");
   }
   const withEdges = graph.edges.some((e) => e.type === "onderbouwt");
-  lines.push(
+  lines2.push(
     `## ${t().graph.provenanceHeading}`,
     "",
     withEdges ? t().graph.provenanceWithEdges : t().graph.provenanceWithoutEdges,
     ""
   );
-  return `${lines.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}
+  return `${lines2.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}
 `;
 }
 
@@ -12371,13 +12507,13 @@ function renumberHypotheses(adopted) {
 }
 function buildHypothesesBody(set) {
   const labels = t().hypotheses;
-  const lines = [];
+  const lines2 = [];
   for (const h of set.hypotheses) {
-    lines.push(`- **${h.id}** \u2014 ${h.text}`);
-    if (h.basis) lines.push(`	- *${labels.basisLabel}:* ${h.basis}`);
-    if (h.rationale) lines.push(`	- *${labels.testLabel}:* ${h.rationale}`);
+    lines2.push(`- **${h.id}** \u2014 ${h.text}`);
+    if (h.basis) lines2.push(`	- *${labels.basisLabel}:* ${h.basis}`);
+    if (h.rationale) lines2.push(`	- *${labels.testLabel}:* ${h.rationale}`);
   }
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 
 // src/preregistration.ts
@@ -12402,35 +12538,35 @@ var FILL_IN = "______________________";
 function buildPreregistrationDraft(input) {
   const labels = t().prereg;
   const notRecorded = t().account.notRecorded;
-  const lines = [];
-  lines.push(`# ${input.noteBasename} \u2014 ${labels.title}`, "");
-  lines.push(`> ${fmt(labels.provenance, { source: input.sourceLink, date: input.date })}`, "");
-  lines.push(`## ${labels.questionsHeading}`, "");
-  lines.push(`- **${labels.mainQuestionLabel}:** ${input.question}`);
+  const lines2 = [];
+  lines2.push(`# ${input.noteBasename} \u2014 ${labels.title}`, "");
+  lines2.push(`> ${fmt(labels.provenance, { source: input.sourceLink, date: input.date })}`, "");
+  lines2.push(`## ${labels.questionsHeading}`, "");
+  lines2.push(`- **${labels.mainQuestionLabel}:** ${input.question}`);
   if (input.framing && input.framing !== input.question) {
-    lines.push(`- **${t().account.chosenFraming}** ${input.framing}`);
+    lines2.push(`- **${t().account.chosenFraming}** ${input.framing}`);
   }
   for (const q of input.questions) {
     const aside = q.method ? ` *(${methodFitLabel(q.method)})*` : "";
-    lines.push(`- ${q.question}${aside}`);
+    lines2.push(`- ${q.question}${aside}`);
   }
-  lines.push("");
-  lines.push(`## ${t().headings.hypotheses}`, "");
-  lines.push(input.hypotheses ? buildHypothesesBody(input.hypotheses) : `_${labels.noHypotheses}_`);
-  lines.push("");
+  lines2.push("");
+  lines2.push(`## ${t().headings.hypotheses}`, "");
+  lines2.push(input.hypotheses ? buildHypothesesBody(input.hypotheses) : `_${labels.noHypotheses}_`);
+  lines2.push("");
   const designs = extractAgendaBlock(input.agendaSection, "designs");
-  lines.push(`## ${labels.designHeading}`, "");
-  lines.push(designs.length > 0 ? designs.map((d) => `- ${d}`).join("\n") : notRecorded);
-  lines.push("");
+  lines2.push(`## ${labels.designHeading}`, "");
+  lines2.push(designs.length > 0 ? designs.map((d) => `- ${d}`).join("\n") : notRecorded);
+  lines2.push("");
   const data = extractAgendaBlock(input.agendaSection, "data");
-  lines.push(`## ${labels.variablesHeading}`, "");
-  if (data.length > 0) lines.push(data.map((d) => `- ${d}`).join("\n"), "");
-  lines.push(`_${labels.fillInNote}_`, "", FILL_IN);
-  lines.push("");
+  lines2.push(`## ${labels.variablesHeading}`, "");
+  if (data.length > 0) lines2.push(data.map((d) => `- ${d}`).join("\n"), "");
+  lines2.push(`_${labels.fillInNote}_`, "", FILL_IN);
+  lines2.push("");
   for (const heading of [labels.samplingHeading, labels.analysisHeading]) {
-    lines.push(`## ${heading}`, "", `_${labels.fillInNote}_`, "", FILL_IN, "");
+    lines2.push(`## ${heading}`, "", `_${labels.fillInNote}_`, "", FILL_IN, "");
   }
-  return `${lines.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}
+  return `${lines2.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd()}
 `;
 }
 
@@ -14053,48 +14189,48 @@ async function runResearch(rawQuestion, settings, http, provider, filters = {}, 
 // src/search-strategy.ts
 function renderSearchStrategy(s) {
   var _a;
-  const lines = [];
+  const lines2 = [];
   const providerLabels = s.providers.map((id) => getProvider(id).label);
-  lines.push(`*${t().searchStrategy.sources}*`);
-  lines.push(providerLabels.length ? `- ${providerLabels.join(", ")}` : `- ${t().searchStrategy.none}`);
-  lines.push("");
+  lines2.push(`*${t().searchStrategy.sources}*`);
+  lines2.push(providerLabels.length ? `- ${providerLabels.join(", ")}` : `- ${t().searchStrategy.none}`);
+  lines2.push("");
   if (s.resumed) {
-    lines.push(`*${t().searchStrategy.terms}*`);
-    lines.push(`- ${t().searchStrategy.resumedLine}`);
-    lines.push("");
+    lines2.push(`*${t().searchStrategy.terms}*`);
+    lines2.push(`- ${t().searchStrategy.resumedLine}`);
+    lines2.push("");
   } else if (s.queries.length > 0) {
-    lines.push(`*${fmt(t().searchStrategy.termsCounted, { n: s.queries.length })}*`);
-    for (const q of s.queries) lines.push(`- ${q}`);
-    lines.push("");
+    lines2.push(`*${fmt(t().searchStrategy.termsCounted, { n: s.queries.length })}*`);
+    for (const q of s.queries) lines2.push(`- ${q}`);
+    lines2.push("");
     if (s.seeds.length > 0) {
-      lines.push(`*${t().searchStrategy.additionalTerms}*`);
-      for (const t2 of s.seeds) lines.push(`- ${t2}`);
-      lines.push("");
+      lines2.push(`*${t().searchStrategy.additionalTerms}*`);
+      for (const t2 of s.seeds) lines2.push(`- ${t2}`);
+      lines2.push("");
     }
   }
-  lines.push(`*${t().searchStrategy.selectionCriteria}*`);
-  lines.push(`- ${fmt(t().searchStrategy.rerankLine, { tested: s.split ? t().searchStrategy.testedAgainstSubQuestions : "" })}`);
-  lines.push(`- ${t().searchStrategy.abstractsOnlyLine}`);
-  if (s.rerankLimit) lines.push(`- ${fmt(t().searchStrategy.limitedToTop, { n: s.rerankLimit })}`);
+  lines2.push(`*${t().searchStrategy.selectionCriteria}*`);
+  lines2.push(`- ${fmt(t().searchStrategy.rerankLine, { tested: s.split ? t().searchStrategy.testedAgainstSubQuestions : "" })}`);
+  lines2.push(`- ${t().searchStrategy.abstractsOnlyLine}`);
+  if (s.rerankLimit) lines2.push(`- ${fmt(t().searchStrategy.limitedToTop, { n: s.rerankLimit })}`);
   if (s.crossSector) {
     const sectors = s.transferSectors.length ? fmt(t().searchStrategy.sectorsSuffix, { sectors: s.transferSectors.join(", ") }) : "";
-    lines.push(`- ${fmt(t().searchStrategy.crossSectorLine, { sectors })}`);
+    lines2.push(`- ${fmt(t().searchStrategy.crossSectorLine, { sectors })}`);
   }
-  lines.push("");
-  lines.push(`*${t().searchStrategy.funnel}*`);
-  if (!s.resumed) lines.push(`- ${fmt(t().searchStrategy.fusedCount, { n: s.fusedCount })}`);
-  lines.push(`- ${fmt(t().searchStrategy.afterRerank, { n: s.rerankedCount })}`);
-  lines.push(`- ${fmt(t().searchStrategy.keptCount, { n: s.keptCount })}`);
+  lines2.push("");
+  lines2.push(`*${t().searchStrategy.funnel}*`);
+  if (!s.resumed) lines2.push(`- ${fmt(t().searchStrategy.fusedCount, { n: s.fusedCount })}`);
+  lines2.push(`- ${fmt(t().searchStrategy.afterRerank, { n: s.rerankedCount })}`);
+  lines2.push(`- ${fmt(t().searchStrategy.keptCount, { n: s.keptCount })}`);
   const failures = ((_a = s.providerFailures) != null ? _a : []).filter((f) => f.failed > 0);
   if (failures.length > 0) {
-    lines.push("");
-    lines.push(`*${t().searchStrategy.failuresHeading}*`);
+    lines2.push("");
+    lines2.push(`*${t().searchStrategy.failuresHeading}*`);
     for (const f of failures) {
       const label = getProvider(f.provider).label;
-      lines.push(`- ${fmt(t().searchStrategy.failureLine, { label, failed: f.failed, total: f.total })}`);
+      lines2.push(`- ${fmt(t().searchStrategy.failureLine, { label, failed: f.failed, total: f.total })}`);
     }
   }
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 
 // src/deepen.ts
@@ -14105,14 +14241,14 @@ function splitSelectionLines(selection) {
   return selection.split("\n").map((l) => l.replace(/^[\s>]*[-*]\s*/, "").replace(/^\s*\d+[.)]\s*/, "").trim()).filter(Boolean);
 }
 function matchFindings(selection, findings) {
-  const lines = splitSelectionLines(selection).map(normalize4);
-  if (lines.length === 0) return [];
+  const lines2 = splitSelectionLines(selection).map(normalize4);
+  if (lines2.length === 0) return [];
   const out = [];
   const seen = /* @__PURE__ */ new Set();
   for (const f of findings) {
     const claim = normalize4(f.claim);
     if (!claim || seen.has(claim)) continue;
-    if (lines.some((line) => line.includes(claim))) {
+    if (lines2.some((line) => line.includes(claim))) {
       out.push(f);
       seen.add(claim);
     }
@@ -15173,11 +15309,11 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian13.ItemView {
   }
   /** Log / trace — the most recent decision-trail entries from the ## Logboek. */
   renderTrace(root, body) {
-    const lines = recentLog(body, 6);
-    if (lines.length === 0) return;
+    const lines2 = recentLog(body, 6);
+    if (lines2.length === 0) return;
     root.createEl("h4", { text: "Logbook (latest steps)" });
     const ul = root.createEl("ul", { cls: "consensus-workbench-trace" });
-    for (const line of lines) ul.createEl("li", { text: line.replace(/^- /, "") });
+    for (const line of lines2) ul.createEl("li", { text: line.replace(/^- /, "") });
   }
   async onClose() {
     if (this.pendingRerender !== null) window.clearTimeout(this.pendingRerender);
@@ -15788,13 +15924,13 @@ async function exploreProblem(question, chat, log) {
   return parseExploration(raw, log);
 }
 function buildExplorationBody(result, choice) {
-  const lines = [];
-  if (choice.framing) lines.push(`${t().exploration.chosenFraming} ${choice.framing}`, "");
+  const lines2 = [];
+  if (choice.framing) lines2.push(`${t().exploration.chosenFraming} ${choice.framing}`, "");
   const section = (heading, items) => {
     if (items.length === 0) return;
-    lines.push(`*${heading}*`);
-    for (const item of items) lines.push(`- ${item}`);
-    lines.push("");
+    lines2.push(`*${heading}*`);
+    for (const item of items) lines2.push(`- ${item}`);
+    lines2.push("");
   };
   section(t().exploration.assumptions, result.assumptions);
   section(t().exploration.counterAssumptions, result.counterAssumptions);
@@ -15802,7 +15938,7 @@ function buildExplorationBody(result, choice) {
   section(t().exploration.disciplines, result.lenses);
   section(t().exploration.definitions, result.definitions);
   if (result.researchDirections.length > 0) {
-    lines.push(`*${t().exploration.directions}*`);
+    lines2.push(`*${t().exploration.directions}*`);
     for (const d of result.researchDirections) {
       const facets = [
         d.theoreticalBasis && `${t().exploration.facetTheoreticalBasis}: ${d.theoreticalBasis}`,
@@ -15810,13 +15946,13 @@ function buildExplorationBody(result, choice) {
         d.literatureStrength && `${t().exploration.facetLiteratureStrength}: ${d.literatureStrength}`,
         d.originality && `${t().exploration.facetOriginality}: ${d.originality}`
       ].filter(Boolean);
-      lines.push(`- **${d.title}**${facets.length ? ` \u2014 ${facets.join("; ")}` : ""}`);
+      lines2.push(`- **${d.title}**${facets.length ? ` \u2014 ${facets.join("; ")}` : ""}`);
     }
-    lines.push("");
+    lines2.push("");
   }
   section(t().exploration.chosenSearchTerms, choice.searchTermSeeds);
-  if (choice.beliefs) lines.push(`*${t().exploration.initialBeliefs}*`, choice.beliefs, "");
-  return lines.join("\n").trimEnd();
+  if (choice.beliefs) lines2.push(`*${t().exploration.initialBeliefs}*`, choice.beliefs, "");
+  return lines2.join("\n").trimEnd();
 }
 function explorationAdoptionRecord(question, choice) {
   return {
@@ -16047,32 +16183,32 @@ async function proposeTheory(question, chat, log) {
   return parseTheory(raw, log);
 }
 function buildTheoryBody(result, choice) {
-  const lines = [];
+  const lines2 = [];
   if (result.lenses.length > 0) {
-    lines.push("*Lenzen*");
+    lines2.push("*Lenzen*");
     for (const l of result.lenses) {
       const facets = [l.why && `waarom hier: ${l.why}`, l.predicts && `voorspelt: ${l.predicts}`].filter(Boolean);
-      lines.push(`- **${l.name}**${l.tradition ? ` (${l.tradition})` : ""}${facets.length ? ` \u2014 ${facets.join("; ")}` : ""}`);
+      lines2.push(`- **${l.name}**${l.tradition ? ` (${l.tradition})` : ""}${facets.length ? ` \u2014 ${facets.join("; ")}` : ""}`);
     }
-    lines.push("");
+    lines2.push("");
   }
   if (result.eliminated.length > 0) {
-    lines.push("*Verleidelijk maar verklaart hier weinig*");
-    for (const e of result.eliminated) lines.push(`- ${e.name} \u2014 ${e.reason}`);
-    lines.push("");
+    lines2.push("*Verleidelijk maar verklaart hier weinig*");
+    for (const e of result.eliminated) lines2.push(`- ${e.name} \u2014 ${e.reason}`);
+    lines2.push("");
   }
   const section = (heading, items) => {
     if (items.length === 0) return;
-    lines.push(`*${heading}*`);
-    for (const item of items) lines.push(`- ${item}`);
-    lines.push("");
+    lines2.push(`*${heading}*`);
+    for (const item of items) lines2.push(`- ${item}`);
+    lines2.push("");
   };
   section(t().theory.sameMechanism, result.sameMechanism);
   section(t().theory.strikinglyAbsent, result.absent);
   section(t().theory.competing, result.competing);
   section(t().theory.crossDomain, result.crossDomain);
   if (choice.lenses.length > 0) section(t().theory.chosenLenses, choice.lenses);
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 function theoryAdoptionRecord(result, choice) {
   const byName = new Map(result.lenses.map((l) => [l.name.toLowerCase(), l]));
@@ -16601,19 +16737,19 @@ ${beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}` : "";
 }
 function buildChallengeBody(result) {
   var _a;
-  const lines = [];
+  const lines2 = [];
   for (const dim of CHALLENGE_DIMENSIONS) {
     const items = result.challenges.filter((c) => c.dimension === dim);
     if (items.length === 0) continue;
-    lines.push(`*${(_a = t().challenge.dimensions[dim]) != null ? _a : dim}*`);
-    for (const c of items) lines.push(`- ${c.challenge}${c.action ? ` \u2014 _${t().challenge.actionLabel}: ${c.action}_` : ""}`);
-    lines.push("");
+    lines2.push(`*${(_a = t().challenge.dimensions[dim]) != null ? _a : dim}*`);
+    for (const c of items) lines2.push(`- ${c.challenge}${c.action ? ` \u2014 _${t().challenge.actionLabel}: ${c.action}_` : ""}`);
+    lines2.push("");
   }
   if (result.inversion) {
-    lines.push(`*${t().challenge.inversion}*`);
-    lines.push(result.inversion);
+    lines2.push(`*${t().challenge.inversion}*`);
+    lines2.push(result.inversion);
   }
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 function challengeAdoptionRecord(result, choice) {
   const dimensionByText = new Map(result.challenges.map((c) => [c.challenge, c.dimension]));
@@ -16785,33 +16921,33 @@ function filterArgumentStructure(structure, adoptedIds) {
 }
 function buildArgumentBody(structure, labels) {
   var _a;
-  const lines = [];
+  const lines2 = [];
   const group = (kind, heading) => {
     const items = structure.nodes.filter((n) => n.kind === kind);
     if (items.length === 0) return;
-    lines.push(`*${heading}*`);
+    lines2.push(`*${heading}*`);
     items.forEach(
-      (n, i) => lines.push(`${i + 1}. [${n.id}] ${n.text}${n.source ? ` \u2014 _${labels.source}: ${n.source}_` : ""}`)
+      (n, i) => lines2.push(`${i + 1}. [${n.id}] ${n.text}${n.source ? ` \u2014 _${labels.source}: ${n.source}_` : ""}`)
     );
-    lines.push("");
+    lines2.push("");
   };
   group("claim", labels.claims);
   group("assumption", labels.assumptions);
   if (structure.edges.length > 0) {
     for (const e of structure.edges) {
-      lines.push(`- [${e.from}] ${e.kind === "supports" ? labels.supports : labels.attacks} [${e.to}]`);
+      lines2.push(`- [${e.from}] ${e.kind === "supports" ? labels.supports : labels.attacks} [${e.to}]`);
     }
-    lines.push("");
+    lines2.push("");
   }
   const evidence = (_a = structure.evidence) != null ? _a : [];
   if (evidence.length > 0) {
-    lines.push(`*${labels.evidence}*`);
+    lines2.push(`*${labels.evidence}*`);
     for (const ev of evidence) {
-      lines.push(`- [${ev.id}] ${ev.kind === "supports" ? labels.supports : labels.attacks} [${ev.to}]: ${ev.text}`);
+      lines2.push(`- [${ev.id}] ${ev.kind === "supports" ? labels.supports : labels.attacks} [${ev.to}]: ${ev.text}`);
     }
-    lines.push("");
+    lines2.push("");
   }
-  return lines.join("\n").trimEnd();
+  return lines2.join("\n").trimEnd();
 }
 function normalizeForMatch(s) {
   return s.toLowerCase().replace(/[*_`#>[\]()"'\u201c\u201d\u2018\u2019«»-]/g, " ").replace(/\s+/g, " ").trim();
@@ -17425,20 +17561,20 @@ function wikiTarget(path) {
 }
 function buildConnectionsBody(inputs) {
   const labels = t().connections;
-  const lines = [];
+  const lines2 = [];
   const parent = parseParentSessionLink(inputs.contextBody);
-  if (parent) lines.push(`- ${labels.parent}: [[${parent}]]`);
+  if (parent) lines2.push(`- ${labels.parent}: [[${parent}]]`);
   const followUps = inputs.members.filter((m) => m.path !== inputs.notePath && parseParentSessionLink(m.contextBody) === inputs.noteBasename).map((m) => m.basename).sort((a, b) => a.localeCompare(b, void 0, { sensitivity: "base" }));
-  if (followUps.length > 0) lines.push(`- ${labels.followUps}: ${followUps.map((f) => `[[${f}]]`).join(", ")}`);
-  if (inputs.hubBasename) lines.push(`- ${labels.hub}: [[${inputs.hubBasename}]]`);
+  if (followUps.length > 0) lines2.push(`- ${labels.followUps}: ${followUps.map((f) => `[[${f}]]`).join(", ")}`);
+  if (inputs.hubBasename) lines2.push(`- ${labels.hub}: [[${inputs.hubBasename}]]`);
   const shared = [...sharedSourceCounts(inputs.register, inputs.notePath).entries()].map(([path, n]) => ({ target: wikiTarget(path), n })).sort((a, b) => b.n - a.n || a.target.localeCompare(b.target, void 0, { sensitivity: "base" }));
   for (const s of shared.slice(0, MAX_SHARED_SOURCE_LINKS)) {
-    lines.push(`- [[${s.target}]] \u2014 ${fmt(labels.sharedSources, { n: s.n })}`);
+    lines2.push(`- [[${s.target}]] \u2014 ${fmt(labels.sharedSources, { n: s.n })}`);
   }
   if (shared.length > MAX_SHARED_SOURCE_LINKS) {
-    lines.push(`- ${fmt(labels.more, { n: shared.length - MAX_SHARED_SOURCE_LINKS })}`);
+    lines2.push(`- ${fmt(labels.more, { n: shared.length - MAX_SHARED_SOURCE_LINKS })}`);
   }
-  return lines.length > 0 ? lines.join("\n") : null;
+  return lines2.length > 0 ? lines2.join("\n") : null;
 }
 
 // src/research-design-modal.ts
@@ -17963,9 +18099,11 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       }
     }
     setArtifactLanguage(this.settings.artifactLanguage);
+    setViewportTraceEnabled(this.settings.debugLogging);
   }
   async saveSettings() {
     await this.saveData(stripSecretValues(this.settings));
+    setViewportTraceEnabled(this.settings.debugLogging);
   }
   /**
    * Set the live research run phase (E56) and route it to every progress surface: the
@@ -19335,10 +19473,10 @@ ${qs.join("\n")}`);
     }
     const expectations = parseSubquestionExpectations(noteBody);
     if (expectations.length > 0) {
-      const lines = expectations.map((e) => `- ${e.query}
+      const lines2 = expectations.map((e) => `- ${e.query}
   expectation: ${e.expectation}`);
       parts.push(`Search expectations per sub-question (stated BEFORE the research ran):
-${lines.join("\n")}`);
+${lines2.join("\n")}`);
     }
     return parts.join("\n\n");
   }

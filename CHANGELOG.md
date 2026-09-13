@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.1]
+
+**Links in the Parallax sidebar now take you where they say.** Tapping an artefact in the sidebar — *Probleemverkenning*, *Synthese*, the logbook, a project's other questions, a gap in the evidence — closed the panel and then appeared to do nothing at all. The note was in fact opening, but into the sidebar panel that was closing at that very moment, so you never saw it. Every link in that panel now opens in the main area and jumps to the right section, as it always meant to. Most visible on a phone, where the sidebar is an overlay; the same code path served every link in the panel, so all of them are fixed.
+
+*Also, for anyone who runs with debug logging on:* the viewport trace no longer rewrites its note when nothing new has been measured. It used to write on every dialog close, and if you happened to have that note open, the sidebar re-drew itself and lost your scrolling position each time.
+
 ## [0.31.0]
 
 **Typing in a dialog on Android works properly again.** Open a dialog with a text field on an Android phone, tap the field, and the keyboard would cover everything below it — the Filters row, and the Rephrase and Search buttons. The dialog could not be scrolled either, so the only way through was to dismiss the keyboard, scroll, and bring it back. This is now fixed: while the keyboard is up, a dialog sizes itself to the space above it and scrolls, so every field and button stays reachable.

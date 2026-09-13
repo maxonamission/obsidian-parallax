@@ -7050,12 +7050,17 @@ function setViewportTraceEnabled(value) {
 function isViewportTraceEnabled() {
   return enabled;
 }
+var recordedTotal = 0;
+var writtenTotal = 0;
 function recordViewportLine(line) {
   if (!enabled) return;
   lines.push(line);
+  recordedTotal += 1;
   if (lines.length > MAX_LINES) lines.splice(0, lines.length - MAX_LINES);
 }
-function viewportTraceLines() {
+function viewportTraceToWrite() {
+  if (recordedTotal === writtenTotal) return null;
+  writtenTotal = recordedTotal;
   return lines;
 }
 function formatViewportTraceNote(collected) {
@@ -7201,8 +7206,9 @@ function attachKeyboardAvoidance(modal) {
   };
 }
 async function writeViewportTrace(modal) {
-  const collected = viewportTraceLines();
-  if (!isViewportTraceEnabled() || collected.length === 0) return;
+  if (!isViewportTraceEnabled()) return;
+  const collected = viewportTraceToWrite();
+  if (collected === null || collected.length === 0) return;
   const body = formatViewportTraceNote(collected);
   try {
     const existing = modal.app.vault.getAbstractFileByPath(VIEWPORT_TRACE_PATH);
@@ -15065,7 +15071,7 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian13.ItemView {
       const link = li.createEl("a", { text: f.claim, href: "#", cls: "consensus-workbench-artifact-link" });
       link.addEventListener("click", (e) => {
         e.preventDefault();
-        void this.app.workspace.openLinkText(`#${sectionHeading("synthesis")}`, file.path, false);
+        void this.openFromSidebar(`#${sectionHeading("synthesis")}`, file.path);
       });
       li.appendText(` \u2014 ${f.strength}`);
     }
@@ -15120,7 +15126,7 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian13.ItemView {
           const link = li.createEl("a", { text: m.title, href: "#", cls: "consensus-workbench-artifact-link" });
           link.addEventListener("click", (e) => {
             e.preventDefault();
-            void this.app.workspace.openLinkText(m.path, "", false);
+            void this.openFromSidebar(m.path, "");
           });
         }
         li.appendText(open);
@@ -15182,7 +15188,7 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian13.ItemView {
         const link = p.createEl("a", { text: item.text, href: "#", cls: "consensus-workbench-artifact-link" });
         link.addEventListener("click", (e) => {
           e.preventDefault();
-          void this.app.workspace.openLinkText(`#${sectionHeading("synthesis")}`, item.note, false);
+          void this.openFromSidebar(`#${sectionHeading("synthesis")}`, item.note);
         });
         p.appendText(` \u2014 "${this.noteTitle(item.note)}"`);
       }
@@ -15300,12 +15306,36 @@ var _WorkbenchView = class _WorkbenchView extends import_obsidian13.ItemView {
         const link = li.createEl("a", { text: a.label, href: "#", cls: "consensus-workbench-artifact-link" });
         link.addEventListener("click", (e) => {
           e.preventDefault();
-          void this.app.workspace.openLinkText(`#${a.heading}`, file.path, false);
+          void this.openFromSidebar(`#${a.heading}`, file.path);
         });
       } else {
         li.appendText(a.label);
       }
     }
+  }
+  /**
+   * Follow a link from this sidebar into the main area (AU_E145_S1).
+   *
+   * `openLinkText(…, false)` opens in the ACTIVE leaf, and on mobile the active leaf is this
+   * sidebar — you just tapped in it. The note then opened into the panel that was closing, so the
+   * tap read as "the link goes nowhere". Obsidian names this exact case in its API docs for
+   * `getMostRecentLeaf`: *"Useful for interacting with the leaf in the root split while a sidebar
+   * leaf might be active."*
+   *
+   * So: make a main-area leaf active first, then hand the link to Obsidian as before. Deliberately
+   * NOT `openFile(file, { eState: { subpath } })` — that would mean resolving the subpath
+   * ourselves, while `openLinkText` already does it and stays the one path that knows how.
+   *
+   * Every link in this view goes through here; there were four call sites and all four had it.
+   * A heading that no longer matches (the section lookup is marker-first, the anchor is the
+   * current localised name) now degrades to "opens the note without scrolling" rather than to
+   * nothing at all.
+   */
+  async openFromSidebar(linktext, sourcePath) {
+    const { workspace } = this.app;
+    const target = workspace.getMostRecentLeaf();
+    if (target) workspace.setActiveLeaf(target, { focus: true });
+    await workspace.openLinkText(linktext, sourcePath, false);
   }
   /** Log / trace — the most recent decision-trail entries from the ## Logboek. */
   renderTrace(root, body) {

@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.31.3]
+
+**A clearer description of what Parallax is for.** The plugin's own description, the line you see in the community directory and on its detail page, listed its steps as bare verbs. It now says what actually happens: explore before you search, think with theoretical lenses, challenge your framing, keep the account. No functional change.
+
 ## [0.31.2]
 
 **The search provider list no longer says "free" where it tells you nothing.** The provider dropdown read "OpenAlex (free)" and "Semantic Scholar (free, optional key)", which looked like a tier you were stuck on rather than a fact about the source. It is not a tier: OpenAlex and Semantic Scholar cost nothing whether or not you enter a key, and a key or a contact e-mail only raises how much you may ask of them per day. The options are now simply "OpenAlex", "Semantic Scholar" and "Consensus (paid API key)", so the one distinction that matters when choosing is the only one on screen, and the description spells out that keys change your allowance, never which source runs.

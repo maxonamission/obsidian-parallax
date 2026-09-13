@@ -1,9 +1,9 @@
 {
 	"id": "consensus-research",
 	"name": "Parallax",
-	"version": "0.31.2",
+	"version": "0.31.3",
 	"minAppVersion": "1.11.4",
-	"description": "Where research thinking takes shape: explore, theorise, research, challenge and account for it — then revise or branch as your thinking moves. Free via OpenAlex & Semantic Scholar; bring any LLM or none.",
+	"description": "Where research thinking takes shape: explore before you search, think with theoretical lenses, challenge your framing, keep the account. Free via OpenAlex & Semantic Scholar; bring any LLM or none.",
 	"author": "Max Kloosterman",
 	"authorUrl": "https://github.com/maxonamission",
 	"fundingUrl": "https://buymeacoffee.com/maxonamission",

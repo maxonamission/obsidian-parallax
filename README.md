@@ -84,8 +84,9 @@ Works on desktop and mobile (Obsidian 1.5.0+).
   writes into your notes come in 13 languages (English, Nederlands, Français, Deutsch,
   Español, Português, Italiano, Русский, 中文, हिन्दी, العربية, 日本語, 한국어). The AI-written
   prose always follows the language of your question.
-- **Search**: OpenAlex (default, free) · Semantic Scholar (free; optional key for a faster
-  lane) · Consensus (optional, paid).
+- **Search**: OpenAlex (default) · Semantic Scholar · Consensus (optional, paid). The first two
+  cost nothing and work as they are; a contact e-mail or a free key only raises your daily
+  allowance.
 - **AI (optional)**: Mistral (EU) or any OpenAI-compatible endpoint (OpenAI, Ollama, LM Studio,
   OpenRouter). Per-step model routing and reasoning effort — spend compute where it's read.
 - **Everything degrades gracefully**: no LLM key → you still get multi-source search + rank

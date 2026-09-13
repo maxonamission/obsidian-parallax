@@ -6157,6 +6157,605 @@ function stripSecretValues(settings) {
   return stripped;
 }
 
+// src/query-clean.ts
+function stripMarkdownNoise(query) {
+  return query.split("\n").map(
+    (line) => line.replace(/^\s*(?:>+\s*)?(?:[-*+]|\d+[.)])\s+/, "").replace(/^\s*#{1,6}\s+/, "").replace(/^\s*\[[^\]]{0,16}\]\s*/, "")
+  ).join(" ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`~]/g, " ").replace(/[–—]/g, " ").replace(/\s+/g, " ").trim();
+}
+var QUOTED_SPAN = /(^|[\s(])['‘"“]([^'’"”]{2,80}?)['’"”](?=$|[\s).,;:!?])/g;
+function extractQuotedPhrases(query) {
+  const out = [];
+  for (const m of query.matchAll(QUOTED_SPAN)) out.push(m[2].trim());
+  return out.filter(Boolean);
+}
+
+// src/consensus-api.ts
+function buildSearchUrl(query, filters, settings) {
+  const base = settings.apiBaseUrl.replace(/\/+$/, "");
+  const params = new URLSearchParams();
+  params.set("query", stripMarkdownNoise(query));
+  if (settings.resultLimit) params.set("page_size", String(settings.resultLimit));
+  if (filters.yearMin != null) params.set("year_min", String(filters.yearMin));
+  if (filters.yearMax != null) params.set("year_max", String(filters.yearMax));
+  if (filters.excludePreprints) params.set("exclude_preprints", "true");
+  if (filters.humanOnly) params.set("human", "true");
+  if (filters.sampleSizeMin != null) {
+    params.set("sample_size_min", String(filters.sampleSizeMin));
+  }
+  if (filters.studyTypes && filters.studyTypes.length > 0) {
+    for (const t2 of filters.studyTypes) params.append("study_types", t2);
+  }
+  return `${base}/quick_search?${params.toString()}`;
+}
+function firstString(obj, keys) {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  return void 0;
+}
+function firstNumber(obj, keys) {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) {
+      return Number(v);
+    }
+  }
+  return void 0;
+}
+function parseAuthors(obj) {
+  var _a, _b;
+  const raw = (_b = (_a = obj.authors) != null ? _a : obj.author_names) != null ? _b : obj.author;
+  if (Array.isArray(raw)) {
+    return raw.map((a) => {
+      var _a2;
+      if (typeof a === "string") return a;
+      if (a && typeof a === "object") {
+        const o = a;
+        return (_a2 = firstString(o, ["name", "display_name", "full_name"])) != null ? _a2 : "";
+      }
+      return "";
+    }).filter((s) => s.length > 0);
+  }
+  if (typeof raw === "string" && raw.trim()) {
+    return raw.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+function normalizePaper(raw) {
+  var _a;
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw;
+  const title = firstString(o, ["title", "paper_title", "name"]);
+  if (!title) return null;
+  const url = (_a = firstString(o, ["url", "paper_url", "consensus_url", "link", "doi_url"])) != null ? _a : "";
+  return {
+    title,
+    authors: parseAuthors(o),
+    year: firstNumber(o, ["year", "publish_year", "publication_year"]),
+    journal: firstString(o, ["journal", "journal_name", "venue", "publication"]),
+    citationCount: firstNumber(o, ["citation_count", "citations", "cited_by_count"]),
+    url,
+    doi: firstString(o, ["doi"]),
+    abstract: firstString(o, ["abstract", "snippet", "text", "summary"])
+  };
+}
+function extractPaperArray(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && typeof payload === "object") {
+    const o = payload;
+    for (const key of ["results", "papers", "data", "items", "search_results"]) {
+      if (Array.isArray(o[key])) return o[key];
+    }
+  }
+  return [];
+}
+function parseSearchResponse(query, payload) {
+  const papers = extractPaperArray(payload).map(normalizePaper).filter((p) => p !== null);
+  let summary;
+  if (payload && typeof payload === "object") {
+    summary = firstString(payload, [
+      "summary",
+      "answer",
+      "synthesis"
+    ]);
+  }
+  return { query, papers, summary, raw: payload };
+}
+async function searchConsensus(query, filters, settings, http) {
+  var _a, _b;
+  if (!settings.apiKey) {
+    throw new SearchApiError("No Consensus API key configured.", 0);
+  }
+  const url = buildSearchUrl(query, filters, settings);
+  const headers3 = {
+    Accept: "application/json",
+    [settings.apiKeyHeader]: settings.apiKey
+  };
+  const res = await http({ url, method: "GET", headers: headers3 });
+  if (res.status < 200 || res.status >= 300) {
+    const detail = (_b = (_a = res.json && typeof res.json === "object" ? firstString(res.json, ["message", "detail", "error"]) : void 0) != null ? _a : res.text) == null ? void 0 : _b.slice(0, 200);
+    throw new SearchApiError(
+      `Consensus API returned ${res.status}${detail ? `: ${detail}` : ""}`,
+      res.status
+    );
+  }
+  return parseSearchResponse(query, res.json);
+}
+
+// src/openalex-api.ts
+var OPENALEX_WORKS = "https://api.openalex.org/works";
+function buildOpenAlexUrl(query, filters, settings, mode = "semantic") {
+  const params = new URLSearchParams();
+  const cleaned = stripMarkdownNoise(query);
+  if (mode === "semantic") {
+    params.set("search.semantic", cleaned);
+  } else {
+    params.set("search", cleaned.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
+  }
+  params.set("per-page", String(Math.min(settings.resultLimit || 20, 50)));
+  params.set(
+    "select",
+    "id,doi,title,display_name,publication_year,cited_by_count,primary_location,authorships,abstract_inverted_index,type,open_access"
+  );
+  if (settings.openAlexMailto) params.set("mailto", settings.openAlexMailto);
+  if (settings.openAlexApiKey) params.set("api_key", settings.openAlexApiKey);
+  const filterParts = [];
+  if (filters.yearMin != null) {
+    filterParts.push(
+      mode === "semantic" ? `publication_year:>${filters.yearMin - 1}` : `from_publication_date:${filters.yearMin}-01-01`
+    );
+  }
+  if (filters.yearMax != null) {
+    filterParts.push(
+      mode === "semantic" ? `publication_year:<${filters.yearMax + 1}` : `to_publication_date:${filters.yearMax}-12-31`
+    );
+  }
+  if (filters.excludePreprints) filterParts.push("type:article");
+  if (filterParts.length > 0) params.set("filter", filterParts.join(","));
+  return `${OPENALEX_WORKS}?${params.toString()}`;
+}
+function reconstructAbstract(inverted) {
+  if (!inverted || typeof inverted !== "object") return void 0;
+  const entries = Object.entries(inverted);
+  const slots = [];
+  for (const [word, positions] of entries) {
+    if (!Array.isArray(positions)) continue;
+    for (const pos of positions) {
+      if (typeof pos === "number") slots[pos] = word;
+    }
+  }
+  const text = slots.filter((w) => w !== void 0).join(" ").trim();
+  return text.length > 0 ? text : void 0;
+}
+function pickUrl(work) {
+  const doi = work.doi;
+  if (typeof doi === "string" && doi) return doi;
+  const loc = work.primary_location;
+  if (loc && typeof loc === "object") {
+    const landing = loc.landing_page_url;
+    if (typeof landing === "string" && landing) return landing;
+  }
+  const id = work.id;
+  return typeof id === "string" ? id : "";
+}
+function pickJournal(work) {
+  const loc = work.primary_location;
+  if (loc && typeof loc === "object") {
+    const source = loc.source;
+    if (source && typeof source === "object") {
+      const name = source.display_name;
+      if (typeof name === "string" && name) return name;
+    }
+  }
+  return void 0;
+}
+function pickAuthors(work) {
+  const authorships = work.authorships;
+  if (!Array.isArray(authorships)) return [];
+  return authorships.map((a) => {
+    if (a && typeof a === "object") {
+      const author = a.author;
+      if (author && typeof author === "object") {
+        const name = author.display_name;
+        if (typeof name === "string") return name;
+      }
+    }
+    return "";
+  }).filter((s) => s.length > 0);
+}
+function pickPublicationTypes(work) {
+  const type = work.type;
+  if (typeof type !== "string" || !type) return void 0;
+  if (type === "review") return ["Review"];
+  return void 0;
+}
+function pickOpenAccess(work) {
+  const oa = work.open_access;
+  if (!oa || typeof oa !== "object") return {};
+  const o = oa;
+  const oaUrl = typeof o.oa_url === "string" && o.oa_url ? o.oa_url : void 0;
+  const isOpenAccess = typeof o.is_oa === "boolean" ? o.is_oa : void 0;
+  return { oaUrl, isOpenAccess };
+}
+function normalizeOpenAlexWork(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const w = raw;
+  const title = typeof w.title === "string" && w.title || typeof w.display_name === "string" && w.display_name || "";
+  if (!title) return null;
+  const year = typeof w.publication_year === "number" ? w.publication_year : void 0;
+  const citationCount = typeof w.cited_by_count === "number" ? w.cited_by_count : void 0;
+  const doi = typeof w.doi === "string" ? w.doi.replace(/^https?:\/\/doi\.org\//, "") : void 0;
+  return {
+    title,
+    authors: pickAuthors(w),
+    year,
+    journal: pickJournal(w),
+    citationCount,
+    url: pickUrl(w),
+    doi,
+    abstract: reconstructAbstract(w.abstract_inverted_index),
+    publicationTypes: pickPublicationTypes(w),
+    ...pickOpenAccess(w)
+  };
+}
+function parseOpenAlexResponse(query, payload) {
+  let results = [];
+  if (payload && typeof payload === "object" && Array.isArray(payload.results)) {
+    results = payload.results;
+  }
+  const papers = results.map(normalizeOpenAlexWork).filter((p) => p !== null);
+  return { query, papers, raw: payload };
+}
+async function searchOpenAlex(query, filters, settings, http) {
+  const url = buildOpenAlexUrl(query, filters, settings, "semantic");
+  let res = await http({ url, method: "GET", headers: { Accept: "application/json" } });
+  if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+    const fallbackUrl = buildOpenAlexUrl(query, filters, settings, "keyword");
+    res = await http({ url: fallbackUrl, method: "GET", headers: { Accept: "application/json" } });
+  }
+  if (res.status < 200 || res.status >= 300) {
+    throw new SearchApiError(
+      `OpenAlex returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
+      res.status
+    );
+  }
+  return parseOpenAlexResponse(query, res.json);
+}
+
+// src/semanticscholar-api.ts
+var S2_SEARCH = "https://api.semanticscholar.org/graph/v1/paper/search";
+var S2_STOPWORDS = /* @__PURE__ */ new Set([
+  "a",
+  "an",
+  "the",
+  "of",
+  "to",
+  "in",
+  "on",
+  "for",
+  "and",
+  "or",
+  "but",
+  "by",
+  "with",
+  "within",
+  "into",
+  "from",
+  "at",
+  "as",
+  "is",
+  "are",
+  "was",
+  "were",
+  "be",
+  "been",
+  "being",
+  "do",
+  "does",
+  "did",
+  "what",
+  "how",
+  "which",
+  "why",
+  "who",
+  "whom",
+  "when",
+  "where",
+  "whether",
+  "that",
+  "this",
+  "these",
+  "those",
+  "their",
+  "they",
+  "them",
+  "its",
+  "it",
+  "can",
+  "could",
+  "should",
+  "would",
+  "may",
+  "might",
+  "will",
+  "shall",
+  "than",
+  "then",
+  "there",
+  "about",
+  "over",
+  "under",
+  "between",
+  "among",
+  "through",
+  "per",
+  // Dutch: articles, pronouns, prepositions, auxiliaries, interrogatives.
+  "de",
+  "het",
+  "een",
+  "en",
+  "maar",
+  "want",
+  "dus",
+  "als",
+  "dan",
+  "dat",
+  "dit",
+  "deze",
+  "die",
+  "ook",
+  "nog",
+  "al",
+  "alleen",
+  "hier",
+  "daar",
+  "er",
+  "niet",
+  "geen",
+  "wel",
+  "zo",
+  "zoals",
+  "van",
+  "voor",
+  "naar",
+  "met",
+  "bij",
+  "tot",
+  "uit",
+  "onder",
+  "tussen",
+  "door",
+  "om",
+  "op",
+  "aan",
+  "binnen",
+  "tegen",
+  "zonder",
+  "tijdens",
+  "volgens",
+  "vanuit",
+  "na",
+  "te",
+  "ten",
+  "ter",
+  "zijn",
+  "waren",
+  "wordt",
+  "worden",
+  "werd",
+  "werden",
+  "ben",
+  "bent",
+  "heeft",
+  "hebben",
+  "had",
+  "hadden",
+  "kan",
+  "kunnen",
+  "kon",
+  "konden",
+  "zal",
+  "zullen",
+  "zou",
+  "zouden",
+  "moet",
+  "moeten",
+  "mag",
+  "mogen",
+  "wil",
+  "willen",
+  "wat",
+  "wie",
+  "waar",
+  "waarom",
+  "hoe",
+  "welke",
+  "welk",
+  "wanneer",
+  "waarin",
+  "waarbij",
+  "waarvoor",
+  "waarmee",
+  "hun",
+  "hen",
+  "ze",
+  "zij",
+  "hij",
+  "hem",
+  "haar",
+  "je",
+  "jij",
+  "u",
+  "we",
+  "wij",
+  "men",
+  "iets",
+  "niets",
+  "alles",
+  "elk",
+  "elke",
+  "ieder",
+  "iedere"
+]);
+function toKeywordQuery(query, maxTokens = 8) {
+  const noiseFree = stripMarkdownNoise(query);
+  const quotedTokens = extractQuotedPhrases(noiseFree).flatMap((p) => p.split(/\s+/));
+  const cleaned = noiseFree.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
+  const tokens = cleaned.split(" ").filter(Boolean);
+  const isContent = (t2) => !S2_STOPWORDS.has(t2.toLowerCase()) && /[\p{L}\p{N}]/u.test(t2);
+  const seen = /* @__PURE__ */ new Set();
+  const content = [];
+  for (const t2 of [...quotedTokens.filter(isContent), ...tokens.filter(isContent)]) {
+    if (seen.has(t2.toLowerCase())) continue;
+    seen.add(t2.toLowerCase());
+    content.push(t2);
+  }
+  const kept = content.slice(0, maxTokens).join(" ").trim();
+  return content.length >= 2 ? kept : cleaned;
+}
+var S2_FIELDS = [
+  "title",
+  "abstract",
+  "year",
+  "authors",
+  "venue",
+  "externalIds",
+  "citationCount",
+  "influentialCitationCount",
+  "publicationTypes",
+  "url",
+  "openAccessPdf"
+].join(",");
+function buildSemanticScholarUrl(query, filters, settings) {
+  var _a, _b;
+  const params = new URLSearchParams();
+  params.set("query", toKeywordQuery(query));
+  params.set("limit", String(Math.min(settings.resultLimit || 20, 100)));
+  params.set("fields", S2_FIELDS);
+  if (filters.yearMin != null || filters.yearMax != null) {
+    params.set("year", `${(_a = filters.yearMin) != null ? _a : ""}-${(_b = filters.yearMax) != null ? _b : ""}`);
+  }
+  if (filters.excludePreprints) params.set("publicationTypes", "JournalArticle");
+  return `${S2_SEARCH}?${params.toString()}`;
+}
+function pickAuthors2(raw) {
+  const authors = raw.authors;
+  if (!Array.isArray(authors)) return [];
+  return authors.map((a) => a && typeof a === "object" ? a.name : "").filter((n) => typeof n === "string" && n.length > 0);
+}
+function pickDoi(raw) {
+  const ext = raw.externalIds;
+  if (ext && typeof ext === "object") {
+    const doi = ext.DOI;
+    if (typeof doi === "string" && doi) return doi;
+  }
+  return void 0;
+}
+function pickUrl2(raw, doi) {
+  if (typeof raw.url === "string" && raw.url) return raw.url;
+  if (doi) return `https://doi.org/${doi}`;
+  return "";
+}
+function pickPublicationTypes2(raw) {
+  const types = raw.publicationTypes;
+  if (!Array.isArray(types)) return void 0;
+  const out = types.filter((t2) => typeof t2 === "string" && t2.length > 0);
+  return out.length > 0 ? out : void 0;
+}
+function pickOpenAccess2(raw) {
+  const pdf = raw.openAccessPdf;
+  if (!pdf || typeof pdf !== "object") return {};
+  const url = pdf.url;
+  return typeof url === "string" && url ? { oaUrl: url, isOpenAccess: true } : {};
+}
+function normalizeSemanticScholarPaper(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const p = raw;
+  const title = typeof p.title === "string" ? p.title : "";
+  if (!title) return null;
+  const doi = pickDoi(p);
+  return {
+    title,
+    authors: pickAuthors2(p),
+    year: typeof p.year === "number" ? p.year : void 0,
+    journal: typeof p.venue === "string" && p.venue ? p.venue : void 0,
+    citationCount: typeof p.citationCount === "number" ? p.citationCount : void 0,
+    url: pickUrl2(p, doi),
+    doi,
+    abstract: typeof p.abstract === "string" ? p.abstract : void 0,
+    publicationTypes: pickPublicationTypes2(p),
+    ...pickOpenAccess2(p)
+  };
+}
+function parseSemanticScholarResponse(query, payload) {
+  let data = [];
+  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
+    data = payload.data;
+  }
+  const papers = data.map(normalizeSemanticScholarPaper).filter((p) => p !== null);
+  return { query, papers, raw: payload };
+}
+async function searchSemanticScholar(query, filters, settings, http) {
+  const headers3 = { Accept: "application/json" };
+  if (settings.semanticScholarApiKey) headers3["x-api-key"] = settings.semanticScholarApiKey;
+  const url = buildSemanticScholarUrl(query, filters, settings);
+  const res = await http({ url, method: "GET", headers: headers3 });
+  if (res.status === 429) {
+    throw new SearchApiError(
+      "Semantic Scholar rate limit reached (429). Add a free API key in settings for a dedicated lane.",
+      429
+    );
+  }
+  if (res.status < 200 || res.status >= 300) {
+    throw new SearchApiError(
+      `Semantic Scholar returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
+      res.status
+    );
+  }
+  return parseSemanticScholarResponse(query, res.json);
+}
+
+// src/providers.ts
+var PROVIDERS = {
+  openalex: {
+    id: "openalex",
+    label: "OpenAlex",
+    costHint: "",
+    requiresApiKey: false,
+    supportsMedicalFilters: false,
+    search: searchOpenAlex
+  },
+  semanticscholar: {
+    id: "semanticscholar",
+    label: "Semantic Scholar",
+    costHint: "",
+    // Works without a key (shared pool); a free key just raises the rate limit.
+    requiresApiKey: false,
+    supportsMedicalFilters: false,
+    search: searchSemanticScholar
+  },
+  consensus: {
+    id: "consensus",
+    label: "Consensus",
+    costHint: "paid API key",
+    requiresApiKey: true,
+    supportsMedicalFilters: true,
+    search: searchConsensus
+  }
+};
+var SEARCH_PROVIDER_ORDER = ["openalex", "semanticscholar", "consensus"];
+function providerOptionLabel(id) {
+  const provider = getProvider(id);
+  return provider.costHint ? `${provider.label} (${provider.costHint})` : provider.label;
+}
+function getProvider(id) {
+  var _a;
+  return (_a = PROVIDERS[id]) != null ? _a : PROVIDERS.openalex;
+}
+
 // src/settings-tab.ts
 var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   constructor(app, plugin) {
@@ -6298,9 +6897,10 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   }
   renderSearchSources(containerEl) {
     new import_obsidian.Setting(containerEl).setName("Search provider").setDesc(
-      'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 ask a question" command always combines OpenAlex + Semantic Scholar, regardless of this choice.'
+      'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 ask a question" command always combines OpenAlex + Semantic Scholar, regardless of this choice. OpenAlex and Semantic Scholar cost nothing and work without any setup; the contact e-mail and keys below only raise your daily allowance, they never change which provider runs. Consensus is the one paid source.'
     ).addDropdown((d) => {
-      d.addOption("openalex", "OpenAlex (free)").addOption("semanticscholar", "Semantic Scholar (free, optional key)").addOption("consensus", "Consensus (API key)").setValue(this.plugin.settings.provider).onChange(async (v) => {
+      for (const id of SEARCH_PROVIDER_ORDER) d.addOption(id, providerOptionLabel(id));
+      d.setValue(this.plugin.settings.provider).onChange(async (v) => {
         this.plugin.settings.provider = v;
         await this.plugin.saveSettings();
         this.refreshBadges();
@@ -6351,7 +6951,9 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     this.addSecretComponent(
       new import_obsidian.Setting(containerEl).setName("Consensus API key").setDesc(
         createFragment((f) => {
-          f.appendText("Only needed for the Consensus provider. Request access at ");
+          f.appendText(
+            "Only needed for the Consensus provider, which is a paid service \u2014 the other two sources need no key at all. Request access at "
+          );
           f.createEl("a", {
             text: "consensus.app/home/api",
             href: "https://consensus.app/home/api/"
@@ -9168,597 +9770,6 @@ var RecordHygieneModal = class extends import_obsidian8.Modal {
     this.contentEl.empty();
   }
 };
-
-// src/query-clean.ts
-function stripMarkdownNoise(query) {
-  return query.split("\n").map(
-    (line) => line.replace(/^\s*(?:>+\s*)?(?:[-*+]|\d+[.)])\s+/, "").replace(/^\s*#{1,6}\s+/, "").replace(/^\s*\[[^\]]{0,16}\]\s*/, "")
-  ).join(" ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`~]/g, " ").replace(/[–—]/g, " ").replace(/\s+/g, " ").trim();
-}
-var QUOTED_SPAN = /(^|[\s(])['‘"“]([^'’"”]{2,80}?)['’"”](?=$|[\s).,;:!?])/g;
-function extractQuotedPhrases(query) {
-  const out = [];
-  for (const m of query.matchAll(QUOTED_SPAN)) out.push(m[2].trim());
-  return out.filter(Boolean);
-}
-
-// src/consensus-api.ts
-function buildSearchUrl(query, filters, settings) {
-  const base = settings.apiBaseUrl.replace(/\/+$/, "");
-  const params = new URLSearchParams();
-  params.set("query", stripMarkdownNoise(query));
-  if (settings.resultLimit) params.set("page_size", String(settings.resultLimit));
-  if (filters.yearMin != null) params.set("year_min", String(filters.yearMin));
-  if (filters.yearMax != null) params.set("year_max", String(filters.yearMax));
-  if (filters.excludePreprints) params.set("exclude_preprints", "true");
-  if (filters.humanOnly) params.set("human", "true");
-  if (filters.sampleSizeMin != null) {
-    params.set("sample_size_min", String(filters.sampleSizeMin));
-  }
-  if (filters.studyTypes && filters.studyTypes.length > 0) {
-    for (const t2 of filters.studyTypes) params.append("study_types", t2);
-  }
-  return `${base}/quick_search?${params.toString()}`;
-}
-function firstString(obj, keys) {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === "string" && v.trim()) return v.trim();
-  }
-  return void 0;
-}
-function firstNumber(obj, keys) {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === "number" && Number.isFinite(v)) return v;
-    if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) {
-      return Number(v);
-    }
-  }
-  return void 0;
-}
-function parseAuthors(obj) {
-  var _a, _b;
-  const raw = (_b = (_a = obj.authors) != null ? _a : obj.author_names) != null ? _b : obj.author;
-  if (Array.isArray(raw)) {
-    return raw.map((a) => {
-      var _a2;
-      if (typeof a === "string") return a;
-      if (a && typeof a === "object") {
-        const o = a;
-        return (_a2 = firstString(o, ["name", "display_name", "full_name"])) != null ? _a2 : "";
-      }
-      return "";
-    }).filter((s) => s.length > 0);
-  }
-  if (typeof raw === "string" && raw.trim()) {
-    return raw.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
-  }
-  return [];
-}
-function normalizePaper(raw) {
-  var _a;
-  if (!raw || typeof raw !== "object") return null;
-  const o = raw;
-  const title = firstString(o, ["title", "paper_title", "name"]);
-  if (!title) return null;
-  const url = (_a = firstString(o, ["url", "paper_url", "consensus_url", "link", "doi_url"])) != null ? _a : "";
-  return {
-    title,
-    authors: parseAuthors(o),
-    year: firstNumber(o, ["year", "publish_year", "publication_year"]),
-    journal: firstString(o, ["journal", "journal_name", "venue", "publication"]),
-    citationCount: firstNumber(o, ["citation_count", "citations", "cited_by_count"]),
-    url,
-    doi: firstString(o, ["doi"]),
-    abstract: firstString(o, ["abstract", "snippet", "text", "summary"])
-  };
-}
-function extractPaperArray(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (payload && typeof payload === "object") {
-    const o = payload;
-    for (const key of ["results", "papers", "data", "items", "search_results"]) {
-      if (Array.isArray(o[key])) return o[key];
-    }
-  }
-  return [];
-}
-function parseSearchResponse(query, payload) {
-  const papers = extractPaperArray(payload).map(normalizePaper).filter((p) => p !== null);
-  let summary;
-  if (payload && typeof payload === "object") {
-    summary = firstString(payload, [
-      "summary",
-      "answer",
-      "synthesis"
-    ]);
-  }
-  return { query, papers, summary, raw: payload };
-}
-async function searchConsensus(query, filters, settings, http) {
-  var _a, _b;
-  if (!settings.apiKey) {
-    throw new SearchApiError("No Consensus API key configured.", 0);
-  }
-  const url = buildSearchUrl(query, filters, settings);
-  const headers3 = {
-    Accept: "application/json",
-    [settings.apiKeyHeader]: settings.apiKey
-  };
-  const res = await http({ url, method: "GET", headers: headers3 });
-  if (res.status < 200 || res.status >= 300) {
-    const detail = (_b = (_a = res.json && typeof res.json === "object" ? firstString(res.json, ["message", "detail", "error"]) : void 0) != null ? _a : res.text) == null ? void 0 : _b.slice(0, 200);
-    throw new SearchApiError(
-      `Consensus API returned ${res.status}${detail ? `: ${detail}` : ""}`,
-      res.status
-    );
-  }
-  return parseSearchResponse(query, res.json);
-}
-
-// src/openalex-api.ts
-var OPENALEX_WORKS = "https://api.openalex.org/works";
-function buildOpenAlexUrl(query, filters, settings, mode = "semantic") {
-  const params = new URLSearchParams();
-  const cleaned = stripMarkdownNoise(query);
-  if (mode === "semantic") {
-    params.set("search.semantic", cleaned);
-  } else {
-    params.set("search", cleaned.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
-  }
-  params.set("per-page", String(Math.min(settings.resultLimit || 20, 50)));
-  params.set(
-    "select",
-    "id,doi,title,display_name,publication_year,cited_by_count,primary_location,authorships,abstract_inverted_index,type,open_access"
-  );
-  if (settings.openAlexMailto) params.set("mailto", settings.openAlexMailto);
-  if (settings.openAlexApiKey) params.set("api_key", settings.openAlexApiKey);
-  const filterParts = [];
-  if (filters.yearMin != null) {
-    filterParts.push(
-      mode === "semantic" ? `publication_year:>${filters.yearMin - 1}` : `from_publication_date:${filters.yearMin}-01-01`
-    );
-  }
-  if (filters.yearMax != null) {
-    filterParts.push(
-      mode === "semantic" ? `publication_year:<${filters.yearMax + 1}` : `to_publication_date:${filters.yearMax}-12-31`
-    );
-  }
-  if (filters.excludePreprints) filterParts.push("type:article");
-  if (filterParts.length > 0) params.set("filter", filterParts.join(","));
-  return `${OPENALEX_WORKS}?${params.toString()}`;
-}
-function reconstructAbstract(inverted) {
-  if (!inverted || typeof inverted !== "object") return void 0;
-  const entries = Object.entries(inverted);
-  const slots = [];
-  for (const [word, positions] of entries) {
-    if (!Array.isArray(positions)) continue;
-    for (const pos of positions) {
-      if (typeof pos === "number") slots[pos] = word;
-    }
-  }
-  const text = slots.filter((w) => w !== void 0).join(" ").trim();
-  return text.length > 0 ? text : void 0;
-}
-function pickUrl(work) {
-  const doi = work.doi;
-  if (typeof doi === "string" && doi) return doi;
-  const loc = work.primary_location;
-  if (loc && typeof loc === "object") {
-    const landing = loc.landing_page_url;
-    if (typeof landing === "string" && landing) return landing;
-  }
-  const id = work.id;
-  return typeof id === "string" ? id : "";
-}
-function pickJournal(work) {
-  const loc = work.primary_location;
-  if (loc && typeof loc === "object") {
-    const source = loc.source;
-    if (source && typeof source === "object") {
-      const name = source.display_name;
-      if (typeof name === "string" && name) return name;
-    }
-  }
-  return void 0;
-}
-function pickAuthors(work) {
-  const authorships = work.authorships;
-  if (!Array.isArray(authorships)) return [];
-  return authorships.map((a) => {
-    if (a && typeof a === "object") {
-      const author = a.author;
-      if (author && typeof author === "object") {
-        const name = author.display_name;
-        if (typeof name === "string") return name;
-      }
-    }
-    return "";
-  }).filter((s) => s.length > 0);
-}
-function pickPublicationTypes(work) {
-  const type = work.type;
-  if (typeof type !== "string" || !type) return void 0;
-  if (type === "review") return ["Review"];
-  return void 0;
-}
-function pickOpenAccess(work) {
-  const oa = work.open_access;
-  if (!oa || typeof oa !== "object") return {};
-  const o = oa;
-  const oaUrl = typeof o.oa_url === "string" && o.oa_url ? o.oa_url : void 0;
-  const isOpenAccess = typeof o.is_oa === "boolean" ? o.is_oa : void 0;
-  return { oaUrl, isOpenAccess };
-}
-function normalizeOpenAlexWork(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const w = raw;
-  const title = typeof w.title === "string" && w.title || typeof w.display_name === "string" && w.display_name || "";
-  if (!title) return null;
-  const year = typeof w.publication_year === "number" ? w.publication_year : void 0;
-  const citationCount = typeof w.cited_by_count === "number" ? w.cited_by_count : void 0;
-  const doi = typeof w.doi === "string" ? w.doi.replace(/^https?:\/\/doi\.org\//, "") : void 0;
-  return {
-    title,
-    authors: pickAuthors(w),
-    year,
-    journal: pickJournal(w),
-    citationCount,
-    url: pickUrl(w),
-    doi,
-    abstract: reconstructAbstract(w.abstract_inverted_index),
-    publicationTypes: pickPublicationTypes(w),
-    ...pickOpenAccess(w)
-  };
-}
-function parseOpenAlexResponse(query, payload) {
-  let results = [];
-  if (payload && typeof payload === "object" && Array.isArray(payload.results)) {
-    results = payload.results;
-  }
-  const papers = results.map(normalizeOpenAlexWork).filter((p) => p !== null);
-  return { query, papers, raw: payload };
-}
-async function searchOpenAlex(query, filters, settings, http) {
-  const url = buildOpenAlexUrl(query, filters, settings, "semantic");
-  let res = await http({ url, method: "GET", headers: { Accept: "application/json" } });
-  if (res.status >= 400 && res.status < 500 && res.status !== 429) {
-    const fallbackUrl = buildOpenAlexUrl(query, filters, settings, "keyword");
-    res = await http({ url: fallbackUrl, method: "GET", headers: { Accept: "application/json" } });
-  }
-  if (res.status < 200 || res.status >= 300) {
-    throw new SearchApiError(
-      `OpenAlex returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
-      res.status
-    );
-  }
-  return parseOpenAlexResponse(query, res.json);
-}
-
-// src/semanticscholar-api.ts
-var S2_SEARCH = "https://api.semanticscholar.org/graph/v1/paper/search";
-var S2_STOPWORDS = /* @__PURE__ */ new Set([
-  "a",
-  "an",
-  "the",
-  "of",
-  "to",
-  "in",
-  "on",
-  "for",
-  "and",
-  "or",
-  "but",
-  "by",
-  "with",
-  "within",
-  "into",
-  "from",
-  "at",
-  "as",
-  "is",
-  "are",
-  "was",
-  "were",
-  "be",
-  "been",
-  "being",
-  "do",
-  "does",
-  "did",
-  "what",
-  "how",
-  "which",
-  "why",
-  "who",
-  "whom",
-  "when",
-  "where",
-  "whether",
-  "that",
-  "this",
-  "these",
-  "those",
-  "their",
-  "they",
-  "them",
-  "its",
-  "it",
-  "can",
-  "could",
-  "should",
-  "would",
-  "may",
-  "might",
-  "will",
-  "shall",
-  "than",
-  "then",
-  "there",
-  "about",
-  "over",
-  "under",
-  "between",
-  "among",
-  "through",
-  "per",
-  // Dutch: articles, pronouns, prepositions, auxiliaries, interrogatives.
-  "de",
-  "het",
-  "een",
-  "en",
-  "maar",
-  "want",
-  "dus",
-  "als",
-  "dan",
-  "dat",
-  "dit",
-  "deze",
-  "die",
-  "ook",
-  "nog",
-  "al",
-  "alleen",
-  "hier",
-  "daar",
-  "er",
-  "niet",
-  "geen",
-  "wel",
-  "zo",
-  "zoals",
-  "van",
-  "voor",
-  "naar",
-  "met",
-  "bij",
-  "tot",
-  "uit",
-  "onder",
-  "tussen",
-  "door",
-  "om",
-  "op",
-  "aan",
-  "binnen",
-  "tegen",
-  "zonder",
-  "tijdens",
-  "volgens",
-  "vanuit",
-  "na",
-  "te",
-  "ten",
-  "ter",
-  "zijn",
-  "waren",
-  "wordt",
-  "worden",
-  "werd",
-  "werden",
-  "ben",
-  "bent",
-  "heeft",
-  "hebben",
-  "had",
-  "hadden",
-  "kan",
-  "kunnen",
-  "kon",
-  "konden",
-  "zal",
-  "zullen",
-  "zou",
-  "zouden",
-  "moet",
-  "moeten",
-  "mag",
-  "mogen",
-  "wil",
-  "willen",
-  "wat",
-  "wie",
-  "waar",
-  "waarom",
-  "hoe",
-  "welke",
-  "welk",
-  "wanneer",
-  "waarin",
-  "waarbij",
-  "waarvoor",
-  "waarmee",
-  "hun",
-  "hen",
-  "ze",
-  "zij",
-  "hij",
-  "hem",
-  "haar",
-  "je",
-  "jij",
-  "u",
-  "we",
-  "wij",
-  "men",
-  "iets",
-  "niets",
-  "alles",
-  "elk",
-  "elke",
-  "ieder",
-  "iedere"
-]);
-function toKeywordQuery(query, maxTokens = 8) {
-  const noiseFree = stripMarkdownNoise(query);
-  const quotedTokens = extractQuotedPhrases(noiseFree).flatMap((p) => p.split(/\s+/));
-  const cleaned = noiseFree.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
-  const tokens = cleaned.split(" ").filter(Boolean);
-  const isContent = (t2) => !S2_STOPWORDS.has(t2.toLowerCase()) && /[\p{L}\p{N}]/u.test(t2);
-  const seen = /* @__PURE__ */ new Set();
-  const content = [];
-  for (const t2 of [...quotedTokens.filter(isContent), ...tokens.filter(isContent)]) {
-    if (seen.has(t2.toLowerCase())) continue;
-    seen.add(t2.toLowerCase());
-    content.push(t2);
-  }
-  const kept = content.slice(0, maxTokens).join(" ").trim();
-  return content.length >= 2 ? kept : cleaned;
-}
-var S2_FIELDS = [
-  "title",
-  "abstract",
-  "year",
-  "authors",
-  "venue",
-  "externalIds",
-  "citationCount",
-  "influentialCitationCount",
-  "publicationTypes",
-  "url",
-  "openAccessPdf"
-].join(",");
-function buildSemanticScholarUrl(query, filters, settings) {
-  var _a, _b;
-  const params = new URLSearchParams();
-  params.set("query", toKeywordQuery(query));
-  params.set("limit", String(Math.min(settings.resultLimit || 20, 100)));
-  params.set("fields", S2_FIELDS);
-  if (filters.yearMin != null || filters.yearMax != null) {
-    params.set("year", `${(_a = filters.yearMin) != null ? _a : ""}-${(_b = filters.yearMax) != null ? _b : ""}`);
-  }
-  if (filters.excludePreprints) params.set("publicationTypes", "JournalArticle");
-  return `${S2_SEARCH}?${params.toString()}`;
-}
-function pickAuthors2(raw) {
-  const authors = raw.authors;
-  if (!Array.isArray(authors)) return [];
-  return authors.map((a) => a && typeof a === "object" ? a.name : "").filter((n) => typeof n === "string" && n.length > 0);
-}
-function pickDoi(raw) {
-  const ext = raw.externalIds;
-  if (ext && typeof ext === "object") {
-    const doi = ext.DOI;
-    if (typeof doi === "string" && doi) return doi;
-  }
-  return void 0;
-}
-function pickUrl2(raw, doi) {
-  if (typeof raw.url === "string" && raw.url) return raw.url;
-  if (doi) return `https://doi.org/${doi}`;
-  return "";
-}
-function pickPublicationTypes2(raw) {
-  const types = raw.publicationTypes;
-  if (!Array.isArray(types)) return void 0;
-  const out = types.filter((t2) => typeof t2 === "string" && t2.length > 0);
-  return out.length > 0 ? out : void 0;
-}
-function pickOpenAccess2(raw) {
-  const pdf = raw.openAccessPdf;
-  if (!pdf || typeof pdf !== "object") return {};
-  const url = pdf.url;
-  return typeof url === "string" && url ? { oaUrl: url, isOpenAccess: true } : {};
-}
-function normalizeSemanticScholarPaper(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const p = raw;
-  const title = typeof p.title === "string" ? p.title : "";
-  if (!title) return null;
-  const doi = pickDoi(p);
-  return {
-    title,
-    authors: pickAuthors2(p),
-    year: typeof p.year === "number" ? p.year : void 0,
-    journal: typeof p.venue === "string" && p.venue ? p.venue : void 0,
-    citationCount: typeof p.citationCount === "number" ? p.citationCount : void 0,
-    url: pickUrl2(p, doi),
-    doi,
-    abstract: typeof p.abstract === "string" ? p.abstract : void 0,
-    publicationTypes: pickPublicationTypes2(p),
-    ...pickOpenAccess2(p)
-  };
-}
-function parseSemanticScholarResponse(query, payload) {
-  let data = [];
-  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
-    data = payload.data;
-  }
-  const papers = data.map(normalizeSemanticScholarPaper).filter((p) => p !== null);
-  return { query, papers, raw: payload };
-}
-async function searchSemanticScholar(query, filters, settings, http) {
-  const headers3 = { Accept: "application/json" };
-  if (settings.semanticScholarApiKey) headers3["x-api-key"] = settings.semanticScholarApiKey;
-  const url = buildSemanticScholarUrl(query, filters, settings);
-  const res = await http({ url, method: "GET", headers: headers3 });
-  if (res.status === 429) {
-    throw new SearchApiError(
-      "Semantic Scholar rate limit reached (429). Add a free API key in settings for a dedicated lane.",
-      429
-    );
-  }
-  if (res.status < 200 || res.status >= 300) {
-    throw new SearchApiError(
-      `Semantic Scholar returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
-      res.status
-    );
-  }
-  return parseSemanticScholarResponse(query, res.json);
-}
-
-// src/providers.ts
-var PROVIDERS = {
-  openalex: {
-    id: "openalex",
-    label: "OpenAlex (free)",
-    requiresApiKey: false,
-    supportsMedicalFilters: false,
-    search: searchOpenAlex
-  },
-  semanticscholar: {
-    id: "semanticscholar",
-    label: "Semantic Scholar (free, optional key)",
-    // Works without a key (shared pool); a free key just raises the rate limit.
-    requiresApiKey: false,
-    supportsMedicalFilters: false,
-    search: searchSemanticScholar
-  },
-  consensus: {
-    id: "consensus",
-    label: "Consensus (API key)",
-    requiresApiKey: true,
-    supportsMedicalFilters: true,
-    search: searchConsensus
-  }
-};
-function getProvider(id) {
-  var _a;
-  return (_a = PROVIDERS[id]) != null ? _a : PROVIDERS.openalex;
-}
 
 // src/references-section.ts
 function referenceKey(paper) {

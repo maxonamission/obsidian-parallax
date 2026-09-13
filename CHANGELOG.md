@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.31.2]
+
+**The search provider list no longer says "free" where it tells you nothing.** The provider dropdown read "OpenAlex (free)" and "Semantic Scholar (free, optional key)", which looked like a tier you were stuck on rather than a fact about the source. It is not a tier: OpenAlex and Semantic Scholar cost nothing whether or not you enter a key, and a key or a contact e-mail only raises how much you may ask of them per day. The options are now simply "OpenAlex", "Semantic Scholar" and "Consensus (paid API key)", so the one distinction that matters when choosing is the only one on screen, and the description spells out that keys change your allowance, never which source runs.
+
+*This also cleans up your notes.* That same label was written into the sources line of every Zoekstrategie section and methodological account, so your accounts recorded "OpenAlex (free), Semantic Scholar (free, optional key)" where they should simply attribute the source. New accounts read "OpenAlex, Semantic Scholar" — and in the twelve non-English artefact languages, that stray English parenthetical is gone with it. Existing notes are untouched.
+
 ## [0.31.1]
 
 **Links in the Parallax sidebar now take you where they say.** Tapping an artefact in the sidebar — *Probleemverkenning*, *Synthese*, the logbook, a project's other questions, a gap in the evidence — closed the panel and then appeared to do nothing at all. The note was in fact opening, but into the sidebar panel that was closing at that very moment, so you never saw it. Every link in that panel now opens in the main area and jumps to the right section, as it always meant to. Most visible on a phone, where the sidebar is an overlay; the same code path served every link in the panel, so all of them are fixed.

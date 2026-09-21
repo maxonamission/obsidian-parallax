@@ -41,6 +41,21 @@
 	padding-bottom: 3em;
 }
 
+/* Action buttons in Parallax modals (owner screenshot, 21 sep 2026): a long label such as
+   "Add to new session in "<project>"" must wrap inside the sheet instead of running off a phone
+   screen. Obsidian's default keeps button text on one line; allow wrapping and cap the width. */
+.consensus-modal .setting-item-control button {
+	white-space: normal;
+	max-width: 100%;
+	text-align: center;
+	line-height: 1.3;
+}
+
+.is-mobile .consensus-modal .setting-item-control {
+	flex-wrap: wrap;
+	justify-content: flex-end;
+}
+
 /* AU_E127_S2: also raise the ceiling of the sheet itself — the content cap above is moot if
    Obsidian's own modal element stops growing earlier. Height stays content-driven; this only
    allows growth. */
@@ -199,6 +214,56 @@
 	color: var(--text-muted);
 }
 
+/* Parallax — the six phase colours (AU_E148_S5), taken from the procesplaat
+   (docs/procesplaat/procesplaat.html). ONE variable per phase, used by both the workflow strip
+   and the Artifacts outline, so a phase has the same colour wherever it shows up. The colour only
+   ever paints a border — never text on a background — so contrast stays the theme's business; the
+   dark-theme block lightens the three darkest hues so they stay visible on a dark surface. */
+.consensus-phase-explore {
+	--parallax-phase-color: #2f6fdb;
+}
+.consensus-phase-frame {
+	--parallax-phase-color: #0f8a8a;
+}
+.consensus-phase-theory {
+	--parallax-phase-color: #7a4fd8;
+}
+.consensus-phase-challenge {
+	--parallax-phase-color: #d9721c;
+}
+.consensus-phase-evidence {
+	--parallax-phase-color: #2a8f4e;
+}
+.consensus-phase-design {
+	--parallax-phase-color: #c2397a;
+}
+.theme-dark .consensus-phase-explore {
+	--parallax-phase-color: #6f9ff0;
+}
+.theme-dark .consensus-phase-frame {
+	--parallax-phase-color: #3ec2c2;
+}
+.theme-dark .consensus-phase-theory {
+	--parallax-phase-color: #a98af0;
+}
+.theme-dark .consensus-phase-challenge {
+	--parallax-phase-color: #f0a05a;
+}
+.theme-dark .consensus-phase-evidence {
+	--parallax-phase-color: #5cc483;
+}
+.theme-dark .consensus-phase-design {
+	--parallax-phase-color: #ef7aac;
+}
+
+/* The outline row's phase marker (AU_E148_S5): a coloured left border in front of the row. */
+.consensus-workbench-artifact-row {
+	border-left: 3px solid var(--parallax-phase-color);
+	padding-left: 0.4em;
+	margin-left: -0.4em;
+	list-style-position: inside;
+}
+
 /* Parallax — workflow strip + artefact links (E55) */
 .consensus-workbench-strip {
 	display: flex;
@@ -210,6 +275,12 @@
 }
 .consensus-workbench-step {
 	color: var(--text-faint);
+	/* AU_E148_S5: the phase colour as an underline; the text colour keeps carrying done/current. */
+	border-bottom: 2px solid transparent;
+}
+.consensus-workbench-step.is-done,
+.consensus-workbench-step.is-current {
+	border-bottom-color: var(--parallax-phase-color);
 }
 .consensus-workbench-step.is-done {
 	color: var(--text-muted);
@@ -223,6 +294,13 @@
 }
 .consensus-workbench-artifact-link {
 	cursor: pointer;
+}
+
+/* Parallax — quiet repair action under the project's member list (AU_E149_S2) */
+.consensus-workbench-refresh-contents {
+	margin: 0.4em 0 0;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
 }
 
 /* Parallax — live run banner (E56) */

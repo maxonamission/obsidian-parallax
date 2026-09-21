@@ -13,7 +13,7 @@ Parallax is a research workbench for Obsidian built to guard exactly that. It st
 ## Get started in 60 seconds — free, no API key
 
 1. **Install & enable**: Community plugins → search for *Parallax*.
-2. Open a note and run **Quick search (single provider)**.
+2. Open a note and run **Evidence · quick search**.
 3. Insert real academic references from [OpenAlex](https://openalex.org) (~250M scholarly works) straight into your note — free, keyless, no account.
 
 That's the whole entry fee. Everything beyond it is opt-in: bring any OpenAI-compatible LLM (including a fully local Ollama), or none at all.
@@ -30,9 +30,15 @@ A session is a plain markdown note that you work step by step. A set of **resear
 6. **Design** — turn the synthesis into a research agenda: gaps, sharper questions, fitting study designs. One click opens the next session — the loop closes.
 7. **Methodological account** — walk away with the audit trail as a deliverable: question, framing (and what it was chosen over), lenses (including the eliminated ones), search strategy with its funnel, synthesis and beliefs — assembled *deterministically* from what actually happened, never written by a model about itself.
 
-The **Parallax sidebar** is your cockpit: where you are, a recommended next step (never a straitjacket), your artefacts, the evidence gaps in your project, and source↔finding provenance. Sessions group into **projects**; everything exports as a portable, reproducible bundle (JSON + methodological account + BibTeX).
+The **Parallax sidebar** is your cockpit, and it starts where your thinking starts. At the top sits the entry block — step 0, naming the problem: your objective and your question, with a single primary button for whatever note you have open (*Start research project*, *Start question in this note*, *New question in this project*, or *Edit question* once it is a session). Below it the blocks follow the flow of the work: the workflow strip with where you are, **Steps** with one card per phase (including the framing you set yourself, without AI), your artefacts as an outline in the colour of the phase that wrote them, sources and findings, the project with its evidence gaps, a **Wrap up** block for the methodological account and the exports, and the logbook. Sessions group into **projects**; everything exports as a portable, reproducible bundle (JSON + methodological account + BibTeX).
 
 ![A graded synthesis: findings labelled with evidence strength and study-design tier, clickable citations, and deepened findings drawn from the sources](docs/screenshots/synthesis.png)
+
+## The process at a glance
+
+The map below shows the whole plugin on one sheet: step 0 (naming the problem), the six phases with their commands and where each result lands, and the Wrap up block that turns a session into a deliverable. The workflow strip is the *thinking* order and the session note is the *reading* order — that is why Challenge sits before Evidence in the strip but after the synthesis in your note.
+
+![Parallax process map](process-map.png)
 
 ## What Parallax is *not*
 
@@ -66,7 +72,7 @@ Parallax is the layer those tools don't cover: the reasoning between question an
 | Publisher/OA hosts | open-access page fetch for reading-list sources | only when deepening |
 | api.consensus.app | search queries | only with the optional Consensus provider |
 
-Keys are stored locally in your vault config and never echoed in error messages. With a local
+Keys live in Obsidian's secret storage on each device (never in your vault, so they don't sync) and are never echoed in error messages. With a local
 Ollama endpoint, all LLM traffic stays on your machine. No telemetry, no account, no cloud
 backend of ours.
 
@@ -87,18 +93,23 @@ Works on desktop and mobile (Obsidian 1.5.0+).
 - **Search**: OpenAlex (default) · Semantic Scholar · Consensus (optional, paid). The first two
   cost nothing and work as they are; a contact e-mail or a free key only raises your daily
   allowance.
-- **AI (optional)**: Mistral (EU) or any OpenAI-compatible endpoint (OpenAI, Ollama, LM Studio,
-  OpenRouter). Per-step model routing and reasoning effort — spend compute where it's read.
+- **AI (optional)**: Mistral (EU), OpenAI, Anthropic, Google, a local Ollama or LM Studio, or any
+  OpenAI-compatible endpoint (OpenRouter and the like). Per-step model routing and reasoning effort — spend compute where it's read.
 - **Everything degrades gracefully**: no LLM key → you still get multi-source search + rank
   fusion; a dropped connection → resume re-runs only the tail; a long run shows live progress
   and a Stop button.
+- **Debug log**: turning this on writes a "Parallax debug" note with your question,
+  sub-questions, search queries, per-source result counts, model names and token usage, and —
+  on a failure — the error and a short preview (up to 200 characters) of the model's raw
+  response. API keys are redacted. The note lives in your vault, so it syncs and can be
+  shared — turn it off or delete the note once you're done debugging.
 
 ## Works well with
 
 **[Voxtral Transcribe](https://github.com/maxonamission/obsidian-voxtral)** — from the same
 workshop. Research thinking rarely starts at a keyboard: speak your messy problem statement on
-a walk, let Voxtral turn it into a markdown note, then select the transcript and run **Explore
-the problem** — Parallax picks up the thinking exactly where the recording stops. The two
+a walk, let Voxtral turn it into a markdown note, then select the transcript and run **Explore ·
+problem** — Parallax picks up the thinking exactly where the recording stops. The two
 plugins share the same principles (your keys, local where possible, no telemetry) but stay
 deliberately separate tools: Voxtral owns capturing speech, Parallax owns the reasoning.
 

@@ -23,89 +23,7 @@ __export(main_exports, {
   default: () => ParallaxPlugin
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian27 = require("obsidian");
-
-// src/http-adapter.ts
-var DEFAULT_HTTP_TIMEOUT_MS = 6e4;
-var HttpTimeoutError = class extends Error {
-  constructor(url, timeoutMs) {
-    super(`Request timed out after ${Math.round(timeoutMs / 1e3)}s: ${url}`);
-    this.name = "HttpTimeoutError";
-  }
-};
-function withTimeout(http, timeoutMs = DEFAULT_HTTP_TIMEOUT_MS) {
-  return (options) => new Promise((resolve, reject) => {
-    const timer = window.setTimeout(() => reject(new HttpTimeoutError(options.url, timeoutMs)), timeoutMs);
-    http(options).then(
-      (res) => {
-        window.clearTimeout(timer);
-        resolve(res);
-      },
-      (err) => {
-        window.clearTimeout(timer);
-        reject(err instanceof Error ? err : new Error(String(err)));
-      }
-    );
-  });
-}
-var NETWORK_REFERENCE_URL = "https://api.openalex.org";
-async function referenceHostReachable(http) {
-  try {
-    await http({ url: NETWORK_REFERENCE_URL, method: "GET", headers: {} });
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-async function diagnoseNetworkFailure(failedHost, http) {
-  const referenceReachable = await referenceHostReachable(http);
-  const online = typeof navigator !== "undefined" && typeof navigator.onLine === "boolean" ? String(navigator.onLine) : "unknown";
-  return referenceReachable ? `${failedHost} unreachable, but reference host ${NETWORK_REFERENCE_URL} IS reachable \u2014 the problem is specific to ${failedHost} (DNS filter, adblock list or VPN rule?); navigator.onLine=${online}` : `${failedHost} unreachable AND reference host ${NETWORK_REFERENCE_URL} unreachable \u2014 the device appears to be offline (wifi/mobile data asleep or dropped); navigator.onLine=${online}`;
-}
-
-// src/settings-tab.ts
-var import_obsidian = require("obsidian");
-
-// src/llm-routing.ts
-var LLM_PROVIDER_IDS = ["mistral", "openai", "anthropic", "google", "local", "openai-compat"];
-var REASONING_EFFORTS = ["off", "minimal", "low", "medium", "high", "xhigh"];
-function globalChatModel(settings) {
-  switch (settings.llmProvider) {
-    case "openai":
-      return settings.openaiChatModel;
-    case "anthropic":
-      return settings.anthropicChatModel;
-    case "google":
-      return settings.googleChatModel;
-    case "local":
-      return settings.localChatModel;
-    case "openai-compat":
-      return settings.openaiCompatChatModel;
-    default:
-      return settings.mistralChatModel;
-  }
-}
-function resolveEmbedProviderId(settings) {
-  return settings.embedProvider || settings.llmProvider;
-}
-function resolveStepModel(settings, step) {
-  var _a;
-  const perStep = (_a = settings.llmStepModels[settings.llmProvider]) == null ? void 0 : _a[step];
-  return (perStep != null ? perStep : "").trim() || globalChatModel(settings);
-}
-function resolveStepReasoning(settings, step) {
-  const v = settings.llmStepReasoning[step];
-  return (v != null ? v : "").trim() || "off";
-}
-
-// src/errors.ts
-var SearchApiError = class extends Error {
-  constructor(message, status) {
-    super(message);
-    this.status = status;
-    this.name = "SearchApiError";
-  }
-};
+var import_obsidian30 = require("obsidian");
 
 // src/cancellation.ts
 var ResearchCancelledError = class extends Error {
@@ -154,33 +72,251 @@ function createCancellationToken() {
   };
 }
 
-// src/mistral-api.ts
-var MISTRAL_BASE = "https://api.mistral.ai/v1";
-function extractJsonObject(raw) {
-  const start = raw.indexOf("{");
-  const end = raw.lastIndexOf("}");
-  return start >= 0 && end > start ? raw.slice(start, end + 1) : raw;
-}
-var REASONING_EFFORTS2 = REASONING_EFFORTS;
-function parseSupportedEfforts(reason) {
-  const out = [];
-  for (const m of reason.matchAll(/'([a-z]+)'/gi)) {
-    const e = m[1].toLowerCase();
-    if (e !== "none" && e !== "off" && REASONING_EFFORTS2.includes(e) && !out.includes(e)) {
-      out.push(e);
-    }
+// src/http-adapter.ts
+var DEFAULT_HTTP_TIMEOUT_MS = 6e4;
+var HttpTimeoutError = class extends Error {
+  constructor(url, timeoutMs) {
+    super(`Request timed out after ${Math.round(timeoutMs / 1e3)}s: ${url}`);
+    this.name = "HttpTimeoutError";
   }
-  return out.sort((a, b) => REASONING_EFFORTS2.indexOf(a) - REASONING_EFFORTS2.indexOf(b));
+};
+function withTimeout(http, timeoutMs = DEFAULT_HTTP_TIMEOUT_MS) {
+  return (options) => new Promise((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new HttpTimeoutError(options.url, timeoutMs)), timeoutMs);
+    http(options).then(
+      (res) => {
+        window.clearTimeout(timer);
+        resolve(res);
+      },
+      (err) => {
+        window.clearTimeout(timer);
+        reject(err instanceof Error ? err : new Error(String(err)));
+      }
+    );
+  });
+}
+var NETWORK_REFERENCE_URL = "https://api.openalex.org";
+async function referenceHostReachable(http) {
+  try {
+    await http({ url: NETWORK_REFERENCE_URL, method: "GET", headers: {} });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+async function diagnoseNetworkFailure(failedHost, http) {
+  const referenceReachable = await referenceHostReachable(http);
+  const online = typeof navigator !== "undefined" && typeof navigator.onLine === "boolean" ? String(navigator.onLine) : "unknown";
+  return referenceReachable ? `${failedHost} unreachable, but reference host ${NETWORK_REFERENCE_URL} IS reachable \u2014 the problem is specific to ${failedHost} (DNS filter, adblock list or VPN rule?); navigator.onLine=${online}` : `${failedHost} unreachable AND reference host ${NETWORK_REFERENCE_URL} unreachable \u2014 the device appears to be offline (wifi/mobile data asleep or dropped); navigator.onLine=${online}`;
+}
+function isTransientStatus(status) {
+  return status === 429 || status >= 500 && status < 600;
 }
 function shortNetworkError(e) {
   return String(e instanceof Error ? e.message : e).replace(/\s+/g, " ").trim().slice(0, 140);
 }
-var MISTRAL_HOST = "api.mistral.ai";
 function delay(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
-function isTransientStatus(status) {
-  return status === 429 || status >= 500 && status < 600;
+async function httpWithRetry(opts) {
+  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  const retries = (_a = opts.retries) != null ? _a : 2;
+  const networkRetries = (_b = opts.networkRetries) != null ? _b : 6;
+  const backoffMs = (_c = opts.backoffMs) != null ? _c : 800;
+  for (let attempt = 0; ; attempt++) {
+    let status = 0;
+    let reason = "";
+    let netReason = "";
+    try {
+      const res = await opts.http(opts.request());
+      status = res.status;
+      if (status >= 200 && status < 300) return opts.onSuccess(res);
+      reason = (_e = (_d = opts.parseError) == null ? void 0 : _d.call(opts, res)) != null ? _e : "";
+    } catch (e) {
+      if (e instanceof ResearchCancelledError) throw e;
+      if (attempt >= networkRetries) {
+        if (opts.log) opts.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure(opts.host, opts.http)}`);
+        throw e;
+      }
+      netReason = shortNetworkError(e);
+    }
+    if (status !== 0 && ((_f = opts.adapt) == null ? void 0 : _f.call(opts, status, reason))) continue;
+    if (status !== 0 && (!isTransientStatus(status) || attempt >= retries)) {
+      if (reason) (_g = opts.log) == null ? void 0 : _g.call(opts, `${opts.logPrefix}: ${status} \u2014 ${reason}`);
+      throw opts.terminalError(status, reason);
+    }
+    const budget = status === 0 ? networkRetries : retries;
+    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
+    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
+    (_h = opts.log) == null ? void 0 : _h.call(opts, `${opts.logPrefix}: ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
+    if (status === 0) (_i = opts.onRetry) == null ? void 0 : _i.call(opts, `Network error \u2014 retrying ${opts.retrySubject} (${attempt + 1}/${budget})\u2026`);
+    if (wait > 0) await delay(wait);
+  }
+}
+
+// src/settings-tab.ts
+var import_obsidian2 = require("obsidian");
+
+// src/notify.ts
+var import_obsidian = require("obsidian");
+
+// src/errors.ts
+var SearchApiError = class extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+    this.name = "SearchApiError";
+  }
+};
+
+// src/notify.ts
+function notifyError(context, e, opts = {}) {
+  var _a;
+  (_a = opts.log) == null ? void 0 : _a.call(opts, `${context} \u2014 FAILED`, e instanceof Error ? e.message : String(e));
+  const message = e instanceof SearchApiError ? e.message : `${context} failed \u2014 likely a connection or configuration problem. Details in the debug log.`;
+  new import_obsidian.Notice(message, 0);
+}
+function notify(message, timeout) {
+  new import_obsidian.Notice(message, timeout);
+}
+
+// src/query-clean.ts
+function stripMarkdownNoise(query) {
+  return query.split("\n").map(
+    (line) => line.replace(/^\s*(?:>+\s*)?(?:[-*+]|\d+[.)])\s+/, "").replace(/^\s*#{1,6}\s+/, "").replace(/^\s*\[[^\]]{0,16}\]\s*/, "")
+  ).join(" ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`~]/g, " ").replace(/[–—]/g, " ").replace(/\s+/g, " ").trim();
+}
+var QUOTED_SPAN = /(^|[\s(])['‘"“]([^'’"”]{2,80}?)['’"”](?=$|[\s).,;:!?])/g;
+function extractQuotedPhrases(query) {
+  const out = [];
+  for (const m of query.matchAll(QUOTED_SPAN)) out.push(m[2].trim());
+  return out.filter(Boolean);
+}
+
+// src/consensus-api.ts
+function buildSearchUrl(query, filters, settings) {
+  const base = settings.apiBaseUrl.replace(/\/+$/, "");
+  const params = new URLSearchParams();
+  params.set("query", stripMarkdownNoise(query));
+  if (settings.resultLimit) params.set("page_size", String(settings.resultLimit));
+  if (filters.yearMin != null) params.set("year_min", String(filters.yearMin));
+  if (filters.yearMax != null) params.set("year_max", String(filters.yearMax));
+  if (filters.excludePreprints) params.set("exclude_preprints", "true");
+  if (filters.humanOnly) params.set("human", "true");
+  if (filters.sampleSizeMin != null) {
+    params.set("sample_size_min", String(filters.sampleSizeMin));
+  }
+  if (filters.studyTypes && filters.studyTypes.length > 0) {
+    for (const t2 of filters.studyTypes) params.append("study_types", t2);
+  }
+  return `${base}/quick_search?${params.toString()}`;
+}
+function firstString(obj, keys) {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "string" && v.trim()) return v.trim();
+  }
+  return void 0;
+}
+function firstNumber(obj, keys) {
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+    if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) {
+      return Number(v);
+    }
+  }
+  return void 0;
+}
+function parseAuthors(obj) {
+  var _a, _b;
+  const raw = (_b = (_a = obj.authors) != null ? _a : obj.author_names) != null ? _b : obj.author;
+  if (Array.isArray(raw)) {
+    return raw.map((a) => {
+      var _a2;
+      if (typeof a === "string") return a;
+      if (a && typeof a === "object") {
+        const o = a;
+        return (_a2 = firstString(o, ["name", "display_name", "full_name"])) != null ? _a2 : "";
+      }
+      return "";
+    }).filter((s) => s.length > 0);
+  }
+  if (typeof raw === "string" && raw.trim()) {
+    return raw.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+function normalizePaper(raw) {
+  var _a;
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw;
+  const title = firstString(o, ["title", "paper_title", "name"]);
+  if (!title) return null;
+  const url = (_a = firstString(o, ["url", "paper_url", "consensus_url", "link", "doi_url"])) != null ? _a : "";
+  return {
+    title,
+    authors: parseAuthors(o),
+    year: firstNumber(o, ["year", "publish_year", "publication_year"]),
+    journal: firstString(o, ["journal", "journal_name", "venue", "publication"]),
+    citationCount: firstNumber(o, ["citation_count", "citations", "cited_by_count"]),
+    url,
+    doi: firstString(o, ["doi"]),
+    abstract: firstString(o, ["abstract", "snippet", "text", "summary"])
+  };
+}
+function extractPaperArray(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (payload && typeof payload === "object") {
+    const o = payload;
+    for (const key of ["results", "papers", "data", "items", "search_results"]) {
+      if (Array.isArray(o[key])) return o[key];
+    }
+  }
+  return [];
+}
+function parseSearchResponse(query, payload) {
+  const papers = extractPaperArray(payload).map(normalizePaper).filter((p) => p !== null);
+  let summary;
+  if (payload && typeof payload === "object") {
+    summary = firstString(payload, [
+      "summary",
+      "answer",
+      "synthesis"
+    ]);
+  }
+  return { query, papers, summary, raw: payload };
+}
+async function searchConsensus(query, filters, settings, http) {
+  var _a, _b;
+  if (!settings.apiKey) {
+    throw new SearchApiError("No Consensus API key configured.", 0);
+  }
+  const url = buildSearchUrl(query, filters, settings);
+  const headers3 = {
+    Accept: "application/json",
+    [settings.apiKeyHeader]: settings.apiKey
+  };
+  const res = await http({ url, method: "GET", headers: headers3 });
+  if (res.status < 200 || res.status >= 300) {
+    const detail = (_b = (_a = res.json && typeof res.json === "object" ? firstString(res.json, ["message", "detail", "error"]) : void 0) != null ? _a : res.text) == null ? void 0 : _b.slice(0, 200);
+    throw new SearchApiError(
+      `Consensus API returned ${res.status}${detail ? `: ${detail}` : ""}`,
+      res.status
+    );
+  }
+  return parseSearchResponse(query, res.json);
+}
+
+// src/openai-compat-api.ts
+function oaCustomEndpoint(settings) {
+  return {
+    label: "OpenAI-compatible",
+    baseUrl: settings.openaiCompatBaseUrl,
+    apiKey: settings.openaiCompatApiKey,
+    chatModel: settings.openaiCompatChatModel,
+    embedModel: settings.openaiCompatEmbedModel
+  };
 }
 function extractUsage(payload) {
   if (payload && typeof payload === "object") {
@@ -193,23 +329,6 @@ function extractUsage(payload) {
   }
   return {};
 }
-function requireKey(settings) {
-  const key = settings.mistralApiKey.trim();
-  if (!key) {
-    throw new SearchApiError("Set your Mistral API key in the plugin settings to use the AI features.", 0);
-  }
-  return key;
-}
-function authHeaders(key) {
-  return {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-    Authorization: `Bearer ${key}`
-  };
-}
-function stripThinking(text) {
-  return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
-}
 function extractChatContent(payload) {
   if (!payload || typeof payload !== "object") return "";
   const choices = payload.choices;
@@ -217,114 +336,78 @@ function extractChatContent(payload) {
   const message = choices[0].message;
   if (!message || typeof message !== "object") return "";
   const content = message.content;
-  if (typeof content === "string") return stripThinking(content);
-  if (Array.isArray(content)) {
-    const text = content.map((chunk) => {
-      if (typeof chunk === "string") return chunk;
-      if (chunk && typeof chunk === "object") {
-        const c = chunk;
-        if (c.type === "text" && typeof c.text === "string") return c.text;
-      }
-      return "";
-    }).join("");
-    return stripThinking(text);
-  }
-  return "";
+  return typeof content === "string" ? content.trim() : "";
 }
 function errorMessage(payload) {
   var _a, _b;
   if (!payload || typeof payload !== "object") return "";
   const p = payload;
   const raw = (_b = (_a = p.message) != null ? _a : p.detail) != null ? _b : p.error;
-  const text = typeof raw === "string" ? raw : raw && typeof raw === "object" ? JSON.stringify(raw) : "";
+  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
+    const nested = raw.message;
+    if (typeof nested === "string") return nested.replace(/\s+/g, " ").trim().slice(0, 200);
+  }
+  const text = typeof raw === "string" ? raw : raw != null ? JSON.stringify(raw) : "";
   return text.replace(/\s+/g, " ").trim().slice(0, 200);
 }
-async function mistralChat(messages, opts, settings, http, net = {}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
-  const key = requireKey(settings);
-  const model = opts.model || settings.mistralChatModel;
-  const body = { model, messages };
-  if (opts.temperature != null) body.temperature = opts.temperature;
-  let effort = net.reasoningEffort && net.reasoningEffort !== "off" ? net.reasoningEffort : "";
-  let reasoningApplied = !!effort;
-  const applyShape = () => {
-    delete body.prompt_mode;
-    delete body.reasoning_effort;
-    delete body.response_format;
-    if (reasoningApplied && effort) {
-      body.reasoning_effort = effort;
-    } else if (opts.json) {
-      body.response_format = { type: "json_object" };
-    }
-  };
-  applyShape();
-  const retries = (_a = net.retries) != null ? _a : 2;
-  const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
-  const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
-  const label = net.label ? `${net.label} ` : "";
-  let triedSupportedEffort = false;
-  let triedWithoutReasoning = false;
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let reason = "";
-    let netReason = "";
-    try {
-      const res = await http({
-        url: `${MISTRAL_BASE}/chat/completions`,
-        method: "POST",
-        headers: authHeaders(key),
-        body: JSON.stringify(body)
-      });
-      status = res.status;
-      if (status >= 200 && status < 300) {
-        const usage = extractUsage(res.json);
-        if (usage.total != null) {
-          (_f = net.log) == null ? void 0 : _f.call(net, `Mistral ${label}(${model}): ${usage.total} tokens (prompt ${(_d = usage.prompt) != null ? _d : "?"}, completion ${(_e = usage.completion) != null ? _e : "?"})`);
-          (_g = net.log) == null ? void 0 : _g.addUsage(usage.total);
-        }
-        return extractChatContent(res.json);
-      }
-      reason = errorMessage(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure(MISTRAL_HOST, http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError(e);
-    }
-    if (reasoningApplied && status >= 400 && status < 500 && status !== 429) {
-      const supported = parseSupportedEfforts(reason);
-      if (!triedSupportedEffort && supported.length > 0 && !supported.includes(effort)) {
-        triedSupportedEffort = true;
-        const next = supported[0];
-        (_h = net.log) == null ? void 0 : _h.call(net, `Mistral ${label}(${model}): ${status} \u2014 effort "${effort}" unsupported; retrying with "${next}"${reason ? ` (${reason})` : ""}`);
-        effort = next;
-        applyShape();
-        continue;
-      }
-      if (!triedWithoutReasoning) {
-        reasoningApplied = false;
-        triedWithoutReasoning = true;
-        applyShape();
-        (_i = net.log) == null ? void 0 : _i.call(net, `Mistral ${label}(${model}): ${status} with reasoning \u2014 retrying WITHOUT reasoning${reason ? ` (${reason})` : ""}`);
-        continue;
-      }
-    }
-    if (status !== 0 && (!isTransientStatus(status) || attempt >= retries)) {
-      if (reason) (_j = net.log) == null ? void 0 : _j.call(net, `Mistral ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(
-        `Mistral chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your key and connection."}`,
-        status
-      );
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_k = net.log) == null ? void 0 : _k.call(net, `Mistral ${label}(${model}): ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_m = net.onRetry) == null ? void 0 : _m.call(net, `Network error \u2014 retrying ${(_l = net.label) != null ? _l : "LLM call"} (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay(wait);
+function baseUrl(endpoint3) {
+  return (endpoint3.baseUrl.trim() || "https://api.openai.com/v1").replace(/\/+$/, "");
+}
+function endpointHost(endpoint3) {
+  try {
+    return new URL(baseUrl(endpoint3)).host;
+  } catch (e) {
+    return baseUrl(endpoint3);
   }
+}
+function authHeaders(endpoint3) {
+  const headers3 = { "Content-Type": "application/json", Accept: "application/json" };
+  const key = endpoint3.apiKey.trim();
+  if (key) headers3.Authorization = `Bearer ${key}`;
+  return headers3;
+}
+async function openAiCompatChat(messages, opts, endpoint3, http, net = {}) {
+  var _a, _b;
+  const model = opts.model || endpoint3.chatModel;
+  if (!model.trim()) {
+    throw new SearchApiError(`Set a chat model for the ${endpoint3.label} provider in the plugin settings.`, 0);
+  }
+  const body = { model, messages };
+  if (opts.temperature != null && !endpoint3.dropTemperature) body.temperature = opts.temperature;
+  if (opts.json) body.response_format = { type: "json_object" };
+  const effort = ((_a = net.reasoningEffort) != null ? _a : "").trim();
+  if (endpoint3.sendReasoningEffort && effort && effort !== "off") body.reasoning_effort = effort;
+  const label = net.label ? `${net.label} ` : "";
+  const logPrefix = `LLM ${label}(${model})`;
+  const url = `${baseUrl(endpoint3)}/chat/completions`;
+  const headers3 = authHeaders(endpoint3);
+  return httpWithRetry({
+    http,
+    request: () => ({ url, method: "POST", headers: headers3, body: JSON.stringify(body) }),
+    host: endpointHost(endpoint3),
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix,
+    retrySubject: (_b = net.label) != null ? _b : "LLM call",
+    parseError: (res) => errorMessage(res.json),
+    onSuccess: (res) => {
+      var _a2, _b2, _c, _d;
+      const usage = extractUsage(res.json);
+      if (usage.total != null) {
+        (_c = net.log) == null ? void 0 : _c.call(net, `${logPrefix}: ${usage.total} tokens (prompt ${(_a2 = usage.prompt) != null ? _a2 : "?"}, completion ${(_b2 = usage.completion) != null ? _b2 : "?"})`);
+        (_d = net.log) == null ? void 0 : _d.addUsage(usage.total);
+      }
+      return extractChatContent(res.json);
+    },
+    // Surface the API's own explanation (AU_E124_S5) — same transparency as Anthropic.
+    terminalError: (status, reason) => new SearchApiError(
+      `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your endpoint/model and connection."}`,
+      status
+    )
+  });
 }
 function indexOf(entry) {
   if (entry && typeof entry === "object") {
@@ -351,44 +434,956 @@ function extractEmbeddings(payload) {
   }
   return out;
 }
+async function openAiCompatEmbed(texts, endpoint3, http, net = {}) {
+  if (texts.length === 0) return [];
+  const model = endpoint3.embedModel.trim();
+  if (!model) {
+    throw new SearchApiError(`Set an embedding model for the ${endpoint3.label} provider in the plugin settings.`, 0);
+  }
+  const url = `${baseUrl(endpoint3)}/embeddings`;
+  const headers3 = authHeaders(endpoint3);
+  const payload = JSON.stringify({ model, input: texts });
+  return httpWithRetry({
+    http,
+    request: () => ({ url, method: "POST", headers: headers3, body: payload }),
+    host: endpointHost(endpoint3),
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix: "LLM embed",
+    retrySubject: "embeddings",
+    onSuccess: (res) => extractEmbeddings(res.json),
+    terminalError: (status) => new SearchApiError(`Embeddings request failed (${status}). Check your endpoint/model and connection.`, status)
+  });
+}
+function isOpenAiCompatConfigured(settings) {
+  return baseUrl(oaCustomEndpoint(settings)).length > 0 && settings.openaiCompatChatModel.trim().length > 0;
+}
+async function openAiCompatListModels(endpoint3, http) {
+  const res = await http({ url: `${baseUrl(endpoint3)}/models`, method: "GET", headers: authHeaders(endpoint3) });
+  if (res.status < 200 || res.status >= 300) {
+    throw new SearchApiError(`Could not list models (${res.status}). Check your ${endpoint3.label} key/endpoint.`, res.status);
+  }
+  const ids = [];
+  if (res.json && typeof res.json === "object") {
+    const data = res.json.data;
+    if (Array.isArray(data)) {
+      for (const entry of data) {
+        if (entry && typeof entry === "object") {
+          const id = entry.id;
+          if (typeof id === "string" && id.trim()) ids.push(id);
+        }
+      }
+    }
+  }
+  return ids.sort((a, b) => a.localeCompare(b));
+}
+
+// src/openalex-api.ts
+var OPENALEX_WORKS = "https://api.openalex.org/works";
+function buildOpenAlexUrl(query, filters, settings, mode = "semantic") {
+  const params = new URLSearchParams();
+  const cleaned = stripMarkdownNoise(query);
+  if (mode === "semantic") {
+    params.set("search.semantic", cleaned);
+  } else {
+    params.set("search", cleaned.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
+  }
+  params.set("per-page", String(Math.min(settings.resultLimit || 20, 50)));
+  params.set(
+    "select",
+    "id,doi,title,display_name,publication_year,cited_by_count,primary_location,authorships,abstract_inverted_index,type,open_access"
+  );
+  if (settings.openAlexMailto) params.set("mailto", settings.openAlexMailto);
+  if (settings.openAlexApiKey) params.set("api_key", settings.openAlexApiKey);
+  const filterParts = [];
+  if (filters.yearMin != null) {
+    filterParts.push(
+      mode === "semantic" ? `publication_year:>${filters.yearMin - 1}` : `from_publication_date:${filters.yearMin}-01-01`
+    );
+  }
+  if (filters.yearMax != null) {
+    filterParts.push(
+      mode === "semantic" ? `publication_year:<${filters.yearMax + 1}` : `to_publication_date:${filters.yearMax}-12-31`
+    );
+  }
+  if (filters.excludePreprints) filterParts.push("type:article");
+  if (filterParts.length > 0) params.set("filter", filterParts.join(","));
+  return `${OPENALEX_WORKS}?${params.toString()}`;
+}
+function reconstructAbstract(inverted) {
+  if (!inverted || typeof inverted !== "object") return void 0;
+  const entries = Object.entries(inverted);
+  const slots = [];
+  for (const [word, positions] of entries) {
+    if (!Array.isArray(positions)) continue;
+    for (const pos of positions) {
+      if (typeof pos === "number") slots[pos] = word;
+    }
+  }
+  const text = slots.filter((w) => w !== void 0).join(" ").trim();
+  return text.length > 0 ? text : void 0;
+}
+function pickUrl(work) {
+  const doi = work.doi;
+  if (typeof doi === "string" && doi) return doi;
+  const loc = work.primary_location;
+  if (loc && typeof loc === "object") {
+    const landing = loc.landing_page_url;
+    if (typeof landing === "string" && landing) return landing;
+  }
+  const id = work.id;
+  return typeof id === "string" ? id : "";
+}
+function pickJournal(work) {
+  const loc = work.primary_location;
+  if (loc && typeof loc === "object") {
+    const source = loc.source;
+    if (source && typeof source === "object") {
+      const name = source.display_name;
+      if (typeof name === "string" && name) return name;
+    }
+  }
+  return void 0;
+}
+function pickAuthors(work) {
+  const authorships = work.authorships;
+  if (!Array.isArray(authorships)) return [];
+  return authorships.map((a) => {
+    if (a && typeof a === "object") {
+      const author = a.author;
+      if (author && typeof author === "object") {
+        const name = author.display_name;
+        if (typeof name === "string") return name;
+      }
+    }
+    return "";
+  }).filter((s) => s.length > 0);
+}
+function pickPublicationTypes(work) {
+  const type = work.type;
+  if (typeof type !== "string" || !type) return void 0;
+  if (type === "review") return ["Review"];
+  return void 0;
+}
+function pickOpenAccess(work) {
+  const oa = work.open_access;
+  if (!oa || typeof oa !== "object") return {};
+  const o = oa;
+  const oaUrl = typeof o.oa_url === "string" && o.oa_url ? o.oa_url : void 0;
+  const isOpenAccess = typeof o.is_oa === "boolean" ? o.is_oa : void 0;
+  return { oaUrl, isOpenAccess };
+}
+function normalizeOpenAlexWork(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const w = raw;
+  const title = typeof w.title === "string" && w.title || typeof w.display_name === "string" && w.display_name || "";
+  if (!title) return null;
+  const year = typeof w.publication_year === "number" ? w.publication_year : void 0;
+  const citationCount = typeof w.cited_by_count === "number" ? w.cited_by_count : void 0;
+  const doi = typeof w.doi === "string" ? w.doi.replace(/^https?:\/\/doi\.org\//, "") : void 0;
+  return {
+    title,
+    authors: pickAuthors(w),
+    year,
+    journal: pickJournal(w),
+    citationCount,
+    url: pickUrl(w),
+    doi,
+    abstract: reconstructAbstract(w.abstract_inverted_index),
+    publicationTypes: pickPublicationTypes(w),
+    ...pickOpenAccess(w)
+  };
+}
+function parseOpenAlexResponse(query, payload) {
+  let results = [];
+  if (payload && typeof payload === "object" && Array.isArray(payload.results)) {
+    results = payload.results;
+  }
+  const papers = results.map(normalizeOpenAlexWork).filter((p) => p !== null);
+  return { query, papers, raw: payload };
+}
+async function searchOpenAlex(query, filters, settings, http) {
+  const url = buildOpenAlexUrl(query, filters, settings, "semantic");
+  let res = await http({ url, method: "GET", headers: { Accept: "application/json" } });
+  if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+    const fallbackUrl = buildOpenAlexUrl(query, filters, settings, "keyword");
+    res = await http({ url: fallbackUrl, method: "GET", headers: { Accept: "application/json" } });
+  }
+  if (res.status < 200 || res.status >= 300) {
+    throw new SearchApiError(
+      `OpenAlex returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
+      res.status
+    );
+  }
+  return parseOpenAlexResponse(query, res.json);
+}
+
+// src/semanticscholar-api.ts
+var S2_SEARCH = "https://api.semanticscholar.org/graph/v1/paper/search";
+var S2_STOPWORDS = /* @__PURE__ */ new Set([
+  "a",
+  "an",
+  "the",
+  "of",
+  "to",
+  "in",
+  "on",
+  "for",
+  "and",
+  "or",
+  "but",
+  "by",
+  "with",
+  "within",
+  "into",
+  "from",
+  "at",
+  "as",
+  "is",
+  "are",
+  "was",
+  "were",
+  "be",
+  "been",
+  "being",
+  "do",
+  "does",
+  "did",
+  "what",
+  "how",
+  "which",
+  "why",
+  "who",
+  "whom",
+  "when",
+  "where",
+  "whether",
+  "that",
+  "this",
+  "these",
+  "those",
+  "their",
+  "they",
+  "them",
+  "its",
+  "it",
+  "can",
+  "could",
+  "should",
+  "would",
+  "may",
+  "might",
+  "will",
+  "shall",
+  "than",
+  "then",
+  "there",
+  "about",
+  "over",
+  "under",
+  "between",
+  "among",
+  "through",
+  "per",
+  // Dutch: articles, pronouns, prepositions, auxiliaries, interrogatives.
+  "de",
+  "het",
+  "een",
+  "en",
+  "maar",
+  "want",
+  "dus",
+  "als",
+  "dan",
+  "dat",
+  "dit",
+  "deze",
+  "die",
+  "ook",
+  "nog",
+  "al",
+  "alleen",
+  "hier",
+  "daar",
+  "er",
+  "niet",
+  "geen",
+  "wel",
+  "zo",
+  "zoals",
+  "van",
+  "voor",
+  "naar",
+  "met",
+  "bij",
+  "tot",
+  "uit",
+  "onder",
+  "tussen",
+  "door",
+  "om",
+  "op",
+  "aan",
+  "binnen",
+  "tegen",
+  "zonder",
+  "tijdens",
+  "volgens",
+  "vanuit",
+  "na",
+  "te",
+  "ten",
+  "ter",
+  "zijn",
+  "waren",
+  "wordt",
+  "worden",
+  "werd",
+  "werden",
+  "ben",
+  "bent",
+  "heeft",
+  "hebben",
+  "had",
+  "hadden",
+  "kan",
+  "kunnen",
+  "kon",
+  "konden",
+  "zal",
+  "zullen",
+  "zou",
+  "zouden",
+  "moet",
+  "moeten",
+  "mag",
+  "mogen",
+  "wil",
+  "willen",
+  "wat",
+  "wie",
+  "waar",
+  "waarom",
+  "hoe",
+  "welke",
+  "welk",
+  "wanneer",
+  "waarin",
+  "waarbij",
+  "waarvoor",
+  "waarmee",
+  "hun",
+  "hen",
+  "ze",
+  "zij",
+  "hij",
+  "hem",
+  "haar",
+  "je",
+  "jij",
+  "u",
+  "we",
+  "wij",
+  "men",
+  "iets",
+  "niets",
+  "alles",
+  "elk",
+  "elke",
+  "ieder",
+  "iedere"
+]);
+function toKeywordQuery(query, maxTokens = 8) {
+  const noiseFree = stripMarkdownNoise(query);
+  const quotedTokens = extractQuotedPhrases(noiseFree).flatMap((p) => p.split(/\s+/));
+  const cleaned = noiseFree.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
+  const tokens = cleaned.split(" ").filter(Boolean);
+  const isContent = (t2) => !S2_STOPWORDS.has(t2.toLowerCase()) && /[\p{L}\p{N}]/u.test(t2);
+  const seen = /* @__PURE__ */ new Set();
+  const content = [];
+  for (const t2 of [...quotedTokens.filter(isContent), ...tokens.filter(isContent)]) {
+    if (seen.has(t2.toLowerCase())) continue;
+    seen.add(t2.toLowerCase());
+    content.push(t2);
+  }
+  const kept = content.slice(0, maxTokens).join(" ").trim();
+  return content.length >= 2 ? kept : cleaned;
+}
+var S2_FIELDS = [
+  "title",
+  "abstract",
+  "year",
+  "authors",
+  "venue",
+  "externalIds",
+  "citationCount",
+  "influentialCitationCount",
+  "publicationTypes",
+  "url",
+  "openAccessPdf"
+].join(",");
+function buildSemanticScholarUrl(query, filters, settings) {
+  var _a, _b;
+  const params = new URLSearchParams();
+  params.set("query", toKeywordQuery(query));
+  params.set("limit", String(Math.min(settings.resultLimit || 20, 100)));
+  params.set("fields", S2_FIELDS);
+  if (filters.yearMin != null || filters.yearMax != null) {
+    params.set("year", `${(_a = filters.yearMin) != null ? _a : ""}-${(_b = filters.yearMax) != null ? _b : ""}`);
+  }
+  if (filters.excludePreprints) params.set("publicationTypes", "JournalArticle");
+  return `${S2_SEARCH}?${params.toString()}`;
+}
+function pickAuthors2(raw) {
+  const authors = raw.authors;
+  if (!Array.isArray(authors)) return [];
+  return authors.map((a) => a && typeof a === "object" ? a.name : "").filter((n) => typeof n === "string" && n.length > 0);
+}
+function pickDoi(raw) {
+  const ext = raw.externalIds;
+  if (ext && typeof ext === "object") {
+    const doi = ext.DOI;
+    if (typeof doi === "string" && doi) return doi;
+  }
+  return void 0;
+}
+function pickUrl2(raw, doi) {
+  if (typeof raw.url === "string" && raw.url) return raw.url;
+  if (doi) return `https://doi.org/${doi}`;
+  return "";
+}
+function pickPublicationTypes2(raw) {
+  const types = raw.publicationTypes;
+  if (!Array.isArray(types)) return void 0;
+  const out = types.filter((t2) => typeof t2 === "string" && t2.length > 0);
+  return out.length > 0 ? out : void 0;
+}
+function pickOpenAccess2(raw) {
+  const pdf = raw.openAccessPdf;
+  if (!pdf || typeof pdf !== "object") return {};
+  const url = pdf.url;
+  return typeof url === "string" && url ? { oaUrl: url, isOpenAccess: true } : {};
+}
+function normalizeSemanticScholarPaper(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const p = raw;
+  const title = typeof p.title === "string" ? p.title : "";
+  if (!title) return null;
+  const doi = pickDoi(p);
+  return {
+    title,
+    authors: pickAuthors2(p),
+    year: typeof p.year === "number" ? p.year : void 0,
+    journal: typeof p.venue === "string" && p.venue ? p.venue : void 0,
+    citationCount: typeof p.citationCount === "number" ? p.citationCount : void 0,
+    url: pickUrl2(p, doi),
+    doi,
+    abstract: typeof p.abstract === "string" ? p.abstract : void 0,
+    publicationTypes: pickPublicationTypes2(p),
+    ...pickOpenAccess2(p)
+  };
+}
+function parseSemanticScholarResponse(query, payload) {
+  let data = [];
+  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
+    data = payload.data;
+  }
+  const papers = data.map(normalizeSemanticScholarPaper).filter((p) => p !== null);
+  return { query, papers, raw: payload };
+}
+async function searchSemanticScholar(query, filters, settings, http) {
+  const headers3 = { Accept: "application/json" };
+  if (settings.semanticScholarApiKey) headers3["x-api-key"] = settings.semanticScholarApiKey;
+  const url = buildSemanticScholarUrl(query, filters, settings);
+  const res = await http({ url, method: "GET", headers: headers3 });
+  if (res.status === 429) {
+    throw new SearchApiError(
+      "Semantic Scholar rate limit reached (429). Add a free API key in settings for a dedicated lane.",
+      429
+    );
+  }
+  if (res.status < 200 || res.status >= 300) {
+    throw new SearchApiError(
+      `Semantic Scholar returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
+      res.status
+    );
+  }
+  return parseSemanticScholarResponse(query, res.json);
+}
+
+// src/providers.ts
+var PROVIDERS = {
+  openalex: {
+    id: "openalex",
+    label: "OpenAlex",
+    costHint: "",
+    requiresApiKey: false,
+    supportsMedicalFilters: false,
+    search: searchOpenAlex
+  },
+  semanticscholar: {
+    id: "semanticscholar",
+    label: "Semantic Scholar",
+    costHint: "",
+    // Works without a key (shared pool); a free key just raises the rate limit.
+    requiresApiKey: false,
+    supportsMedicalFilters: false,
+    search: searchSemanticScholar
+  },
+  consensus: {
+    id: "consensus",
+    label: "Consensus",
+    costHint: "paid API key",
+    requiresApiKey: true,
+    supportsMedicalFilters: true,
+    search: searchConsensus
+  }
+};
+var SEARCH_PROVIDER_ORDER = ["openalex", "semanticscholar", "consensus"];
+function providerOptionLabel(id) {
+  const provider = getProvider(id);
+  return provider.costHint ? `${provider.label} (${provider.costHint})` : provider.label;
+}
+function getProvider(id) {
+  var _a;
+  return (_a = PROVIDERS[id]) != null ? _a : PROVIDERS.openalex;
+}
+var SECRET_STORAGE_TAIL = ". Stored in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync between devices \u2014 enter it once per device, and rotate the key if it was previously synced.";
+var LLM_PROVIDERS = {
+  mistral: {
+    id: "mistral",
+    label: "Mistral",
+    apiKeyField: "mistralApiKey",
+    chatModelField: "mistralChatModel",
+    catalogField: "mistralModelCatalog",
+    freeTextChatModel: null,
+    baseUrl: null,
+    keyRow: {
+      name: "Mistral API key",
+      desc: {
+        text: 'Enables the "Evidence \xB7 run research" command: question \u2192 sub-questions \u2192 multi-source search \u2192 rerank \u2192 AI synthesis. Without a key it falls back to multi-source search + fusion. Get one at ',
+        link: { text: "console.mistral.ai", href: "https://console.mistral.ai/" },
+        tail: ". Kept in Obsidian\u2019s secret storage on this device (EU key), not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
+      }
+    },
+    embedModel: {
+      field: "mistralEmbedModel",
+      desc: "Used for the rerank (e.g. mistral-embed).",
+      placeholder: "mistral-embed",
+      fallback: "mistral-embed",
+      fromCatalog: true
+    },
+    embedKeyRow: {
+      name: "Mistral API key (embeddings)",
+      desc: { text: "Get one at ", link: { text: "console.mistral.ai", href: "https://console.mistral.ai/" }, tail: SECRET_STORAGE_TAIL }
+    },
+    embedBaseUrl: null,
+    listModelsBlocker: (s) => s.mistralApiKey.trim() ? null : "Set a Mistral API key first.",
+    attention: (s) => s.mistralApiKey.trim() ? null : "Mistral API key missing \u2014 runs fall back to search + fusion"
+  },
+  openai: {
+    id: "openai",
+    label: "OpenAI",
+    apiKeyField: "openaiApiKey",
+    chatModelField: "openaiChatModel",
+    catalogField: "openaiModelCatalog",
+    freeTextChatModel: null,
+    baseUrl: null,
+    keyRow: {
+      name: "OpenAI API key",
+      desc: { text: "Get one at ", link: { text: "platform.openai.com/api-keys", href: "https://platform.openai.com/api-keys" }, tail: SECRET_STORAGE_TAIL }
+    },
+    embedModel: {
+      field: "openaiEmbedModel",
+      desc: "Used for the rerank step.",
+      placeholder: "text-embedding-3-small",
+      fallback: "text-embedding-3-small",
+      fromCatalog: false
+    },
+    embedKeyRow: {
+      name: "OpenAI API key (embeddings)",
+      desc: { text: "Get one at ", link: { text: "platform.openai.com/api-keys", href: "https://platform.openai.com/api-keys" }, tail: SECRET_STORAGE_TAIL }
+    },
+    embedBaseUrl: null,
+    listModelsBlocker: (s) => s.openaiApiKey.trim() ? null : "Set an OpenAI API key first.",
+    attention: (s) => s.openaiApiKey.trim() ? null : "OpenAI API key missing"
+  },
+  anthropic: {
+    id: "anthropic",
+    label: "Anthropic",
+    apiKeyField: "anthropicApiKey",
+    chatModelField: "anthropicChatModel",
+    catalogField: "anthropicModelCatalog",
+    freeTextChatModel: null,
+    baseUrl: null,
+    keyRow: {
+      name: "Anthropic API key",
+      desc: { text: "Get one at ", link: { text: "console.anthropic.com", href: "https://console.anthropic.com/settings/keys" }, tail: SECRET_STORAGE_TAIL }
+    },
+    // No embeddings API — the needs-attention hint below keeps the rerank degradation visible.
+    embedModel: null,
+    embedKeyRow: null,
+    embedBaseUrl: null,
+    listModelsBlocker: (s) => s.anthropicApiKey.trim() ? null : "Set an Anthropic API key first.",
+    attention: (s) => {
+      if (!s.anthropicApiKey.trim()) return "Anthropic API key missing";
+      if (!s.embedProvider) return "No embeddings provider \u2014 rerank is skipped (Anthropic has no embeddings API)";
+      return null;
+    }
+  },
+  google: {
+    id: "google",
+    label: "Google",
+    apiKeyField: "googleApiKey",
+    chatModelField: "googleChatModel",
+    catalogField: "googleModelCatalog",
+    freeTextChatModel: null,
+    baseUrl: null,
+    keyRow: {
+      name: "Google API key",
+      desc: { text: "Get one at ", link: { text: "aistudio.google.com/apikey", href: "https://aistudio.google.com/apikey" }, tail: SECRET_STORAGE_TAIL }
+    },
+    embedModel: {
+      field: "googleEmbedModel",
+      desc: "Used for the rerank step.",
+      placeholder: "gemini-embedding-001",
+      fallback: "gemini-embedding-001",
+      fromCatalog: false
+    },
+    embedKeyRow: {
+      name: "Google API key (embeddings)",
+      desc: { text: "Get one at ", link: { text: "aistudio.google.com/apikey", href: "https://aistudio.google.com/apikey" }, tail: SECRET_STORAGE_TAIL }
+    },
+    embedBaseUrl: null,
+    listModelsBlocker: (s) => s.googleApiKey.trim() ? null : "Set a Google API key first.",
+    attention: (s) => s.googleApiKey.trim() ? null : "Google API key missing"
+  },
+  local: {
+    id: "local",
+    label: "Local (Ollama/LM Studio)",
+    apiKeyField: "localApiKey",
+    chatModelField: "localChatModel",
+    catalogField: "localModelCatalog",
+    freeTextChatModel: null,
+    baseUrl: {
+      field: "localBaseUrl",
+      name: "Base URL",
+      desc: "Your local server's API root. On this desktop typically http://localhost:11434/v1 (Ollama) or http://localhost:1234/v1 (LM Studio). From a phone/tablet, use the machine's LAN address instead, e.g. http://192.168.1.20:11434/v1 \u2014 local is not desktop-only.",
+      placeholder: "http://localhost:11434/v1",
+      fallback: "",
+      refreshesBadge: true
+    },
+    keyRow: {
+      name: "API key",
+      desc: {
+        text: "Optional \u2014 Ollama and LM Studio commonly run keyless. Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device."
+      }
+    },
+    embedModel: {
+      field: "localEmbedModel",
+      desc: "Used for the rerank step.",
+      placeholder: "nomic-embed-text",
+      fallback: "",
+      fromCatalog: false
+    },
+    embedKeyRow: null,
+    embedBaseUrl: {
+      field: "localBaseUrl",
+      name: "Base URL (embeddings)",
+      desc: "The local server's API root, e.g. http://localhost:11434/v1 \u2014 from mobile, use the machine's LAN address.",
+      placeholder: "http://localhost:11434/v1",
+      fallback: "",
+      refreshesBadge: true
+    },
+    listModelsBlocker: (s) => s.localBaseUrl.trim() ? null : "Set the base URL first.",
+    attention: (s) => {
+      if (!s.localBaseUrl.trim()) return "Base URL missing";
+      if (!s.localChatModel.trim()) return "Chat model missing";
+      return null;
+    }
+  },
+  "openai-compat": {
+    id: "openai-compat",
+    label: "Custom (OpenAI-compatible)",
+    apiKeyField: "openaiCompatApiKey",
+    chatModelField: "openaiCompatChatModel",
+    catalogField: null,
+    freeTextChatModel: {
+      desc: "Free text \u2014 no live catalogue for a custom endpoint. Examples: gpt-4o-mini, llama3.1.",
+      placeholder: "gpt-4o-mini"
+    },
+    baseUrl: {
+      field: "openaiCompatBaseUrl",
+      name: "Base URL",
+      desc: "The endpoint's API root, no trailing slash. Examples: https://api.openai.com/v1 (OpenAI), https://openrouter.ai/api/v1 (OpenRouter). For Ollama/LM Studio, prefer the Local provider above.",
+      placeholder: "https://api.openai.com/v1",
+      fallback: "https://api.openai.com/v1",
+      refreshesBadge: false
+    },
+    keyRow: {
+      name: "API key",
+      desc: {
+        text: "Optional \u2014 keyless is a valid config for a self-hosted server. Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
+      }
+    },
+    embedModel: {
+      field: "openaiCompatEmbedModel",
+      desc: "Used for the rerank step.",
+      placeholder: "text-embedding-3-small",
+      fallback: "",
+      fromCatalog: false
+    },
+    embedKeyRow: null,
+    embedBaseUrl: {
+      field: "openaiCompatBaseUrl",
+      name: "Base URL (embeddings)",
+      desc: "The custom endpoint's API root; its optional API key is shared with the Custom chat config.",
+      placeholder: "https://api.openai.com/v1",
+      fallback: "https://api.openai.com/v1",
+      refreshesBadge: false
+    },
+    listModelsBlocker: () => "The custom provider uses free-text model names.",
+    attention: (s) => isOpenAiCompatConfigured(s) ? null : "Chat model missing"
+  }
+};
+var LLM_PROVIDER_ORDER = Object.keys(LLM_PROVIDERS);
+var LLM_EMBED_PROVIDER_ORDER = LLM_PROVIDER_ORDER.filter(
+  (id) => LLM_PROVIDERS[id].embedModel !== null
+);
+function getLlmProvider(id) {
+  return id && LLM_PROVIDERS[id] || LLM_PROVIDERS.mistral;
+}
+function llmChatModel(settings, id) {
+  return settings[getLlmProvider(id).chatModelField];
+}
+function setLlmChatModel(settings, id, model) {
+  settings[getLlmProvider(id).chatModelField] = model;
+}
+function llmCatalog(settings, id) {
+  const field2 = getLlmProvider(id).catalogField;
+  return field2 && settings[field2] || [];
+}
+function setLlmCatalog(settings, id, models) {
+  const field2 = getLlmProvider(id).catalogField;
+  if (field2) settings[field2] = models;
+}
+
+// src/llm-routing.ts
+var LLM_PROVIDER_IDS = ["mistral", "openai", "anthropic", "google", "local", "openai-compat"];
+var REASONING_EFFORTS = ["off", "minimal", "low", "medium", "high", "xhigh"];
+function globalChatModel(settings) {
+  return llmChatModel(settings, settings.llmProvider);
+}
+function resolveEmbedProviderId(settings) {
+  return settings.embedProvider || settings.llmProvider;
+}
+function resolveStepModel(settings, step) {
+  var _a;
+  const perStep = (_a = settings.llmStepModels[settings.llmProvider]) == null ? void 0 : _a[step];
+  return (perStep != null ? perStep : "").trim() || globalChatModel(settings);
+}
+function resolveStepReasoning(settings, step) {
+  const v = settings.llmStepReasoning[step];
+  return (v != null ? v : "").trim() || "off";
+}
+
+// src/mistral-api.ts
+var MISTRAL_BASE = "https://api.mistral.ai/v1";
+var REASONING_EFFORTS2 = REASONING_EFFORTS;
+function parseSupportedEfforts(reason) {
+  const out = [];
+  for (const m of reason.matchAll(/'([a-z]+)'/gi)) {
+    const e = m[1].toLowerCase();
+    if (e !== "none" && e !== "off" && REASONING_EFFORTS2.includes(e) && !out.includes(e)) {
+      out.push(e);
+    }
+  }
+  return out.sort((a, b) => REASONING_EFFORTS2.indexOf(a) - REASONING_EFFORTS2.indexOf(b));
+}
+var MISTRAL_HOST = "api.mistral.ai";
+function extractUsage2(payload) {
+  if (payload && typeof payload === "object") {
+    const usage = payload.usage;
+    if (usage && typeof usage === "object") {
+      const u = usage;
+      const num = (v) => typeof v === "number" ? v : void 0;
+      return { prompt: num(u.prompt_tokens), completion: num(u.completion_tokens), total: num(u.total_tokens) };
+    }
+  }
+  return {};
+}
+function requireKey(settings) {
+  const key = settings.mistralApiKey.trim();
+  if (!key) {
+    throw new SearchApiError("Set your Mistral API key in the plugin settings to use the AI features.", 0);
+  }
+  return key;
+}
+function authHeaders2(key) {
+  return {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    Authorization: `Bearer ${key}`
+  };
+}
+function stripThinking(text) {
+  return text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+}
+function extractChatContent2(payload) {
+  if (!payload || typeof payload !== "object") return "";
+  const choices = payload.choices;
+  if (!Array.isArray(choices) || !choices[0] || typeof choices[0] !== "object") return "";
+  const message = choices[0].message;
+  if (!message || typeof message !== "object") return "";
+  const content = message.content;
+  if (typeof content === "string") return stripThinking(content);
+  if (Array.isArray(content)) {
+    const text = content.map((chunk) => {
+      if (typeof chunk === "string") return chunk;
+      if (chunk && typeof chunk === "object") {
+        const c = chunk;
+        if (c.type === "text" && typeof c.text === "string") return c.text;
+      }
+      return "";
+    }).join("");
+    return stripThinking(text);
+  }
+  return "";
+}
+function errorMessage2(payload) {
+  var _a, _b;
+  if (!payload || typeof payload !== "object") return "";
+  const p = payload;
+  const raw = (_b = (_a = p.message) != null ? _a : p.detail) != null ? _b : p.error;
+  const text = typeof raw === "string" ? raw : raw && typeof raw === "object" ? JSON.stringify(raw) : "";
+  return text.replace(/\s+/g, " ").trim().slice(0, 200);
+}
+async function mistralChat(messages, opts, settings, http, net = {}) {
+  var _a;
+  const key = requireKey(settings);
+  const model = opts.model || settings.mistralChatModel;
+  const body = { model, messages };
+  if (opts.temperature != null) body.temperature = opts.temperature;
+  let effort = net.reasoningEffort && net.reasoningEffort !== "off" ? net.reasoningEffort : "";
+  let reasoningApplied = !!effort;
+  const applyShape = () => {
+    delete body.prompt_mode;
+    delete body.reasoning_effort;
+    delete body.response_format;
+    if (reasoningApplied && effort) {
+      body.reasoning_effort = effort;
+    } else if (opts.json) {
+      body.response_format = { type: "json_object" };
+    }
+  };
+  applyShape();
+  const label = net.label ? `${net.label} ` : "";
+  const logPrefix = `Mistral ${label}(${model})`;
+  let triedSupportedEffort = false;
+  let triedWithoutReasoning = false;
+  return httpWithRetry({
+    http,
+    request: () => ({
+      url: `${MISTRAL_BASE}/chat/completions`,
+      method: "POST",
+      headers: authHeaders2(key),
+      body: JSON.stringify(body)
+    }),
+    host: MISTRAL_HOST,
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix,
+    retrySubject: (_a = net.label) != null ? _a : "LLM call",
+    parseError: (res) => errorMessage2(res.json),
+    onSuccess: (res) => {
+      var _a2, _b, _c, _d;
+      const usage = extractUsage2(res.json);
+      if (usage.total != null) {
+        (_c = net.log) == null ? void 0 : _c.call(net, `Mistral ${label}(${model}): ${usage.total} tokens (prompt ${(_a2 = usage.prompt) != null ? _a2 : "?"}, completion ${(_b = usage.completion) != null ? _b : "?"})`);
+        (_d = net.log) == null ? void 0 : _d.addUsage(usage.total);
+      }
+      return extractChatContent2(res.json);
+    },
+    // Reasoning was rejected (a 4xx, not 429). The exact supported efforts are model-specific
+    // and only surface in this error, so first retry with the cheapest effort the model DOES
+    // support (E37) — so "reasoning on" actually engages — and only then drop reasoning (E35).
+    adapt: (status, reason) => {
+      var _a2, _b;
+      if (!reasoningApplied || status < 400 || status >= 500 || status === 429) return false;
+      const supported = parseSupportedEfforts(reason);
+      if (!triedSupportedEffort && supported.length > 0 && !supported.includes(effort)) {
+        triedSupportedEffort = true;
+        const next = supported[0];
+        (_a2 = net.log) == null ? void 0 : _a2.call(net, `${logPrefix}: ${status} \u2014 effort "${effort}" unsupported; retrying with "${next}"${reason ? ` (${reason})` : ""}`);
+        effort = next;
+        applyShape();
+        return true;
+      }
+      if (!triedWithoutReasoning) {
+        reasoningApplied = false;
+        triedWithoutReasoning = true;
+        applyShape();
+        (_b = net.log) == null ? void 0 : _b.call(net, `${logPrefix}: ${status} with reasoning \u2014 retrying WITHOUT reasoning${reason ? ` (${reason})` : ""}`);
+        return true;
+      }
+      return false;
+    },
+    // Surface the API's own explanation (AU_E124_S5) — same transparency as Anthropic.
+    terminalError: (status, reason) => new SearchApiError(
+      `Mistral chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your key and connection."}`,
+      status
+    )
+  });
+}
+function indexOf2(entry) {
+  if (entry && typeof entry === "object") {
+    const idx = entry.index;
+    if (typeof idx === "number") return idx;
+  }
+  return 0;
+}
+function extractEmbeddings2(payload) {
+  const out = [];
+  if (payload && typeof payload === "object") {
+    const data = payload.data;
+    if (Array.isArray(data)) {
+      const ordered = [...data].sort((a, b) => indexOf2(a) - indexOf2(b));
+      for (const entry of ordered) {
+        if (entry && typeof entry === "object") {
+          const emb = entry.embedding;
+          if (Array.isArray(emb)) {
+            out.push(emb.filter((x) => typeof x === "number"));
+          }
+        }
+      }
+    }
+  }
+  return out;
+}
 async function mistralEmbed(texts, settings, http, net = {}) {
-  var _a, _b, _c, _d, _e;
   if (texts.length === 0) return [];
   const key = requireKey(settings);
-  const retries = (_a = net.retries) != null ? _a : 2;
-  const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
-  const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
   const payload = JSON.stringify({ model: settings.mistralEmbedModel, input: texts });
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let netReason = "";
-    try {
-      const res = await http({
-        url: `${MISTRAL_BASE}/embeddings`,
-        method: "POST",
-        headers: authHeaders(key),
-        body: payload
-      });
-      status = res.status;
-      if (status >= 200 && status < 300) return extractEmbeddings(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure(MISTRAL_HOST, http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError(e);
-    }
-    if (status !== 0 && (!isTransientStatus(status) || attempt >= retries)) {
-      throw new SearchApiError(`Mistral embeddings request failed (${status}). Check your key and connection.`, status);
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_d = net.log) == null ? void 0 : _d.call(net, `Mistral embed: ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_e = net.onRetry) == null ? void 0 : _e.call(net, `Network error \u2014 retrying embeddings (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay(wait);
-  }
+  return httpWithRetry({
+    http,
+    request: () => ({ url: `${MISTRAL_BASE}/embeddings`, method: "POST", headers: authHeaders2(key), body: payload }),
+    host: MISTRAL_HOST,
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix: "Mistral embed",
+    retrySubject: "embeddings",
+    onSuccess: (res) => extractEmbeddings2(res.json),
+    terminalError: (status) => new SearchApiError(`Mistral embeddings request failed (${status}). Check your key and connection.`, status)
+  });
 }
 function parseModelList(payload) {
   var _a;
@@ -410,7 +1405,7 @@ function parseModelList(payload) {
 }
 async function mistralListModels(settings, http) {
   const key = requireKey(settings);
-  const res = await http({ url: `${MISTRAL_BASE}/models`, method: "GET", headers: authHeaders(key) });
+  const res = await http({ url: `${MISTRAL_BASE}/models`, method: "GET", headers: authHeaders2(key) });
   if (res.status < 200 || res.status >= 300) {
     throw new SearchApiError(`Mistral models request failed (${res.status}). Check your key and connection.`, res.status);
   }
@@ -441,216 +1436,6 @@ function createMistralProvider(getSettings, http) {
     embed: (texts, meta = {}) => mistralEmbed(texts, getSettings(), http, { log: meta.log, label: meta.label, onRetry: meta.onRetry }),
     listModels: () => mistralListModels(getSettings(), http)
   };
-}
-
-// src/openai-compat-api.ts
-function oaCustomEndpoint(settings) {
-  return {
-    label: "OpenAI-compatible",
-    baseUrl: settings.openaiCompatBaseUrl,
-    apiKey: settings.openaiCompatApiKey,
-    chatModel: settings.openaiCompatChatModel,
-    embedModel: settings.openaiCompatEmbedModel
-  };
-}
-function isTransientStatus2(status) {
-  return status === 429 || status >= 500 && status < 600;
-}
-function delay2(ms) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
-function extractUsage2(payload) {
-  if (payload && typeof payload === "object") {
-    const usage = payload.usage;
-    if (usage && typeof usage === "object") {
-      const u = usage;
-      const num = (v) => typeof v === "number" ? v : void 0;
-      return { prompt: num(u.prompt_tokens), completion: num(u.completion_tokens), total: num(u.total_tokens) };
-    }
-  }
-  return {};
-}
-function extractChatContent2(payload) {
-  if (!payload || typeof payload !== "object") return "";
-  const choices = payload.choices;
-  if (!Array.isArray(choices) || !choices[0] || typeof choices[0] !== "object") return "";
-  const message = choices[0].message;
-  if (!message || typeof message !== "object") return "";
-  const content = message.content;
-  return typeof content === "string" ? content.trim() : "";
-}
-function errorMessage2(payload) {
-  var _a, _b;
-  if (!payload || typeof payload !== "object") return "";
-  const p = payload;
-  const raw = (_b = (_a = p.message) != null ? _a : p.detail) != null ? _b : p.error;
-  if (raw && typeof raw === "object" && !Array.isArray(raw)) {
-    const nested = raw.message;
-    if (typeof nested === "string") return nested.replace(/\s+/g, " ").trim().slice(0, 200);
-  }
-  const text = typeof raw === "string" ? raw : raw != null ? JSON.stringify(raw) : "";
-  return text.replace(/\s+/g, " ").trim().slice(0, 200);
-}
-function baseUrl(endpoint3) {
-  return (endpoint3.baseUrl.trim() || "https://api.openai.com/v1").replace(/\/+$/, "");
-}
-function shortNetworkError2(e) {
-  return String(e instanceof Error ? e.message : e).replace(/\s+/g, " ").trim().slice(0, 140);
-}
-function endpointHost(endpoint3) {
-  try {
-    return new URL(baseUrl(endpoint3)).host;
-  } catch (e) {
-    return baseUrl(endpoint3);
-  }
-}
-function authHeaders2(endpoint3) {
-  const headers3 = { "Content-Type": "application/json", Accept: "application/json" };
-  const key = endpoint3.apiKey.trim();
-  if (key) headers3.Authorization = `Bearer ${key}`;
-  return headers3;
-}
-async function openAiCompatChat(messages, opts, endpoint3, http, net = {}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
-  const model = opts.model || endpoint3.chatModel;
-  if (!model.trim()) {
-    throw new SearchApiError(`Set a chat model for the ${endpoint3.label} provider in the plugin settings.`, 0);
-  }
-  const body = { model, messages };
-  if (opts.temperature != null && !endpoint3.dropTemperature) body.temperature = opts.temperature;
-  if (opts.json) body.response_format = { type: "json_object" };
-  const effort = ((_a = net.reasoningEffort) != null ? _a : "").trim();
-  if (endpoint3.sendReasoningEffort && effort && effort !== "off") body.reasoning_effort = effort;
-  const retries = (_b = net.retries) != null ? _b : 2;
-  const networkRetries = (_c = net.networkRetries) != null ? _c : 6;
-  const backoffMs = (_d = net.backoffMs) != null ? _d : 800;
-  const label = net.label ? `${net.label} ` : "";
-  const url = `${baseUrl(endpoint3)}/chat/completions`;
-  const headers3 = authHeaders2(endpoint3);
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let reason = "";
-    let netReason = "";
-    try {
-      const res = await http({ url, method: "POST", headers: headers3, body: JSON.stringify(body) });
-      status = res.status;
-      if (status >= 200 && status < 300) {
-        const usage = extractUsage2(res.json);
-        if (usage.total != null) {
-          (_g = net.log) == null ? void 0 : _g.call(net, `LLM ${label}(${model}): ${usage.total} tokens (prompt ${(_e = usage.prompt) != null ? _e : "?"}, completion ${(_f = usage.completion) != null ? _f : "?"})`);
-          (_h = net.log) == null ? void 0 : _h.addUsage(usage.total);
-        }
-        return extractChatContent2(res.json);
-      }
-      reason = errorMessage2(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure(endpointHost(endpoint3), http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError2(e);
-    }
-    if (status !== 0 && (!isTransientStatus2(status) || attempt >= retries)) {
-      if (reason) (_i = net.log) == null ? void 0 : _i.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(
-        `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your endpoint/model and connection."}`,
-        status
-      );
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_j = net.log) == null ? void 0 : _j.call(net, `LLM ${label}(${model}): ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_l = net.onRetry) == null ? void 0 : _l.call(net, `Network error \u2014 retrying ${(_k = net.label) != null ? _k : "LLM call"} (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay2(wait);
-  }
-}
-function indexOf2(entry) {
-  if (entry && typeof entry === "object") {
-    const idx = entry.index;
-    if (typeof idx === "number") return idx;
-  }
-  return 0;
-}
-function extractEmbeddings2(payload) {
-  const out = [];
-  if (payload && typeof payload === "object") {
-    const data = payload.data;
-    if (Array.isArray(data)) {
-      const ordered = [...data].sort((a, b) => indexOf2(a) - indexOf2(b));
-      for (const entry of ordered) {
-        if (entry && typeof entry === "object") {
-          const emb = entry.embedding;
-          if (Array.isArray(emb)) {
-            out.push(emb.filter((x) => typeof x === "number"));
-          }
-        }
-      }
-    }
-  }
-  return out;
-}
-async function openAiCompatEmbed(texts, endpoint3, http, net = {}) {
-  var _a, _b, _c, _d, _e;
-  if (texts.length === 0) return [];
-  const model = endpoint3.embedModel.trim();
-  if (!model) {
-    throw new SearchApiError(`Set an embedding model for the ${endpoint3.label} provider in the plugin settings.`, 0);
-  }
-  const retries = (_a = net.retries) != null ? _a : 2;
-  const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
-  const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
-  const url = `${baseUrl(endpoint3)}/embeddings`;
-  const headers3 = authHeaders2(endpoint3);
-  const payload = JSON.stringify({ model, input: texts });
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let netReason = "";
-    try {
-      const res = await http({ url, method: "POST", headers: headers3, body: payload });
-      status = res.status;
-      if (status >= 200 && status < 300) return extractEmbeddings2(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure(endpointHost(endpoint3), http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError2(e);
-    }
-    if (status !== 0 && (!isTransientStatus2(status) || attempt >= retries)) {
-      throw new SearchApiError(`Embeddings request failed (${status}). Check your endpoint/model and connection.`, status);
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_d = net.log) == null ? void 0 : _d.call(net, `LLM embed: ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_e = net.onRetry) == null ? void 0 : _e.call(net, `Network error \u2014 retrying embeddings (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay2(wait);
-  }
-}
-function isOpenAiCompatConfigured(settings) {
-  return baseUrl(oaCustomEndpoint(settings)).length > 0 && settings.openaiCompatChatModel.trim().length > 0;
-}
-async function openAiCompatListModels(endpoint3, http) {
-  const res = await http({ url: `${baseUrl(endpoint3)}/models`, method: "GET", headers: authHeaders2(endpoint3) });
-  if (res.status < 200 || res.status >= 300) {
-    throw new SearchApiError(`Could not list models (${res.status}). Check your ${endpoint3.label} key/endpoint.`, res.status);
-  }
-  const ids = [];
-  if (res.json && typeof res.json === "object") {
-    const data = res.json.data;
-    if (Array.isArray(data)) {
-      for (const entry of data) {
-        if (entry && typeof entry === "object") {
-          const id = entry.id;
-          if (typeof id === "string" && id.trim()) ids.push(id);
-        }
-      }
-    }
-  }
-  return ids.sort((a, b) => a.localeCompare(b));
 }
 
 // src/openai-compat-provider.ts
@@ -797,12 +1582,6 @@ var THINKING_BUDGETS = {
   medium: 8192,
   high: 16384
 };
-function isTransientStatus3(status) {
-  return status === 429 || status === 529 || status >= 500 && status < 600;
-}
-function delay3(ms) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
 function headers(settings) {
   return {
     "Content-Type": "application/json",
@@ -810,9 +1589,6 @@ function headers(settings) {
     "x-api-key": settings.anthropicApiKey.trim(),
     "anthropic-version": API_VERSION
   };
-}
-function shortNetworkError3(e) {
-  return String(e instanceof Error ? e.message : e).replace(/\s+/g, " ").trim().slice(0, 140);
 }
 function errorMessage3(payload) {
   if (!payload || typeof payload !== "object") return "";
@@ -878,7 +1654,7 @@ function buildAnthropicBody(messages, opts, model, reasoningEffort) {
   return body;
 }
 async function anthropicChat(messages, opts, settings, http, net = {}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j;
+  var _a;
   const model = opts.model || settings.anthropicChatModel;
   if (!model.trim()) {
     throw new SearchApiError("Set a chat model for the Anthropic provider in the plugin settings.", 0);
@@ -889,55 +1665,47 @@ async function anthropicChat(messages, opts, settings, http, net = {}) {
     buildAnthropicBody(messages, sendTemperature ? opts : { ...opts, temperature: void 0 }, model, net.reasoningEffort)
   );
   let body = makeBody();
-  const retries = (_a = net.retries) != null ? _a : 2;
-  const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
-  const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
   const label = net.label ? `${net.label} ` : "";
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let reason = "";
-    let netReason = "";
-    try {
-      const res = await http({ url: `${API_BASE}/messages`, method: "POST", headers: headers(settings), body });
-      status = res.status;
-      if (status >= 200 && status < 300) {
-        const total = extractUsageTotal(res.json);
-        if (total != null) {
-          (_d = net.log) == null ? void 0 : _d.call(net, `LLM ${label}(${model}): ${total} tokens`);
-          (_e = net.log) == null ? void 0 : _e.addUsage(total);
-        }
-        return extractText(res.json);
+  const logPrefix = `LLM ${label}(${model})`;
+  return httpWithRetry({
+    http,
+    request: () => ({ url: `${API_BASE}/messages`, method: "POST", headers: headers(settings), body }),
+    host: "api.anthropic.com",
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix,
+    retrySubject: (_a = net.label) != null ? _a : "LLM call",
+    parseError: (res) => errorMessage3(res.json),
+    onSuccess: (res) => {
+      var _a2, _b;
+      const total = extractUsageTotal(res.json);
+      if (total != null) {
+        (_a2 = net.log) == null ? void 0 : _a2.call(net, `${logPrefix}: ${total} tokens`);
+        (_b = net.log) == null ? void 0 : _b.addUsage(total);
       }
-      reason = errorMessage3(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure("api.anthropic.com", http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError3(e);
-    }
-    if (status >= 400 && status < 500 && sendTemperature && !triedWithoutTemperature && /temperature/i.test(reason)) {
+      return extractText(res.json);
+    },
+    // AU_E124_S6: the model rejected `temperature` by name — send the same call once more
+    // without it, rather than keeping a list of which models still accept it.
+    adapt: (status, reason) => {
+      var _a2;
+      if (!(status >= 400 && status < 500 && sendTemperature && !triedWithoutTemperature && /temperature/i.test(reason))) return false;
       sendTemperature = false;
       triedWithoutTemperature = true;
       body = makeBody();
-      (_f = net.log) == null ? void 0 : _f.call(net, `LLM ${label}(${model}): ${status} on temperature \u2014 retrying WITHOUT temperature (${reason})`);
-      continue;
-    }
-    if (status !== 0 && (!isTransientStatus3(status) || attempt >= retries)) {
-      if (reason) (_g = net.log) == null ? void 0 : _g.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(
-        `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your Anthropic key/model and connection."}`,
-        status
-      );
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_h = net.log) == null ? void 0 : _h.call(net, `LLM ${label}(${model}): ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_j = net.onRetry) == null ? void 0 : _j.call(net, `Network error \u2014 retrying ${(_i = net.label) != null ? _i : "LLM call"} (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay3(wait);
-  }
+      (_a2 = net.log) == null ? void 0 : _a2.call(net, `${logPrefix}: ${status} on temperature \u2014 retrying WITHOUT temperature (${reason})`);
+      return true;
+    },
+    // Surface the API's own explanation (AU_E124_S5): a bare "(400)" hides exactly the
+    // part that tells the user what to fix (wrong model, unsupported thinking, …).
+    terminalError: (status, reason) => new SearchApiError(
+      `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your Anthropic key/model and connection."}`,
+      status
+    )
+  });
 }
 async function anthropicListModels(settings, http) {
   const res = await http({ url: `${API_BASE}/models?limit=100`, method: "GET", headers: headers(settings) });
@@ -1007,21 +1775,12 @@ var GOOGLE_THINKING_BUDGETS = {
   medium: 8192,
   high: 24576
 };
-function isTransientStatus4(status) {
-  return status === 429 || status >= 500 && status < 600;
-}
-function delay4(ms) {
-  return new Promise((resolve) => window.setTimeout(resolve, ms));
-}
 function headers2(settings) {
   return {
     "Content-Type": "application/json",
     Accept: "application/json",
     "x-goog-api-key": settings.googleApiKey.trim()
   };
-}
-function shortNetworkError4(e) {
-  return String(e instanceof Error ? e.message : e).replace(/\s+/g, " ").trim().slice(0, 140);
 }
 function errorMessage4(payload) {
   if (!payload || typeof payload !== "object") return "";
@@ -1074,55 +1833,42 @@ function buildGoogleBody(messages, opts, reasoningEffort) {
   return body;
 }
 async function googleChat(messages, opts, settings, http, net = {}) {
-  var _a, _b, _c, _d, _e, _f, _g, _h, _i;
+  var _a;
   const model = (opts.model || settings.googleChatModel).trim();
   if (!model) {
     throw new SearchApiError("Set a chat model for the Google provider in the plugin settings.", 0);
   }
   const body = JSON.stringify(buildGoogleBody(messages, opts, net.reasoningEffort));
   const url = `${API_BASE2}/models/${encodeURIComponent(model)}:generateContent`;
-  const retries = (_a = net.retries) != null ? _a : 2;
-  const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
-  const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
   const label = net.label ? `${net.label} ` : "";
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let reason = "";
-    let netReason = "";
-    try {
-      const res = await http({ url, method: "POST", headers: headers2(settings), body });
-      status = res.status;
-      if (status >= 200 && status < 300) {
-        const total = extractUsageTotal2(res.json);
-        if (total != null) {
-          (_d = net.log) == null ? void 0 : _d.call(net, `LLM ${label}(${model}): ${total} tokens`);
-          (_e = net.log) == null ? void 0 : _e.addUsage(total);
-        }
-        return extractText2(res.json);
+  const logPrefix = `LLM ${label}(${model})`;
+  return httpWithRetry({
+    http,
+    request: () => ({ url, method: "POST", headers: headers2(settings), body }),
+    host: "generativelanguage.googleapis.com",
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix,
+    retrySubject: (_a = net.label) != null ? _a : "LLM call",
+    parseError: (res) => errorMessage4(res.json),
+    onSuccess: (res) => {
+      var _a2, _b;
+      const total = extractUsageTotal2(res.json);
+      if (total != null) {
+        (_a2 = net.log) == null ? void 0 : _a2.call(net, `${logPrefix}: ${total} tokens`);
+        (_b = net.log) == null ? void 0 : _b.addUsage(total);
       }
-      reason = errorMessage4(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure("generativelanguage.googleapis.com", http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError4(e);
-    }
-    if (status !== 0 && (!isTransientStatus4(status) || attempt >= retries)) {
-      if (reason) (_f = net.log) == null ? void 0 : _f.call(net, `LLM ${label}(${model}): ${status} \u2014 ${reason}`);
-      throw new SearchApiError(
-        `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your Google key/model and connection."}`,
-        status
-      );
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_g = net.log) == null ? void 0 : _g.call(net, `LLM ${label}(${model}): ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_i = net.onRetry) == null ? void 0 : _i.call(net, `Network error \u2014 retrying ${(_h = net.label) != null ? _h : "LLM call"} (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay4(wait);
-  }
+      return extractText2(res.json);
+    },
+    // Surface the API's own explanation (AU_E124_S5) — same transparency as Anthropic.
+    terminalError: (status, reason) => new SearchApiError(
+      `Chat request failed (${status})${reason ? `: ${reason.slice(0, 200)}` : ". Check your Google key/model and connection."}`,
+      status
+    )
+  });
 }
 function extractBatchEmbeddings(payload) {
   const out = [];
@@ -1140,7 +1886,6 @@ function extractBatchEmbeddings(payload) {
   return out;
 }
 async function googleEmbed(texts, settings, http, net = {}) {
-  var _a, _b, _c, _d, _e;
   if (texts.length === 0) return [];
   const model = settings.googleEmbedModel.trim();
   if (!model) {
@@ -1150,34 +1895,20 @@ async function googleEmbed(texts, settings, http, net = {}) {
   const qualified = `models/${bare}`;
   const url = `${API_BASE2}/models/${encodeURIComponent(bare)}:batchEmbedContents`;
   const body = JSON.stringify({ requests: texts.map((text) => ({ model: qualified, content: { parts: [{ text }] } })) });
-  const retries = (_a = net.retries) != null ? _a : 2;
-  const networkRetries = (_b = net.networkRetries) != null ? _b : 6;
-  const backoffMs = (_c = net.backoffMs) != null ? _c : 800;
-  for (let attempt = 0; ; attempt++) {
-    let status = 0;
-    let netReason = "";
-    try {
-      const res = await http({ url, method: "POST", headers: headers2(settings), body });
-      status = res.status;
-      if (status >= 200 && status < 300) return extractBatchEmbeddings(res.json);
-    } catch (e) {
-      if (e instanceof ResearchCancelledError) throw e;
-      if (attempt >= networkRetries) {
-        if (net.log) net.log(`network diagnosis \u2014 ${await diagnoseNetworkFailure("generativelanguage.googleapis.com", http)}`);
-        throw e;
-      }
-      netReason = shortNetworkError4(e);
-    }
-    if (status !== 0 && (!isTransientStatus4(status) || attempt >= retries)) {
-      throw new SearchApiError(`Embeddings request failed (${status}). Check your Google key/model and connection.`, status);
-    }
-    const budget = status === 0 ? networkRetries : retries;
-    const wait = Math.min(backoffMs * 2 ** attempt, 8e3);
-    const what = status || `network error${netReason ? ` (${netReason})` : ""}`;
-    (_d = net.log) == null ? void 0 : _d.call(net, `LLM embed: ${what} \u2014 retry ${attempt + 1}/${budget} in ${wait}ms`);
-    if (status === 0) (_e = net.onRetry) == null ? void 0 : _e.call(net, `Network error \u2014 retrying embeddings (${attempt + 1}/${budget})\u2026`);
-    if (wait > 0) await delay4(wait);
-  }
+  return httpWithRetry({
+    http,
+    request: () => ({ url, method: "POST", headers: headers2(settings), body }),
+    host: "generativelanguage.googleapis.com",
+    retries: net.retries,
+    networkRetries: net.networkRetries,
+    backoffMs: net.backoffMs,
+    log: net.log,
+    onRetry: net.onRetry,
+    logPrefix: "LLM embed",
+    retrySubject: "embeddings",
+    onSuccess: (res) => extractBatchEmbeddings(res.json),
+    terminalError: (status) => new SearchApiError(`Embeddings request failed (${status}). Check your Google key/model and connection.`, status)
+  });
 }
 async function googleListModels(settings, http) {
   const res = await http({ url: `${API_BASE2}/models?pageSize=1000`, method: "GET", headers: headers2(settings) });
@@ -1665,6 +2396,10 @@ var en = {
     contentsEmpty: "_(no other notes in this folder yet)_"
   },
   logbook: {
+    stepQuestion: "Question",
+    questionChanged: "question changed: {question}",
+    stepFraming: "Framing",
+    framingSet: 'framing set: "{framing}"',
     stepFork: "Fork",
     forkedFrom: "forked from {note} at {section}",
     forkedTo: "forked to {note} at {section}",
@@ -1700,6 +2435,7 @@ var en = {
     hints: {
       exploration: "Probe the question before searching: note your assumptions and counter-assumptions, sharper reformulations of the question, and the search terms you would start from.",
       lenses: "Name two or three theoretical lenses to think with, and for each: what it highlights, what it hides, and the search terms it suggests.",
+      framework: "Name the construct you are studying, give a working definition, and list the dimensions that should steer the sub-questions.",
       challenge: "Argue against your own framing: the strongest objection, a rival explanation, and what evidence would change your mind.",
       beliefs: "List what you already believe about this question, one belief per line \u2014 you will test these against the evidence later.",
       agenda: "Turn what you learned into next steps: the gaps you see, sharper follow-up questions, and study designs that could answer them.",
@@ -2023,6 +2759,10 @@ var nl = {
     contentsEmpty: "_(nog geen andere notities in deze map)_"
   },
   logbook: {
+    stepQuestion: "Vraag",
+    questionChanged: "vraag gewijzigd: {question}",
+    stepFraming: "Framing",
+    framingSet: 'framing gezet: "{framing}"',
     stepFork: "Fork",
     forkedFrom: "gevorkt vanaf {note} bij {section}",
     forkedTo: "gevorkt naar {note} bij {section}",
@@ -2058,6 +2798,7 @@ var nl = {
     hints: {
       exploration: "Verken de vraag v\xF3\xF3r je gaat zoeken: noteer je aannames en tegenaannames, scherpere herformuleringen van de vraag en de zoektermen waarmee je zou starten.",
       lenses: "Benoem twee of drie theoretische lenzen om mee te denken, en per lens: wat hij uitlicht, wat hij verbergt en welke zoektermen hij oplevert.",
+      framework: "Benoem het construct dat je onderzoekt, geef een werkdefinitie en noem de dimensies die de deelvragen moeten sturen.",
       challenge: "Ga tegen je eigen framing in: het sterkste bezwaar, een rivaliserende verklaring en welk bewijs je van gedachten zou doen veranderen.",
       beliefs: "Noteer wat je al gelooft over deze vraag, \xE9\xE9n overtuiging per regel \u2014 die toets je later aan het bewijs.",
       agenda: "Vertaal wat je leerde naar vervolgstappen: de gaten die je ziet, scherpere vervolgvragen en onderzoeksdesigns die ze kunnen beantwoorden.",
@@ -2381,6 +3122,10 @@ var fr = {
     contentsEmpty: "_(pas encore d'autres notes dans ce dossier)_"
   },
   logbook: {
+    stepQuestion: "Question",
+    questionChanged: "question modifi\xE9e : {question}",
+    stepFraming: "Cadrage",
+    framingSet: 'cadrage d\xE9fini : "{framing}"',
     stepFork: "Fourche",
     forkedFrom: "bifurqu\xE9 depuis {note} \xE0 {section}",
     forkedTo: "bifurqu\xE9 vers {note} \xE0 {section}",
@@ -2416,6 +3161,7 @@ var fr = {
     hints: {
       exploration: "Explorez la question avant de chercher : notez vos hypoth\xE8ses et contre-hypoth\xE8ses, des reformulations plus pr\xE9cises de la question et les termes de recherche par lesquels vous commenceriez.",
       lenses: "Nommez deux ou trois lentilles th\xE9oriques pour penser, et pour chacune : ce qu'elle \xE9claire, ce qu'elle masque et les termes de recherche qu'elle sugg\xE8re.",
+      framework: "Nommez le construit que vous \xE9tudiez, donnez-en une d\xE9finition de travail et listez les dimensions qui doivent orienter les sous-questions.",
       challenge: "Argumentez contre votre propre cadrage : l'objection la plus forte, une explication rivale et quelle preuve vous ferait changer d'avis.",
       beliefs: "Listez ce que vous croyez d\xE9j\xE0 sur cette question, une conviction par ligne \u2014 vous les confronterez plus tard aux preuves.",
       agenda: "Traduisez ce que vous avez appris en \xE9tapes suivantes : les lacunes rep\xE9r\xE9es, des questions de suivi plus pr\xE9cises et les designs d'\xE9tude qui pourraient y r\xE9pondre.",
@@ -2739,6 +3485,10 @@ var de = {
     contentsEmpty: "_(noch keine weiteren Notizen in diesem Ordner)_"
   },
   logbook: {
+    stepQuestion: "Frage",
+    questionChanged: "Frage ge\xE4ndert: {question}",
+    stepFraming: "Framing",
+    framingSet: 'Framing gesetzt: "{framing}"',
     stepFork: "Fork",
     forkedFrom: "abgezweigt von {note} bei {section}",
     forkedTo: "abgezweigt nach {note} bei {section}",
@@ -2774,6 +3524,7 @@ var de = {
     hints: {
       exploration: "Erkunden Sie die Frage vor der Suche: Notieren Sie Ihre Annahmen und Gegenannahmen, sch\xE4rfere Umformulierungen der Frage und die Suchbegriffe, mit denen Sie beginnen w\xFCrden.",
       lenses: "Benennen Sie zwei oder drei theoretische Linsen zum Denken, und je Linse: was sie hervorhebt, was sie verdeckt und welche Suchbegriffe sie nahelegt.",
+      framework: "Benennen Sie das Konstrukt, das Sie untersuchen, geben Sie eine Arbeitsdefinition und listen Sie die Dimensionen auf, die die Teilfragen steuern sollen.",
       challenge: "Argumentieren Sie gegen Ihre eigene Rahmung: der st\xE4rkste Einwand, eine konkurrierende Erkl\xE4rung und welcher Beleg Ihre Meinung \xE4ndern w\xFCrde.",
       beliefs: "Listen Sie auf, was Sie \xFCber diese Frage bereits glauben, eine \xDCberzeugung pro Zeile \u2014 Sie pr\xFCfen sie sp\xE4ter an der Evidenz.",
       agenda: "\xDCbersetzen Sie das Gelernte in n\xE4chste Schritte: die erkannten L\xFCcken, sch\xE4rfere Anschlussfragen und Studiendesigns, die sie beantworten k\xF6nnten.",
@@ -3097,6 +3848,10 @@ var es = {
     contentsEmpty: "_(todav\xEDa no hay otras notas en esta carpeta)_"
   },
   logbook: {
+    stepQuestion: "Pregunta",
+    questionChanged: "pregunta modificada: {question}",
+    stepFraming: "Encuadre",
+    framingSet: 'encuadre definido: "{framing}"',
     stepFork: "Bifurcaci\xF3n",
     forkedFrom: "bifurcado desde {note} en {section}",
     forkedTo: "bifurcado hacia {note} en {section}",
@@ -3132,6 +3887,7 @@ var es = {
     hints: {
       exploration: "Explora la pregunta antes de buscar: anota tus supuestos y contra-supuestos, reformulaciones m\xE1s precisas de la pregunta y los t\xE9rminos de b\xFAsqueda con los que empezar\xEDas.",
       lenses: "Nombra dos o tres lentes te\xF3ricas para pensar, y para cada una: qu\xE9 destaca, qu\xE9 oculta y qu\xE9 t\xE9rminos de b\xFAsqueda sugiere.",
+      framework: "Nombra el constructo que estudias, da una definici\xF3n operativa y enumera las dimensiones que deben orientar las subpreguntas.",
       challenge: "Argumenta contra tu propio encuadre: la objeci\xF3n m\xE1s fuerte, una explicaci\xF3n rival y qu\xE9 evidencia te har\xEDa cambiar de opini\xF3n.",
       beliefs: "Enumera lo que ya crees sobre esta pregunta, una convicci\xF3n por l\xEDnea \u2014 luego las contrastar\xE1s con la evidencia.",
       agenda: "Convierte lo aprendido en pr\xF3ximos pasos: las lagunas que ves, preguntas de seguimiento m\xE1s precisas y dise\xF1os de estudio que podr\xEDan responderlas.",
@@ -3455,6 +4211,10 @@ var pt = {
     contentsEmpty: "_(ainda n\xE3o h\xE1 outras notas nesta pasta)_"
   },
   logbook: {
+    stepQuestion: "Pergunta",
+    questionChanged: "pergunta alterada: {question}",
+    stepFraming: "Enquadramento",
+    framingSet: 'enquadramento definido: "{framing}"',
     stepFork: "Bifurca\xE7\xE3o",
     forkedFrom: "bifurcado de {note} em {section}",
     forkedTo: "bifurcado para {note} em {section}",
@@ -3490,6 +4250,7 @@ var pt = {
     hints: {
       exploration: "Explore a pergunta antes de pesquisar: anote suas suposi\xE7\xF5es e contra-suposi\xE7\xF5es, reformula\xE7\xF5es mais precisas da pergunta e os termos de busca com que come\xE7aria.",
       lenses: "Nomeie duas ou tr\xEAs lentes te\xF3ricas para pensar e, para cada uma: o que ela destaca, o que ela esconde e os termos de busca que sugere.",
+      framework: "Nomeie o construto que estuda, d\xEA uma defini\xE7\xE3o de trabalho e liste as dimens\xF5es que devem orientar as subperguntas.",
       challenge: "Argumente contra o seu pr\xF3prio enquadramento: a obje\xE7\xE3o mais forte, uma explica\xE7\xE3o rival e que evid\xEAncia mudaria a sua opini\xE3o.",
       beliefs: "Liste o que voc\xEA j\xE1 acredita sobre esta pergunta, uma convic\xE7\xE3o por linha \u2014 depois voc\xEA as testar\xE1 contra a evid\xEAncia.",
       agenda: "Converta o que aprendeu em pr\xF3ximos passos: as lacunas que v\xEA, perguntas de seguimento mais precisas e desenhos de estudo que poderiam respond\xEA-las.",
@@ -3813,6 +4574,10 @@ var it = {
     contentsEmpty: "_(ancora nessun'altra nota in questa cartella)_"
   },
   logbook: {
+    stepQuestion: "Domanda",
+    questionChanged: "domanda modificata: {question}",
+    stepFraming: "Inquadramento",
+    framingSet: 'inquadramento impostato: "{framing}"',
     stepFork: "Fork",
     forkedFrom: "biforcato da {note} a {section}",
     forkedTo: "biforcato verso {note} a {section}",
@@ -3848,6 +4613,7 @@ var it = {
     hints: {
       exploration: "Esplora la domanda prima di cercare: annota le tue assunzioni e contro-assunzioni, riformulazioni pi\xF9 precise della domanda e i termini di ricerca da cui partiresti.",
       lenses: "Indica due o tre lenti teoriche con cui pensare e, per ciascuna: cosa mette in luce, cosa nasconde e quali termini di ricerca suggerisce.",
+      framework: "Nomina il costrutto che stai studiando, dane una definizione operativa ed elenca le dimensioni che devono orientare le sotto-domande.",
       challenge: "Argomenta contro il tuo stesso inquadramento: l'obiezione pi\xF9 forte, una spiegazione rivale e quale evidenza ti farebbe cambiare idea.",
       beliefs: "Elenca ci\xF2 che gi\xE0 credi su questa domanda, una convinzione per riga \u2014 le metterai poi alla prova con l'evidenza.",
       agenda: "Trasforma ci\xF2 che hai imparato in prossimi passi: le lacune che vedi, domande di follow-up pi\xF9 precise e disegni di studio che potrebbero rispondervi.",
@@ -4171,6 +4937,10 @@ var ru = {
     contentsEmpty: "_(\u0432 \u044D\u0442\u043E\u0439 \u043F\u0430\u043F\u043A\u0435 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442 \u0434\u0440\u0443\u0433\u0438\u0445 \u0437\u0430\u043C\u0435\u0442\u043E\u043A)_"
   },
   logbook: {
+    stepQuestion: "\u0412\u043E\u043F\u0440\u043E\u0441",
+    questionChanged: "\u0432\u043E\u043F\u0440\u043E\u0441 \u0438\u0437\u043C\u0435\u043D\u0451\u043D: {question}",
+    stepFraming: "\u0424\u0440\u0435\u0439\u043C\u0438\u043D\u0433",
+    framingSet: '\u0444\u0440\u0435\u0439\u043C\u0438\u043D\u0433 \u0437\u0430\u0434\u0430\u043D: "{framing}"',
     stepFork: "\u0424\u043E\u0440\u043A",
     forkedFrom: "\u043E\u0442\u0432\u0435\u0442\u0432\u043B\u0435\u043D\u043E \u043E\u0442 {note} \u043D\u0430 {section}",
     forkedTo: "\u043E\u0442\u0432\u0435\u0442\u0432\u043B\u0435\u043D\u043E \u0432 {note} \u043D\u0430 {section}",
@@ -4206,6 +4976,7 @@ var ru = {
     hints: {
       exploration: "\u0418\u0441\u0441\u043B\u0435\u0434\u0443\u0439\u0442\u0435 \u0432\u043E\u043F\u0440\u043E\u0441 \u0434\u043E \u043F\u043E\u0438\u0441\u043A\u0430: \u0437\u0430\u043F\u0438\u0448\u0438\u0442\u0435 \u0441\u0432\u043E\u0438 \u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F \u0438 \u043A\u043E\u043D\u0442\u0440\u0434\u043E\u043F\u0443\u0449\u0435\u043D\u0438\u044F, \u0431\u043E\u043B\u0435\u0435 \u0442\u043E\u0447\u043D\u044B\u0435 \u043F\u0435\u0440\u0435\u0444\u043E\u0440\u043C\u0443\u043B\u0438\u0440\u043E\u0432\u043A\u0438 \u0432\u043E\u043F\u0440\u043E\u0441\u0430 \u0438 \u043F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0437\u0430\u043F\u0440\u043E\u0441\u044B, \u0441 \u043A\u043E\u0442\u043E\u0440\u044B\u0445 \u0432\u044B \u0431\u044B \u043D\u0430\u0447\u0430\u043B\u0438.",
       lenses: "\u041D\u0430\u0437\u043E\u0432\u0438\u0442\u0435 \u0434\u0432\u0435-\u0442\u0440\u0438 \u0442\u0435\u043E\u0440\u0435\u0442\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u043B\u0438\u043D\u0437\u044B \u0434\u043B\u044F \u0440\u0430\u0437\u043C\u044B\u0448\u043B\u0435\u043D\u0438\u044F \u0438 \u0434\u043B\u044F \u043A\u0430\u0436\u0434\u043E\u0439: \u0447\u0442\u043E \u043E\u043D\u0430 \u043F\u043E\u0434\u0441\u0432\u0435\u0447\u0438\u0432\u0430\u0435\u0442, \u0447\u0442\u043E \u0441\u043A\u0440\u044B\u0432\u0430\u0435\u0442 \u0438 \u043A\u0430\u043A\u0438\u0435 \u043F\u043E\u0438\u0441\u043A\u043E\u0432\u044B\u0435 \u0437\u0430\u043F\u0440\u043E\u0441\u044B \u043F\u043E\u0434\u0441\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442.",
+      framework: "\u041D\u0430\u0437\u043E\u0432\u0438\u0442\u0435 \u043A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u0432\u044B \u0438\u0437\u0443\u0447\u0430\u0435\u0442\u0435, \u0434\u0430\u0439\u0442\u0435 \u0440\u0430\u0431\u043E\u0447\u0435\u0435 \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0435\u043D\u0438\u0435 \u0438 \u043F\u0435\u0440\u0435\u0447\u0438\u0441\u043B\u0438\u0442\u0435 \u0438\u0437\u043C\u0435\u0440\u0435\u043D\u0438\u044F, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u0434\u043E\u043B\u0436\u043D\u044B \u043D\u0430\u043F\u0440\u0430\u0432\u043B\u044F\u0442\u044C \u043F\u043E\u0434\u0432\u043E\u043F\u0440\u043E\u0441\u044B.",
       challenge: "\u041F\u043E\u0441\u043F\u043E\u0440\u044C\u0442\u0435 \u0441 \u0441\u043E\u0431\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0439 \u043F\u043E\u0441\u0442\u0430\u043D\u043E\u0432\u043A\u043E\u0439: \u0441\u0430\u043C\u043E\u0435 \u0441\u0438\u043B\u044C\u043D\u043E\u0435 \u0432\u043E\u0437\u0440\u0430\u0436\u0435\u043D\u0438\u0435, \u043A\u043E\u043D\u043A\u0443\u0440\u0438\u0440\u0443\u044E\u0449\u0435\u0435 \u043E\u0431\u044A\u044F\u0441\u043D\u0435\u043D\u0438\u0435 \u0438 \u043A\u0430\u043A\u0438\u0435 \u0434\u0430\u043D\u043D\u044B\u0435 \u0437\u0430\u0441\u0442\u0430\u0432\u0438\u043B\u0438 \u0431\u044B \u0432\u0430\u0441 \u043F\u0435\u0440\u0435\u0434\u0443\u043C\u0430\u0442\u044C.",
       beliefs: "\u041F\u0435\u0440\u0435\u0447\u0438\u0441\u043B\u0438\u0442\u0435, \u0447\u0442\u043E \u0432\u044B \u0443\u0436\u0435 \u0434\u0443\u043C\u0430\u0435\u0442\u0435 \u043E\u0431 \u044D\u0442\u043E\u043C \u0432\u043E\u043F\u0440\u043E\u0441\u0435, \u043F\u043E \u043E\u0434\u043D\u043E\u043C\u0443 \u0443\u0431\u0435\u0436\u0434\u0435\u043D\u0438\u044E \u043D\u0430 \u0441\u0442\u0440\u043E\u043A\u0443 \u2014 \u043F\u043E\u0437\u0436\u0435 \u0432\u044B \u043F\u0440\u043E\u0432\u0435\u0440\u0438\u0442\u0435 \u0438\u0445 \u043D\u0430 \u0434\u0430\u043D\u043D\u044B\u0445.",
       agenda: "\u041F\u0440\u0435\u0432\u0440\u0430\u0442\u0438\u0442\u0435 \u0438\u0437\u0443\u0447\u0435\u043D\u043D\u043E\u0435 \u0432 \u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0435 \u0448\u0430\u0433\u0438: \u0437\u0430\u043C\u0435\u0447\u0435\u043D\u043D\u044B\u0435 \u043F\u0440\u043E\u0431\u0435\u043B\u044B, \u0431\u043E\u043B\u0435\u0435 \u0442\u043E\u0447\u043D\u044B\u0435 \u043F\u043E\u0441\u043B\u0435\u0434\u0443\u044E\u0449\u0438\u0435 \u0432\u043E\u043F\u0440\u043E\u0441\u044B \u0438 \u0434\u0438\u0437\u0430\u0439\u043D\u044B \u0438\u0441\u0441\u043B\u0435\u0434\u043E\u0432\u0430\u043D\u0438\u0439, \u043A\u043E\u0442\u043E\u0440\u044B\u0435 \u043C\u043E\u0433\u043B\u0438 \u0431\u044B \u043D\u0430 \u043D\u0438\u0445 \u043E\u0442\u0432\u0435\u0442\u0438\u0442\u044C.",
@@ -4529,6 +5300,10 @@ var zh = {
     contentsEmpty: "_\uFF08\u6B64\u6587\u4EF6\u5939\u4E2D\u6682\u65E0\u5176\u4ED6\u7B14\u8BB0\uFF09_"
   },
   logbook: {
+    stepQuestion: "\u95EE\u9898",
+    questionChanged: "\u95EE\u9898\u5DF2\u66F4\u6539\uFF1A{question}",
+    stepFraming: "\u6846\u67B6",
+    framingSet: '\u5DF2\u8BBE\u5B9A\u6846\u67B6\uFF1A"{framing}"',
     stepFork: "\u5206\u53C9",
     forkedFrom: "\u81EA {note} \u5728 {section} \u5904\u5206\u53C9",
     forkedTo: "\u5206\u53C9\u81F3 {note}\uFF08{section} \u5904\uFF09",
@@ -4564,6 +5339,7 @@ var zh = {
     hints: {
       exploration: "\u5728\u68C0\u7D22\u4E4B\u524D\u5148\u63A2\u7D22\u95EE\u9898\uFF1A\u5199\u4E0B\u4F60\u7684\u5047\u8BBE\u4E0E\u53CD\u5047\u8BBE\u3001\u66F4\u7CBE\u786E\u7684\u95EE\u9898\u91CD\u8FF0\uFF0C\u4EE5\u53CA\u4F60\u4F1A\u7528\u6765\u8D77\u6B65\u7684\u68C0\u7D22\u8BCD\u3002",
       lenses: "\u5217\u51FA\u4E24\u4E09\u4E2A\u7528\u4E8E\u601D\u8003\u7684\u7406\u8BBA\u89C6\u89D2\uFF0C\u5E76\u4E3A\u6BCF\u4E2A\u89C6\u89D2\u5199\u660E\uFF1A\u5B83\u51F8\u663E\u4EC0\u4E48\u3001\u906E\u853D\u4EC0\u4E48\u3001\u6697\u793A\u54EA\u4E9B\u68C0\u7D22\u8BCD\u3002",
+      framework: "\u5199\u660E\u4F60\u7814\u7A76\u7684\u6784\u5FF5\uFF0C\u7ED9\u51FA\u5DE5\u4F5C\u5B9A\u4E49\uFF0C\u5E76\u5217\u51FA\u5E94\u5F53\u5F15\u5BFC\u5B50\u95EE\u9898\u7684\u5404\u4E2A\u7EF4\u5EA6\u3002",
       challenge: "\u53CD\u9A73\u4F60\u81EA\u5DF1\u7684\u6846\u67B6\uFF1A\u6700\u6709\u529B\u7684\u5F02\u8BAE\u3001\u4E00\u79CD\u7ADE\u4E89\u6027\u89E3\u91CA\uFF0C\u4EE5\u53CA\u4EC0\u4E48\u8BC1\u636E\u4F1A\u8BA9\u4F60\u6539\u53D8\u60F3\u6CD5\u3002",
       beliefs: "\u5217\u51FA\u4F60\u5BF9\u8FD9\u4E2A\u95EE\u9898\u5DF2\u6709\u7684\u770B\u6CD5\uFF0C\u6BCF\u884C\u4E00\u6761\u2014\u2014\u4E4B\u540E\u4F60\u5C06\u7528\u8BC1\u636E\u68C0\u9A8C\u5B83\u4EEC\u3002",
       agenda: "\u628A\u6240\u5B66\u8F6C\u5316\u4E3A\u4E0B\u4E00\u6B65\uFF1A\u4F60\u770B\u5230\u7684\u7A7A\u767D\u3001\u66F4\u7CBE\u786E\u7684\u540E\u7EED\u95EE\u9898\uFF0C\u4EE5\u53CA\u80FD\u56DE\u7B54\u5B83\u4EEC\u7684\u7814\u7A76\u8BBE\u8BA1\u3002",
@@ -4887,6 +5663,10 @@ var hi = {
     contentsEmpty: "_(\u0907\u0938 \u092B\u093C\u094B\u0932\u094D\u0921\u0930 \u092E\u0947\u0902 \u0905\u092D\u0940 \u0924\u0915 \u0915\u094B\u0908 \u0905\u0928\u094D\u092F \u0928\u094B\u091F \u0928\u0939\u0940\u0902 \u0939\u0948)_"
   },
   logbook: {
+    stepQuestion: "\u092A\u094D\u0930\u0936\u094D\u0928",
+    questionChanged: "\u092A\u094D\u0930\u0936\u094D\u0928 \u092C\u0926\u0932\u093E \u0917\u092F\u093E: {question}",
+    stepFraming: "\u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917",
+    framingSet: '\u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917 \u0938\u0947\u091F \u0915\u0940 \u0917\u0908: "{framing}"',
     stepFork: "\u092B\u093C\u094B\u0930\u094D\u0915",
     forkedFrom: "{note} \u0938\u0947 {section} \u092A\u0930 \u092B\u093C\u094B\u0930\u094D\u0915 \u0915\u093F\u092F\u093E \u0917\u092F\u093E",
     forkedTo: "{note} \u0915\u0940 \u0913\u0930 {section} \u092A\u0930 \u092B\u093C\u094B\u0930\u094D\u0915 \u0915\u093F\u092F\u093E \u0917\u092F\u093E",
@@ -4922,6 +5702,7 @@ var hi = {
     hints: {
       exploration: "\u0916\u094B\u091C \u0938\u0947 \u092A\u0939\u0932\u0947 \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u0940 \u092A\u0921\u093C\u0924\u093E\u0932 \u0915\u0930\u0947\u0902: \u0905\u092A\u0928\u0940 \u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901 \u0914\u0930 \u092A\u094D\u0930\u0924\u093F-\u092E\u093E\u0928\u094D\u092F\u0924\u093E\u090F\u0901, \u092A\u094D\u0930\u0936\u094D\u0928 \u0915\u0947 \u0905\u0927\u093F\u0915 \u0938\u091F\u0940\u0915 \u092A\u0941\u0928\u0930\u094D\u0915\u0925\u0928, \u0914\u0930 \u0935\u0947 \u0916\u094B\u091C-\u0936\u092C\u094D\u0926 \u0932\u093F\u0916\u0947\u0902 \u091C\u093F\u0928\u0938\u0947 \u0906\u092A \u0936\u0941\u0930\u0942 \u0915\u0930\u0947\u0902\u0917\u0947\u0964",
       lenses: "\u0938\u094B\u091A\u0928\u0947 \u0915\u0947 \u0932\u093F\u090F \u0926\u094B-\u0924\u0940\u0928 \u0938\u0948\u0926\u094D\u0927\u093E\u0902\u0924\u093F\u0915 \u0926\u0943\u0937\u094D\u091F\u093F\u0915\u094B\u0923 \u091A\u0941\u0928\u0947\u0902, \u0914\u0930 \u092A\u094D\u0930\u0924\u094D\u092F\u0947\u0915 \u0915\u0947 \u0932\u093F\u090F \u0932\u093F\u0916\u0947\u0902: \u0935\u0939 \u0915\u094D\u092F\u093E \u0909\u091C\u093E\u0917\u0930 \u0915\u0930\u0924\u093E \u0939\u0948, \u0915\u094D\u092F\u093E \u091B\u093F\u092A\u093E\u0924\u093E \u0939\u0948, \u0914\u0930 \u0915\u094C\u0928 \u0938\u0947 \u0916\u094B\u091C-\u0936\u092C\u094D\u0926 \u0938\u0941\u091D\u093E\u0924\u093E \u0939\u0948\u0964",
+      framework: "\u091C\u093F\u0938 \u0938\u0902\u092A\u094D\u0930\u0924\u094D\u092F\u092F \u0915\u093E \u0906\u092A \u0905\u0927\u094D\u092F\u092F\u0928 \u0915\u0930 \u0930\u0939\u0947 \u0939\u0948\u0902 \u0909\u0938\u0947 \u0928\u093E\u092E \u0926\u0947\u0902, \u090F\u0915 \u0915\u093E\u0930\u094D\u092F\u0915\u093E\u0930\u0940 \u092A\u0930\u093F\u092D\u093E\u0937\u093E \u0926\u0947\u0902, \u0914\u0930 \u0935\u0947 \u0906\u092F\u093E\u092E \u0917\u093F\u0928\u093E\u090F\u0901 \u091C\u094B \u0909\u092A-\u092A\u094D\u0930\u0936\u094D\u0928\u094B\u0902 \u0915\u094B \u0926\u093F\u0936\u093E \u0926\u0947\u0902\u0964",
       challenge: "\u0905\u092A\u0928\u0947 \u0939\u0940 \u092B\u093C\u094D\u0930\u0947\u092E\u093F\u0902\u0917 \u0915\u0947 \u0935\u093F\u0930\u0941\u0926\u094D\u0927 \u0924\u0930\u094D\u0915 \u0915\u0930\u0947\u0902: \u0938\u092C\u0938\u0947 \u092E\u091C\u093C\u092C\u0942\u0924 \u0906\u092A\u0924\u094D\u0924\u093F, \u090F\u0915 \u092A\u094D\u0930\u0924\u093F\u0938\u094D\u092A\u0930\u094D\u0927\u0940 \u0935\u094D\u092F\u093E\u0916\u094D\u092F\u093E, \u0914\u0930 \u0915\u094C\u0928-\u0938\u093E \u092A\u094D\u0930\u092E\u093E\u0923 \u0906\u092A\u0915\u093E \u092E\u0924 \u092C\u0926\u0932 \u0926\u0947\u0917\u093E\u0964",
       beliefs: "\u0907\u0938 \u092A\u094D\u0930\u0936\u094D\u0928 \u092A\u0930 \u0906\u092A \u091C\u094B \u092A\u0939\u0932\u0947 \u0938\u0947 \u092E\u093E\u0928\u0924\u0947 \u0939\u0948\u0902 \u0909\u0938\u0947 \u0932\u093F\u0916\u0947\u0902, \u092A\u094D\u0930\u0924\u093F \u092A\u0902\u0915\u094D\u0924\u093F \u090F\u0915 \u0927\u093E\u0930\u0923\u093E \u2014 \u092C\u093E\u0926 \u092E\u0947\u0902 \u0906\u092A \u0907\u0928\u094D\u0939\u0947\u0902 \u092A\u094D\u0930\u092E\u093E\u0923 \u0938\u0947 \u092A\u0930\u0916\u0947\u0902\u0917\u0947\u0964",
       agenda: "\u091C\u094B \u0938\u0940\u0916\u093E \u0909\u0938\u0947 \u0905\u0917\u0932\u0947 \u0915\u093C\u0926\u092E\u094B\u0902 \u092E\u0947\u0902 \u092C\u0926\u0932\u0947\u0902: \u0926\u093F\u0916\u0940 \u0939\u0941\u0908 \u0915\u092E\u093F\u092F\u093E\u0901, \u0905\u0927\u093F\u0915 \u0938\u091F\u0940\u0915 \u0905\u0928\u0941\u0935\u0930\u094D\u0924\u0940 \u092A\u094D\u0930\u0936\u094D\u0928, \u0914\u0930 \u0935\u0947 \u0905\u0927\u094D\u092F\u092F\u0928-\u0921\u093F\u091C\u093C\u093E\u0907\u0928 \u091C\u094B \u0909\u0928\u0915\u0947 \u0909\u0924\u094D\u0924\u0930 \u0926\u0947 \u0938\u0915\u0947\u0902\u0964",
@@ -5245,6 +6026,10 @@ var ar = {
     contentsEmpty: "_(\u0644\u0627 \u062A\u0648\u062C\u062F \u0645\u0644\u0627\u062D\u0638\u0627\u062A \u0623\u062E\u0631\u0649 \u0628\u0639\u062F \u0641\u064A \u0647\u0630\u0627 \u0627\u0644\u0645\u062C\u0644\u062F)_"
   },
   logbook: {
+    stepQuestion: "\u0627\u0644\u0633\u0624\u0627\u0644",
+    questionChanged: "\u062A\u063A\u064A\u0651\u0631 \u0627\u0644\u0633\u0624\u0627\u0644: {question}",
+    stepFraming: "\u0627\u0644\u062A\u0623\u0637\u064A\u0631",
+    framingSet: '\u062D\u064F\u062F\u0650\u0651\u062F \u0627\u0644\u062A\u0623\u0637\u064A\u0631: "{framing}"',
     stepFork: "\u062A\u0641\u0631\u064A\u0639",
     forkedFrom: "\u062A\u0641\u0631\u064E\u0651\u0639 \u0645\u0646 {note} \u0639\u0646\u062F {section}",
     forkedTo: "\u062A\u0641\u0631\u064E\u0651\u0639 \u0625\u0644\u0649 {note} \u0639\u0646\u062F {section}",
@@ -5280,6 +6065,7 @@ var ar = {
     hints: {
       exploration: "\u0627\u0633\u062A\u0643\u0634\u0641 \u0627\u0644\u0633\u0624\u0627\u0644 \u0642\u0628\u0644 \u0627\u0644\u0628\u062D\u062B: \u062F\u0648\u0650\u0651\u0646 \u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A\u0643 \u0648\u0627\u0641\u062A\u0631\u0627\u0636\u0627\u062A\u0643 \u0627\u0644\u0645\u0636\u0627\u062F\u0629\u060C \u0648\u0635\u064A\u0627\u063A\u0627\u062A \u0623\u062F\u0642 \u0644\u0644\u0633\u0624\u0627\u0644\u060C \u0648\u0645\u0635\u0637\u0644\u062D\u0627\u062A \u0627\u0644\u0628\u062D\u062B \u0627\u0644\u062A\u064A \u0633\u062A\u0628\u062F\u0623 \u0628\u0647\u0627.",
       lenses: "\u0633\u0645\u0650\u0651 \u0639\u062F\u0633\u062A\u064A\u0646 \u0623\u0648 \u062B\u0644\u0627\u062B \u0639\u062F\u0633\u0627\u062A \u0646\u0638\u0631\u064A\u0629 \u0644\u0644\u062A\u0641\u0643\u064A\u0631\u060C \u0648\u0644\u0643\u0644 \u0645\u0646\u0647\u0627: \u0645\u0627 \u0627\u0644\u0630\u064A \u062A\u064F\u0628\u0631\u0632\u0647\u060C \u0648\u0645\u0627 \u0627\u0644\u0630\u064A \u062A\u064F\u062E\u0641\u064A\u0647\u060C \u0648\u0645\u0627 \u0645\u0635\u0637\u0644\u062D\u0627\u062A \u0627\u0644\u0628\u062D\u062B \u0627\u0644\u062A\u064A \u062A\u0642\u062A\u0631\u062D\u0647\u0627.",
+      framework: "\u0633\u0645\u0650\u0651 \u0627\u0644\u0628\u0646\u0627\u0621 \u0627\u0644\u0645\u0641\u0627\u0647\u064A\u0645\u064A \u0627\u0644\u0630\u064A \u062A\u062F\u0631\u0633\u0647\u060C \u0648\u0623\u0639\u0637\u0650 \u062A\u0639\u0631\u064A\u0641\u064B\u0627 \u0625\u062C\u0631\u0627\u0626\u064A\u064B\u0627 \u0644\u0647\u060C \u0648\u0627\u0630\u0643\u0631 \u0627\u0644\u0623\u0628\u0639\u0627\u062F \u0627\u0644\u062A\u064A \u064A\u0646\u0628\u063A\u064A \u0623\u0646 \u062A\u0648\u062C\u0651\u0647 \u0627\u0644\u0623\u0633\u0626\u0644\u0629 \u0627\u0644\u0641\u0631\u0639\u064A\u0629.",
       challenge: "\u062C\u0627\u062F\u0644 \u0636\u062F \u062A\u0623\u0637\u064A\u0631\u0643 \u0627\u0644\u062E\u0627\u0635: \u0623\u0642\u0648\u0649 \u0627\u0639\u062A\u0631\u0627\u0636\u060C \u0648\u062A\u0641\u0633\u064A\u0631 \u0645\u0646\u0627\u0641\u0633\u060C \u0648\u0645\u0627 \u0627\u0644\u062F\u0644\u064A\u0644 \u0627\u0644\u0630\u064A \u0633\u064A\u063A\u064A\u0651\u0631 \u0631\u0623\u064A\u0643.",
       beliefs: "\u0627\u0630\u0643\u0631 \u0645\u0627 \u062A\u0639\u062A\u0642\u062F\u0647 \u0623\u0635\u0644\u064B\u0627 \u062D\u0648\u0644 \u0647\u0630\u0627 \u0627\u0644\u0633\u0624\u0627\u0644\u060C \u0627\u0639\u062A\u0642\u0627\u062F\u064B\u0627 \u0648\u0627\u062D\u062F\u064B\u0627 \u0641\u064A \u0643\u0644 \u0633\u0637\u0631 \u2014 \u0633\u062A\u062E\u062A\u0628\u0631\u0647\u0627 \u0644\u0627\u062D\u0642\u064B\u0627 \u0641\u064A \u0636\u0648\u0621 \u0627\u0644\u0623\u062F\u0644\u0629.",
       agenda: "\u062D\u0648\u0650\u0651\u0644 \u0645\u0627 \u062A\u0639\u0644\u0645\u062A\u0647 \u0625\u0644\u0649 \u062E\u0637\u0648\u0627\u062A \u062A\u0627\u0644\u064A\u0629: \u0627\u0644\u0641\u062C\u0648\u0627\u062A \u0627\u0644\u062A\u064A \u062A\u0631\u0627\u0647\u0627\u060C \u0648\u0623\u0633\u0626\u0644\u0629 \u0645\u062A\u0627\u0628\u0639\u0629 \u0623\u062F\u0642\u060C \u0648\u062A\u0635\u0627\u0645\u064A\u0645 \u062F\u0631\u0627\u0633\u0627\u062A \u064A\u0645\u0643\u0646 \u0623\u0646 \u062A\u062C\u064A\u0628 \u0639\u0646\u0647\u0627.",
@@ -5603,6 +6389,10 @@ var ja = {
     contentsEmpty: "_\uFF08\u3053\u306E\u30D5\u30A9\u30EB\u30C0\u306B\u306F\u307E\u3060\u4ED6\u306E\u30CE\u30FC\u30C8\u304C\u306A\u3044\uFF09_"
   },
   logbook: {
+    stepQuestion: "\u554F\u3044",
+    questionChanged: "\u554F\u3044\u3092\u5909\u66F4: {question}",
+    stepFraming: "\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0",
+    framingSet: '\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0\u3092\u8A2D\u5B9A: "{framing}"',
     stepFork: "\u30D5\u30A9\u30FC\u30AF",
     forkedFrom: "{note} \u304B\u3089 {section} \u3067\u5206\u5C90",
     forkedTo: "{note} \u3078 {section} \u3067\u5206\u5C90",
@@ -5638,6 +6428,7 @@ var ja = {
     hints: {
       exploration: "\u691C\u7D22\u306E\u524D\u306B\u554F\u3044\u3092\u6398\u308A\u4E0B\u3052\u308B\uFF1A\u81EA\u5206\u306E\u524D\u63D0\u3068\u53CD\u524D\u63D0\u3001\u3088\u308A\u6B63\u78BA\u306A\u554F\u3044\u306E\u8A00\u3044\u63DB\u3048\u3001\u51FA\u767A\u70B9\u3068\u306A\u308B\u691C\u7D22\u8A9E\u3092\u66F8\u304D\u51FA\u3057\u307E\u3059\u3002",
       lenses: "\u601D\u8003\u306B\u4F7F\u3046\u7406\u8AD6\u30EC\u30F3\u30BA\u30922\u301C3\u6319\u3052\u3001\u305D\u308C\u305E\u308C\u306B\u3064\u3044\u3066\uFF1A\u4F55\u3092\u7167\u3089\u3057\u3001\u4F55\u3092\u96A0\u3057\u3001\u3069\u3093\u306A\u691C\u7D22\u8A9E\u3092\u793A\u5506\u3059\u308B\u304B\u3092\u66F8\u304D\u307E\u3059\u3002",
+      framework: "\u7814\u7A76\u3059\u308B\u69CB\u6210\u6982\u5FF5\u3092\u660E\u793A\u3057\u3001\u4F5C\u696D\u5B9A\u7FA9\u3092\u4E0E\u3048\u3001\u4E0B\u4F4D\u306E\u554F\u3044\u3092\u5C0E\u304F\u3079\u304D\u6B21\u5143\u3092\u66F8\u304D\u51FA\u3057\u307E\u3059\u3002",
       challenge: "\u81EA\u5206\u306E\u30D5\u30EC\u30FC\u30DF\u30F3\u30B0\u306B\u53CD\u8AD6\u3059\u308B\uFF1A\u6700\u3082\u5F37\u3044\u7570\u8AD6\u3001\u5BFE\u6297\u3059\u308B\u8AAC\u660E\u3001\u305D\u3057\u3066\u8003\u3048\u3092\u5909\u3048\u3055\u305B\u308B\u8A3C\u62E0\u306F\u4F55\u304B\u3092\u66F8\u304D\u307E\u3059\u3002",
       beliefs: "\u3053\u306E\u554F\u3044\u306B\u3064\u3044\u3066\u65E2\u306B\u4FE1\u3058\u3066\u3044\u308B\u3053\u3068\u30921\u884C\u306B1\u3064\u305A\u3064\u66F8\u304D\u307E\u3059 \u2014 \u5F8C\u3067\u8A3C\u62E0\u3068\u7A81\u304D\u5408\u308F\u305B\u3066\u691C\u8A3C\u3057\u307E\u3059\u3002",
       agenda: "\u5B66\u3093\u3060\u3053\u3068\u3092\u6B21\u306E\u4E00\u6B69\u306B\u5909\u3048\u308B\uFF1A\u898B\u3048\u305F\u30AE\u30E3\u30C3\u30D7\u3001\u3088\u308A\u92ED\u3044\u5F8C\u7D9A\u306E\u554F\u3044\u3001\u305D\u308C\u306B\u7B54\u3048\u3046\u308B\u7814\u7A76\u30C7\u30B6\u30A4\u30F3\u3092\u66F8\u304D\u307E\u3059\u3002",
@@ -5961,6 +6752,10 @@ var ko = {
     contentsEmpty: "_(\uC774 \uD3F4\uB354\uC5D0 \uC544\uC9C1 \uB2E4\uB978 \uB178\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4)_"
   },
   logbook: {
+    stepQuestion: "\uC9C8\uBB38",
+    questionChanged: "\uC9C8\uBB38 \uBCC0\uACBD: {question}",
+    stepFraming: "\uD504\uB808\uC774\uBC0D",
+    framingSet: '\uD504\uB808\uC774\uBC0D \uC124\uC815\uB428: "{framing}"',
     stepFork: "\uD3EC\uD06C",
     forkedFrom: "{note}\uC5D0\uC11C {section} \uC9C0\uC810\uC5D0 \uBD84\uAE30",
     forkedTo: "{note}(\uC73C)\uB85C {section} \uC9C0\uC810\uC5D0 \uBD84\uAE30",
@@ -5996,6 +6791,7 @@ var ko = {
     hints: {
       exploration: "\uAC80\uC0C9 \uC804\uC5D0 \uC9C8\uBB38\uC744 \uD0D0\uC0C9\uD558\uC138\uC694: \uC790\uC2E0\uC758 \uAC00\uC815\uACFC \uBC18\uAC00\uC815, \uB354 \uC815\uD655\uD55C \uC9C8\uBB38 \uC7AC\uAD6C\uC131, \uC2DC\uC791\uD560 \uAC80\uC0C9\uC5B4\uB97C \uC801\uC2B5\uB2C8\uB2E4.",
       lenses: "\uC0AC\uACE0\uC5D0 \uC4F8 \uC774\uB860\uC801 \uB80C\uC988\uB97C \uB450\uC138 \uAC1C \uC815\uD558\uACE0, \uAC01 \uB80C\uC988\uAC00 \uBB34\uC5C7\uC744 \uBE44\uCD94\uACE0 \uBB34\uC5C7\uC744 \uAC00\uB9AC\uB294\uC9C0, \uC5B4\uB5A4 \uAC80\uC0C9\uC5B4\uB97C \uC2DC\uC0AC\uD558\uB294\uC9C0 \uC801\uC2B5\uB2C8\uB2E4.",
+      framework: "\uC5F0\uAD6C\uD558\uB294 \uAD6C\uC131\uAC1C\uB150\uC744 \uBC1D\uD788\uACE0, \uC791\uC5C5\uC801 \uC815\uC758\uB97C \uC81C\uC2DC\uD558\uBA70, \uD558\uC704 \uC9C8\uBB38\uC744 \uC774\uB04C\uC5B4\uC57C \uD560 \uCC28\uC6D0\uB4E4\uC744 \uB098\uC5F4\uD558\uC138\uC694.",
       challenge: "\uC790\uC2E0\uC758 \uD504\uB808\uC774\uBC0D\uC5D0 \uBC18\uBC15\uD558\uC138\uC694: \uAC00\uC7A5 \uAC15\uD55C \uBC18\uB860, \uACBD\uC7C1 \uC124\uBA85, \uADF8\uB9AC\uACE0 \uC5B4\uB5A4 \uC99D\uAC70\uAC00 \uC0DD\uAC01\uC744 \uBC14\uAFB8\uAC8C \uD560\uC9C0 \uC801\uC2B5\uB2C8\uB2E4.",
       beliefs: "\uC774 \uC9C8\uBB38\uC5D0 \uB300\uD574 \uC774\uBBF8 \uBBFF\uACE0 \uC788\uB294 \uAC83\uC744 \uD55C \uC904\uC5D0 \uD558\uB098\uC529 \uC801\uC73C\uC138\uC694 \u2014 \uB098\uC911\uC5D0 \uC99D\uAC70\uB85C \uAC80\uC99D\uD569\uB2C8\uB2E4.",
       agenda: "\uBC30\uC6B4 \uAC83\uC744 \uB2E4\uC74C \uB2E8\uACC4\uB85C \uBC14\uAFB8\uC138\uC694: \uBC1C\uACAC\uD55C \uACF5\uBC31, \uB354 \uB0A0\uCE74\uB85C\uC6B4 \uD6C4\uC18D \uC9C8\uBB38, \uC774\uC5D0 \uB2F5\uD560 \uC218 \uC788\uB294 \uC5F0\uAD6C \uC124\uACC4\uB97C \uC801\uC2B5\uB2C8\uB2E4.",
@@ -6061,29 +6857,7 @@ function searchSourcesAttention(settings) {
   return null;
 }
 function aiResearchAttention(settings) {
-  switch (settings.llmProvider) {
-    case "mistral":
-      if (!settings.mistralApiKey.trim()) return "Mistral API key missing \u2014 runs fall back to search + fusion";
-      break;
-    case "openai":
-      if (!settings.openaiApiKey.trim()) return "OpenAI API key missing";
-      break;
-    case "anthropic":
-      if (!settings.anthropicApiKey.trim()) return "Anthropic API key missing";
-      if (!settings.embedProvider) return "No embeddings provider \u2014 rerank is skipped (Anthropic has no embeddings API)";
-      break;
-    case "google":
-      if (!settings.googleApiKey.trim()) return "Google API key missing";
-      break;
-    case "local":
-      if (!settings.localBaseUrl.trim()) return "Base URL missing";
-      if (!settings.localChatModel.trim()) return "Chat model missing";
-      break;
-    case "openai-compat":
-      if (!isOpenAiCompatConfigured(settings)) return "Chat model missing";
-      break;
-  }
-  return null;
+  return getLlmProvider(settings.llmProvider).attention(settings);
 }
 function citationRegisterAttention(settings) {
   if (settings.registerEnabled && !settings.registerPath.trim()) {
@@ -6157,607 +6931,17 @@ function stripSecretValues(settings) {
   return stripped;
 }
 
-// src/query-clean.ts
-function stripMarkdownNoise(query) {
-  return query.split("\n").map(
-    (line) => line.replace(/^\s*(?:>+\s*)?(?:[-*+]|\d+[.)])\s+/, "").replace(/^\s*#{1,6}\s+/, "").replace(/^\s*\[[^\]]{0,16}\]\s*/, "")
-  ).join(" ").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").replace(/[*_`~]/g, " ").replace(/[–—]/g, " ").replace(/\s+/g, " ").trim();
-}
-var QUOTED_SPAN = /(^|[\s(])['‘"“]([^'’"”]{2,80}?)['’"”](?=$|[\s).,;:!?])/g;
-function extractQuotedPhrases(query) {
-  const out = [];
-  for (const m of query.matchAll(QUOTED_SPAN)) out.push(m[2].trim());
-  return out.filter(Boolean);
-}
-
-// src/consensus-api.ts
-function buildSearchUrl(query, filters, settings) {
-  const base = settings.apiBaseUrl.replace(/\/+$/, "");
-  const params = new URLSearchParams();
-  params.set("query", stripMarkdownNoise(query));
-  if (settings.resultLimit) params.set("page_size", String(settings.resultLimit));
-  if (filters.yearMin != null) params.set("year_min", String(filters.yearMin));
-  if (filters.yearMax != null) params.set("year_max", String(filters.yearMax));
-  if (filters.excludePreprints) params.set("exclude_preprints", "true");
-  if (filters.humanOnly) params.set("human", "true");
-  if (filters.sampleSizeMin != null) {
-    params.set("sample_size_min", String(filters.sampleSizeMin));
-  }
-  if (filters.studyTypes && filters.studyTypes.length > 0) {
-    for (const t2 of filters.studyTypes) params.append("study_types", t2);
-  }
-  return `${base}/quick_search?${params.toString()}`;
-}
-function firstString(obj, keys) {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === "string" && v.trim()) return v.trim();
-  }
-  return void 0;
-}
-function firstNumber(obj, keys) {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === "number" && Number.isFinite(v)) return v;
-    if (typeof v === "string" && v.trim() && !Number.isNaN(Number(v))) {
-      return Number(v);
-    }
-  }
-  return void 0;
-}
-function parseAuthors(obj) {
-  var _a, _b;
-  const raw = (_b = (_a = obj.authors) != null ? _a : obj.author_names) != null ? _b : obj.author;
-  if (Array.isArray(raw)) {
-    return raw.map((a) => {
-      var _a2;
-      if (typeof a === "string") return a;
-      if (a && typeof a === "object") {
-        const o = a;
-        return (_a2 = firstString(o, ["name", "display_name", "full_name"])) != null ? _a2 : "";
-      }
-      return "";
-    }).filter((s) => s.length > 0);
-  }
-  if (typeof raw === "string" && raw.trim()) {
-    return raw.split(/[;,]/).map((s) => s.trim()).filter(Boolean);
-  }
-  return [];
-}
-function normalizePaper(raw) {
-  var _a;
-  if (!raw || typeof raw !== "object") return null;
-  const o = raw;
-  const title = firstString(o, ["title", "paper_title", "name"]);
-  if (!title) return null;
-  const url = (_a = firstString(o, ["url", "paper_url", "consensus_url", "link", "doi_url"])) != null ? _a : "";
-  return {
-    title,
-    authors: parseAuthors(o),
-    year: firstNumber(o, ["year", "publish_year", "publication_year"]),
-    journal: firstString(o, ["journal", "journal_name", "venue", "publication"]),
-    citationCount: firstNumber(o, ["citation_count", "citations", "cited_by_count"]),
-    url,
-    doi: firstString(o, ["doi"]),
-    abstract: firstString(o, ["abstract", "snippet", "text", "summary"])
-  };
-}
-function extractPaperArray(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (payload && typeof payload === "object") {
-    const o = payload;
-    for (const key of ["results", "papers", "data", "items", "search_results"]) {
-      if (Array.isArray(o[key])) return o[key];
-    }
-  }
-  return [];
-}
-function parseSearchResponse(query, payload) {
-  const papers = extractPaperArray(payload).map(normalizePaper).filter((p) => p !== null);
-  let summary;
-  if (payload && typeof payload === "object") {
-    summary = firstString(payload, [
-      "summary",
-      "answer",
-      "synthesis"
-    ]);
-  }
-  return { query, papers, summary, raw: payload };
-}
-async function searchConsensus(query, filters, settings, http) {
-  var _a, _b;
-  if (!settings.apiKey) {
-    throw new SearchApiError("No Consensus API key configured.", 0);
-  }
-  const url = buildSearchUrl(query, filters, settings);
-  const headers3 = {
-    Accept: "application/json",
-    [settings.apiKeyHeader]: settings.apiKey
-  };
-  const res = await http({ url, method: "GET", headers: headers3 });
-  if (res.status < 200 || res.status >= 300) {
-    const detail = (_b = (_a = res.json && typeof res.json === "object" ? firstString(res.json, ["message", "detail", "error"]) : void 0) != null ? _a : res.text) == null ? void 0 : _b.slice(0, 200);
-    throw new SearchApiError(
-      `Consensus API returned ${res.status}${detail ? `: ${detail}` : ""}`,
-      res.status
-    );
-  }
-  return parseSearchResponse(query, res.json);
-}
-
-// src/openalex-api.ts
-var OPENALEX_WORKS = "https://api.openalex.org/works";
-function buildOpenAlexUrl(query, filters, settings, mode = "semantic") {
-  const params = new URLSearchParams();
-  const cleaned = stripMarkdownNoise(query);
-  if (mode === "semantic") {
-    params.set("search.semantic", cleaned);
-  } else {
-    params.set("search", cleaned.replace(/[?*]/g, " ").replace(/\s+/g, " ").trim());
-  }
-  params.set("per-page", String(Math.min(settings.resultLimit || 20, 50)));
-  params.set(
-    "select",
-    "id,doi,title,display_name,publication_year,cited_by_count,primary_location,authorships,abstract_inverted_index,type,open_access"
-  );
-  if (settings.openAlexMailto) params.set("mailto", settings.openAlexMailto);
-  if (settings.openAlexApiKey) params.set("api_key", settings.openAlexApiKey);
-  const filterParts = [];
-  if (filters.yearMin != null) {
-    filterParts.push(
-      mode === "semantic" ? `publication_year:>${filters.yearMin - 1}` : `from_publication_date:${filters.yearMin}-01-01`
-    );
-  }
-  if (filters.yearMax != null) {
-    filterParts.push(
-      mode === "semantic" ? `publication_year:<${filters.yearMax + 1}` : `to_publication_date:${filters.yearMax}-12-31`
-    );
-  }
-  if (filters.excludePreprints) filterParts.push("type:article");
-  if (filterParts.length > 0) params.set("filter", filterParts.join(","));
-  return `${OPENALEX_WORKS}?${params.toString()}`;
-}
-function reconstructAbstract(inverted) {
-  if (!inverted || typeof inverted !== "object") return void 0;
-  const entries = Object.entries(inverted);
-  const slots = [];
-  for (const [word, positions] of entries) {
-    if (!Array.isArray(positions)) continue;
-    for (const pos of positions) {
-      if (typeof pos === "number") slots[pos] = word;
-    }
-  }
-  const text = slots.filter((w) => w !== void 0).join(" ").trim();
-  return text.length > 0 ? text : void 0;
-}
-function pickUrl(work) {
-  const doi = work.doi;
-  if (typeof doi === "string" && doi) return doi;
-  const loc = work.primary_location;
-  if (loc && typeof loc === "object") {
-    const landing = loc.landing_page_url;
-    if (typeof landing === "string" && landing) return landing;
-  }
-  const id = work.id;
-  return typeof id === "string" ? id : "";
-}
-function pickJournal(work) {
-  const loc = work.primary_location;
-  if (loc && typeof loc === "object") {
-    const source = loc.source;
-    if (source && typeof source === "object") {
-      const name = source.display_name;
-      if (typeof name === "string" && name) return name;
-    }
-  }
-  return void 0;
-}
-function pickAuthors(work) {
-  const authorships = work.authorships;
-  if (!Array.isArray(authorships)) return [];
-  return authorships.map((a) => {
-    if (a && typeof a === "object") {
-      const author = a.author;
-      if (author && typeof author === "object") {
-        const name = author.display_name;
-        if (typeof name === "string") return name;
-      }
-    }
-    return "";
-  }).filter((s) => s.length > 0);
-}
-function pickPublicationTypes(work) {
-  const type = work.type;
-  if (typeof type !== "string" || !type) return void 0;
-  if (type === "review") return ["Review"];
-  return void 0;
-}
-function pickOpenAccess(work) {
-  const oa = work.open_access;
-  if (!oa || typeof oa !== "object") return {};
-  const o = oa;
-  const oaUrl = typeof o.oa_url === "string" && o.oa_url ? o.oa_url : void 0;
-  const isOpenAccess = typeof o.is_oa === "boolean" ? o.is_oa : void 0;
-  return { oaUrl, isOpenAccess };
-}
-function normalizeOpenAlexWork(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const w = raw;
-  const title = typeof w.title === "string" && w.title || typeof w.display_name === "string" && w.display_name || "";
-  if (!title) return null;
-  const year = typeof w.publication_year === "number" ? w.publication_year : void 0;
-  const citationCount = typeof w.cited_by_count === "number" ? w.cited_by_count : void 0;
-  const doi = typeof w.doi === "string" ? w.doi.replace(/^https?:\/\/doi\.org\//, "") : void 0;
-  return {
-    title,
-    authors: pickAuthors(w),
-    year,
-    journal: pickJournal(w),
-    citationCount,
-    url: pickUrl(w),
-    doi,
-    abstract: reconstructAbstract(w.abstract_inverted_index),
-    publicationTypes: pickPublicationTypes(w),
-    ...pickOpenAccess(w)
-  };
-}
-function parseOpenAlexResponse(query, payload) {
-  let results = [];
-  if (payload && typeof payload === "object" && Array.isArray(payload.results)) {
-    results = payload.results;
-  }
-  const papers = results.map(normalizeOpenAlexWork).filter((p) => p !== null);
-  return { query, papers, raw: payload };
-}
-async function searchOpenAlex(query, filters, settings, http) {
-  const url = buildOpenAlexUrl(query, filters, settings, "semantic");
-  let res = await http({ url, method: "GET", headers: { Accept: "application/json" } });
-  if (res.status >= 400 && res.status < 500 && res.status !== 429) {
-    const fallbackUrl = buildOpenAlexUrl(query, filters, settings, "keyword");
-    res = await http({ url: fallbackUrl, method: "GET", headers: { Accept: "application/json" } });
-  }
-  if (res.status < 200 || res.status >= 300) {
-    throw new SearchApiError(
-      `OpenAlex returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
-      res.status
-    );
-  }
-  return parseOpenAlexResponse(query, res.json);
-}
-
-// src/semanticscholar-api.ts
-var S2_SEARCH = "https://api.semanticscholar.org/graph/v1/paper/search";
-var S2_STOPWORDS = /* @__PURE__ */ new Set([
-  "a",
-  "an",
-  "the",
-  "of",
-  "to",
-  "in",
-  "on",
-  "for",
-  "and",
-  "or",
-  "but",
-  "by",
-  "with",
-  "within",
-  "into",
-  "from",
-  "at",
-  "as",
-  "is",
-  "are",
-  "was",
-  "were",
-  "be",
-  "been",
-  "being",
-  "do",
-  "does",
-  "did",
-  "what",
-  "how",
-  "which",
-  "why",
-  "who",
-  "whom",
-  "when",
-  "where",
-  "whether",
-  "that",
-  "this",
-  "these",
-  "those",
-  "their",
-  "they",
-  "them",
-  "its",
-  "it",
-  "can",
-  "could",
-  "should",
-  "would",
-  "may",
-  "might",
-  "will",
-  "shall",
-  "than",
-  "then",
-  "there",
-  "about",
-  "over",
-  "under",
-  "between",
-  "among",
-  "through",
-  "per",
-  // Dutch: articles, pronouns, prepositions, auxiliaries, interrogatives.
-  "de",
-  "het",
-  "een",
-  "en",
-  "maar",
-  "want",
-  "dus",
-  "als",
-  "dan",
-  "dat",
-  "dit",
-  "deze",
-  "die",
-  "ook",
-  "nog",
-  "al",
-  "alleen",
-  "hier",
-  "daar",
-  "er",
-  "niet",
-  "geen",
-  "wel",
-  "zo",
-  "zoals",
-  "van",
-  "voor",
-  "naar",
-  "met",
-  "bij",
-  "tot",
-  "uit",
-  "onder",
-  "tussen",
-  "door",
-  "om",
-  "op",
-  "aan",
-  "binnen",
-  "tegen",
-  "zonder",
-  "tijdens",
-  "volgens",
-  "vanuit",
-  "na",
-  "te",
-  "ten",
-  "ter",
-  "zijn",
-  "waren",
-  "wordt",
-  "worden",
-  "werd",
-  "werden",
-  "ben",
-  "bent",
-  "heeft",
-  "hebben",
-  "had",
-  "hadden",
-  "kan",
-  "kunnen",
-  "kon",
-  "konden",
-  "zal",
-  "zullen",
-  "zou",
-  "zouden",
-  "moet",
-  "moeten",
-  "mag",
-  "mogen",
-  "wil",
-  "willen",
-  "wat",
-  "wie",
-  "waar",
-  "waarom",
-  "hoe",
-  "welke",
-  "welk",
-  "wanneer",
-  "waarin",
-  "waarbij",
-  "waarvoor",
-  "waarmee",
-  "hun",
-  "hen",
-  "ze",
-  "zij",
-  "hij",
-  "hem",
-  "haar",
-  "je",
-  "jij",
-  "u",
-  "we",
-  "wij",
-  "men",
-  "iets",
-  "niets",
-  "alles",
-  "elk",
-  "elke",
-  "ieder",
-  "iedere"
-]);
-function toKeywordQuery(query, maxTokens = 8) {
-  const noiseFree = stripMarkdownNoise(query);
-  const quotedTokens = extractQuotedPhrases(noiseFree).flatMap((p) => p.split(/\s+/));
-  const cleaned = noiseFree.replace(/[?*()[\]{}"'“”‘’,;:.!]/g, " ").replace(/\s+/g, " ").trim();
-  const tokens = cleaned.split(" ").filter(Boolean);
-  const isContent = (t2) => !S2_STOPWORDS.has(t2.toLowerCase()) && /[\p{L}\p{N}]/u.test(t2);
-  const seen = /* @__PURE__ */ new Set();
-  const content = [];
-  for (const t2 of [...quotedTokens.filter(isContent), ...tokens.filter(isContent)]) {
-    if (seen.has(t2.toLowerCase())) continue;
-    seen.add(t2.toLowerCase());
-    content.push(t2);
-  }
-  const kept = content.slice(0, maxTokens).join(" ").trim();
-  return content.length >= 2 ? kept : cleaned;
-}
-var S2_FIELDS = [
-  "title",
-  "abstract",
-  "year",
-  "authors",
-  "venue",
-  "externalIds",
-  "citationCount",
-  "influentialCitationCount",
-  "publicationTypes",
-  "url",
-  "openAccessPdf"
-].join(",");
-function buildSemanticScholarUrl(query, filters, settings) {
-  var _a, _b;
-  const params = new URLSearchParams();
-  params.set("query", toKeywordQuery(query));
-  params.set("limit", String(Math.min(settings.resultLimit || 20, 100)));
-  params.set("fields", S2_FIELDS);
-  if (filters.yearMin != null || filters.yearMax != null) {
-    params.set("year", `${(_a = filters.yearMin) != null ? _a : ""}-${(_b = filters.yearMax) != null ? _b : ""}`);
-  }
-  if (filters.excludePreprints) params.set("publicationTypes", "JournalArticle");
-  return `${S2_SEARCH}?${params.toString()}`;
-}
-function pickAuthors2(raw) {
-  const authors = raw.authors;
-  if (!Array.isArray(authors)) return [];
-  return authors.map((a) => a && typeof a === "object" ? a.name : "").filter((n) => typeof n === "string" && n.length > 0);
-}
-function pickDoi(raw) {
-  const ext = raw.externalIds;
-  if (ext && typeof ext === "object") {
-    const doi = ext.DOI;
-    if (typeof doi === "string" && doi) return doi;
-  }
-  return void 0;
-}
-function pickUrl2(raw, doi) {
-  if (typeof raw.url === "string" && raw.url) return raw.url;
-  if (doi) return `https://doi.org/${doi}`;
-  return "";
-}
-function pickPublicationTypes2(raw) {
-  const types = raw.publicationTypes;
-  if (!Array.isArray(types)) return void 0;
-  const out = types.filter((t2) => typeof t2 === "string" && t2.length > 0);
-  return out.length > 0 ? out : void 0;
-}
-function pickOpenAccess2(raw) {
-  const pdf = raw.openAccessPdf;
-  if (!pdf || typeof pdf !== "object") return {};
-  const url = pdf.url;
-  return typeof url === "string" && url ? { oaUrl: url, isOpenAccess: true } : {};
-}
-function normalizeSemanticScholarPaper(raw) {
-  if (!raw || typeof raw !== "object") return null;
-  const p = raw;
-  const title = typeof p.title === "string" ? p.title : "";
-  if (!title) return null;
-  const doi = pickDoi(p);
-  return {
-    title,
-    authors: pickAuthors2(p),
-    year: typeof p.year === "number" ? p.year : void 0,
-    journal: typeof p.venue === "string" && p.venue ? p.venue : void 0,
-    citationCount: typeof p.citationCount === "number" ? p.citationCount : void 0,
-    url: pickUrl2(p, doi),
-    doi,
-    abstract: typeof p.abstract === "string" ? p.abstract : void 0,
-    publicationTypes: pickPublicationTypes2(p),
-    ...pickOpenAccess2(p)
-  };
-}
-function parseSemanticScholarResponse(query, payload) {
-  let data = [];
-  if (payload && typeof payload === "object" && Array.isArray(payload.data)) {
-    data = payload.data;
-  }
-  const papers = data.map(normalizeSemanticScholarPaper).filter((p) => p !== null);
-  return { query, papers, raw: payload };
-}
-async function searchSemanticScholar(query, filters, settings, http) {
-  const headers3 = { Accept: "application/json" };
-  if (settings.semanticScholarApiKey) headers3["x-api-key"] = settings.semanticScholarApiKey;
-  const url = buildSemanticScholarUrl(query, filters, settings);
-  const res = await http({ url, method: "GET", headers: headers3 });
-  if (res.status === 429) {
-    throw new SearchApiError(
-      "Semantic Scholar rate limit reached (429). Add a free API key in settings for a dedicated lane.",
-      429
-    );
-  }
-  if (res.status < 200 || res.status >= 300) {
-    throw new SearchApiError(
-      `Semantic Scholar returned ${res.status}${res.text ? `: ${res.text.slice(0, 200)}` : ""}`,
-      res.status
-    );
-  }
-  return parseSemanticScholarResponse(query, res.json);
-}
-
-// src/providers.ts
-var PROVIDERS = {
-  openalex: {
-    id: "openalex",
-    label: "OpenAlex",
-    costHint: "",
-    requiresApiKey: false,
-    supportsMedicalFilters: false,
-    search: searchOpenAlex
-  },
-  semanticscholar: {
-    id: "semanticscholar",
-    label: "Semantic Scholar",
-    costHint: "",
-    // Works without a key (shared pool); a free key just raises the rate limit.
-    requiresApiKey: false,
-    supportsMedicalFilters: false,
-    search: searchSemanticScholar
-  },
-  consensus: {
-    id: "consensus",
-    label: "Consensus",
-    costHint: "paid API key",
-    requiresApiKey: true,
-    supportsMedicalFilters: true,
-    search: searchConsensus
-  }
-};
-var SEARCH_PROVIDER_ORDER = ["openalex", "semanticscholar", "consensus"];
-function providerOptionLabel(id) {
-  const provider = getProvider(id);
-  return provider.costHint ? `${provider.label} (${provider.costHint})` : provider.label;
-}
-function getProvider(id) {
-  var _a;
-  return (_a = PROVIDERS[id]) != null ? _a : PROVIDERS.openalex;
-}
-
 // src/settings-tab.ts
-var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
+function renderRowDesc(desc) {
+  const link = desc.link;
+  if (!link) return desc.text;
+  return createFragment((f) => {
+    f.appendText(desc.text);
+    f.createEl("a", { text: link.text, href: link.href });
+    if (desc.tail) f.appendText(desc.tail);
+  });
+}
+var ParallaxSettingTab = class extends import_obsidian2.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     /** Session-scoped open/collapsed state: survives in-tab re-renders, reset in display(). */
@@ -6779,40 +6963,26 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   }
   /** Pre-flight guidance for a model-list refresh, or null when the fetch can be tried. */
   listModelsBlocker(provider) {
-    const s = this.plugin.settings;
-    switch (provider) {
-      case "openai":
-        return s.openaiApiKey.trim() ? null : "Set an OpenAI API key first.";
-      case "anthropic":
-        return s.anthropicApiKey.trim() ? null : "Set an Anthropic API key first.";
-      case "google":
-        return s.googleApiKey.trim() ? null : "Set a Google API key first.";
-      case "local":
-        return s.localBaseUrl.trim() ? null : "Set the base URL first.";
-      case "openai-compat":
-        return "The custom provider uses free-text model names.";
-      default:
-        return s.mistralApiKey.trim() ? null : "Set a Mistral API key first.";
-    }
+    return getLlmProvider(provider).listModelsBlocker(this.plugin.settings);
   }
   /** Shared refresh button for a provider's model catalogue (disabled while loading). */
   catalogRefreshButton(setting, provider) {
     setting.addExtraButton(
-      (b) => b.setIcon("refresh-cw").setTooltip(this.catalogFor(provider).length > 0 ? "Refresh model list" : "Load model list").onClick(async () => {
+      (b) => b.setIcon("refresh-cw").setTooltip(llmCatalog(this.plugin.settings, provider).length > 0 ? "Refresh model list" : "Load model list").onClick(async () => {
         const blocker = this.listModelsBlocker(provider);
         if (blocker) {
-          new import_obsidian.Notice(blocker);
+          notify(blocker);
           return;
         }
         b.setDisabled(true);
         try {
           const models = await this.registryFor(provider).listModels();
-          this.setCatalog(provider, models);
+          setLlmCatalog(this.plugin.settings, provider, models);
           await this.plugin.saveSettings();
-          new import_obsidian.Notice(`Loaded ${models.length} model(s).`);
+          notify(`Loaded ${models.length} model(s).`);
           this.render();
         } catch (e) {
-          new import_obsidian.Notice(`Could not load models: ${String(e)}`);
+          notify(`Could not load models: ${String(e)}`);
           b.setDisabled(false);
         }
       })
@@ -6896,8 +7066,8 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     });
   }
   renderSearchSources(containerEl) {
-    new import_obsidian.Setting(containerEl).setName("Search provider").setDesc(
-      'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 ask a question" command always combines OpenAlex + Semantic Scholar, regardless of this choice. OpenAlex and Semantic Scholar cost nothing and work without any setup; the contact e-mail and keys below only raise your daily allowance, they never change which provider runs. Consensus is the one paid source.'
+    new import_obsidian2.Setting(containerEl).setName("Search provider").setDesc(
+      'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 run research" command always combines OpenAlex + Semantic Scholar, regardless of this choice. OpenAlex and Semantic Scholar cost nothing and work without any setup; the contact e-mail and keys below only raise your daily allowance, they never change which provider runs. Consensus is the one paid source.'
     ).addDropdown((d) => {
       for (const id of SEARCH_PROVIDER_ORDER) d.addOption(id, providerOptionLabel(id));
       d.setValue(this.plugin.settings.provider).onChange(async (v) => {
@@ -6906,8 +7076,8 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         this.refreshBadges();
       });
     });
-    new import_obsidian.Setting(containerEl).setName("Contact e-mail (OpenAlex)").setDesc(
-      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Evidence \xB7 ask a question". Not sent anywhere else.`
+    new import_obsidian2.Setting(containerEl).setName("Contact e-mail (OpenAlex)").setDesc(
+      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Evidence \xB7 run research". Not sent anywhere else.`
     ).addText(
       (t2) => t2.setPlaceholder("you@example.com").setValue(this.plugin.settings.openAlexMailto).onChange(async (v) => {
         this.plugin.settings.openAlexMailto = v.trim();
@@ -6915,7 +7085,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     this.addSecretComponent(
-      new import_obsidian.Setting(containerEl).setName("OpenAlex API key").setDesc(
+      new import_obsidian2.Setting(containerEl).setName("OpenAlex API key").setDesc(
         createFragment((f) => {
           f.appendText(
             "Optional \u2014 works without one, but the anonymous daily allowance is tiny (about ten searches); a free key raises it to roughly a thousand per day. Create one at "
@@ -6932,10 +7102,10 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       SECRET_FIELD_BY_VALUE.openAlexApiKey
     );
     this.addSecretComponent(
-      new import_obsidian.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
+      new import_obsidian2.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
         createFragment((f) => {
           f.appendText(
-            'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 ask a question". Request at '
+            'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 run research". Request at '
           );
           f.createEl("a", {
             text: "semanticscholar.org/product/api",
@@ -6949,7 +7119,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       SECRET_FIELD_BY_VALUE.semanticScholarApiKey
     );
     this.addSecretComponent(
-      new import_obsidian.Setting(containerEl).setName("Consensus API key").setDesc(
+      new import_obsidian2.Setting(containerEl).setName("Consensus API key").setDesc(
         createFragment((f) => {
           f.appendText(
             "Only needed for the Consensus provider, which is a paid service \u2014 the other two sources need no key at all. Request access at "
@@ -6967,7 +7137,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     );
   }
   renderOutputLanguage(containerEl) {
-    new import_obsidian.Setting(containerEl).setName("Artifact language").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Artifact language").setDesc(
       "Language of the section headings, labels and methodological account the plugin writes into your notes. AI-written text follows the language of your question instead. Existing notes keep working when you switch."
     ).addDropdown((d) => {
       for (const lang of ARTIFACT_LANGUAGES) d.addOption(lang, ARTIFACT_LANGUAGE_LABELS[lang]);
@@ -6977,25 +7147,25 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       });
     });
-    new import_obsidian.Setting(containerEl).setName("Default format").setDesc("How references are rendered when inserted into a note.").addDropdown((d) => {
+    new import_obsidian2.Setting(containerEl).setName("Default format").setDesc("How references are rendered when inserted into a note.").addDropdown((d) => {
       d.addOption("detailed", "Detailed (with abstracts)").addOption("compact", "Compact list").addOption("bibliography", "Bibliography").setValue(this.plugin.settings.defaultFormat).onChange(async (v) => {
         this.plugin.settings.defaultFormat = v;
         await this.plugin.saveSettings();
       });
     });
-    new import_obsidian.Setting(containerEl).setName("Insert question as heading").setDesc("Prepend the research question as an H3 above the references.").addToggle(
+    new import_obsidian2.Setting(containerEl).setName("Insert question as heading").setDesc("Prepend the research question as an H3 above the references.").addToggle(
       (t2) => t2.setValue(this.plugin.settings.insertQuestionHeading).onChange(async (v) => {
         this.plugin.settings.insertQuestionHeading = v;
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Include abstracts").setDesc("Show the abstract under each paper in the detailed format.").addToggle(
+    new import_obsidian2.Setting(containerEl).setName("Include abstracts").setDesc("Show the abstract under each paper in the detailed format.").addToggle(
       (t2) => t2.setValue(this.plugin.settings.includeAbstract).onChange(async (v) => {
         this.plugin.settings.includeAbstract = v;
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Result limit").setDesc("How many papers to request (Consensus returns up to 20 per search).").addText(
+    new import_obsidian2.Setting(containerEl).setName("Result limit").setDesc("How many papers to request (Consensus returns up to 20 per search).").addText(
       (t2) => t2.setValue(String(this.plugin.settings.resultLimit)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
@@ -7006,7 +7176,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     );
   }
   renderCitationRegister(containerEl) {
-    new import_obsidian.Setting(containerEl).setName("Keep a citation register").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Keep a citation register").setDesc(
       "Record every inserted reference in a central JSON file, so you can see which sources recur across notes and projects."
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.registerEnabled).onChange(async (v) => {
@@ -7015,7 +7185,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         this.refreshBadges();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Register file").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Register file").setDesc(
       "Vault-relative path of the register JSON. The research records (research-graph.json) live in the same folder. \u26A0 Obsidian Sync does NOT sync hidden folders (names starting with a dot) \u2014 with the default .consensus-research/ location, the register and records stay per-device while your notes do sync. Pick a visible folder (e.g. Parallax/citations.json) and use the move action below to have them travel along."
     ).addText(
       (t2) => t2.setPlaceholder(".consensus-research/citations.json").setValue(this.plugin.settings.registerPath).onChange(async (v) => {
@@ -7023,25 +7193,25 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Move register & records to the configured folder").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Move register & records to the configured folder").setDesc(
       "Moves citations.json, research-graph.json and its backup from their current folder to the folder of the path configured above. Nothing is overwritten \u2014 a file that already exists at the target is skipped and reported."
     ).addButton(
       (b) => b.setButtonText("Move now").onClick(async () => {
         b.setDisabled(true);
         try {
           const result = await this.plugin.migrateStoreTo(this.plugin.settings.registerPath);
-          new import_obsidian.Notice(
+          notify(
             result.moved.length > 0 ? `Moved: ${result.moved.join(", ")}.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}` : `Nothing to move.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}`,
             8e3
           );
         } catch (e) {
-          new import_obsidian.Notice(`Move failed: ${e instanceof Error ? e.message : String(e)}`, 8e3);
+          notify(`Move failed: ${e instanceof Error ? e.message : String(e)}`, 8e3);
         } finally {
           b.setDisabled(false);
         }
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Library file (.bib)").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Library file (.bib)").setDesc(
       'Optional. Vault-relative path of your own BibTeX library \u2014 for example a Zotero Better BibTeX auto-export. Parallax only reads it (the file stays yours). Commands: "Library \xB7 insert citation" (fuzzy picker), "Library \xB7 update references (note / project)" (with a preview before anything changes) and "Library \xB7 read .bib library" (reload). Leave empty to turn this off.'
     ).addText(
       (t2) => t2.setPlaceholder("references/library.bib").setValue(this.plugin.settings.libraryPath).onChange(async (v) => {
@@ -7049,7 +7219,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Literature note links").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Literature note links").setDesc(
       "Optional. If another plugin keeps a note per reference (ZotLit, or any tool that writes one note per Zotero item), Parallax can link sources to those notes \u2014 so your library shows up in Obsidian's graph. Enter the naming pattern your template produces, with {{citekey}} where the key goes, for example @{{citekey}} or Literature/@{{citekey}}. Links only appear for sources that match your .bib library, and a note that does not exist is simply an unresolved link. Leave empty to turn this off."
     ).addText(
       (t2) => t2.setPlaceholder("@{{citekey}}").setValue(this.plugin.settings.literatureNotePattern).onChange(async (v) => {
@@ -7059,129 +7229,74 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     );
   }
   renderAiResearch(containerEl) {
-    new import_obsidian.Setting(containerEl).setName("LLM provider").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("LLM provider").setDesc(
       'Which backend powers the AI research pipeline (decomposition, synthesis, deepening and the research assistants). "Local" targets an Ollama/LM Studio server; "Custom" any other OpenAI-compatible endpoint. Only the workbench steps tagged "Requires AI" use this configuration \u2014 search, the citation register, the library and exports work without it.'
-    ).addDropdown(
-      (d) => d.addOption("mistral", "Mistral").addOption("openai", "OpenAI").addOption("anthropic", "Anthropic").addOption("google", "Google").addOption("local", "Local (Ollama/LM Studio)").addOption("openai-compat", "Custom (OpenAI-compatible)").setValue(this.plugin.settings.llmProvider).onChange(async (v) => {
+    ).addDropdown((d) => {
+      for (const id of LLM_PROVIDER_ORDER) d.addOption(id, getLlmProvider(id).label);
+      d.setValue(this.plugin.settings.llmProvider).onChange(async (v) => {
         this.plugin.settings.llmProvider = v;
         await this.plugin.saveSettings();
         this.render();
-      })
-    );
-    switch (this.plugin.settings.llmProvider) {
-      case "openai":
-        this.apiKeyRow(containerEl, "OpenAI API key", "platform.openai.com/api-keys", "https://platform.openai.com/api-keys", "openaiApiKey");
-        this.chatModelRow(containerEl, "openai");
-        break;
-      case "anthropic":
-        this.apiKeyRow(containerEl, "Anthropic API key", "console.anthropic.com", "https://console.anthropic.com/settings/keys", "anthropicApiKey");
-        this.chatModelRow(containerEl, "anthropic");
-        break;
-      case "google":
-        this.apiKeyRow(containerEl, "Google API key", "aistudio.google.com/apikey", "https://aistudio.google.com/apikey", "googleApiKey");
-        this.chatModelRow(containerEl, "google");
-        break;
-      case "local":
-        new import_obsidian.Setting(containerEl).setName("Base URL").setDesc(
-          "Your local server's API root. On this desktop typically http://localhost:11434/v1 (Ollama) or http://localhost:1234/v1 (LM Studio). From a phone/tablet, use the machine's LAN address instead, e.g. http://192.168.1.20:11434/v1 \u2014 local is not desktop-only."
-        ).addText(
-          (t2) => t2.setPlaceholder("http://localhost:11434/v1").setValue(this.plugin.settings.localBaseUrl).onChange(async (v) => {
-            this.plugin.settings.localBaseUrl = v.trim();
-            await this.plugin.saveSettings();
-            this.refreshBadges();
-          })
-        );
-        this.addSecretComponent(
-          new import_obsidian.Setting(containerEl).setName("API key").setDesc(
-            "Optional \u2014 Ollama and LM Studio commonly run keyless. Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device."
-          ),
-          SECRET_FIELD_BY_VALUE.localApiKey
-        );
-        this.chatModelRow(containerEl, "local");
-        break;
-      case "openai-compat":
-        new import_obsidian.Setting(containerEl).setName("Base URL").setDesc(
-          "The endpoint's API root, no trailing slash. Examples: https://api.openai.com/v1 (OpenAI), https://openrouter.ai/api/v1 (OpenRouter). For Ollama/LM Studio, prefer the Local provider above."
-        ).addText(
-          (t2) => t2.setPlaceholder("https://api.openai.com/v1").setValue(this.plugin.settings.openaiCompatBaseUrl).onChange(async (v) => {
-            this.plugin.settings.openaiCompatBaseUrl = v.trim() || "https://api.openai.com/v1";
-            await this.plugin.saveSettings();
-          })
-        );
-        this.addSecretComponent(
-          new import_obsidian.Setting(containerEl).setName("API key").setDesc(
-            "Optional \u2014 keyless is a valid config for a self-hosted server. Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
-          ),
-          SECRET_FIELD_BY_VALUE.openaiCompatApiKey
-        );
-        new import_obsidian.Setting(containerEl).setName("Chat model").setDesc("Free text \u2014 no live catalogue for a custom endpoint. Examples: gpt-4o-mini, llama3.1.").addText(
-          (t2) => t2.setPlaceholder("gpt-4o-mini").setValue(this.plugin.settings.openaiCompatChatModel).onChange(async (v) => {
-            this.plugin.settings.openaiCompatChatModel = v.trim();
-            await this.plugin.saveSettings();
-            this.refreshBadges();
-          })
-        );
-        break;
-      default:
-        this.addSecretComponent(
-          new import_obsidian.Setting(containerEl).setName("Mistral API key").setDesc(
-            createFragment((f) => {
-              f.appendText(
-                'Enables the "Evidence \xB7 ask a question" command: question \u2192 sub-questions \u2192 multi-source search \u2192 rerank \u2192 AI synthesis. Without a key it falls back to multi-source search + fusion. Get one at '
-              );
-              f.createEl("a", { text: "console.mistral.ai", href: "https://console.mistral.ai/" });
-              f.appendText(
-                ". Kept in Obsidian\u2019s secret storage on this device (EU key), not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
-              );
-            })
-          ),
-          SECRET_FIELD_BY_VALUE.mistralApiKey
-        );
-        this.chatModelRow(containerEl, "mistral");
-    }
-    new import_obsidian.Setting(containerEl).setName("Embeddings provider").setDesc(
-      'Which provider computes the rerank embeddings for "Evidence \xB7 ask a question". "Same as LLM provider" follows the choice above. Anthropic has no embeddings API \u2014 with Anthropic as LLM provider, pick one here or the rerank falls back to the fusion order.'
-    ).addDropdown(
-      (d) => d.addOption("", "Same as LLM provider").addOption("mistral", "Mistral").addOption("openai", "OpenAI").addOption("google", "Google").addOption("local", "Local (Ollama/LM Studio)").addOption("openai-compat", "Custom (OpenAI-compatible)").setValue(this.plugin.settings.embedProvider).onChange(async (v) => {
+      });
+    });
+    this.renderLlmProviderConfig(containerEl, getLlmProvider(this.plugin.settings.llmProvider));
+    new import_obsidian2.Setting(containerEl).setName("Embeddings provider").setDesc(
+      'Which provider computes the rerank embeddings for "Evidence \xB7 run research". "Same as LLM provider" follows the choice above. Anthropic has no embeddings API \u2014 with Anthropic as LLM provider, pick one here or the rerank falls back to the fusion order.'
+    ).addDropdown((d) => {
+      d.addOption("", "Same as LLM provider");
+      for (const id of LLM_EMBED_PROVIDER_ORDER) d.addOption(id, getLlmProvider(id).label);
+      d.setValue(this.plugin.settings.embedProvider).onChange(async (v) => {
         this.plugin.settings.embedProvider = v;
         await this.plugin.saveSettings();
         this.render();
-      })
-    );
+      });
+    });
     const effectiveEmbed = resolveEmbedProviderId(this.plugin.settings);
     if (effectiveEmbed !== this.plugin.settings.llmProvider) this.renderEmbedProviderConfig(containerEl, effectiveEmbed);
     this.embedModelRow(containerEl, effectiveEmbed);
   }
   /** Minimal credential rows for an embeddings provider that is NOT the chat provider. */
   renderEmbedProviderConfig(containerEl, provider) {
-    switch (provider) {
-      case "mistral":
-        this.apiKeyRow(containerEl, "Mistral API key (embeddings)", "console.mistral.ai", "https://console.mistral.ai/", "mistralApiKey");
-        break;
-      case "openai":
-        this.apiKeyRow(containerEl, "OpenAI API key (embeddings)", "platform.openai.com/api-keys", "https://platform.openai.com/api-keys", "openaiApiKey");
-        break;
-      case "google":
-        this.apiKeyRow(containerEl, "Google API key (embeddings)", "aistudio.google.com/apikey", "https://aistudio.google.com/apikey", "googleApiKey");
-        break;
-      case "local":
-        new import_obsidian.Setting(containerEl).setName("Base URL (embeddings)").setDesc("The local server's API root, e.g. http://localhost:11434/v1 \u2014 from mobile, use the machine's LAN address.").addText(
-          (t2) => t2.setPlaceholder("http://localhost:11434/v1").setValue(this.plugin.settings.localBaseUrl).onChange(async (v) => {
-            this.plugin.settings.localBaseUrl = v.trim();
-            await this.plugin.saveSettings();
-            this.refreshBadges();
-          })
-        );
-        break;
-      case "openai-compat":
-        new import_obsidian.Setting(containerEl).setName("Base URL (embeddings)").setDesc("The custom endpoint's API root; its optional API key is shared with the Custom chat config.").addText(
-          (t2) => t2.setPlaceholder("https://api.openai.com/v1").setValue(this.plugin.settings.openaiCompatBaseUrl).onChange(async (v) => {
-            this.plugin.settings.openaiCompatBaseUrl = v.trim() || "https://api.openai.com/v1";
-            await this.plugin.saveSettings();
-          })
-        );
-        break;
+    const descriptor = getLlmProvider(provider);
+    if (descriptor.embedBaseUrl) this.baseUrlRow(containerEl, descriptor.embedBaseUrl);
+    if (descriptor.embedKeyRow) this.keyRow(containerEl, descriptor.embedKeyRow, descriptor);
+  }
+  /**
+   * Render one provider's config rows from its descriptor: endpoint root (Local/Custom),
+   * API key, chat model — the catalogue dropdown + refresh button, or a free-text field for
+   * an endpoint without a live catalogue.
+   */
+  renderLlmProviderConfig(containerEl, descriptor) {
+    if (descriptor.baseUrl) this.baseUrlRow(containerEl, descriptor.baseUrl);
+    if (descriptor.keyRow) this.keyRow(containerEl, descriptor.keyRow, descriptor);
+    const freeText = descriptor.freeTextChatModel;
+    if (!freeText) {
+      this.chatModelRow(containerEl, descriptor.id);
+      return;
     }
+    new import_obsidian2.Setting(containerEl).setName("Chat model").setDesc(freeText.desc).addText(
+      (t2) => t2.setPlaceholder(freeText.placeholder).setValue(llmChatModel(this.plugin.settings, descriptor.id)).onChange(async (v) => {
+        setLlmChatModel(this.plugin.settings, descriptor.id, v.trim());
+        await this.plugin.saveSettings();
+        this.refreshBadges();
+      })
+    );
+  }
+  /** A descriptor-driven endpoint-root row (Local/Custom, chat or embeddings variant). */
+  baseUrlRow(containerEl, spec) {
+    new import_obsidian2.Setting(containerEl).setName(spec.name).setDesc(spec.desc).addText(
+      (t2) => t2.setPlaceholder(spec.placeholder).setValue(this.plugin.settings[spec.field]).onChange(async (v) => {
+        this.plugin.settings[spec.field] = v.trim() || spec.fallback;
+        await this.plugin.saveSettings();
+        if (spec.refreshesBadge) this.refreshBadges();
+      })
+    );
+  }
+  /** A descriptor-driven secret-storage API-key row; no-op for a provider without a key. */
+  keyRow(containerEl, spec, descriptor) {
+    if (!descriptor.apiKeyField) return;
+    const setting = new import_obsidian2.Setting(containerEl).setName(spec.name).setDesc(renderRowDesc(spec.desc));
+    this.addSecretComponent(setting, SECRET_FIELD_BY_VALUE[descriptor.apiKeyField]);
   }
   /**
    * Attach a `SecretComponent` (Obsidian 1.11.4) to `setting` for one registry key (AU_E139_S3):
@@ -7193,7 +7308,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
    */
   addSecretComponent(setting, field2) {
     setting.addComponent(
-      (el) => new import_obsidian.SecretComponent(this.app, el).setValue(this.plugin.settings[field2.idField]).onChange(async (id) => {
+      (el) => new import_obsidian2.SecretComponent(this.app, el).setValue(this.plugin.settings[field2.idField]).onChange(async (id) => {
         this.plugin.settings[field2.idField] = id;
         this.plugin.settings[field2.valueField] = readSecret(id, this.app.secretStorage);
         await this.plugin.saveSettings();
@@ -7201,93 +7316,27 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
   }
-  /** A secret-storage API-key row with a console link; refreshes badges on change. */
-  apiKeyRow(containerEl, name, linkText, href, valueField) {
-    const setting = new import_obsidian.Setting(containerEl).setName(name).setDesc(
-      createFragment((f) => {
-        f.appendText("Get one at ");
-        f.createEl("a", { text: linkText, href });
-        f.appendText(
-          ". Stored in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync between devices \u2014 enter it once per device, and rotate the key if it was previously synced."
-        );
-      })
-    );
-    this.addSecretComponent(setting, SECRET_FIELD_BY_VALUE[valueField]);
-  }
-  /** The active provider's cached model catalogue (empty for Custom). */
-  catalogFor(provider) {
-    var _a, _b, _c, _d, _e;
-    const s = this.plugin.settings;
-    switch (provider) {
-      case "openai":
-        return (_a = s.openaiModelCatalog) != null ? _a : [];
-      case "anthropic":
-        return (_b = s.anthropicModelCatalog) != null ? _b : [];
-      case "google":
-        return (_c = s.googleModelCatalog) != null ? _c : [];
-      case "local":
-        return (_d = s.localModelCatalog) != null ? _d : [];
-      case "openai-compat":
-        return [];
-      default:
-        return (_e = s.mistralModelCatalog) != null ? _e : [];
-    }
-  }
-  setCatalog(provider, models) {
-    const s = this.plugin.settings;
-    if (provider === "openai") s.openaiModelCatalog = models;
-    else if (provider === "anthropic") s.anthropicModelCatalog = models;
-    else if (provider === "google") s.googleModelCatalog = models;
-    else if (provider === "local") s.localModelCatalog = models;
-    else if (provider === "mistral") s.mistralModelCatalog = models;
-  }
-  getChatModel(provider) {
-    const s = this.plugin.settings;
-    switch (provider) {
-      case "openai":
-        return s.openaiChatModel;
-      case "anthropic":
-        return s.anthropicChatModel;
-      case "google":
-        return s.googleChatModel;
-      case "local":
-        return s.localChatModel;
-      case "openai-compat":
-        return s.openaiCompatChatModel;
-      default:
-        return s.mistralChatModel;
-    }
-  }
-  setChatModel(provider, v) {
-    const s = this.plugin.settings;
-    if (provider === "openai") s.openaiChatModel = v;
-    else if (provider === "anthropic") s.anthropicChatModel = v;
-    else if (provider === "google") s.googleChatModel = v;
-    else if (provider === "local") s.localChatModel = v;
-    else if (provider === "openai-compat") s.openaiCompatChatModel = v;
-    else s.mistralChatModel = v;
-  }
   /**
    * The provider's global chat-model dropdown + a provider-aware "refresh model list" button
    * (AU_E118_S1: moved out of Advanced — the model choice is a core setting, not tuning).
    */
   chatModelRow(containerEl, provider) {
-    const catalog = this.catalogFor(provider);
+    const catalog = llmCatalog(this.plugin.settings, provider);
     const chatModels = catalog.filter((m) => m.chat).map((m) => m.id);
-    const setting = new import_obsidian.Setting(containerEl).setName("Chat model").setDesc(
+    const setting = new import_obsidian2.Setting(containerEl).setName("Chat model").setDesc(
       catalog.length > 0 ? `The default model for every AI research step; per-step overrides under Advanced. ${catalog.length} model(s) loaded (\xB7 reasoning = supports a thinking pass) \u2014 refresh to update.` : "The default model for every AI research step; per-step overrides under Advanced. Use the refresh button to load your account's live model list, or type a model id."
     );
     if (chatModels.length > 0) {
-      this.modelDropdown(setting, chatModels, catalog, () => this.getChatModel(provider), (v) => {
+      this.modelDropdown(setting, chatModels, catalog, () => llmChatModel(this.plugin.settings, provider), (v) => {
         if (v) {
-          this.setChatModel(provider, v);
+          setLlmChatModel(this.plugin.settings, provider, v);
           this.refreshBadges();
         }
-      }, this.getChatModel(provider) ? null : "\u2014 pick a model \u2014");
+      }, llmChatModel(this.plugin.settings, provider) ? null : "\u2014 pick a model \u2014");
     } else {
       setting.addText(
-        (t2) => t2.setPlaceholder("model id").setValue(this.getChatModel(provider)).onChange(async (v) => {
-          this.setChatModel(provider, v.trim());
+        (t2) => t2.setPlaceholder("model id").setValue(llmChatModel(this.plugin.settings, provider)).onChange(async (v) => {
+          setLlmChatModel(this.plugin.settings, provider, v.trim());
           await this.plugin.saveSettings();
           this.refreshBadges();
         })
@@ -7297,59 +7346,28 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   }
   /** The embedding-model row for the EFFECTIVE embeddings provider (below its dropdown). */
   embedModelRow(containerEl, provider) {
+    const spec = getLlmProvider(provider).embedModel;
+    if (!spec) return;
     const s = this.plugin.settings;
-    if (provider === "anthropic") return;
-    if (provider === "mistral") {
-      const catalog = this.catalogFor("mistral");
-      const setting = new import_obsidian.Setting(containerEl).setName("Embedding model").setDesc("Used for the rerank (e.g. mistral-embed).");
+    const setting = new import_obsidian2.Setting(containerEl).setName("Embedding model").setDesc(spec.desc);
+    if (spec.fromCatalog) {
+      const catalog = llmCatalog(s, provider);
       this.modelDropdown(
         setting,
         catalog.map((m) => m.id),
         catalog,
-        () => s.mistralEmbedModel,
+        () => s[spec.field],
         (v) => {
-          s.mistralEmbedModel = v || "mistral-embed";
+          s[spec.field] = v || spec.fallback;
         },
         null
       );
-      this.catalogRefreshButton(setting, "mistral");
+      this.catalogRefreshButton(setting, provider);
       return;
     }
-    const byProvider = {
-      openai: {
-        placeholder: "text-embedding-3-small",
-        get: () => s.openaiEmbedModel,
-        set: (v) => {
-          s.openaiEmbedModel = v.trim() || "text-embedding-3-small";
-        }
-      },
-      google: {
-        placeholder: "gemini-embedding-001",
-        get: () => s.googleEmbedModel,
-        set: (v) => {
-          s.googleEmbedModel = v.trim() || "gemini-embedding-001";
-        }
-      },
-      local: {
-        placeholder: "nomic-embed-text",
-        get: () => s.localEmbedModel,
-        set: (v) => {
-          s.localEmbedModel = v.trim();
-        }
-      },
-      "openai-compat": {
-        placeholder: "text-embedding-3-small",
-        get: () => s.openaiCompatEmbedModel,
-        set: (v) => {
-          s.openaiCompatEmbedModel = v.trim();
-        }
-      }
-    };
-    const row = byProvider[provider];
-    if (!row) return;
-    new import_obsidian.Setting(containerEl).setName("Embedding model").setDesc("Used for the rerank step.").addText(
-      (t2) => t2.setPlaceholder(row.placeholder).setValue(row.get()).onChange(async (v) => {
-        row.set(v);
+    setting.addText(
+      (t2) => t2.setPlaceholder(spec.placeholder).setValue(s[spec.field]).onChange(async (v) => {
+        s[spec.field] = v.trim() || spec.fallback;
         await this.plugin.saveSettings();
       })
     );
@@ -7379,15 +7397,15 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   }
   // Pipeline phases — optional stages of the research process (in run order).
   renderPipelinePhases(containerEl) {
-    new import_obsidian.Setting(containerEl).setName("Theoretical framework phase").then((s) => this.markUses(s, "ai")).setDesc(
-      'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Theory \xB7 framework" command runs this regardless of this toggle.'
+    new import_obsidian2.Setting(containerEl).setName("Theoretical framework phase").then((s) => this.markUses(s, "ai")).setDesc(
+      'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Frame \xB7 framework" command runs this regardless of this toggle.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchFrameworkPhase).onChange(async (v) => {
         this.plugin.settings.researchFrameworkPhase = v;
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Review sub-questions before searching").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Review sub-questions before searching").then((s) => this.markUses(s, "ai")).setDesc(
       "After the question is split into sub-questions (and the framework, if on), pause to edit, add or remove them before the literature search runs. Editing here keeps source attribution accurate. You can also land the sub-questions in the note first and restart the research after refining them there."
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchSubQuestionCheckpoint).onChange(async (v) => {
@@ -7395,7 +7413,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Cross-sector evidence").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Cross-sector evidence").then((s) => this.markUses(s, "ai")).setDesc(
       'When the topic evidence is thin within its own domain, also search analogous sectors (e.g. healthcare, public administration, education) and offer the hits as clearly-labelled transfer evidence. Only fires on thin evidence; the "Force cross-sector evidence" toggle in the Ask window runs it regardless.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchCrossSector).onChange(async (v) => {
@@ -7406,7 +7424,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   }
   // Synthesis quality — how the final answer is written.
   renderSynthesis(containerEl) {
-    new import_obsidian.Setting(containerEl).setName("Output mode").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Output mode").then((s) => this.markUses(s, "ai")).setDesc(
       'Balanced follows the two grouped toggles below ("Weight evidence by study design" and "Calibrate claims"). Public and Academic switch both on and add their own steering: Public = practical and decisive, with a concrete decision rule per finding; Academic = cautious review-paper nuance, with an open-questions section.'
     ).addDropdown(
       (d) => d.addOption("balanced", "Balanced (use toggles)").addOption("public", "Public (practical, safe)").addOption("academic", "Academic (nuance, follow-ups)").setValue(this.plugin.settings.researchOutputMode).onChange(async (v) => {
@@ -7420,7 +7438,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
     const governed = containerEl.createDiv({
       cls: "consensus-settings-subgroup" + (modeForcesToggles ? " consensus-settings-subgroup-forced" : "")
     });
-    new import_obsidian.Setting(governed).setName("Weight evidence by study design").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(governed).setName("Weight evidence by study design").then((s) => this.markUses(s, "ai")).setDesc(
       "Tag each source by study design (review/meta-analysis > RCT > small study) and steer the synthesis to weight by it \u2014 claims resting only on small studies are flagged as hypothesis-forming, and the basis is shown next to each finding. On by default." + forcedNote
     ).addToggle(
       (t2) => t2.setValue(modeForcesToggles ? true : this.plugin.settings.researchEvidenceWeighting).setDisabled(modeForcesToggles).onChange(async (v) => {
@@ -7428,7 +7446,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(governed).setName("Calibrate claims").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(governed).setName("Calibrate claims").then((s) => this.markUses(s, "ai")).setDesc(
       "Steer the synthesis to avoid over-stating: hedge absolute claims, surface moderators and context-dependence, and keep distinct outcomes apart. On by default." + forcedNote
     ).addToggle(
       (t2) => t2.setValue(modeForcesToggles ? true : this.plugin.settings.researchClaimCalibration).setDisabled(modeForcesToggles).onChange(async (v) => {
@@ -7436,7 +7454,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Auto-deepen findings").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Auto-deepen findings").then((s) => this.markUses(s, "ai")).setDesc(
       'After the synthesis, automatically add a deepening under each finding (specific numbers, methods, mechanisms) drawing on \u2014 and citing \u2014 the whole bibliography. Off by default; adds one LLM call per finding (a run with 6 findings adds 6 calls). The "Evidence \xB7 deepen finding" command works regardless. The usage summary after each run reports the total tokens spent.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchAutoDeepen).onChange(async (v) => {
@@ -7444,7 +7462,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Reading recommendations").then((s) => this.markUses(s, "ai")).setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Reading recommendations").then((s) => this.markUses(s, "ai")).setDesc(
       'Add an "Aanrader om volledig te lezen" section: a short, prioritised shortlist of which sources are most worth reading in full (and why). The full texts are often paywalled, so fetching them is a separate manual step. On by default.'
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.researchReadingTips).onChange(async (v) => {
@@ -7456,8 +7474,8 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
   // Advanced: retrieval tuning, models, and endpoint overrides. The former standalone
   // <details> element is absorbed into the shared accordion (tier 3: never auto-opens).
   renderAdvanced(adv) {
-    new import_obsidian.Setting(adv).setName("Multi-source search: how many papers to keep").setHeading();
-    new import_obsidian.Setting(adv).setName("Max results").setDesc('Upper bound on how many reranked papers "Evidence \xB7 ask a question" returns. The selection is weighted, so this is just the ceiling.').addText(
+    new import_obsidian2.Setting(adv).setName("Multi-source search: how many papers to keep").setHeading();
+    new import_obsidian2.Setting(adv).setName("Max results").setDesc('Upper bound on how many reranked papers "Evidence \xB7 run research" returns. The selection is weighted, so this is just the ceiling.').addText(
       (t2) => t2.setValue(String(this.plugin.settings.researchMaxResults)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
@@ -7466,7 +7484,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(adv).setName("Min results").setDesc("Lower bound \u2014 always keep at least this many, even if scores are low.").addText(
+    new import_obsidian2.Setting(adv).setName("Min results").setDesc("Lower bound \u2014 always keep at least this many, even if scores are low.").addText(
       (t2) => t2.setValue(String(this.plugin.settings.researchMinResults)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0) {
@@ -7475,7 +7493,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(adv).setName("Keep ratio").setDesc("Weighted cutoff (0\u20131): keep papers scoring at least this fraction of the top result. Lower = more inclusive; clamped by min/max.").addText(
+    new import_obsidian2.Setting(adv).setName("Keep ratio").setDesc("Weighted cutoff (0\u20131): keep papers scoring at least this fraction of the top result. Lower = more inclusive; clamped by min/max.").addText(
       (t2) => t2.setValue(String(this.plugin.settings.researchKeepRatio)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0 && n <= 1) {
@@ -7484,7 +7502,7 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(adv).setName("Relevance keep").then((s) => this.markUses(s, "embeddings")).setDesc("Topicality gate (0\u20131): keep this fraction of candidates ranked by semantic match to the question, dropping the least-on-topic tail before the weighted cutoff. Lower = stricter (less noise); 1 = off. Protected by the min bound.").addText(
+    new import_obsidian2.Setting(adv).setName("Relevance keep").then((s) => this.markUses(s, "embeddings")).setDesc("Topicality gate (0\u20131): keep this fraction of candidates ranked by semantic match to the question, dropping the least-on-topic tail before the weighted cutoff. Lower = stricter (less noise); 1 = off. Protected by the min bound.").addText(
       (t2) => t2.setValue(String(this.plugin.settings.researchRelevanceKeep)).onChange(async (v) => {
         const n = Number(v);
         if (!Number.isNaN(n) && n > 0 && n <= 1) {
@@ -7493,8 +7511,8 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
         }
       })
     );
-    new import_obsidian.Setting(adv).setName("Debug logging").setDesc(
-      'Write a "Parallax debug" note with what "Evidence \xB7 ask a question" did (sub-questions, queries, per-source result counts). Handy on mobile, where the dev console is out of reach.'
+    new import_obsidian2.Setting(adv).setName("Debug logging").setDesc(
+      `Write a "Parallax debug" note with what "Evidence \xB7 run research" did: your question, sub-questions, search queries, per-source result counts, the model name and token usage per LLM call, and \u2014 on a failure \u2014 the error and a short preview (up to 200 characters) of the model's raw response. API keys are never included (redacted). Handy on mobile, where the dev console is out of reach \u2014 but the note lives in your vault like any other, so it syncs and can be shared; turn it off or delete the note once you're done debugging.`
     ).addToggle(
       (t2) => t2.setValue(this.plugin.settings.debugLogging).onChange(async (v) => {
         this.plugin.settings.debugLogging = v;
@@ -7502,15 +7520,15 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       })
     );
     const provider = this.plugin.settings.llmProvider;
-    const catalog = this.catalogFor(provider);
+    const catalog = llmCatalog(this.plugin.settings, provider);
     const chatModels = catalog.filter((m) => m.chat).map((m) => m.id);
-    new import_obsidian.Setting(adv).setName("Per-step model overrides").setHeading();
-    new import_obsidian.Setting(adv).setDesc(
+    new import_obsidian2.Setting(adv).setName("Per-step model overrides").setHeading();
+    new import_obsidian2.Setting(adv).setDesc(
       "Overrides apply to the ACTIVE LLM provider; switching provider switches to that provider's own overrides. Empty = the provider's global chat model."
     );
     const stepModel = (step, name, desc) => {
       this.modelDropdown(
-        new import_obsidian.Setting(adv).setName(name).setDesc(desc),
+        new import_obsidian2.Setting(adv).setName(name).setDesc(desc),
         chatModels,
         catalog,
         () => {
@@ -7552,12 +7570,12 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       "Model \u2014 cross-sector",
       "The analogous-sector transfer step. A cheaper model is usually fine here."
     );
-    new import_obsidian.Setting(adv).setName("Per-step reasoning effort").setHeading();
-    new import_obsidian.Setting(adv).setDesc(
+    new import_obsidian2.Setting(adv).setName("Per-step reasoning effort").setHeading();
+    new import_obsidian2.Setting(adv).setDesc(
       "Let a step think before answering. Off by default; it helps synthesis (and deepen) most and is usually wasted tokens on the straightforward steps. The thinking is dropped from the output. Each dropdown offers only the levels the step's model supports (AU_E118_S6); if a model still rejects a level at call time, the call falls back to the cheapest level it does support (shown in the debug log)."
     );
     const stepReasoning = (step, name, desc) => {
-      new import_obsidian.Setting(adv).setName(name).setDesc(desc).addDropdown((d) => {
+      new import_obsidian2.Setting(adv).setName(name).setDesc(desc).addDropdown((d) => {
         const model = resolveStepModel(this.plugin.settings, step);
         const entry = catalog.find((m) => m.id === model);
         const efforts = [
@@ -7600,26 +7618,31 @@ var ParallaxSettingTab = class extends import_obsidian.PluginSettingTab {
       "Reasoning \u2014 cross-sector",
       "The analogous-sector transfer step \u2014 off is normally fine."
     );
-    new import_obsidian.Setting(adv).setName("API base URL").setDesc("Override only if Consensus changes the endpoint or version.").addText(
+    new import_obsidian2.Setting(adv).setName("API base URL").setDesc("Override only if Consensus changes the endpoint or version.").addText(
       (t2) => t2.setValue(this.plugin.settings.apiBaseUrl).onChange(async (v) => {
         this.plugin.settings.apiBaseUrl = v.trim();
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(adv).setName("API key header").setDesc("Header used to send the key. Default: X-API-Key.").addText(
+    new import_obsidian2.Setting(adv).setName("API key header").setDesc("Header used to send the key. Default: X-API-Key.").addText(
       (t2) => t2.setValue(this.plugin.settings.apiKeyHeader).onChange(async (v) => {
         this.plugin.settings.apiKeyHeader = v.trim() || "X-API-Key";
         await this.plugin.saveSettings();
+      })
+    );
+    new import_obsidian2.Setting(adv).setName("Feedback or a bug?").setDesc("Report a problem or an idea on GitHub. No usage data is collected or sent automatically.").addButton(
+      (b) => b.setButtonText("Open issues").onClick(() => {
+        window.open("https://github.com/maxonamission/obsidian-parallax/issues", "_blank");
       })
     );
   }
 };
 
 // src/search-modal.ts
-var import_obsidian3 = require("obsidian");
+var import_obsidian4 = require("obsidian");
 
 // src/modal-chrome.ts
-var import_obsidian2 = require("obsidian");
+var import_obsidian3 = require("obsidian");
 
 // src/viewport-trace.ts
 function parseCssPx(value) {
@@ -7814,7 +7837,7 @@ async function writeViewportTrace(modal) {
   const body = formatViewportTraceNote(collected);
   try {
     const existing = modal.app.vault.getAbstractFileByPath(VIEWPORT_TRACE_PATH);
-    if (existing instanceof import_obsidian2.TFile) await modal.app.vault.modify(existing, body);
+    if (existing instanceof import_obsidian3.TFile) await modal.app.vault.modify(existing, body);
     else await modal.app.vault.create(VIEWPORT_TRACE_PATH, body);
   } catch (e) {
   }
@@ -7822,7 +7845,7 @@ async function writeViewportTrace(modal) {
 var chromed = /* @__PURE__ */ new WeakSet();
 function applyModalChrome(modal) {
   modal.modalEl.addClass("consensus-modal");
-  if (!import_obsidian2.Platform.isMobile) return;
+  if (!import_obsidian3.Platform.isMobile) return;
   if (chromed.has(modal)) return;
   chromed.add(modal);
   const cleanup = attachKeyboardAvoidance(modal);
@@ -7834,7 +7857,7 @@ function applyModalChrome(modal) {
 }
 
 // src/search-modal.ts
-var SearchModal = class extends import_obsidian3.Modal {
+var SearchModal = class extends import_obsidian4.Modal {
   constructor(app, initialQuery, supportsMedicalFilters, onSubmit, hint, rephrase, offerCrossSector = false) {
     super(app);
     this.filters = {};
@@ -7853,7 +7876,7 @@ var SearchModal = class extends import_obsidian3.Modal {
     contentEl.createEl("h2", { text: "Ask Parallax" });
     if (this.hint) contentEl.createEl("p", { text: this.hint, cls: "consensus-handoff-hint" });
     contentEl.createEl("label", { text: "Research question", cls: "consensus-search-label" });
-    contentEl.createEl("div", {
+    contentEl.createDiv({
       text: 'Phrased as you would search \u2014 e.g. "does spaced repetition improve retention". The databases are mostly English; the Rephrase button turns any text into a concise English search query.',
       // Own class (AU_E127_S2): themes may line-clamp Obsidian's setting-item-description,
       // which cut this explanation off mid-sentence on the owner's device.
@@ -7870,48 +7893,48 @@ var SearchModal = class extends import_obsidian3.Modal {
         this.submit();
       }
     });
-    if (!import_obsidian3.Platform.isMobile) window.setTimeout(() => ta.focus(), 0);
+    if (!import_obsidian4.Platform.isMobile) window.setTimeout(() => ta.focus(), 0);
     const details = contentEl.createEl("details", { cls: "consensus-filters" });
     details.createEl("summary", { text: "Filters (optional)" });
-    new import_obsidian3.Setting(details).setName("Published from year").addText((t2) => {
+    new import_obsidian4.Setting(details).setName("Published from year").addText((t2) => {
       t2.setPlaceholder("e.g. 2018").onChange((v) => {
         const n = Number(v);
         this.filters.yearMin = v && !Number.isNaN(n) ? n : void 0;
       });
     });
-    new import_obsidian3.Setting(details).setName("Peer-reviewed only").addToggle((t2) => {
+    new import_obsidian4.Setting(details).setName("Peer-reviewed only").addToggle((t2) => {
       t2.setValue(false).onChange((v) => this.filters.excludePreprints = v || void 0);
     });
     if (this.supportsMedicalFilters) {
-      new import_obsidian3.Setting(details).setName("Human studies only").addToggle((t2) => {
+      new import_obsidian4.Setting(details).setName("Human studies only").addToggle((t2) => {
         t2.setValue(false).onChange((v) => this.filters.humanOnly = v || void 0);
       });
     }
     if (this.offerCrossSector) {
-      new import_obsidian3.Setting(details).setName("Force cross-sector evidence").setDesc("Always add analogous evidence from other sectors, labelled separately.").addToggle((t2) => {
+      new import_obsidian4.Setting(details).setName("Force cross-sector evidence").setDesc("Always add analogous evidence from other sectors, labelled separately.").addToggle((t2) => {
         t2.setValue(false).onChange((v) => this.crossSector = v);
       });
     }
-    const buttons = new import_obsidian3.Setting(contentEl);
+    const buttons = new import_obsidian4.Setting(contentEl);
     buttons.addButton((b) => {
       b.setButtonText("Rephrase for search (uses AI)");
       b.setTooltip("Replaces the text with a concise English search query \u2014 review it, then Search.");
       b.onClick(() => {
         if (!this.rephrase) {
-          new import_obsidian3.Notice("No AI provider configured \u2014 set one up under Settings \u2192 Parallax \u2192 AI research, then try again.", 8e3);
+          notify("No AI provider configured \u2014 set one up under Settings \u2192 Parallax \u2192 AI research, then try again.", 8e3);
           return;
         }
         const rephrase = this.rephrase;
         const text = this.query.trim();
         if (!text) {
-          new import_obsidian3.Notice("Type or paste a question first \u2014 there is nothing to rephrase yet.");
+          notify("Type or paste a question first \u2014 there is nothing to rephrase yet.");
           return;
         }
         b.setDisabled(true).setButtonText("Rephrasing\u2026");
         void rephrase(text).then((rewritten) => {
           ta.value = rewritten;
           ta.dispatchEvent(new Event("input"));
-        }).catch((e) => new import_obsidian3.Notice(`Rephrasing failed: ${e instanceof Error ? e.message : String(e)}`, 8e3)).finally(() => {
+        }).catch((e) => notify(`Rephrasing failed: ${e instanceof Error ? e.message : String(e)}`, 8e3)).finally(() => {
           b.setDisabled(false).setButtonText("Rephrase for search (uses AI)");
         });
       });
@@ -7934,10 +7957,10 @@ var SearchModal = class extends import_obsidian3.Modal {
 };
 
 // src/project-modal.ts
-var import_obsidian4 = require("obsidian");
-var ProjectModal = class extends import_obsidian4.Modal {
+var import_obsidian5 = require("obsidian");
+var ProjectModal = class extends import_obsidian5.Modal {
   constructor(app, opts, onSubmit) {
-    var _a;
+    var _a, _b;
     super(app);
     this.objective = "";
     this.moveNote = true;
@@ -7945,6 +7968,8 @@ var ProjectModal = class extends import_obsidian4.Modal {
     this.moveEligible = opts.moveEligible;
     this.initialName = ((_a = opts.initialName) != null ? _a : "").trim();
     this.name = this.initialName;
+    this.initialQuestion = ((_b = opts.initialQuestion) != null ? _b : "").trim();
+    this.question = this.initialQuestion;
     this.onSubmit = onSubmit;
   }
   onOpen() {
@@ -7952,11 +7977,11 @@ var ProjectModal = class extends import_obsidian4.Modal {
     applyModalChrome(this);
     contentEl.createEl("h2", { text: "Start research project" });
     contentEl.createEl("p", {
-      text: "A project = a folder with one session note per research question. The objective becomes the first artefact in the project hub; the individual questions operationalise it.",
+      text: `A project = a folder with one session note per research question. The objective becomes the first artefact in the project hub; the question below becomes the project's first session. Leave the question empty and add one later with "Question \xB7 start in this project (new session note)".`,
       cls: "consensus-handoff-hint"
     });
     contentEl.createEl("label", { text: "Project name", cls: "consensus-search-label" });
-    contentEl.createEl("div", { text: "Becomes the folder name and the hub note's title.", cls: "consensus-field-desc" });
+    contentEl.createDiv({ text: "Becomes the folder name and the hub note's title.", cls: "consensus-field-desc" });
     const nameEl = contentEl.createEl("input", { cls: "consensus-search-input", type: "text" });
     nameEl.placeholder = "e.g. Talent development in speed skating";
     if (this.initialName) nameEl.value = this.initialName;
@@ -7968,7 +7993,7 @@ var ProjectModal = class extends import_obsidian4.Modal {
       }
     });
     contentEl.createEl("label", { text: "Research objective", cls: "consensus-search-label" });
-    contentEl.createEl("div", {
+    contentEl.createDiv({
       text: "What do you ultimately want to understand or achieve with this project? Becomes the first artefact (## Doelstelling).",
       cls: "consensus-field-desc"
     });
@@ -7982,13 +8007,29 @@ var ProjectModal = class extends import_obsidian4.Modal {
         this.submit();
       }
     });
+    contentEl.createEl("label", { text: "Research question", cls: "consensus-search-label" });
+    contentEl.createDiv({
+      text: "The first question you want to answer. Becomes the project's first session note \u2014 the moved note itself when you move it along.",
+      cls: "consensus-field-desc"
+    });
+    const questionEl = contentEl.createEl("textarea", { cls: "consensus-search-input" });
+    questionEl.placeholder = "e.g. Why do talented skaters drop out between 16 and 20?";
+    if (this.initialQuestion) questionEl.value = this.initialQuestion;
+    questionEl.addEventListener("input", () => this.question = questionEl.value);
+    makeAutoGrowTextarea(questionEl, 3);
+    questionEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        this.submit();
+      }
+    });
     if (this.moveEligible) {
-      new import_obsidian4.Setting(contentEl).setName("Move the current note into the project").addToggle((t2) => t2.setValue(this.moveNote).onChange((v) => this.moveNote = v));
+      new import_obsidian5.Setting(contentEl).setName("Move the current note into the project").addToggle((t2) => t2.setValue(this.moveNote).onChange((v) => this.moveNote = v));
     }
-    new import_obsidian4.Setting(contentEl).addButton(
+    new import_obsidian5.Setting(contentEl).addButton(
       (b) => b.setButtonText("Create project").setCta().onClick(() => this.submit())
     );
-    if (!import_obsidian4.Platform.isMobile)
+    if (!import_obsidian5.Platform.isMobile)
       window.setTimeout(() => {
         nameEl.focus();
         if (this.initialName) nameEl.select();
@@ -7998,7 +8039,12 @@ var ProjectModal = class extends import_obsidian4.Modal {
     const name = this.name.trim();
     if (!name) return;
     this.submitted = true;
-    this.onSubmit({ name, objective: this.objective.trim(), moveNote: this.moveEligible && this.moveNote });
+    this.onSubmit({
+      name,
+      objective: this.objective.trim(),
+      question: this.question.trim(),
+      moveNote: this.moveEligible && this.moveNote
+    });
     this.close();
   }
   onClose() {
@@ -8008,7 +8054,7 @@ var ProjectModal = class extends import_obsidian4.Modal {
 };
 
 // src/results-modal.ts
-var import_obsidian5 = require("obsidian");
+var import_obsidian6 = require("obsidian");
 
 // src/evidence-tier.ts
 var STRONG_RE = /\b(meta-?analy(?:s|z)|systematic review|cochrane|umbrella review|network meta)/i;
@@ -8344,6 +8390,33 @@ async function fetchOaTexts(papers, recommendations, cache, http, opts = {}) {
 function renderOaBadge(paper) {
   if (!(paper == null ? void 0 : paper.oaUrl)) return t().oa.paywalled;
   return isPdfUrl(paper.oaUrl) ? `[${t().oa.availablePdf}](${paper.oaUrl})` : `[${t().oa.available}](${paper.oaUrl})`;
+}
+
+// src/json-parse.ts
+function extractJsonObject(raw) {
+  const start = raw.indexOf("{");
+  const end = raw.lastIndexOf("}");
+  return start >= 0 && end > start ? raw.slice(start, end + 1) : raw;
+}
+function parseJsonObject(raw, label, log) {
+  let payload;
+  try {
+    payload = JSON.parse(extractJsonObject(raw));
+  } catch (e) {
+    log == null ? void 0 : log(`parse failure \u2014 ${label}: invalid JSON`, {
+      error: String(e),
+      length: raw.length,
+      preview: raw.slice(0, 200)
+    });
+    return null;
+  }
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    log == null ? void 0 : log(`parse failure \u2014 ${label}: not a JSON object`, {
+      type: Array.isArray(payload) ? "array" : payload === null ? "null" : typeof payload
+    });
+    return null;
+  }
+  return payload;
 }
 
 // src/synthesis.ts
@@ -9010,7 +9083,7 @@ function joinReferenceBlocks(entries, format) {
 }
 
 // src/results-modal.ts
-var ResultsModal = class extends import_obsidian5.Modal {
+var ResultsModal = class extends import_obsidian6.Modal {
   constructor(app, result, settings, onSubmit, opts = {}) {
     super(app);
     /** Live checkbox refs (D9/E78) — lets select-all/none update in place instead of a full re-render
@@ -9041,7 +9114,7 @@ var ResultsModal = class extends import_obsidian5.Modal {
       text: `${this.result.papers.length} papers found \xB7 ${this.selected.size} selected`,
       cls: "consensus-results-count"
     });
-    const controls = new import_obsidian5.Setting(contentEl).setName("Format");
+    const controls = new import_obsidian6.Setting(contentEl).setName("Format");
     controls.addDropdown((d) => {
       d.addOption("detailed", "Detailed (with abstracts)").addOption("compact", "Compact list").addOption("bibliography", "Bibliography").setValue(this.format).onChange((v) => this.format = v);
     });
@@ -9065,7 +9138,7 @@ var ResultsModal = class extends import_obsidian5.Modal {
       });
       this.checkboxes.push(cb);
       const text = row.createDiv({ cls: "consensus-paper-text" });
-      const titleEl = text.createEl("div", { cls: "consensus-paper-title" });
+      const titleEl = text.createDiv({ cls: "consensus-paper-title" });
       const safeUrl = safeExternalUrl(paper.url);
       if (safeUrl) {
         const link = titleEl.createEl("a", { text: paper.title, href: safeUrl });
@@ -9077,12 +9150,12 @@ var ResultsModal = class extends import_obsidian5.Modal {
       if (paper.year != null) meta.push(String(paper.year));
       if (paper.journal) meta.push(paper.journal);
       if (paper.citationCount != null) meta.push(`${paper.citationCount} cit.`);
-      text.createEl("div", { text: meta.join(" \xB7 "), cls: "consensus-paper-meta" });
+      text.createDiv({ text: meta.join(" \xB7 "), cls: "consensus-paper-meta" });
     });
-    new import_obsidian5.Setting(contentEl).addButton(
+    new import_obsidian6.Setting(contentEl).addButton(
       (b) => b.setButtonText("Add references to the note").setCta().onClick(() => {
         if (this.selected.size === 0) {
-          new import_obsidian5.Notice("Select at least one paper.");
+          notify("Select at least one paper.");
           return;
         }
         const papers = this.selectedPapers();
@@ -9092,7 +9165,7 @@ var ResultsModal = class extends import_obsidian5.Modal {
     ).addButton(
       (b) => b.setButtonText("Copy").onClick(() => {
         if (this.selected.size === 0) {
-          new import_obsidian5.Notice("Select at least one paper.");
+          notify("Select at least one paper.");
           return;
         }
         void this.onSubmit(this.selectedPapers(), this.format, "copy");
@@ -9114,15 +9187,6 @@ var ResultsModal = class extends import_obsidian5.Modal {
     this.contentEl.empty();
   }
 };
-
-// src/notify.ts
-var import_obsidian6 = require("obsidian");
-function notifyError(context, e, opts = {}) {
-  var _a;
-  (_a = opts.log) == null ? void 0 : _a.call(opts, `${context} \u2014 FAILED`, e instanceof Error ? e.message : String(e));
-  const message = e instanceof SearchApiError ? e.message : `${context} failed \u2014 likely a connection or configuration problem. Details in the debug log.`;
-  new import_obsidian6.Notice(message, 0);
-}
 
 // src/quadro.ts
 var QUADRO_CONVENTIONS = {
@@ -9371,28 +9435,6 @@ function renderQdaSection(input) {
 
 // src/quadro-kit-modal.ts
 var import_obsidian7 = require("obsidian");
-
-// src/json-parse.ts
-function parseJsonObject(raw, label, log) {
-  let payload;
-  try {
-    payload = JSON.parse(extractJsonObject(raw));
-  } catch (e) {
-    log == null ? void 0 : log(`parse failure \u2014 ${label}: invalid JSON`, {
-      error: String(e),
-      length: raw.length,
-      preview: raw.slice(0, 200)
-    });
-    return null;
-  }
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    log == null ? void 0 : log(`parse failure \u2014 ${label}: not a JSON object`, {
-      type: Array.isArray(payload) ? "array" : payload === null ? "null" : typeof payload
-    });
-    return null;
-  }
-  return payload;
-}
 
 // src/research-design.ts
 var METHOD_FITS = ["qualitative", "quantitative", "mixed"];
@@ -9691,7 +9733,7 @@ var RecordHygieneModal = class extends import_obsidian8.Modal {
     super(app);
     /** graph-note ticks, keyed by note path. */
     this.noteTicks = /* @__PURE__ */ new Map();
-    /** reference ticks, keyed by `key folder` (one tick per reference-in-group). */
+    /** reference ticks, keyed by `key\u0000folder` (one tick per reference-in-group). */
     this.refTicks = /* @__PURE__ */ new Map();
     this.groups = groups;
     this.onConfirm = onConfirm;
@@ -9771,59 +9813,6 @@ var RecordHygieneModal = class extends import_obsidian8.Modal {
   }
 };
 
-// src/references-section.ts
-function referenceKey(paper) {
-  if (paper.doi) return paper.doi.toLowerCase().replace(/^https?:\/\/doi\.org\//, "");
-  if (paper.url) return paper.url.toLowerCase();
-  return paper.title.toLowerCase().replace(/\s+/g, " ").trim();
-}
-function headingLineRegex(heading) {
-  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  return new RegExp(`^##\\s+${escaped}\\s*(?:<!--.*?-->\\s*)?$`, "im");
-}
-function appendReferencesSection(body, heading, entries, lead) {
-  const match = headingLineRegex(heading).exec(body);
-  let sectionStart = -1;
-  let sectionEnd = -1;
-  if (match) {
-    sectionStart = match.index + match[0].length;
-    const rest = body.slice(sectionStart);
-    const next2 = /^##\s/m.exec(rest);
-    sectionEnd = next2 ? sectionStart + next2.index : body.length;
-  }
-  const sectionText = match ? body.slice(sectionStart, sectionEnd).toLowerCase() : "";
-  const seen = /* @__PURE__ */ new Set();
-  const fresh = [];
-  let skipped = 0;
-  for (const entry of entries) {
-    const key = entry.key.toLowerCase();
-    if (!key || seen.has(key) || sectionText.includes(key)) {
-      skipped += 1;
-      continue;
-    }
-    seen.add(key);
-    fresh.push(entry);
-  }
-  if (fresh.length === 0) return { body, added: 0, skipped };
-  const blocks = (lead ? [lead] : []).concat(fresh.map((e) => e.block)).join("\n\n");
-  let next;
-  if (match) {
-    const before = body.slice(0, sectionEnd).replace(/\s+$/, "");
-    const after = body.slice(sectionEnd);
-    next = `${before}
-
-${blocks}
-${after ? "\n" + after : ""}`;
-  } else {
-    const base = body.replace(/\s+$/, "");
-    next = `${base ? base + "\n\n" : ""}## ${heading}
-
-${blocks}
-`;
-  }
-  return { body: next, added: fresh.length, skipped };
-}
-
 // src/logger.ts
 var REDACT_PATTERNS = [
   // Bare key material: OpenAI-style sk-…, and long unbroken token-ish strings after "Bearer".
@@ -9862,6 +9851,20 @@ function createLogger(enabled2) {
   };
   return fn;
 }
+
+// src/start-copy.ts
+function questionFromNoteTitle(basename) {
+  return basename.replace(/^[#\s]+/, "").replace(/\s+/g, " ").trim();
+}
+function landingActionLabel(landing, projectName) {
+  if (landing === "session-note") return "Add to session";
+  if (landing === "new-project-session") return "Add to a new session in this project";
+  const project = projectName == null ? void 0 : projectName.trim();
+  if (!project) return "Add to a new session note";
+  const shown = project.length > MAX_PROJECT_IN_LABEL ? `${project.slice(0, MAX_PROJECT_IN_LABEL).trimEnd()}\u2026` : project;
+  return `Add to new session in "${shown}"`;
+}
+var MAX_PROJECT_IN_LABEL = 28;
 
 // src/research-session.ts
 var SESSION_FLAG = "research-session";
@@ -9931,6 +9934,12 @@ function parseSession(frontmatter) {
 }
 function sessionTopic(session) {
   return ((session == null ? void 0 : session.framing) || (session == null ? void 0 : session.question) || "").trim();
+}
+function framingSubmission(current, submitted) {
+  const framing = (submitted || "").trim();
+  if (!framing) return { kind: "empty" };
+  if (framing === (current || "").trim()) return { kind: "unchanged", framing };
+  return { kind: "set", framing };
 }
 function pickPromptSeed(initialQuery, selection, topic) {
   return (initialQuery || "").trim() || (selection || "").trim() || (topic || "").trim();
@@ -10016,6 +10025,9 @@ function resolveHeading(headingOrId) {
     if (id) return { heading: headingOrId, id };
   }
   return { heading: headingOrId, id: null };
+}
+function headingTextFor(headingOrId) {
+  return resolveHeading(headingOrId).heading;
 }
 function findHeadingLine(lines2, headingOrId) {
   const { heading, id } = resolveHeading(headingOrId);
@@ -10251,6 +10263,14 @@ var CANONICAL_SECTION_ORDER = [
 ];
 var REFERENCES_RANK = CANONICAL_SECTION_ORDER.length;
 var REFERENCES_HEADINGS = new Set(Object.values(ARTIFACT_STRINGS).map((s) => s.references.heading));
+function findReferencesHeading(body) {
+  for (const line of body.split("\n")) {
+    if (!/^##\s+/.test(line)) continue;
+    const text = line.replace(/^##\s+/, "").replace(/<!--.*?-->/g, "").trim();
+    if (REFERENCES_HEADINGS.has(text)) return text;
+  }
+  return null;
+}
 function headingRank(line) {
   const marker = /<!--\s*lens:([a-z]+)/.exec(line);
   if (marker) {
@@ -10395,6 +10415,8 @@ var SCAFFOLD_SECTION_IDS = [
   // belief store (setBeliefs/addBeliefs, no edit-respect gate) — a free-text beliefs scaffold
   // would never be parsed and would be silently overwritten by the next belief mutation.
   "exploration",
+  // AU_E148_S7: Frame comes before Theory in the strip, so the picker follows that order.
+  "framework",
   "lenses",
   "challenge",
   "agenda",
@@ -10441,7 +10463,25 @@ function isScaffoldReplaceable(sectionContent) {
 }
 
 // src/workbench.ts
+var SECTION_PHASE = {
+  exploration: "explore",
+  lenses: "theory",
+  framework: "frame",
+  subquestions: "evidence",
+  searchstrategy: "evidence",
+  synthesis: "evidence",
+  challenge: "challenge",
+  beliefs: "challenge",
+  argument: "design",
+  hypotheses: "design",
+  interview: "design",
+  agenda: "design"
+};
 var SNIPPET_LEN = 160;
+function sectionPresent(body, id) {
+  const content = extractSection(body, id);
+  return SCAFFOLD_SECTION_IDS.includes(id) ? hasOwnText(content) : content !== "";
+}
 function deriveSessionState(session, body) {
   var _a, _b, _c;
   const synthesis = extractSection(body, "synthesis");
@@ -10459,11 +10499,23 @@ function deriveSessionState(session, body) {
       return ((_a2 = b.status) != null ? _a2 : "open") === "open";
     }).length,
     totalBeliefs: beliefs.length,
-    hasExploration: hasOwnText(extractSection(body, "exploration")),
-    hasLenses: lenses.length > 0 || extractSection(body, "lenses") !== "",
-    hasChallenge: hasOwnText(extractSection(body, "challenge")),
+    hasExploration: sectionPresent(body, "exploration"),
+    // AU_E146_S2 (audit U4): the strip used to accept ANY non-empty lenses section, so an
+    // empty "Add section" scaffold put Theory on done while the Artifacts outline — which
+    // always asked for own text — showed it as absent. Both now ask `sectionPresent`, the
+    // one rule. The front-matter lenses still count on their own: they ARE the researcher's
+    // own choice, recorded outside the body (same exception as the outline's `presentExtra`).
+    hasLenses: lenses.length > 0 || sectionPresent(body, "lenses"),
+    // AU_E148_S2: Frame has two carriers — the framing (a front-matter field, owner decision
+    // B3) and the theoretical framework section that `build-framework` writes. Either one
+    // makes the strip's Frame step done (voorstel §4, "done = framing gezet of kader aanwezig").
+    // AU_E148_S7: framework became scaffoldable, so `sectionPresent` now asks for the
+    // researcher's OWN text here — an inserted, still-empty hint does not put Frame on done.
+    hasFramework: sectionPresent(body, "framework"),
+    hasChallenge: sectionPresent(body, "challenge"),
+    // Not scaffoldable, so "present" stays "non-empty" — same as `sectionPresent` decides.
     hasSynthesis: synthesis !== "",
-    hasAgenda: hasOwnText(extractSection(body, "agenda")),
+    hasAgenda: sectionPresent(body, "agenda"),
     synthesisSnippet: synthesis ? `${snippet2}${synthesis.length > SNIPPET_LEN ? "\u2026" : ""}` : ""
   };
 }
@@ -10510,7 +10562,7 @@ function recommendActions(s) {
       when: s.isSession && !s.hasSynthesis && (s.hasExploration || s.hasFraming),
       action: {
         commandId: "research-question",
-        label: "Ask a question (research)",
+        label: "Literature research",
         why: "Run the literature research: search \u2192 rerank \u2192 graded synthesis, seeded from your framing/lenses.",
         step: "evidence"
       }
@@ -10558,7 +10610,7 @@ function recommendActions(s) {
       when: s.isSession,
       action: {
         commandId: "research-question",
-        label: "Ask a question (research)",
+        label: "Literature research",
         why: "Refine or extend with a new round of research on this session.",
         step: "evidence"
       }
@@ -10574,16 +10626,56 @@ function recommendActions(s) {
   }
   return picked;
 }
+var START_PROJECT = { commandId: "start-research-project", label: "Start research project" };
+var START_IN_NOTE = { commandId: "start-research-session", label: "Start question in this note" };
+var NEW_IN_PROJECT = { commandId: "new-project-session", label: "New question in this project" };
+var NEW_NOTE = { commandId: "new-project-session", label: "New question (new note)" };
+var EDIT_QUESTION = { commandId: "start-research-session", label: "Edit question" };
+var OBJECTIVE_EXCERPT_LEN = 160;
+function objectiveExcerpt(objective) {
+  const text = objective.replace(/\s+/g, " ").trim();
+  return text.length > OBJECTIVE_EXCERPT_LEN ? `${text.slice(0, OBJECTIVE_EXCERPT_LEN).trimEnd()}\u2026` : text;
+}
+function entryActions(s) {
+  const noteLine = s.noteTitle ? [`Note: ${s.noteTitle}`] : [];
+  const projectLine = s.projectId ? [`Project: ${s.projectId}`] : [];
+  switch (s.kind) {
+    case "none":
+      return {
+        primary: START_PROJECT,
+        lines: [
+          "Nothing open yet. Parallax works in a note: the question you want to answer is the note, the thinking lands in it as sections.",
+          "Open a note and turn it into a question, or start a research project \u2014 a folder with one session note per question."
+        ]
+      };
+    case "plain":
+      return { primary: START_IN_NOTE, secondary: START_PROJECT, lines: noteLine };
+    case "plain-in-project":
+      return { primary: START_IN_NOTE, secondary: NEW_NOTE, lines: [...projectLine, ...noteLine] };
+    case "hub":
+      return {
+        primary: NEW_IN_PROJECT,
+        lines: s.objective ? [] : ["No objective yet \u2014 set it under Doelstelling on this hub; it steers which questions you ask."]
+      };
+    case "session": {
+      const secondary = s.projectId ? NEW_IN_PROJECT : s.moveEligible ? START_PROJECT : void 0;
+      const lines2 = [
+        s.question ? `Question: ${s.question}` : "No question recorded yet \u2014 set it with Edit question.",
+        ...s.framing ? [`Framing: ${s.framing}`] : []
+      ];
+      return { primary: EDIT_QUESTION, secondary, lines: lines2 };
+    }
+  }
+}
+var FRAMING_EXCERPT_LEN = 120;
+function framingCardDescription(framing) {
+  const text = (framing != null ? framing : "").replace(/\s+/g, " ").trim();
+  if (!text) return "Choose how you frame the question: the one sentence the assistants steer on.";
+  const excerpt = text.length > FRAMING_EXCERPT_LEN ? `${text.slice(0, FRAMING_EXCERPT_LEN)}\u2026` : text;
+  return `Current: ${excerpt}`;
+}
 function stepActions(s, recommended = recommendActions(s)) {
   const out = [];
-  if (!s.isSession) {
-    out.push({
-      commandId: "start-research-session",
-      label: "Start research session",
-      description: "Turn this note into a research session \u2014 the research assistants write their artefacts into it.",
-      step: "explore"
-    });
-  }
   out.push({
     commandId: "explore-problem",
     label: "Explore the problem",
@@ -10591,6 +10683,23 @@ function stepActions(s, recommended = recommendActions(s)) {
     requires: "ai",
     description: "Probe the question before searching: assumptions, counter-assumptions, reformulations, search seeds.",
     step: "explore"
+  });
+  if (s.isSession) {
+    out.push({
+      commandId: "set-framing",
+      label: "Framing",
+      buttonLabel: s.hasFraming ? "Change framing" : "Set framing",
+      description: framingCardDescription(s.framing),
+      step: "frame"
+    });
+  }
+  out.push({
+    commandId: "build-framework",
+    label: "Framework",
+    scaffoldSection: "framework",
+    requires: "ai",
+    description: "Only the framework step: construct, working definition and the dimensions that steer sub-questions.",
+    step: "frame"
   });
   out.push({
     commandId: "theory-lenses",
@@ -10610,7 +10719,7 @@ function stepActions(s, recommended = recommendActions(s)) {
   });
   out.push({
     commandId: "research-question",
-    label: "Ask a question (research)",
+    label: "Literature research",
     requires: "ai-optional",
     description: "Run the literature research: multi-source search \u2192 rerank \u2192 graded synthesis with citations.",
     step: "evidence"
@@ -10624,41 +10733,85 @@ function stepActions(s, recommended = recommendActions(s)) {
       step: "evidence"
     });
     out.push({
+      commandId: "map-argument",
+      label: "Argument map",
+      scaffoldSection: "argument",
+      requires: "ai",
+      description: "Map the argument: claims, assumptions and what supports or attacks them \u2014 a proposal you adopt.",
+      step: "design"
+    });
+    out.push({
+      commandId: "propose-hypotheses",
+      label: "Hypotheses",
+      scaffoldSection: "hypotheses",
+      requires: "ai",
+      description: "Turn the argument map into falsifiable hypotheses with their variables and expected direction.",
+      step: "design"
+    });
+    out.push({
+      commandId: "design-interview-guide",
+      label: "Interview guide",
+      scaffoldSection: "interview",
+      requires: "ai",
+      description: "Design the conversation from your open thinking \u2014 every question carries its provenance.",
+      step: "design"
+    });
+    out.push({
       commandId: "research-agenda",
-      label: "Propose research agenda",
+      label: "Research agenda",
       scaffoldSection: "agenda",
       requires: "ai",
       description: "Turn the synthesis into a research agenda: gaps, sharper questions, fitting study designs.",
       step: "design"
     });
-    out.push({
-      commandId: "methodology-account",
-      label: "Generate methodological account",
-      description: "Assemble the reproducible account of this session \u2014 question, framing, lenses, search, synthesis.",
-      step: "design"
-    });
   }
-  const byId = new Map(out.map((a) => [a.commandId, a]));
+  foldRecommendation(out, recommended);
+  return out;
+}
+function foldRecommendation(rows, recommended) {
+  const byId = new Map(rows.map((a) => [a.commandId, a]));
   recommended.forEach((r, i) => {
     const row = byId.get(r.commandId);
     if (!row) return;
     row.recommended = i === 0 ? "primary" : "alternative";
     row.description = r.why;
   });
+}
+function wrapUpActions(s, opts = {}) {
+  var _a;
+  const out = [];
+  if (s.isSession) {
+    out.push({
+      commandId: "methodology-account",
+      label: "Methodological account",
+      description: "Assemble the reproducible account of this session \u2014 question, framing, lenses, search, synthesis."
+    });
+    out.push({
+      commandId: "export-session",
+      label: "Export session",
+      description: "One portable bundle for this session: JSON, methodological account and BibTeX."
+    });
+  }
+  if (opts.hasProject) {
+    out.push({
+      commandId: "export-project",
+      label: "Export project",
+      description: "The same bundle for every session in this project, plus a project index."
+    });
+    out.push({
+      commandId: "register-bibliography-project",
+      label: "Bibliography (this project)",
+      description: "Every reference used in this project, with where each one is cited."
+    });
+  }
+  foldRecommendation(out, (_a = opts.recommended) != null ? _a : []);
   return out;
 }
 function moreActions() {
   return [
     {
-      commandId: "build-framework",
-      label: "Build theoretical framework",
-      requires: "ai",
-      description: "Only the framework step: construct, working definition and the dimensions that steer sub-questions.",
-      step: "theory"
-    },
-    {
       commandId: "ask-research-question",
-      label: "Quick search (single provider)",
+      label: "Quick search",
       description: "Insert references from one provider \u2014 keyless, no AI, the fastest way to real sources.",
       step: "evidence"
     },
@@ -10670,70 +10823,81 @@ function moreActions() {
       step: "evidence"
     },
     {
-      commandId: "register-bibliography-project",
-      label: "Register \u2014 bibliography (this note's project)",
-      description: "Every reference used in this project, with where each one is cited."
-    },
-    {
       commandId: "register-bridge-papers",
       label: "Register \u2014 bridge papers across projects",
-      description: "Sources that appear in more than one project \u2014 where your projects touch."
+      description: "Sources that appear in more than one project \u2014 where your projects touch.",
+      group: "Register"
     },
     {
       commandId: "register-overview",
       label: "Register \u2014 authors & orphans",
-      description: "Recurring authors, plus inserted references never cited again."
+      description: "Recurring authors, plus inserted references never cited again.",
+      group: "Register"
     },
     {
       commandId: "register-export-bibtex",
       label: "Register \u2014 export BibTeX",
-      description: "Export the citation register as BibTeX \u2014 feeds Zotero or any reference manager."
+      description: "Export the citation register as BibTeX \u2014 feeds Zotero or any reference manager.",
+      group: "Register"
     },
     {
-      commandId: "export-session",
-      label: "Export research session (portable)",
-      description: "One portable bundle for this session: JSON, methodological account and BibTeX."
+      commandId: "export-quadro",
+      label: "Export Quadro (codebook / starter kit)",
+      description: "A codebook from your lenses, or a starter kit \u2014 for qualitative analysis outside Obsidian.",
+      group: "Exports"
     },
     {
-      commandId: "export-project",
-      label: "Export research project (portable)",
-      description: "The same bundle for every session in this project, plus a project index."
+      commandId: "export-preregistration",
+      label: "Export pre-registration draft",
+      description: "A pre-registration draft from the recorded hypotheses \u2014 deterministic, no AI.",
+      group: "Exports"
+    },
+    {
+      commandId: "interview-export",
+      label: "Export interview guide (fieldwork)",
+      description: "The interview guide as a stand-alone fieldwork document.",
+      group: "Exports"
     }
   ];
 }
-function listArtifacts(session, body) {
+function listArtifacts(session, body, opts = {}) {
   var _a, _b;
-  const SCAFFOLDABLE = ["exploration", "lenses", "challenge", "agenda"];
-  const has = (id) => SCAFFOLDABLE.includes(id) ? hasOwnText(extractSection(body, id)) : extractSection(body, id) !== "";
-  const row = (id, presentExtra = false) => ({
-    label: sectionHeading(id),
-    heading: sectionHeading(id),
-    present: presentExtra || has(id),
-    navigable: has(id)
-  });
-  return [
-    row("exploration"),
-    row("lenses", ((_a = session == null ? void 0 : session.lenses.length) != null ? _a : 0) > 0),
-    row("searchstrategy"),
-    row("synthesis"),
-    row("challenge"),
-    row("beliefs", ((_b = session == null ? void 0 : session.beliefs.length) != null ? _b : 0) > 0),
-    row("agenda"),
-    row("logbook")
-  ];
+  const rows = [];
+  const push = (id, presentExtra = false) => {
+    const inBody = sectionPresent(body, id);
+    if (!inBody && !presentExtra) return;
+    rows.push({
+      label: sectionHeading(id),
+      heading: sectionHeading(id),
+      present: true,
+      navigable: inBody,
+      // AU_E148_S5: the phase colour of the row; absent for the non-phase sections.
+      ...SECTION_PHASE[id] ? { phase: SECTION_PHASE[id] } : {}
+    });
+  };
+  for (const id of CANONICAL_SECTION_ORDER) {
+    if ((id === "objective" || id === "contents") && !opts.isHub) continue;
+    if (id === "lenses") push(id, ((_a = session == null ? void 0 : session.lenses.length) != null ? _a : 0) > 0);
+    else if (id === "beliefs") push(id, ((_b = session == null ? void 0 : session.beliefs.length) != null ? _b : 0) > 0);
+    else push(id);
+  }
+  const references = findReferencesHeading(body);
+  if (references) rows.push({ label: references, heading: references, present: true, navigable: true });
+  return rows;
 }
 function workflowSteps(s) {
   var _a;
   const raw = [
     { label: "Explore", done: s.hasExploration, key: "explore" },
-    { label: "Frame", done: s.hasFraming, key: "frame" },
+    // AU_E148_S2: framing OR framework — the Frame phase now has a card for the framework too.
+    { label: "Frame", done: s.hasFraming || s.hasFramework, key: "frame" },
     { label: "Theory", done: s.hasLenses, key: "theory" },
     { label: "Challenge", done: s.hasChallenge, key: "challenge" },
     { label: "Evidence", done: s.hasSynthesis, key: "evidence" },
     { label: "Design", done: s.hasAgenda, key: "design" }
   ];
   const primaryStep = (_a = recommendActions(s)[0]) == null ? void 0 : _a.step;
-  return raw.map(({ key, ...step }) => ({ ...step, current: key === primaryStep }));
+  return raw.map((step) => ({ ...step, current: step.key === primaryStep }));
 }
 function formatRunPhase(phase) {
   const p = (phase != null ? phase : "").trim();
@@ -10774,13 +10938,20 @@ function resolveProject(notePath, frontmatter) {
   if (parts.length > 1) return parts[0];
   return void 0;
 }
-function suggestProjectName(selection, noteBasename) {
-  const firstLine = (selection != null ? selection : "").trim().split("\n")[0].replace(/^#+\s*/, "").trim();
-  const capped = firstLine.length > 80 ? `${firstLine.slice(0, 80).trim()}\u2026` : firstLine;
-  return capped || (noteBasename != null ? noteBasename : "").trim();
+function suggestProjectName(noteBasename) {
+  const firstLine = (noteBasename != null ? noteBasename : "").trim().split("\n")[0].replace(/^#+\s*/, "").trim();
+  return firstLine.length > 80 ? `${firstLine.slice(0, 80).trim()}\u2026` : firstLine;
 }
 function resolveProjectId(hub, basename) {
   return hub.project || normalizeProjectRef(basename);
+}
+function projectIdForNote(frontmatter, notePath, basename) {
+  var _a;
+  const hub = parseProjectHub(frontmatter);
+  if (hub) return resolveProjectId(hub, basename);
+  const session = parseSession(frontmatter);
+  if (session == null ? void 0 : session.project) return session.project;
+  return (_a = resolveProject(notePath, frontmatter)) != null ? _a : "";
 }
 function projectMembers(projectId, notes) {
   const out = [];
@@ -10829,6 +11000,14 @@ function renderProjectContents(entries) {
 }
 function updateProjectContentsSection(body, entries) {
   return upsertSection(body, "contents", renderProjectContents(entries));
+}
+function foldersToReindexAfterRename(oldPath, newPath, isFolder = false) {
+  const parent = (path) => {
+    const idx = path.lastIndexOf("/");
+    return idx === -1 ? "" : path.slice(0, idx);
+  };
+  const folders = isFolder ? [newPath, parent(oldPath), parent(newPath)] : [parent(oldPath), parent(newPath)];
+  return [...new Set(folders)];
 }
 
 // src/interview-guide.ts
@@ -11188,172 +11367,6 @@ function upsertSessionArtefactRecord(store, note, patch) {
   return { version: store.version, sessions: store.sessions, artefacts };
 }
 
-// src/bibtex-import.ts
-var NON_ENTRY_TYPES = /* @__PURE__ */ new Set(["comment", "preamble", "string"]);
-function parseBibtex(text) {
-  const entries = [];
-  let skipped = 0;
-  let i = 0;
-  while (i < text.length) {
-    const at = text.indexOf("@", i);
-    if (at === -1) break;
-    const parsed = parseEntryAt(text, at);
-    if (parsed.entry) {
-      entries.push(parsed.entry);
-    } else if (parsed.broken) {
-      skipped += 1;
-    }
-    i = Math.max(parsed.next, at + 1);
-  }
-  return { entries, skipped };
-}
-function parseEntryAt(text, at) {
-  let i = at + 1;
-  const typeMatch = /^[a-zA-Z]+/.exec(text.slice(i));
-  if (!typeMatch) return { next: i };
-  const entryType = typeMatch[0].toLowerCase();
-  i += typeMatch[0].length;
-  while (i < text.length && /\s/.test(text[i])) i += 1;
-  const open = text[i];
-  if (open !== "{" && open !== "(") {
-    return { next: i };
-  }
-  const close = open === "{" ? "}" : ")";
-  const bodyEnd = findBalancedEnd(text, i, open, close);
-  if (bodyEnd === -1) {
-    return { broken: !NON_ENTRY_TYPES.has(entryType), next: text.length };
-  }
-  const body = text.slice(i + 1, bodyEnd);
-  const next = bodyEnd + 1;
-  if (NON_ENTRY_TYPES.has(entryType)) return { next };
-  const comma = body.indexOf(",");
-  const citekey = (comma === -1 ? body : body.slice(0, comma)).trim();
-  if (!citekey || /[\s{}(),=\\"]/.test(citekey)) return { broken: true, next };
-  const fields = {};
-  if (comma !== -1) {
-    for (const [name, value] of parseFields(body.slice(comma + 1))) {
-      fields[name] = value;
-    }
-  }
-  return { entry: { entryType, citekey, fields }, next };
-}
-function findBalancedEnd(text, start, open, close) {
-  let depth = 0;
-  let inQuote = false;
-  for (let i = start; i < text.length; i += 1) {
-    const ch = text[i];
-    if (ch === '"' && open === "{" && depth === 1) inQuote = !inQuote;
-    if (inQuote) continue;
-    if (ch === open || ch === "{" && open === "(") depth += 1;
-    else if (ch === close || ch === "}" && open === "(") {
-      depth -= 1;
-      if (depth === 0) return i;
-    }
-  }
-  return -1;
-}
-function parseFields(body) {
-  const fields = [];
-  let i = 0;
-  while (i < body.length) {
-    while (i < body.length && /[\s,]/.test(body[i])) i += 1;
-    const nameMatch = /^[a-zA-Z][a-zA-Z0-9_-]*/.exec(body.slice(i));
-    if (!nameMatch) break;
-    const name = nameMatch[0].toLowerCase();
-    i += nameMatch[0].length;
-    while (i < body.length && /\s/.test(body[i])) i += 1;
-    if (body[i] !== "=") break;
-    i += 1;
-    const value = parseValue(body, i);
-    if (value === null) break;
-    fields.push([name, value.text]);
-    i = value.next;
-  }
-  return fields;
-}
-function parseValue(body, start) {
-  let i = start;
-  const parts = [];
-  for (; ; ) {
-    while (i < body.length && /\s/.test(body[i])) i += 1;
-    if (i >= body.length) break;
-    const ch = body[i];
-    if (ch === "{") {
-      const end = findBalancedEnd(body, i, "{", "}");
-      if (end === -1) return null;
-      parts.push(body.slice(i + 1, end));
-      i = end + 1;
-    } else if (ch === '"') {
-      const end = body.indexOf('"', i + 1);
-      if (end === -1) return null;
-      parts.push(body.slice(i + 1, end));
-      i = end + 1;
-    } else {
-      const bare = /^[^\s,#{}]+/.exec(body.slice(i));
-      if (!bare) return null;
-      parts.push(bare[0]);
-      i += bare[0].length;
-    }
-    while (i < body.length && /\s/.test(body[i])) i += 1;
-    if (body[i] === "#") {
-      i += 1;
-      continue;
-    }
-    break;
-  }
-  if (parts.length === 0) return null;
-  return { text: parts.join(""), next: i };
-}
-function cleanLatex(raw) {
-  return raw.replace(/\s+/g, " ").replace(/\\([&%$#_])/g, "$1").replace(/~/g, " ").replace(/---?/g, "\u2013").replace(/\\[a-zA-Z]+\s*/g, "").replace(/\\./g, "").replace(/[{}]/g, "").replace(/\s+/g, " ").trim();
-}
-function splitAuthors(raw) {
-  return raw.split(/\s+and\s+/i).map((part) => {
-    const name = cleanLatex(part);
-    const comma = name.indexOf(",");
-    if (comma === -1) return name;
-    const last = name.slice(0, comma).trim();
-    const first = name.slice(comma + 1).trim();
-    return first ? `${first} ${last}` : last;
-  }).filter((name) => name.length > 0);
-}
-function bibtexEntryToPaper(entry) {
-  var _a, _b, _c;
-  const f = entry.fields;
-  const title = f.title ? cleanLatex(f.title) : "";
-  if (!title) return null;
-  const yearSource = (_a = f.year) != null ? _a : f.date;
-  const yearMatch = yearSource ? /\d{4}/.exec(yearSource) : null;
-  const doi = f.doi ? cleanLatex(f.doi) : void 0;
-  const isbnRaw = f.isbn ? f.isbn.replace(/[^0-9Xx]/g, "") : "";
-  const journalRaw = (_c = (_b = f.journal) != null ? _b : f.journaltitle) != null ? _c : f.booktitle;
-  const url = f.url ? cleanLatex(f.url) : doi ? `https://doi.org/${doi.replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")}` : "";
-  return {
-    title,
-    authors: f.author ? splitAuthors(f.author) : [],
-    year: yearMatch ? Number(yearMatch[0]) : void 0,
-    journal: journalRaw ? cleanLatex(journalRaw) : void 0,
-    doi,
-    isbn: isbnRaw.length > 0 ? isbnRaw : void 0,
-    url,
-    library: { citekey: entry.citekey }
-  };
-}
-function loadLibrary(text) {
-  const { entries: rawEntries, skipped: broken } = parseBibtex(text);
-  const byCitekey = /* @__PURE__ */ new Map();
-  let unusable = 0;
-  for (const entry of rawEntries) {
-    const paper = bibtexEntryToPaper(entry);
-    if (!paper) {
-      unusable += 1;
-      continue;
-    }
-    byCitekey.set(entry.citekey, { citekey: entry.citekey, paper });
-  }
-  return { entries: [...byCitekey.values()], skipped: broken + unusable };
-}
-
 // src/library-picker.ts
 var import_obsidian9 = require("obsidian");
 function libraryItemText(entry) {
@@ -11378,98 +11391,6 @@ var LibraryPickerModal = class extends import_obsidian9.FuzzySuggestModal {
     this.onChoose(entry);
   }
 };
-
-// src/library-update.ts
-function inScope(record, scope) {
-  return record.occurrences.some(
-    (o) => scope.notes !== void 0 && scope.notes.has(o.note) || scope.project !== void 0 && o.project === scope.project
-  );
-}
-function findLibraryMatch(record, entries) {
-  if (record.citekey) {
-    const byCitekey = entries.find((e) => e.citekey === record.citekey);
-    if (byCitekey) return byCitekey;
-  }
-  return entries.find((e) => citationKey(e.paper) === record.key);
-}
-function fieldChanges(record, entry) {
-  var _a, _b, _c, _d, _e, _f;
-  const p = entry.paper;
-  const changes = [];
-  const push = (field2, from, to) => {
-    changes.push({ key: record.key, citekey: entry.citekey, title: record.title, field: field2, from, to });
-  };
-  if (!record.verified) {
-    if (p.title && p.title !== record.title) push("title", record.title, p.title);
-    const authors = p.authors.join(", ");
-    const recordAuthors = record.authors.join(", ");
-    if (p.authors.length > 0 && authors !== recordAuthors) push("authors", recordAuthors, authors);
-    if (p.year != null && p.year !== record.year) push("year", (_b = (_a = record.year) == null ? void 0 : _a.toString()) != null ? _b : "", String(p.year));
-    if (p.journal && p.journal !== record.journal) push("journal", (_c = record.journal) != null ? _c : "", p.journal);
-    if (p.url && p.url !== record.url) push("url", record.url, p.url);
-    const doi = normalizeDoi(p.doi);
-    if (doi && doi !== record.doi) push("doi", (_d = record.doi) != null ? _d : "", doi);
-    if (p.isbn && p.isbn !== record.isbn) push("isbn", (_e = record.isbn) != null ? _e : "", p.isbn);
-  }
-  if (record.citekey !== entry.citekey) push("citekey", (_f = record.citekey) != null ? _f : "", entry.citekey);
-  return changes;
-}
-function buildLibraryUpdatePlan(register, entries, scope) {
-  let matched = 0;
-  const changes = [];
-  for (const record of register.citations) {
-    if (!inScope(record, scope)) continue;
-    const entry = findLibraryMatch(record, entries);
-    if (!entry) continue;
-    matched += 1;
-    changes.push(...fieldChanges(record, entry));
-  }
-  return { matched, changes };
-}
-function applyLibraryUpdatePlan(register, plan) {
-  const touched = /* @__PURE__ */ new Set();
-  for (const change of plan.changes) {
-    const record = register.citations.find((r) => r.key === change.key);
-    if (!record) continue;
-    touched.add(record.key);
-    switch (change.field) {
-      case "title":
-        record.title = change.to;
-        break;
-      case "authors":
-        record.authors = change.to.split(", ").map((a) => a.trim()).filter((a) => a.length > 0);
-        break;
-      case "year":
-        record.year = change.to ? Number(change.to) : void 0;
-        break;
-      case "journal":
-        record.journal = change.to || void 0;
-        break;
-      case "url":
-        record.url = change.to;
-        break;
-      case "doi":
-        record.doi = change.to || void 0;
-        break;
-      case "isbn":
-        record.isbn = change.to || void 0;
-        break;
-      case "citekey":
-        record.citekey = change.to;
-        record.origin = "library";
-        break;
-    }
-  }
-  return touched.size;
-}
-function formatUpdatePreview(plan, cap = 12) {
-  const lines2 = plan.changes.slice(0, cap).map((c) => `\u2022 ${c.citekey} \u2014 ${c.field}: "${truncate(c.from, 40)}" \u2192 "${truncate(c.to, 40)}"`);
-  if (plan.changes.length > cap) lines2.push(`\u2026 and ${plan.changes.length - cap} more change(s)`);
-  return lines2.join("\n");
-}
-function truncate(text, max) {
-  return text.length > max ? `${text.slice(0, max - 1)}\u2026` : text;
-}
 
 // src/session-store.ts
 var import_obsidian11 = require("obsidian");
@@ -11574,7 +11495,7 @@ var VaultAdapters = class {
       const backupPath = `${path}.corrupt-${Date.now()}`;
       try {
         await store.write(backupPath, raw);
-        new import_obsidian10.Notice(
+        notify(
           `The citation register at "${path}" could not be read and was backed up to "${backupPath}" before starting fresh.`,
           1e4
         );
@@ -11908,6 +11829,27 @@ beliefs: []
     return this.deps.vault.create(path, fm + body);
   }
   /**
+   * Stamp `file`'s front-matter as a research SESSION (AU_E146_S1): the session flag, the
+   * research `question`, the `project` it belongs to, and the empty `seeds`/`lenses`/`beliefs`
+   * arrays the flows merge into. Shared by "Question · start in this note (turn it into a session)" (which stamps the
+   * note you are in) and "Project · start" (which stamps the note it just moved into the new
+   * project folder, so the note you started from IS the project's first session).
+   *
+   * Merge-safe, not overwrite: `question`/`project` are only written when given, and the three
+   * arrays only when they are not already arrays — stamping a note twice never empties beliefs
+   * a flow already collected.
+   */
+  async stampSessionFrontMatter(file, question = "", project) {
+    await this.deps.fileManager.processFrontMatter(file, (fm) => {
+      fm[SESSION_FLAG] = true;
+      if (question.trim()) fm.question = question.trim();
+      if (project == null ? void 0 : project.trim()) fm.project = project.trim();
+      if (!Array.isArray(fm.seeds)) fm.seeds = [];
+      if (!Array.isArray(fm.lenses)) fm.lenses = [];
+      if (!Array.isArray(fm.beliefs)) fm.beliefs = [];
+    });
+  }
+  /**
    * Move `file` into a just-created project's folder and set its `project:` front-matter
    * (AU_E86_S2) — link-safe via `fileManager.renameFile` (Obsidian rewrites backlinks pointing
    * at the note). The caller has already resolved `newPath` and checked it's free; this never
@@ -12018,6 +11960,7 @@ var ArtefactLanding = class {
    * to {@link forkSessionFromRevision} — this helper itself never forks or retries.
    */
   async landArtefact(opts) {
+    var _a, _b;
     const writeMode = await this.confirmArtefactOverwrite(opts.file, opts.section, opts.label, {
       ...opts.preapproved ? { preapproved: opts.preapproved } : {}
     });
@@ -12035,6 +11978,10 @@ var ArtefactLanding = class {
       await this.deps.graphRecords.persistSessionArtefactRecord(opts.file, patch);
     }
     this.deps.notify(opts.notice);
+    try {
+      await ((_b = (_a = this.deps).revealSection) == null ? void 0 : _b.call(_a, opts.file.path, headingTextFor(opts.section)));
+    } catch (e) {
+    }
     return "landed";
   }
 };
@@ -12889,7 +12836,7 @@ var ExportFlows = class {
     var _a, _b, _c;
     const active = this.deps.activeSession();
     if (!active) {
-      this.deps.notify('No research session yet \u2014 run "Session \xB7 start research session" first, then export the pre-registration draft.');
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then export the pre-registration draft.');
       return;
     }
     const { file, session } = active;
@@ -12959,7 +12906,7 @@ var ExportFlows = class {
   async exportSession() {
     const active = this.deps.activeSession();
     if (!active) {
-      this.deps.notify('No research session yet \u2014 run "Session \xB7 start research session" first, then export it.');
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then export it.');
       return;
     }
     const { file, session } = active;
@@ -13561,11 +13508,11 @@ function reciprocalRankFusion(lists, k = RRF_K) {
   const ranked = [...byKey.values()].sort((a, b) => b.score - a.score).map((e) => e.paper);
   return dedupeByTitleFingerprint(ranked);
 }
-function delay5(ms) {
+function delay2(ms) {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 function cancellableDelay(ms, cancellation) {
-  return cancellation ? cancellation.race(delay5(ms)) : delay5(ms);
+  return cancellation ? cancellation.race(delay2(ms)) : delay2(ms);
 }
 function isTransientSearchFailure(e) {
   if (e instanceof SearchApiError) return e.status === 429 || e.status === 0 || e.status >= 500;
@@ -14432,190 +14379,306 @@ var ResearchFlowController = class {
      */
     this.suppressCancelNotice = false;
   }
+  /**
+   * One research run, as six phases (AU_E147_S5 — audit N3: the 307-line original was the
+   * longest function of the repo). The phases are the ones the pipeline already has —
+   * guard/seed, search + checkpoint, framework handoff, post-processing, the synthesis
+   * landing and the release — each a private method of its own, with {@link RunState} as
+   * the small mutable state between them. No behaviour changed: same order, same texts,
+   * same Notices, same early returns.
+   */
   async run(question, filters, opts = {}) {
-    var _a, _b, _c, _d, _e;
+    var _a;
     if (!question.trim()) return;
-    const isResume = !!opts.resumeFrom;
     const reentrant = !!opts.presetFramework;
-    if (!reentrant) {
-      if (this.deps.flowInFlight()) {
-        this.deps.notify(
-          "Research is already running \u2014 wait for it to finish. (A long search phase can look frozen; follow progress in the notice bottom-right.)",
-          6e3
-        );
-        return;
-      }
-      this.deps.setFlowInFlight("research");
+    if (!reentrant && !this.claimGuard()) return;
+    const state = this.prepareRun(question, filters, await this.resolveHubLanding(question, opts, reentrant), reentrant);
+    try {
+      const result = await this.runPipeline(state);
+      (_a = state.notice) == null ? void 0 : _a.hide();
+      state.notice = null;
+      if (await this.finishEmptyOrHandoff(state, result)) return;
+      await this.afterPipeline(state, result);
+      const landing = await this.gateSynthesis(state, result);
+      await this.landSynthesis(state, result, landing);
+      if (state.log.enabled) this.deps.notify('Research debug written to "Parallax debug.md".', 4e3);
+      this.deps.showResults(result, { synthesisLanded: landing.synthesisLanded });
+    } catch (e) {
+      await this.failRun(state, e);
+    } finally {
+      this.releaseRun(state);
     }
-    if (!opts.frameworkOnly && !isResume && !reentrant && !opts.sessionOverride && !this.deps.activeSession()) {
-      const hubFile = this.deps.activeNoteFile();
-      const hub = hubFile ? parseProjectHub(this.deps.fileFrontmatter(hubFile)) : null;
-      if (hubFile && hub) {
-        const created = await this.deps.newSessionInHubProject(hubFile, hub, question);
-        if (created) {
-          this.deps.notify(`Landed in a new session: "${created.basename}".`);
-          opts = {
-            ...opts,
-            sessionOverride: {
-              file: created,
-              session: { project: resolveProjectId(hub, hubFile.basename), question, seeds: [], lenses: [], beliefs: [] }
-            }
-          };
-        }
-      }
+  }
+  /**
+   * Phase 1 — claim the single-flow guard (A2/E39). Returns false (after showing the existing
+   * "already running" message) when another run holds it; the caller then starts nothing.
+   */
+  claimGuard() {
+    if (this.deps.flowInFlight()) {
+      this.deps.notify(
+        "Research is already running \u2014 wait for it to finish. (A long search phase can look frozen; follow progress in the notice bottom-right.)",
+        6e3
+      );
+      return false;
     }
+    this.deps.setFlowInFlight("research");
+    return true;
+  }
+  /**
+   * Phase 1b — AU_E87_S1 (landingsprotocol §2 regel 2): a FRESH run started from a project HUB
+   * with no active session — the research run itself, or the "research" continuation out of
+   * Explore/Theory — gets its own new session note FIRST, so every session-aware write below
+   * (Zoekstrategie, Synthese, graph record, logbook) just works exactly as an existing-session
+   * run would. Guarded to exactly that case: never on framework-only (no session write happens
+   * there at all), a resume (recovers the SAME cached run, not a fresh landing decision) or the
+   * framework-handoff's reentrant continuation (the outer, non-reentrant call already resolved/
+   * would have resolved it) — those three stay untouched. A caller-supplied sessionOverride (a
+   * follow-up, E65) already IS the resolved session. Called AFTER the guard claim (not before)
+   * so a "research already running" bail-out never leaves a spurious new session note behind.
+   */
+  async resolveHubLanding(question, opts, reentrant) {
+    if (opts.frameworkOnly || opts.resumeFrom || reentrant || opts.sessionOverride || this.deps.activeSession()) return opts;
+    const hubFile = this.deps.activeNoteFile();
+    const hub = hubFile ? parseProjectHub(this.deps.fileFrontmatter(hubFile)) : null;
+    if (!hubFile || !hub) return opts;
+    const created = await this.deps.newSessionInHubProject(hubFile, hub, question);
+    if (!created) return opts;
+    this.deps.notify(`Landed in a new session: "${created.basename}".`);
+    return {
+      ...opts,
+      sessionOverride: {
+        file: created,
+        session: { project: resolveProjectId(hub, hubFile.basename), question, seeds: [], lenses: [], beliefs: [] }
+      }
+    };
+  }
+  /**
+   * Phase 2 — everything the run needs before the pipeline starts: the session captured up
+   * front (E46_S3, so a late note-switch can't misdirect the synthesis write; E65 passes it
+   * explicitly), the logger, the persistent progress notice with its step numbering (D8/E74),
+   * the cancellation token (D2/E74) and the optional sub-question checkpoint (E18_S3).
+   */
+  prepareRun(question, filters, opts, reentrant) {
+    var _a, _b, _c;
+    const isResume = !!opts.resumeFrom;
     const sessionAtStart = opts.frameworkOnly ? null : (_a = opts.sessionOverride) != null ? _a : this.deps.activeSession();
-    const sessionFile = (_b = sessionAtStart == null ? void 0 : sessionAtStart.file) != null ? _b : null;
-    const sessionHasBeliefs = ((_c = sessionAtStart == null ? void 0 : sessionAtStart.session.beliefs.length) != null ? _c : 0) > 0;
     const log = createLogger(this.deps.settings().debugLogging);
     const note = isResume ? "Resuming (rerank \u2192 synthesis on the found sources)\u2026" : opts.frameworkOnly ? "Building theoretical framework (construct \u2192 conceptual search \u2192 framework)\u2026" : opts.crossSectorForce ? "Researching with forced cross-sector evidence\u2026" : this.deps.llm.isConfigured() ? "Researching (decompose \u2192 search \u2192 rerank \u2192 synthesise)\u2026" : "Searching OpenAlex + Semantic Scholar (configure an LLM provider for AI synthesis)\u2026";
-    const loading = this.deps.notify(note, 0);
-    let activeNotice = loading;
+    const state = {
+      question,
+      filters,
+      opts,
+      isResume,
+      reentrant,
+      sessionFile: (_b = sessionAtStart == null ? void 0 : sessionAtStart.file) != null ? _b : null,
+      sessionHasBeliefs: ((_c = sessionAtStart == null ? void 0 : sessionAtStart.session.beliefs.length) != null ? _c : 0) > 0,
+      log,
+      // Live phase signal (E39): the notice is held in a mutable slot because the
+      // sub-question checkpoint hides it while the writer edits — after that the next
+      // phase re-creates a fresh one.
+      notice: this.deps.notify(note, 0),
+      cancellation: createCancellationToken(),
+      progress: () => void 0
+    };
     let stepNumber = 0;
     let lastPhase = null;
-    const progress = (phase) => {
+    state.progress = (phase) => {
       if (phase !== lastPhase) {
         stepNumber += 1;
         lastPhase = phase;
       }
       const labelled = `Step ${stepNumber} \u2014 ${phase}`;
-      if (activeNotice) activeNotice.setMessage(labelled);
-      else activeNotice = this.deps.notify(labelled, 0);
+      if (state.notice) state.notice.setMessage(labelled);
+      else state.notice = this.deps.notify(labelled, 0);
       this.deps.setRunPhase(labelled);
     };
     const outerToken = this.deps.currentRunCancellation();
-    const cancellation = reentrant && outerToken ? outerToken : createCancellationToken();
-    if (!reentrant) this.deps.setCurrentRunCancellation(cancellation);
-    const reviewSubQuestions = this.deps.settings().researchSubQuestionCheckpoint && !opts.frameworkOnly && !isResume ? (subs, framework) => this.reviewSubQuestions(question, subs, framework, () => {
-      activeNotice == null ? void 0 : activeNotice.hide();
-      activeNotice = null;
-    }) : void 0;
-    try {
-      const result = await runResearch(question, this.deps.settings(), this.deps.http, this.deps.llm, filters, log, {
-        ...opts,
-        reviewSubQuestions,
-        progress,
-        // AU_E110_S1: retry visibility — a short-lived toast NEXT TO the persistent step
-        // notice, so a long network-retry window reads as "still working", not a freeze.
-        onLlmRetry: (message) => this.deps.notify(message, 4e3),
-        // E43 checkpoint: cache the fused union + context so a dropped connection can resume.
-        onSearchComplete: (checkpoint) => {
-          this.researchCache = { checkpoint, at: Date.now() };
-          void this.persistResearchCache();
-        },
-        cancellation
+    if (reentrant && outerToken) state.cancellation = outerToken;
+    if (!reentrant) this.deps.setCurrentRunCancellation(state.cancellation);
+    if (this.deps.settings().researchSubQuestionCheckpoint && !opts.frameworkOnly && !isResume) {
+      state.reviewSubQuestions = (subs, framework) => this.reviewSubQuestions(question, subs, framework, () => {
+        var _a2;
+        (_a2 = state.notice) == null ? void 0 : _a2.hide();
+        state.notice = null;
       });
-      activeNotice == null ? void 0 : activeNotice.hide();
-      activeNotice = null;
-      if (result.papers.length === 0) {
-        await this.writeDebugLog(log, true);
-        this.deps.notify(
-          opts.frameworkOnly ? "Could not build a theoretical framework for that question." : "No papers found for that question."
+    }
+    return state;
+  }
+  /** Phase 3 — the search/rerank/synthesis pipeline itself, with the run's hooks attached. */
+  runPipeline(state) {
+    return runResearch(state.question, this.deps.settings(), this.deps.http, this.deps.llm, state.filters, state.log, {
+      ...state.opts,
+      reviewSubQuestions: state.reviewSubQuestions,
+      progress: state.progress,
+      // AU_E110_S1: retry visibility — a short-lived toast NEXT TO the persistent step
+      // notice, so a long network-retry window reads as "still working", not a freeze.
+      onLlmRetry: (message) => this.deps.notify(message, 4e3),
+      // E43 checkpoint: cache the fused union + context so a dropped connection can resume.
+      onSearchComplete: (checkpoint) => {
+        this.researchCache = { checkpoint, at: Date.now() };
+        void this.persistResearchCache();
+      },
+      cancellation: state.cancellation
+    });
+  }
+  /**
+   * Phase 4 — the two exits that end the run before anything lands: no papers at all, and the
+   * two-step framework handoff (E22_S4), whose "research" answer continues in a re-entrant
+   * run. Returns true when the caller must stop; an "insert"/cancelled handoff answer only
+   * applies the writer's dimension edits and falls through.
+   */
+  async finishEmptyOrHandoff(state, result) {
+    if (result.papers.length === 0) {
+      await this.writeDebugLog(state.log, true);
+      this.deps.notify(
+        state.opts.frameworkOnly ? "Could not build a theoretical framework for that question." : "No papers found for that question."
+      );
+      return true;
+    }
+    if (state.opts.frameworkOnly && result.framework) {
+      const choice = await this.deps.askFrameworkHandoff(result.framework);
+      if ((choice == null ? void 0 : choice.action) === "research") {
+        const preset = {
+          framework: { ...result.framework, dimensions: choice.dimensions },
+          papers: result.papers
+        };
+        await this.run(state.question, state.filters, { presetFramework: preset });
+        return true;
+      }
+      if (choice) result.framework = { ...result.framework, dimensions: choice.dimensions };
+    }
+    return false;
+  }
+  /**
+   * Phase 5 — everything between a finished pipeline and the synthesis landing: auto-deepen
+   * (E27), the debug log, the cost line (E1), the degradation Notice (AU_E76_S2 — C4), the
+   * resume-cache bookkeeping (B6/E43) and remembering the result for "deepen a finding" (E21).
+   */
+  async afterPipeline(state, result) {
+    var _a, _b;
+    if (this.deps.settings().researchAutoDeepen && !state.opts.frameworkOnly && !state.isResume && result.synthesis && result.summary) {
+      const deepening = this.deps.notify("Deepening findings\u2026", 0);
+      try {
+        await this.autoDeepen(
+          result,
+          state.log,
+          (done, total) => deepening.setMessage(`Deepening findings\u2026 (${done}/${total})`),
+          state.cancellation
         );
-        return;
-      }
-      if (opts.frameworkOnly && result.framework) {
-        const choice = await this.deps.askFrameworkHandoff(result.framework);
-        if ((choice == null ? void 0 : choice.action) === "research") {
-          const preset = {
-            framework: { ...result.framework, dimensions: choice.dimensions },
-            papers: result.papers
-          };
-          await this.run(question, filters, { presetFramework: preset });
-          return;
-        }
-        if (choice) result.framework = { ...result.framework, dimensions: choice.dimensions };
-      }
-      if (this.deps.settings().researchAutoDeepen && !opts.frameworkOnly && !isResume && result.synthesis && result.summary) {
-        const deepening = this.deps.notify("Deepening findings\u2026", 0);
-        try {
-          await this.autoDeepen(
-            result,
-            log,
-            (done, total) => deepening.setMessage(`Deepening findings\u2026 (${done}/${total})`),
-            cancellation
-          );
-        } finally {
-          deepening.hide();
-        }
-      }
-      await this.writeDebugLog(log, false);
-      if (log.totalUsage > 0) {
-        const usageLine = `LLM usage: ~${log.totalUsage} tokens over ${log.callCount} call${log.callCount === 1 ? "" : "s"}.`;
-        log(usageLine);
-        this.deps.notify(usageLine, 6e3);
-      }
-      if (!opts.frameworkOnly && result.degradations && result.degradations.length > 0) {
-        const synthesisDegraded = result.degradations.some((d) => d.step === "synthesis");
-        const resumeHint = synthesisDegraded && this.researchCache ? " Run \u201CResume last research\u201D once you're back online \u2014 the found sources are reused." : "";
-        const summary = result.degradations.map((d) => `${DEGRADATION_STEP_LABEL[d.step]} (${d.reason})`).join("; ");
-        this.deps.notify(`Research completed with issues: ${summary}. Details in the debug log.${resumeHint}`, 1e4);
-      }
-      if (!opts.frameworkOnly && result.summary && (!result.degradations || result.degradations.length === 0)) {
-        this.researchCache = null;
-        void this.deps.adapters.clearResearchCache();
-      }
-      if (!opts.frameworkOnly) this.deps.setLastResearch({ ...result, notePath: (_d = sessionFile == null ? void 0 : sessionFile.path) != null ? _d : null });
-      let target = sessionFile;
-      let synthesisLanded = false;
-      if (sessionFile && result.summary) {
-        const forkAnchor = buildSessionFrameworkBody(result) ? "framework" : "synthesis";
-        const gate = await this.deps.artefactLanding.confirmArtefactOverwrite(sessionFile, "synthesis", "synthesis", { offerFork: forkAnchor });
-        if (gate === "fork") {
-          target = await this.deps.artefactLanding.forkSessionFromRevision(sessionFile, forkAnchor, "synthesis", { suppressOnwardNotice: true });
-          synthesisLanded = target !== null;
-          if (target && !opts.frameworkOnly) this.deps.setLastResearch({ ...result, notePath: target.path });
-        } else {
-          synthesisLanded = gate !== null;
-        }
-      }
-      if (target && result.searchStrategy) {
-        await this.deps.sessionStore.writeSessionSection(target, "searchstrategy", renderSearchStrategy(result.searchStrategy));
-        await this.deps.adapters.persistSessionArtefactRecord(target, { searchStrategy: result.searchStrategy });
-      }
-      if (synthesisLanded && target) {
-        const frameworkBody = buildSessionFrameworkBody(result);
-        if (frameworkBody) await this.deps.sessionStore.writeSessionSection(target, "framework", frameworkBody);
-        const subQuestionsBody = buildSessionSubQuestionsBody(result);
-        if (subQuestionsBody) await this.deps.sessionStore.writeSessionSection(target, "subquestions", subQuestionsBody);
-        await this.deps.sessionStore.writeSessionSection(target, "synthesis", buildSessionSynthesisBody(result));
-        if (result.synthesis) {
-          await this.deps.adapters.persistSessionGraphRecord(target, result.synthesis, result.papers, result.subQuestions);
-        } else {
-          this.deps.notify(
-            "Synthesis landed as prose (structured output could not be parsed) \u2014 no findings/provenance recorded for this run. Re-running the research step usually fixes this.",
-            8e3
-          );
-        }
-        const strat = result.searchStrategy;
-        await this.deps.sessionStore.logEvent(
-          target,
-          t().logbook.stepResearch,
-          `${fmt(t().logbook.synthesisOver, { n: (_e = strat == null ? void 0 : strat.keptCount) != null ? _e : result.papers.length })}${strat && !strat.resumed ? fmt(t().logbook.searchTerms, { n: strat.queries.length }) : ""}`
-        );
-        this.deps.notify("Synthesis added to the session.");
-        if (sessionHasBeliefs) this.deps.notify('Tip: weigh your beliefs via "Confront beliefs".', 6e3);
-      }
-      if (log.enabled) this.deps.notify('Research debug written to "Parallax debug.md".', 4e3);
-      this.deps.showResults(result, { synthesisLanded });
-    } catch (e) {
-      activeNotice == null ? void 0 : activeNotice.hide();
-      activeNotice = null;
-      if (e instanceof ResearchCancelledError) {
-        const suppress = this.suppressCancelNotice;
-        this.suppressCancelNotice = false;
-        if (!suppress) this.deps.notify("Research cancelled.");
-        return;
-      }
-      this.deps.notifyError("Research", e, { log });
-      await this.writeDebugLog(log, true);
-    } finally {
-      if (!reentrant) {
-        this.deps.setFlowInFlight(null);
-        this.deps.setRunPhase(null);
-        if (this.deps.currentRunCancellation() === cancellation) this.deps.setCurrentRunCancellation(null);
+      } finally {
+        deepening.hide();
       }
     }
+    await this.writeDebugLog(state.log, false);
+    if (state.log.totalUsage > 0) {
+      const usageLine = `LLM usage: ~${state.log.totalUsage} tokens over ${state.log.callCount} call${state.log.callCount === 1 ? "" : "s"}.`;
+      state.log(usageLine);
+      this.deps.notify(usageLine, 6e3);
+    }
+    if (!state.opts.frameworkOnly && result.degradations && result.degradations.length > 0) {
+      const synthesisDegraded = result.degradations.some((d) => d.step === "synthesis");
+      const resumeHint = synthesisDegraded && this.researchCache ? " Run \u201CResume last research\u201D once you're back online \u2014 the found sources are reused." : "";
+      const summary = result.degradations.map((d) => `${DEGRADATION_STEP_LABEL[d.step]} (${d.reason})`).join("; ");
+      this.deps.notify(`Research completed with issues: ${summary}. Details in the debug log.${resumeHint}`, 1e4);
+    }
+    if (!state.opts.frameworkOnly && result.summary && (!result.degradations || result.degradations.length === 0)) {
+      this.researchCache = null;
+      void this.deps.adapters.clearResearchCache();
+    }
+    if (!state.opts.frameworkOnly) this.deps.setLastResearch({ ...result, notePath: (_b = (_a = state.sessionFile) == null ? void 0 : _a.path) != null ? _b : null });
+  }
+  /**
+   * Phase 6a — AU_E87_S2 (bewerkings-respect, §3.3): the synthesis is a THINK-artefact too —
+   * ask before a re-run overwrites a hand-edited `## Synthese`. A "Keep" answer skips the write
+   * AND its side-effects (graph record, logbook, Notices): the graph record would otherwise
+   * capture findings that never actually landed in the note.
+   *
+   * E135_S3: the gate can now FORK. A re-run revises the synthesis (and the framework/
+   * sub-questions written with it), orphaning the challenge/argument/… built on the old
+   * synthesis — so it offers to fork instead of revising in place. The fork anchor is the
+   * earliest section THIS run rewrites that carries reasoning: the framework when this run
+   * produced one, else the synthesis itself. On a fork the fresh result lands in the NEW note
+   * (`target`), leaving the old analysis + everything downstream intact in the original.
+   */
+  async gateSynthesis(state, result) {
+    let target = state.sessionFile;
+    let synthesisLanded = false;
+    if (state.sessionFile && result.summary) {
+      const forkAnchor = buildSessionFrameworkBody(result) ? "framework" : "synthesis";
+      const gate = await this.deps.artefactLanding.confirmArtefactOverwrite(state.sessionFile, "synthesis", "synthesis", { offerFork: forkAnchor });
+      if (gate === "fork") {
+        target = await this.deps.artefactLanding.forkSessionFromRevision(state.sessionFile, forkAnchor, "synthesis", { suppressOnwardNotice: true });
+        synthesisLanded = target !== null;
+        if (target && !state.opts.frameworkOnly) this.deps.setLastResearch({ ...result, notePath: target.path });
+      } else {
+        synthesisLanded = gate !== null;
+      }
+    }
+    return { target, synthesisLanded };
+  }
+  /**
+   * Phase 6b — the writes themselves. Session-aware (E46_S3): the graded synthesis goes into
+   * `## Synthese` so the whole chain (framing → lenzen → synthese) lives in one note. The
+   * search-strategy artefact (E48_S1) is recorded unconditionally into the landing target (the
+   * fork when forked, else the session) — a REGISTRATION (§3.3, AU_E89_S1), no confirm gate.
+   */
+  async landSynthesis(state, result, landing) {
+    var _a;
+    const { target, synthesisLanded } = landing;
+    if (target && result.searchStrategy) {
+      await this.deps.sessionStore.writeSessionSection(target, "searchstrategy", renderSearchStrategy(result.searchStrategy));
+      await this.deps.adapters.persistSessionArtefactRecord(target, { searchStrategy: result.searchStrategy });
+    }
+    if (!synthesisLanded || !target) return;
+    const frameworkBody = buildSessionFrameworkBody(result);
+    if (frameworkBody) await this.deps.sessionStore.writeSessionSection(target, "framework", frameworkBody);
+    const subQuestionsBody = buildSessionSubQuestionsBody(result);
+    if (subQuestionsBody) await this.deps.sessionStore.writeSessionSection(target, "subquestions", subQuestionsBody);
+    await this.deps.sessionStore.writeSessionSection(target, "synthesis", buildSessionSynthesisBody(result));
+    if (result.synthesis) {
+      await this.deps.adapters.persistSessionGraphRecord(target, result.synthesis, result.papers, result.subQuestions);
+    } else {
+      this.deps.notify(
+        "Synthesis landed as prose (structured output could not be parsed) \u2014 no findings/provenance recorded for this run. Re-running the research step usually fixes this.",
+        8e3
+      );
+    }
+    const strat = result.searchStrategy;
+    await this.deps.sessionStore.logEvent(
+      target,
+      t().logbook.stepResearch,
+      `${fmt(t().logbook.synthesisOver, { n: (_a = strat == null ? void 0 : strat.keptCount) != null ? _a : result.papers.length })}${strat && !strat.resumed ? fmt(t().logbook.searchTerms, { n: strat.queries.length }) : ""}`
+    );
+    this.deps.notify("Synthesis added to the session.");
+    if (state.sessionHasBeliefs) this.deps.notify('Tip: weigh your beliefs via "Confront beliefs".', 6e3);
+  }
+  /**
+   * The catch arm: a user-cancel (D2/E74) unwinds silently — no debug log write, no degraded
+   * synthesis, no session/register artefacts, just the courtesy Notice, unless the checkpoint's
+   * "Insert into note" already told the story (AU_E112_S1). Anything else is a real failure.
+   */
+  async failRun(state, e) {
+    var _a;
+    (_a = state.notice) == null ? void 0 : _a.hide();
+    state.notice = null;
+    if (e instanceof ResearchCancelledError) {
+      const suppress = this.suppressCancelNotice;
+      this.suppressCancelNotice = false;
+      if (!suppress) this.deps.notify("Research cancelled.");
+      return;
+    }
+    this.deps.notifyError("Research", e, { log: state.log });
+    await this.writeDebugLog(state.log, true);
+  }
+  /**
+   * The finally arm: release the guard — but not on the re-entrant handoff call, whose outer
+   * frame still owns it (and clears it when the whole flow unwinds).
+   */
+  releaseRun(state) {
+    if (state.reentrant) return;
+    this.deps.setFlowInFlight(null);
+    this.deps.setRunPhase(null);
+    if (this.deps.currentRunCancellation() === state.cancellation) this.deps.setCurrentRunCancellation(null);
   }
   /**
    * Whether a resumable research cache exists (D5/E78) — so the Workbench sidebar can surface
@@ -14633,7 +14696,7 @@ var ResearchFlowController = class {
   resumeResearch() {
     const cache = this.researchCache;
     if (!cache) {
-      this.deps.notify("No research to resume \u2014 run \u201CAsk a question\u201D first.", 6e3);
+      this.deps.notify("No research to resume \u2014 run \u201CEvidence \xB7 run research\u201D first.", 6e3);
       return;
     }
     if (!this.deps.llm.isConfigured()) {
@@ -14766,1102 +14829,6 @@ ${log.lines.map((l) => `- ${l}`).join("\n")}
   async loadResearchCache() {
     const restored = await this.deps.adapters.loadResearchCache();
     if (restored) this.researchCache = restored;
-  }
-};
-
-// src/commands.ts
-var import_obsidian14 = require("obsidian");
-
-// src/command-names.ts
-var COMMAND_NAMES = {
-  "open-workbench": "Open sidebar",
-  "research-question": "Evidence \xB7 ask a question",
-  "cancel-research": "Evidence \xB7 stop current run",
-  "explore-problem": "Explore \xB7 problem",
-  "insert-scaffold": "Session \xB7 insert section (no AI)",
-  "start-research-session": "Session \xB7 start research session",
-  "reorder-sections": "Session \xB7 reorder sections",
-  "start-research-project": "Project \xB7 start (folder)",
-  "new-project-session": "Project \xB7 new question",
-  "refresh-project-contents": "Project \xB7 refresh contents",
-  "export-quadro": "Export \xB7 Quadro (codebook / starter kit)",
-  "refresh-from-records": "Session \xB7 refresh section from records",
-  "connections-refresh": "Session \xB7 refresh connections (note / project)",
-  "library-update": "Library \xB7 update references (note / project)",
-  "clean-up-records": "Maintenance \xB7 clean up records",
-  "rebuild-records": "Maintenance \xB7 rebuild records from note",
-  "build-knowledge-graph-spike": "Maintenance \xB7 knowledge graph (spike)",
-  "theory-lenses": "Theory \xB7 lenses",
-  "challenge-framing": "Challenge \xB7 framing",
-  "map-argument": "Design \xB7 argument map",
-  "argument-open-canvas": "Design \xB7 argument canvas",
-  "argument-relayout-canvas": "Design \xB7 argument canvas re-layout",
-  "design-interview-guide": "Design \xB7 interview guide",
-  "interview-export": "Export \xB7 interview guide (fieldwork)",
-  "propose-hypotheses": "Design \xB7 hypotheses",
-  "find-validated-scales": "Design \xB7 validated scales",
-  "export-preregistration": "Export \xB7 pre-registration draft",
-  "resume-research": "Evidence \xB7 resume last research",
-  "confront-beliefs": "Challenge \xB7 beliefs",
-  "methodology-account": "Design \xB7 methodological account",
-  "research-agenda": "Design \xB7 research agenda",
-  "build-framework": "Theory \xB7 framework",
-  "deepen-finding": "Evidence \xB7 deepen finding",
-  "ask-research-question": "Evidence \xB7 quick search",
-  "register-bibliography-project": "Register \xB7 bibliography (this project)",
-  "register-bridge-papers": "Register \xB7 bridge papers",
-  "register-overview": "Register \xB7 authors & orphans",
-  "register-export-bibtex": "Register \xB7 export BibTeX",
-  "library-refresh": "Library \xB7 read .bib library",
-  "library-insert-citation": "Library \xB7 insert citation",
-  "export-session": "Export \xB7 session (portable)",
-  "export-project": "Export \xB7 project (portable)"
-};
-
-// src/workbench-view.ts
-var import_obsidian13 = require("obsidian");
-
-// src/evidence-gaps.ts
-function deriveEvidenceGaps(project, notes, sources, records) {
-  const graph = buildProjectGraph(project, notes, sources, records);
-  const gaps = detectGaps(graph);
-  const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
-  const notesByBronId = new Map(sources.map((s) => [bronNodeId(s.key), s.notes]));
-  const toItem = (gap) => {
-    var _a, _b, _c, _d;
-    const note = (_b = gap.note) != null ? _b : (_a = notesByBronId.get(gap.nodeId)) == null ? void 0 : _a[0];
-    if (!note) return null;
-    return { text: (_d = (_c = nodeById.get(gap.nodeId)) == null ? void 0 : _c.label) != null ? _d : gap.message, note };
-  };
-  const unprovenFindings = [];
-  const subquestionsWithoutSources = [];
-  const sourcesWithoutFinding = [];
-  for (const gap of gaps) {
-    if (gap.type === "bevinding-zonder-bron") {
-      const item = toItem(gap);
-      if (item) unprovenFindings.push({ ...item, followUp: { text: item.text, sourcePath: item.note } });
-    } else if (gap.type === "vraag-zonder-bron") {
-      const item = toItem(gap);
-      if (item) subquestionsWithoutSources.push(item);
-    } else if (gap.type === "bron-zonder-bevinding") {
-      const item = toItem(gap);
-      if (item) sourcesWithoutFinding.push(item);
-    }
-  }
-  return { unprovenFindings, subquestionsWithoutSources, sourcesWithoutFinding };
-}
-
-// src/source-provenance.ts
-function occurrencesElsewhere(register, key, notePath) {
-  const record = register.citations.find((c) => c.key === key);
-  return record ? record.occurrences.filter((o) => o.note !== notePath).length : 0;
-}
-function deriveSourceProvenance(notePath, record, register) {
-  if (record) {
-    const sources2 = record.sources.map((meta) => ({
-      key: meta.key,
-      title: meta.title,
-      year: meta.year,
-      occurrencesElsewhere: occurrencesElsewhere(register, meta.key, notePath),
-      findings: record.findings.filter((f) => f.sourceKeys.includes(meta.key)).map((f) => ({ claim: f.claim, strength: f.strength }))
-    }));
-    return { hasRecord: true, sources: sources2 };
-  }
-  const sources = register.citations.filter((c) => c.occurrences.some((o) => o.note === notePath)).map((c) => ({
-    key: c.key,
-    title: c.title,
-    year: c.year,
-    occurrencesElsewhere: occurrencesElsewhere(register, c.key, notePath),
-    findings: []
-  }));
-  return { hasRecord: false, sources };
-}
-
-// src/workbench-view.ts
-var WORKBENCH_VIEW_TYPE = "consensus-research-workbench";
-var _WorkbenchView = class _WorkbenchView extends import_obsidian13.ItemView {
-  constructor(leaf, plugin) {
-    super(leaf);
-    /** Path the panel was last rendered for — guards against re-rendering on every focus change (E69). */
-    this.lastRenderedPath = null;
-    /** Stale artefacts of the rendered note (AU_E131_S5): section id → changed bases. */
-    this.staleArtefacts = /* @__PURE__ */ new Map();
-    /** Project member note paths from the last render (D10) — a change to one of these also matters. */
-    this.lastRenderedProjectMemberPaths = [];
-    /** Pending debounce timer for `metadataCache.on("changed")` (D10). */
-    this.pendingRerender = null;
-    this.plugin = plugin;
-  }
-  getViewType() {
-    return WORKBENCH_VIEW_TYPE;
-  }
-  getDisplayText() {
-    return "Parallax";
-  }
-  getIcon() {
-    return "flask-conical";
-  }
-  async onOpen() {
-    this.registerEvent(
-      this.app.workspace.on("active-leaf-change", () => {
-        var _a, _b;
-        if (((_b = (_a = this.plugin.activeNoteFile()) == null ? void 0 : _a.path) != null ? _b : null) !== this.lastRenderedPath) void this.render();
-      })
-    );
-    this.registerEvent(
-      this.app.metadataCache.on("changed", (file) => {
-        if (!shouldRerenderOnChange(file.path, this.lastRenderedPath, this.lastRenderedProjectMemberPaths)) return;
-        this.scheduleRerender();
-      })
-    );
-    await this.render();
-  }
-  /** Debounce re-renders ~300ms (D10) so a burst of cache-change events collapses into one render. */
-  scheduleRerender() {
-    if (this.pendingRerender !== null) window.clearTimeout(this.pendingRerender);
-    this.pendingRerender = window.setTimeout(() => {
-      this.pendingRerender = null;
-      void this.render();
-    }, 300);
-  }
-  /** Re-render on demand (E56): the plugin calls this when the live run phase changes. */
-  refresh() {
-    void this.render();
-  }
-  /** Run a plugin command by its short id (prefixed with the plugin id). */
-  run(commandId) {
-    this.app.commands.executeCommandById(`${this.plugin.manifest.id}:${commandId}`);
-  }
-  async render() {
-    var _a, _b;
-    const root = this.contentEl;
-    root.empty();
-    root.createEl("h3", { text: "Parallax" });
-    const banner = formatRunPhase(this.plugin.runPhase);
-    if (banner) {
-      const bannerEl = root.createEl("div", { cls: "consensus-workbench-running", attr: { "aria-live": "polite" } });
-      bannerEl.createSpan({ text: banner });
-      const stop = bannerEl.createEl("button", { text: "Stop", cls: "consensus-workbench-stop" });
-      stop.addEventListener("click", () => this.plugin.cancelResearch());
-    }
-    this.renderResume(root);
-    const file = this.plugin.activeNoteFile();
-    this.lastRenderedPath = (_a = file == null ? void 0 : file.path) != null ? _a : null;
-    if (!file) {
-      this.lastRenderedProjectMemberPaths = [];
-      this.staleArtefacts = /* @__PURE__ */ new Map();
-      this.renderOnboarding(root);
-      const emptyState = deriveSessionState(null, "");
-      this.renderSteps(root, emptyState, recommendActions(emptyState));
-      return;
-    }
-    const session = parseSession((_b = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _b.frontmatter);
-    const body = await this.app.vault.cachedRead(file);
-    this.staleArtefacts = session ? await this.plugin.staleArtefactsForNote(file, body) : /* @__PURE__ */ new Map();
-    const state = deriveSessionState(session, body);
-    const recommended = recommendActions(state);
-    this.renderWorkflowStrip(root, state);
-    await this.renderProjectPanel(root, file, session);
-    this.renderSessionPanel(root, state);
-    if (session) await this.renderSourceProvenance(root, file);
-    this.renderSteps(root, state, recommended);
-    this.renderMoreActions(root);
-    this.renderArtifacts(root, session, body, file);
-    this.renderTrace(root, body);
-  }
-  /**
-   * "Resume last research" (D5/E78) — shown only while a resumable cache exists, independent of
-   * which note is active (the cache is a plugin-level rescue, not tied to a single session).
-   */
-  renderResume(root) {
-    if (!this.plugin.hasResumeCache()) return;
-    const box = root.createEl("div", { cls: "consensus-workbench-resume" });
-    new import_obsidian13.Setting(box).setName("Resume last research").setDesc("Re-run rerank + synthesis on the cached search \u2014 no re-fetching.").addButton((b) => {
-      b.setButtonText("Resume").setCta();
-      b.onClick(() => this.run("resume-research"));
-    });
-  }
-  /** A short orientation for newcomers — shown when there is no session to steer yet (E55). */
-  renderOnboarding(root) {
-    const box = root.createEl("div", { cls: "consensus-handoff-hint" });
-    box.createEl("p", { text: "Start here if you want to explore a new research idea." });
-    box.createEl("p", {
-      text: "The Workbench guides the whole process: explore the problem \u2192 choose a framing \u2192 theoretical lenses \u2192 search for evidence \u2192 test your assumptions \u2192 synthesis \u2192 research agenda. Open a note and turn it into a research session to begin."
-    });
-    box.createEl("p", {
-      text: "For a bigger topic: start a research project (a folder). Each research question then becomes its own session note in that project."
-    });
-    new import_obsidian13.Setting(box).addButton((b) => {
-      b.setButtonText("Start research project");
-      b.onClick(() => this.run("start-research-project"));
-    });
-  }
-  /**
-   * Visual workflow strip (E55): Explore → Frame → Theory → Challenge → Evidence → Design —
-   * reordered (D4/E78) to match {@link recommendActions}' order, so this strip's "current" step
-   * and the "Next step" panel below always point at the same place.
-   */
-  renderWorkflowStrip(root, state) {
-    const strip = root.createEl("div", { cls: "consensus-workbench-strip" });
-    const steps = workflowSteps(state);
-    steps.forEach((step, i) => {
-      if (i > 0) strip.createSpan({ cls: "consensus-workbench-strip-sep", text: "\u203A", attr: { "aria-hidden": "true" } });
-      const cls = ["consensus-workbench-step"];
-      if (step.done) cls.push("is-done");
-      if (step.current) cls.push("is-current");
-      const el = strip.createSpan({ cls: cls.join(" ") });
-      if (step.done) el.createSpan({ text: "\u2713 ", attr: { "aria-hidden": "true" } });
-      el.appendText(step.label);
-      el.setAttr("aria-label", `${step.done ? "Done: " : step.current ? "Current: " : ""}${step.label}`);
-    });
-  }
-  /** Session panel — full but concise: one line per field. */
-  renderSessionPanel(root, s) {
-    var _a;
-    root.createEl("h4", { text: "Research Session" });
-    if (!s.isSession) {
-      const hint = root.createEl("div", { cls: "consensus-handoff-hint" });
-      hint.createEl("p", { text: "This note isn't a session yet." });
-      hint.createEl("p", {
-        text: "Turn it into a research session to build the chain in this note \u2014 or explore the problem directly (the artefact then lands in a new session note)."
-      });
-      return;
-    }
-    const dl = root.createEl("div", { cls: "consensus-workbench-session" });
-    const row = (label, value) => {
-      if (!value) return;
-      const p = dl.createEl("p");
-      p.createEl("strong", { text: `${label}: ` });
-      p.appendText(value);
-    };
-    row("Question", s.question);
-    row("Framing", (_a = s.framing) != null ? _a : "");
-    row("Lenses", s.lenses.join(", "));
-    if (s.totalBeliefs > 0) row("Beliefs", `${s.openBeliefs} open of ${s.totalBeliefs}`);
-    row("Latest synthesis", s.synthesisSnippet);
-  }
-  /**
-   * "Sources & findings" (E83_S2) — per active session, a compact provenance block: per source a
-   * one-line summary (title, bridge-visibility elsewhere, finding count) expanding to its findings
-   * with grades. Findings click through to this note's Synthese section. Degraded (no E68 record
-   * for this note): shows what the citation register knows the note cites, with a hint that a
-   * fresh research run would record the provenance.
-   */
-  async renderSourceProvenance(root, file) {
-    const graphStore = await this.plugin.loadGraphStoreForWorkbench();
-    const register = await this.plugin.loadRegisterForWorkbench();
-    const provenance = deriveSourceProvenance(file.path, recordForNote(graphStore, file.path), register);
-    if (provenance.sources.length === 0) return;
-    const details = root.createEl("details", { cls: "consensus-workbench-more" });
-    details.createEl("summary", { text: `Sources & findings (${provenance.sources.length})` });
-    const wrap = details.createEl("div", { cls: "consensus-workbench-session" });
-    if (!provenance.hasRecord) {
-      wrap.createEl("p", {
-        cls: "consensus-handoff-hint",
-        text: "No provenance recorded for this note yet \u2014 showing what the register knows. Run a fresh synthesis to record which finding rests on which source."
-      });
-    }
-    for (const src of provenance.sources) this.renderSourceProvenanceItem(wrap, file, provenance.hasRecord, src);
-  }
-  /** One source's compact line + expandable findings-with-grade list (E83_S2). */
-  renderSourceProvenanceItem(root, file, hasRecord, src) {
-    const srcDetails = root.createEl("details", { cls: "consensus-workbench-more" });
-    const yearText = src.year ? ` (${src.year})` : "";
-    srcDetails.createEl("summary", {
-      text: `${src.title}${yearText} \xB7 ${src.occurrencesElsewhere} elsewhere \xB7 ${src.findings.length} finding(s)`
-    });
-    if (src.findings.length === 0) {
-      srcDetails.createEl("p", {
-        text: hasRecord ? "No findings recorded for this source yet." : "Findings unknown \u2014 no graph record for this note."
-      });
-      return;
-    }
-    const ul = srcDetails.createEl("ul", { cls: "consensus-workbench-artifacts" });
-    for (const f of src.findings) {
-      const li = ul.createEl("li");
-      const link = li.createEl("a", { text: f.claim, href: "#", cls: "consensus-workbench-artifact-link" });
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        void this.openFromSidebar(`#${sectionHeading("synthesis")}`, file.path);
-      });
-      li.appendText(` \u2014 ${f.strength}`);
-    }
-  }
-  /**
-   * Project panel (E64) — shown when the active note is a project hub OR a session that belongs
-   * to a project. Lists the project's sessions (each its own note) with a tiny state badge, and a
-   * button to add a new question. Membership is LEADING from the front-matter `project:` field;
-   * the folder is just where the notes happen to live.
-   */
-  async renderProjectPanel(root, file, session) {
-    var _a, _b, _c;
-    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
-    const hub = parseProjectHub(fm);
-    const projectId = hub ? resolveProjectId(hub, file.basename) : (_b = session == null ? void 0 : session.project) != null ? _b : "";
-    if (!projectId) {
-      this.lastRenderedProjectMemberPaths = [];
-      root.createEl("h4", { text: "Project" });
-      const box = root.createEl("div", { cls: "consensus-workbench-session" });
-      box.createEl("p", { text: "This note doesn't belong to a project yet. A project = a folder with one session per question." });
-      new import_obsidian13.Setting(box).addButton((b) => {
-        b.setButtonText("Start research project").onClick(() => this.run("start-research-project"));
-      });
-      return;
-    }
-    const notes = [];
-    for (const f of this.app.vault.getMarkdownFiles()) {
-      const s = parseSession((_c = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _c.frontmatter);
-      if (!s || s.project.toLowerCase() !== projectId.toLowerCase()) continue;
-      notes.push({ path: f.path, title: f.basename, session: s, body: await this.app.vault.cachedRead(f) });
-    }
-    const members = projectMembers(projectId, notes);
-    this.lastRenderedProjectMemberPaths = members.map((m) => m.path);
-    root.createEl("h4", { text: `Project: ${projectId}` });
-    const wrap = root.createEl("div", { cls: "consensus-workbench-session" });
-    if (members.length === 0) {
-      wrap.createEl("p", { text: "No research questions in this project yet. Add the first one." });
-    } else {
-      const ul = wrap.createEl("ul", { cls: "consensus-workbench-artifacts" });
-      for (const m of members) {
-        const li = ul.createEl("li");
-        const badge = m.hasSynthesis ? "\u2713" : "\xB7";
-        const open = m.openBeliefs > 0 ? ` (${m.openBeliefs} open)` : "";
-        li.createSpan({
-          text: `${badge} `,
-          attr: { "aria-label": m.hasSynthesis ? "Has synthesis" : "No synthesis yet" }
-        });
-        const isActive = m.path === file.path;
-        if (isActive) {
-          li.createEl("strong", { text: m.title });
-        } else {
-          const link = li.createEl("a", { text: m.title, href: "#", cls: "consensus-workbench-artifact-link" });
-          link.addEventListener("click", (e) => {
-            e.preventDefault();
-            void this.openFromSidebar(m.path, "");
-          });
-        }
-        li.appendText(open);
-      }
-    }
-    new import_obsidian13.Setting(wrap).addButton((b) => {
-      b.setButtonText("New question in this project");
-      b.onClick(() => this.run("new-project-session"));
-    });
-    const hypotheses = projectHypotheses(projectId, notes);
-    if (hypotheses.length > 0) {
-      root.createEl("h4", { text: "Open hypotheses & follow-up directions" });
-      const list = root.createEl("div", { cls: "consensus-workbench-session" });
-      for (const h of hypotheses) {
-        const kindLabel = h.kind === "overtuiging" ? "belief" : "follow-up direction";
-        const setting = new import_obsidian13.Setting(list).setName(h.text).setDesc(`${kindLabel} \xB7 from "${h.sourceTitle}"`);
-        setting.addButton((b) => {
-          b.setButtonText("Research this");
-          b.onClick(() => void this.plugin.startHypothesisFollowUp(h.text, h.sourcePath));
-        });
-      }
-    }
-    const memberPaths = new Set(notes.map((n) => n.path));
-    const register = await this.plugin.loadRegisterForWorkbench();
-    const sources = [];
-    for (const c of register.citations) {
-      const inProject = c.occurrences.filter((o) => memberPaths.has(o.note)).map((o) => o.note);
-      if (inProject.length > 0) sources.push({ key: c.key, title: c.title, year: c.year, notes: inProject });
-    }
-    const graphStore = await this.plugin.loadGraphStoreForWorkbench();
-    const records = graphStore.sessions.filter((r) => memberPaths.has(r.note));
-    this.renderEvidenceGaps(root, deriveEvidenceGaps(projectId, notes, sources, records));
-  }
-  /** "Evidence gaps" (E83_S1) — three collapsible worklists, each item click-through + (for an unproven finding) a "Research this" follow-up (E66 pattern). */
-  renderEvidenceGaps(root, gaps) {
-    const total = gaps.unprovenFindings.length + gaps.subquestionsWithoutSources.length + gaps.sourcesWithoutFinding.length;
-    if (total === 0) return;
-    root.createEl("h4", { text: "Evidence gaps" });
-    this.renderGapGroup(root, "Unproven findings", gaps.unprovenFindings, true);
-    this.renderGapGroup(root, "Sub-questions without sources", gaps.subquestionsWithoutSources, false);
-    this.renderGapGroup(root, "Sources without a finding", gaps.sourcesWithoutFinding, false);
-  }
-  /** One collapsible gap-category group; `withFollowUp` mirrors the E66 "Research this" open-hypotheses pattern. */
-  renderGapGroup(root, label, items, withFollowUp) {
-    if (items.length === 0) return;
-    const details = root.createEl("details", { cls: "consensus-workbench-more" });
-    details.createEl("summary", { text: `${label} (${items.length})` });
-    const wrap = details.createEl("div", { cls: "consensus-workbench-session" });
-    for (const item of items) {
-      if (withFollowUp && item.followUp) {
-        const followUp = item.followUp;
-        const setting = new import_obsidian13.Setting(wrap).setName(item.text).setDesc(`From "${this.noteTitle(item.note)}"`);
-        setting.addButton((b) => {
-          b.setButtonText("Research this");
-          b.onClick(() => void this.plugin.startHypothesisFollowUp(followUp.text, followUp.sourcePath));
-        });
-      } else {
-        const p = wrap.createEl("p");
-        const link = p.createEl("a", { text: item.text, href: "#", cls: "consensus-workbench-artifact-link" });
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          void this.openFromSidebar(`#${sectionHeading("synthesis")}`, item.note);
-        });
-        p.appendText(` \u2014 "${this.noteTitle(item.note)}"`);
-      }
-    }
-  }
-  /** Vault-relative path → its basename without the `.md` extension, for a compact "from ..." label. */
-  noteTitle(path) {
-    var _a;
-    const base = (_a = path.split("/").pop()) != null ? _a : path;
-    return base.replace(/\.md$/i, "");
-  }
-  renderSteps(root, state, recommended) {
-    root.createEl("h4", { text: "Steps" });
-    const wrap = root.createEl("div", { cls: "consensus-workbench-steps" });
-    let lastStep = null;
-    for (const a of stepActions(state, recommended)) {
-      if (a.step !== lastStep) {
-        wrap.createEl("div", { text: _WorkbenchView.STEP_LABEL[a.step], cls: "consensus-workbench-step-group" });
-        lastStep = a.step;
-      }
-      this.renderStepCard(wrap, a);
-    }
-  }
-  /** Short action verb for a card's main button ("Ask AI" for anything LLM-gated). */
-  static mainButtonLabel(a) {
-    if (a.scaffoldSection || a.requires === "ai") return "Ask AI";
-    switch (a.commandId) {
-      case "start-research-session":
-        return "Start";
-      case "research-question":
-        return "Run research";
-      case "methodology-account":
-        return "Generate";
-      case "ask-research-question":
-        return "Search";
-      case "register-export-bibtex":
-      case "export-session":
-      case "export-project":
-        return "Export";
-      case "register-bibliography-project":
-      case "register-bridge-papers":
-      case "register-overview":
-        return "Open";
-      default:
-        return a.label;
-    }
-  }
-  /**
-   * One step as a compact card (AU_E121_S2, owner design iteration): title, full-width
-   * description, then a button row — "Add section" (self-write scaffold, no AI) next to
-   * "Ask AI". Replaces the old button-with-side-description row, which crammed the pencil
-   * button, badge and description into one line on mobile. No "Requires AI" badge here —
-   * the split into Add section / Ask AI makes the AI-ness explicit per button.
-   */
-  renderStepCard(wrap, a) {
-    const card = wrap.createDiv({ cls: "consensus-workbench-card" });
-    card.createDiv({ cls: "consensus-workbench-card-title", text: a.label });
-    card.createDiv({ cls: "consensus-workbench-card-desc", text: a.description });
-    const changed = a.scaffoldSection ? this.staleArtefacts.get(a.scaffoldSection) : void 0;
-    if (changed) {
-      card.createDiv({
-        cls: "consensus-workbench-card-desc consensus-workbench-stale",
-        text: `\u26A0 Basis changed since adoption (${changed.map((c) => sectionHeading(c)).join(", ")}) \u2014 re-run this step to refresh the section.`
-      });
-    }
-    const buttons = card.createDiv({ cls: "consensus-workbench-card-buttons" });
-    if (a.scaffoldSection) {
-      const section = a.scaffoldSection;
-      const add = buttons.createEl("button", { text: "Add section", cls: "consensus-workbench-action" });
-      const addLabel = "Insert the section to write yourself \u2014 no AI";
-      add.setAttr("aria-label", addLabel);
-      add.setAttr("title", addLabel);
-      if (a.requires === "ai" && !this.plugin.llm.isConfigured()) add.addClass("mod-cta");
-      add.addEventListener("click", () => void this.plugin.insertScaffold(section));
-    }
-    const main = buttons.createEl("button", { text: _WorkbenchView.mainButtonLabel(a), cls: "consensus-workbench-action" });
-    if (a.requires === "ai") main.setAttr("title", "Runs the AI research assistant \u2014 needs a configured provider");
-    if (a.recommended === "primary") {
-      main.addClass("mod-cta");
-      main.setAttr("aria-label", "Recommended next step");
-    } else if (a.recommended === "alternative") {
-      main.addClass("consensus-workbench-action-alt");
-      main.setAttr("aria-label", "Alternative next step");
-    }
-    main.addEventListener("click", () => this.run(a.commandId));
-  }
-  /**
-   * Collapsed "More" group (D5/E78) under the Steps list — the secondary/rescue commands that were
-   * previously palette-only (framework-only, cross-sector, deepen, register slices, quick search).
-   * A native `<details>` keeps this cheap: collapsed by default so it doesn't compete with the
-   * primary workflow, one click away when needed. Same row layout as Steps (AU_E94_S1).
-   */
-  renderMoreActions(root) {
-    const details = root.createEl("details", { cls: "consensus-workbench-more" });
-    details.createEl("summary", { text: "More" });
-    const wrap = details.createEl("div", { cls: "consensus-workbench-steps" });
-    let lastGroup = null;
-    for (const a of moreActions()) {
-      const group = a.step ? _WorkbenchView.STEP_LABEL[a.step] : "Register & exports";
-      if (group !== lastGroup) {
-        wrap.createEl("div", { text: group, cls: "consensus-workbench-step-group" });
-        lastGroup = group;
-      }
-      this.renderStepCard(wrap, a);
-    }
-  }
-  /** Artefacts — which sections exist; present ones are click-to-jump to their `##` section (E55). */
-  renderArtifacts(root, session, body, file) {
-    root.createEl("h4", { text: "Artifacts" });
-    const ul = root.createEl("ul", { cls: "consensus-workbench-artifacts" });
-    for (const a of listArtifacts(session, body)) {
-      const li = ul.createEl("li");
-      li.createSpan({ text: `${a.present ? "\u2713" : "\xB7"} `, attr: { "aria-label": a.present ? "Present" : "Not present yet" } });
-      if (a.navigable) {
-        const link = li.createEl("a", { text: a.label, href: "#", cls: "consensus-workbench-artifact-link" });
-        link.addEventListener("click", (e) => {
-          e.preventDefault();
-          void this.openFromSidebar(`#${a.heading}`, file.path);
-        });
-      } else {
-        li.appendText(a.label);
-      }
-    }
-  }
-  /**
-   * Follow a link from this sidebar into the main area (AU_E145_S1).
-   *
-   * `openLinkText(…, false)` opens in the ACTIVE leaf, and on mobile the active leaf is this
-   * sidebar — you just tapped in it. The note then opened into the panel that was closing, so the
-   * tap read as "the link goes nowhere". Obsidian names this exact case in its API docs for
-   * `getMostRecentLeaf`: *"Useful for interacting with the leaf in the root split while a sidebar
-   * leaf might be active."*
-   *
-   * So: make a main-area leaf active first, then hand the link to Obsidian as before. Deliberately
-   * NOT `openFile(file, { eState: { subpath } })` — that would mean resolving the subpath
-   * ourselves, while `openLinkText` already does it and stays the one path that knows how.
-   *
-   * Every link in this view goes through here; there were four call sites and all four had it.
-   * A heading that no longer matches (the section lookup is marker-first, the anchor is the
-   * current localised name) now degrades to "opens the note without scrolling" rather than to
-   * nothing at all.
-   */
-  async openFromSidebar(linktext, sourcePath) {
-    const { workspace } = this.app;
-    const target = workspace.getMostRecentLeaf();
-    if (target) workspace.setActiveLeaf(target, { focus: true });
-    await workspace.openLinkText(linktext, sourcePath, false);
-  }
-  /** Log / trace — the most recent decision-trail entries from the ## Logboek. */
-  renderTrace(root, body) {
-    const lines2 = recentLog(body, 6);
-    if (lines2.length === 0) return;
-    root.createEl("h4", { text: "Logbook (latest steps)" });
-    const ul = root.createEl("ul", { cls: "consensus-workbench-trace" });
-    for (const line of lines2) ul.createEl("li", { text: line.replace(/^- /, "") });
-  }
-  async onClose() {
-    if (this.pendingRerender !== null) window.clearTimeout(this.pendingRerender);
-    this.contentEl.empty();
-  }
-};
-/**
- * The integral "Steps" list (AU_E94_S1, supersedes the separate "Next step" + "All steps"
- * sections): every workflow action as a row — button + one-line explanation — grouped under
- * small step labels in the same order as the workflow strip above. The live recommendation is
- * folded in: its row carries the CTA styling (and the alternative a subtle outline) plus the
- * contextual why-text, so "what should I do next" and "what can I do" are one list.
- */
-_WorkbenchView.STEP_LABEL = {
-  explore: "Explore",
-  frame: "Frame",
-  theory: "Theory",
-  challenge: "Challenge",
-  evidence: "Evidence",
-  design: "Design"
-};
-var WorkbenchView = _WorkbenchView;
-async function revealWorkbench(plugin) {
-  var _a;
-  const { workspace } = plugin.app;
-  const leaf = (_a = workspace.getLeavesOfType(WORKBENCH_VIEW_TYPE)[0]) != null ? _a : workspace.getRightLeaf(false);
-  await (leaf == null ? void 0 : leaf.setViewState({ type: WORKBENCH_VIEW_TYPE, active: true }));
-}
-
-// src/commands.ts
-var VariantPickModal = class extends import_obsidian14.FuzzySuggestModal {
-  constructor(app, items) {
-    super(app);
-    this.items = items;
-  }
-  getItems() {
-    return this.items;
-  }
-  getItemText(item) {
-    return item.label;
-  }
-  onChooseItem(item) {
-    item.run();
-  }
-};
-function registerCommands(plugin) {
-  plugin.addCommand({
-    id: "open-workbench",
-    name: COMMAND_NAMES["open-workbench"],
-    icon: "flask-conical",
-    callback: () => void revealWorkbench(plugin)
-  });
-  plugin.addCommand({
-    id: "research-question",
-    name: COMMAND_NAMES["research-question"],
-    icon: "sparkles",
-    callback: () => plugin.promptAndResearch("")
-  });
-  plugin.addCommand({
-    id: "cancel-research",
-    name: COMMAND_NAMES["cancel-research"],
-    icon: "square",
-    callback: () => plugin.cancelResearch()
-  });
-  plugin.addCommand({
-    id: "insert-scaffold",
-    name: COMMAND_NAMES["insert-scaffold"],
-    icon: "pencil-line",
-    callback: () => void plugin.insertScaffold()
-  });
-  plugin.addCommand({
-    id: "explore-problem",
-    name: COMMAND_NAMES["explore-problem"],
-    icon: "compass",
-    callback: () => plugin.promptAndExplore("")
-  });
-  plugin.addCommand({
-    id: "start-research-session",
-    name: COMMAND_NAMES["start-research-session"],
-    icon: "notebook-pen",
-    callback: () => plugin.startResearchSession()
-  });
-  plugin.addCommand({
-    id: "reorder-sections",
-    name: COMMAND_NAMES["reorder-sections"],
-    icon: "arrow-down-up",
-    callback: () => void plugin.reorderSections()
-  });
-  plugin.addCommand({
-    id: "start-research-project",
-    name: COMMAND_NAMES["start-research-project"],
-    icon: "folder-plus",
-    callback: () => plugin.startResearchProject()
-  });
-  plugin.addCommand({
-    id: "new-project-session",
-    name: COMMAND_NAMES["new-project-session"],
-    icon: "file-plus",
-    callback: () => plugin.newProjectSession()
-  });
-  plugin.addCommand({
-    id: "refresh-project-contents",
-    name: COMMAND_NAMES["refresh-project-contents"],
-    icon: "list-tree",
-    callback: () => void plugin.refreshProjectContents()
-  });
-  plugin.addCommand({
-    id: "export-quadro",
-    name: COMMAND_NAMES["export-quadro"],
-    icon: "book-open-check",
-    callback: () => new VariantPickModal(plugin.app, [
-      { label: "Codebook (from lenses)", run: () => void plugin.exportQuadroCodebook() },
-      { label: "Starter kit", run: () => void plugin.exportQuadroStarterKit() }
-    ]).open()
-  });
-  plugin.addCommand({
-    id: "clean-up-records",
-    name: COMMAND_NAMES["clean-up-records"],
-    icon: "eraser",
-    callback: () => void plugin.runRecordCleanup()
-  });
-  plugin.addCommand({
-    id: "rebuild-records",
-    name: COMMAND_NAMES["rebuild-records"],
-    icon: "history",
-    callback: () => void plugin.rebuildRecordsFromNote()
-  });
-  if (plugin.settings.debugLogging) {
-    plugin.addCommand({
-      id: "build-knowledge-graph-spike",
-      name: COMMAND_NAMES["build-knowledge-graph-spike"],
-      icon: "git-fork",
-      callback: () => void plugin.buildKnowledgeGraphSpike()
-    });
-  }
-  plugin.addCommand({
-    id: "theory-lenses",
-    name: COMMAND_NAMES["theory-lenses"],
-    icon: "glasses",
-    callback: () => plugin.promptAndTheory("")
-  });
-  plugin.addCommand({
-    id: "challenge-framing",
-    name: COMMAND_NAMES["challenge-framing"],
-    icon: "swords",
-    callback: () => plugin.promptAndChallenge("")
-  });
-  plugin.addCommand({
-    id: "map-argument",
-    name: COMMAND_NAMES["map-argument"],
-    icon: "network",
-    callback: () => void plugin.mapArgumentFlow()
-  });
-  plugin.addCommand({
-    id: "refresh-from-records",
-    name: COMMAND_NAMES["refresh-from-records"],
-    icon: "refresh-cw",
-    callback: () => new VariantPickModal(plugin.app, [
-      { label: "Argument map", run: () => void plugin.refreshArgumentMap() },
-      { label: "Interview guide", run: () => void plugin.refreshInterviewGuide() },
-      { label: "Hypotheses", run: () => void plugin.refreshHypotheses() }
-    ]).open()
-  });
-  plugin.addCommand({
-    id: "argument-open-canvas",
-    name: COMMAND_NAMES["argument-open-canvas"],
-    icon: "layout-dashboard",
-    callback: () => void plugin.openArgumentCanvas()
-  });
-  plugin.addCommand({
-    id: "argument-relayout-canvas",
-    name: COMMAND_NAMES["argument-relayout-canvas"],
-    icon: "layout-grid",
-    callback: () => void plugin.relayoutArgumentCanvasFlow()
-  });
-  plugin.addCommand({
-    id: "design-interview-guide",
-    name: COMMAND_NAMES["design-interview-guide"],
-    icon: "mic",
-    callback: () => void plugin.designInterviewGuideFlow()
-  });
-  plugin.addCommand({
-    id: "interview-export",
-    name: COMMAND_NAMES["interview-export"],
-    icon: "file-down",
-    callback: () => void plugin.exportInterviewGuide()
-  });
-  plugin.addCommand({
-    id: "propose-hypotheses",
-    name: COMMAND_NAMES["propose-hypotheses"],
-    icon: "flask-conical",
-    callback: () => void plugin.proposeHypothesesFlow()
-  });
-  plugin.addCommand({
-    id: "find-validated-scales",
-    name: COMMAND_NAMES["find-validated-scales"],
-    icon: "ruler",
-    callback: () => void plugin.findValidatedScalesFlow()
-  });
-  plugin.addCommand({
-    id: "export-preregistration",
-    name: COMMAND_NAMES["export-preregistration"],
-    icon: "file-down",
-    callback: () => void plugin.exportPreregistration()
-  });
-  plugin.addCommand({
-    id: "connections-refresh",
-    name: COMMAND_NAMES["connections-refresh"],
-    icon: "link",
-    callback: () => new VariantPickModal(plugin.app, [
-      { label: "This note", run: () => void plugin.refreshConnections("note") },
-      { label: "This project", run: () => void plugin.refreshConnections("project") }
-    ]).open()
-  });
-  plugin.addCommand({
-    id: "resume-research",
-    name: COMMAND_NAMES["resume-research"],
-    icon: "rotate-ccw",
-    callback: () => plugin.resumeResearch()
-  });
-  plugin.addCommand({
-    id: "confront-beliefs",
-    name: COMMAND_NAMES["confront-beliefs"],
-    icon: "scale",
-    callback: () => void plugin.confrontBeliefsFlow()
-  });
-  plugin.addCommand({
-    id: "methodology-account",
-    name: COMMAND_NAMES["methodology-account"],
-    icon: "scroll-text",
-    callback: () => void plugin.generateMethodologyAccount()
-  });
-  plugin.addCommand({
-    id: "research-agenda",
-    name: COMMAND_NAMES["research-agenda"],
-    icon: "telescope",
-    callback: () => void plugin.generateResearchDesign()
-  });
-  plugin.addCommand({
-    id: "build-framework",
-    name: COMMAND_NAMES["build-framework"],
-    icon: "library",
-    callback: () => plugin.promptAndResearch("", { frameworkOnly: true })
-  });
-  plugin.addCommand({
-    id: "deepen-finding",
-    name: COMMAND_NAMES["deepen-finding"],
-    icon: "list-tree",
-    editorCallback: (editor) => void plugin.deepenSelection(editor)
-  });
-  plugin.addCommand({
-    id: "ask-research-question",
-    name: COMMAND_NAMES["ask-research-question"],
-    icon: "search",
-    callback: () => plugin.promptAndSearch("")
-  });
-  plugin.addCommand({
-    id: "register-bibliography-project",
-    name: COMMAND_NAMES["register-bibliography-project"],
-    callback: () => void plugin.sliceBibliography()
-  });
-  plugin.addCommand({
-    id: "register-bridge-papers",
-    name: COMMAND_NAMES["register-bridge-papers"],
-    callback: () => void plugin.sliceBridgePapers()
-  });
-  plugin.addCommand({
-    id: "register-overview",
-    name: COMMAND_NAMES["register-overview"],
-    callback: () => void plugin.sliceOverview()
-  });
-  plugin.addCommand({
-    id: "register-export-bibtex",
-    name: COMMAND_NAMES["register-export-bibtex"],
-    callback: () => void plugin.sliceBibtex()
-  });
-  plugin.addCommand({
-    id: "library-refresh",
-    name: COMMAND_NAMES["library-refresh"],
-    callback: () => void plugin.refreshLibrary()
-  });
-  plugin.addCommand({
-    id: "library-insert-citation",
-    name: COMMAND_NAMES["library-insert-citation"],
-    callback: () => void plugin.insertCitationFromLibrary()
-  });
-  plugin.addCommand({
-    id: "library-update",
-    name: COMMAND_NAMES["library-update"],
-    callback: () => new VariantPickModal(plugin.app, [
-      { label: "This note", run: () => void plugin.updateReferencesFromLibrary("note") },
-      { label: "This project", run: () => void plugin.updateReferencesFromLibrary("project") }
-    ]).open()
-  });
-  plugin.addCommand({
-    id: "export-session",
-    name: COMMAND_NAMES["export-session"],
-    icon: "package",
-    callback: () => void plugin.exportSession()
-  });
-  plugin.addCommand({
-    id: "export-project",
-    name: COMMAND_NAMES["export-project"],
-    icon: "package-open",
-    callback: () => void plugin.exportProject()
-  });
-}
-function registerRibbons(plugin) {
-  plugin.addRibbonIcon("sparkles", "Parallax: ask a question (AI)", () => {
-    plugin.promptAndResearch("");
-  });
-  plugin.addRibbonIcon("flask-conical", "Parallax: open the workbench", () => {
-    void revealWorkbench(plugin);
-  });
-}
-
-// src/subquestion-review-modal.ts
-var import_obsidian15 = require("obsidian");
-function parseSubQuestionLines(text) {
-  const seen = /* @__PURE__ */ new Set();
-  const out = [];
-  for (const raw of text.split("\n")) {
-    const query = raw.trim().replace(/^\d+[.)]\s*/, "");
-    if (!query) continue;
-    const key = query.toLowerCase().replace(/\s+/g, " ");
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push({ query });
-  }
-  return out;
-}
-function reconcileExpectations(edited, original) {
-  const norm = (q) => q.toLowerCase().replace(/\s+/g, " ").trim();
-  const expByQuery = new Map(original.map((s) => [norm(s.query), s.expectation]));
-  return edited.map((s) => {
-    const exp = expByQuery.get(norm(s.query));
-    return exp ? { query: s.query, expectation: exp } : s;
-  });
-}
-function collectSubQuestions(fieldValues, original) {
-  return reconcileExpectations(parseSubQuestionLines(fieldValues.join("\n")), original);
-}
-function buildSubQuestionsBlock(question, subs) {
-  const items = subs.map(
-    (s) => s.expectation ? `- ${s.query}
-	- *${t().decompose.expectationLabel}: ${s.expectation}*` : `- ${s.query}`
-  );
-  return `**${t().decompose.subQuestions}** \u2014 *${question}*
-
-${items.join("\n")}
-`;
-}
-var SubQuestionReviewModal = class extends import_obsidian15.Modal {
-  constructor(app, subs, framework, onSubmit) {
-    super(app);
-    this.resolved = false;
-    this.original = subs;
-    this.rows = subs.map((s) => ({ text: s.query, expectation: s.expectation }));
-    this.framework = framework;
-    this.onSubmit = onSubmit;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Review sub-questions" });
-    contentEl.createEl("p", {
-      text: "Each field holds one sub-question \u2014 edit freely, remove what doesn't help, add your own. Or put them in the note to sharpen them there first.",
-      cls: "consensus-review-hint"
-    });
-    if (this.framework) {
-      const fw = contentEl.createEl("details", { cls: "consensus-review-framework" });
-      fw.createEl("summary", { text: `Theoretical framework \u2014 ${this.framework.construct}` });
-      if (this.framework.definition) fw.createEl("p", { text: this.framework.definition });
-      if (this.framework.dimensions.length > 0) {
-        const ul = fw.createEl("ul");
-        for (const d of this.framework.dimensions) ul.createEl("li", { text: d });
-      }
-    }
-    this.rowsEl = contentEl.createDiv();
-    this.renderRows(false);
-    if (!import_obsidian15.Platform.isMobile) {
-      window.setTimeout(() => {
-        var _a, _b;
-        return (_b = (_a = this.rowsEl) == null ? void 0 : _a.querySelector("textarea")) == null ? void 0 : _b.focus();
-      }, 0);
-    }
-    new import_obsidian15.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Add sub-question").onClick(() => {
-        this.rows.push({ text: "" });
-        this.renderRows(true);
-      })
-    );
-    new import_obsidian15.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Search these").setCta().onClick(() => this.submit("search"))
-    ).addButton(
-      (b) => b.setButtonText("Insert into note").setTooltip("Land the sub-questions at the bottom of the note to refine them there \u2014 stops this run.").onClick(() => this.submit("insert"))
-    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.cancel()));
-  }
-  /** (Re)render the editable rows; `focusLast` puts the cursor in a just-added field. */
-  renderRows(focusLast) {
-    const rowsEl = this.rowsEl;
-    if (!rowsEl) return;
-    rowsEl.empty();
-    this.rows.forEach((row, i) => {
-      const rowEl = rowsEl.createDiv({ cls: "consensus-subq-row" });
-      const ta = rowEl.createEl("textarea", { cls: "consensus-review-input" });
-      ta.value = row.text;
-      ta.addEventListener("input", () => row.text = ta.value);
-      makeAutoGrowTextarea(ta, 2);
-      new import_obsidian15.ExtraButtonComponent(rowEl).setIcon("x").setTooltip("Remove").onClick(() => {
-        this.rows.splice(i, 1);
-        this.renderRows(false);
-      });
-      if (row.expectation) {
-        rowsEl.createEl("p", {
-          text: `${t().decompose.expectationLabel}: ${row.expectation}`,
-          cls: "consensus-subq-hypothesis"
-        });
-      }
-      if (focusLast && i === this.rows.length - 1) window.setTimeout(() => ta.focus(), 0);
-    });
-  }
-  submit(action) {
-    const subs = collectSubQuestions(
-      this.rows.map((r) => r.text),
-      this.original
-    );
-    this.resolve(subs.length > 0 ? { action, subs } : null);
-    this.close();
-  }
-  cancel() {
-    this.resolve(null);
-    this.close();
-  }
-  resolve(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onSubmit(choice);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
-
-// src/framework-handoff-modal.ts
-var import_obsidian16 = require("obsidian");
-function parseDimensionLines(text) {
-  const seen = /* @__PURE__ */ new Set();
-  const out = [];
-  for (const raw of text.split("\n")) {
-    const dim = raw.trim().replace(/^[-*]\s*/, "").trim();
-    if (!dim) continue;
-    const key = dim.toLowerCase().replace(/\s+/g, " ");
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(dim);
-  }
-  return out;
-}
-var FrameworkHandoffModal = class extends import_obsidian16.Modal {
-  constructor(app, framework, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.framework = framework;
-    this.dimensionsText = framework.dimensions.join("\n");
-    this.onChoice = onChoice;
-  }
-  onOpen() {
-    var _a, _b;
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: `Theoretical framework \u2014 ${this.framework.construct}` });
-    if (this.framework.definition) {
-      contentEl.createEl("p", { text: this.framework.definition, cls: "consensus-handoff-definition" });
-    }
-    const count = (_b = (_a = this.framework.sources) == null ? void 0 : _a.length) != null ? _b : 0;
-    contentEl.createEl("p", {
-      text: `${count} seminal source(s). Edit the dimensions below, then continue to the literature research or just insert the framework.`,
-      cls: "consensus-handoff-hint"
-    });
-    stackSetting(new import_obsidian16.Setting(contentEl)).setName("Dimensions (steer the sub-questions)").setDesc("One analytical dimension per line.").addTextArea((ta) => {
-      const MIN_ROWS = 4;
-      ta.inputEl.rows = rowsForLines(this.framework.dimensions.length, MIN_ROWS);
-      ta.setValue(this.dimensionsText).onChange((v) => {
-        this.dimensionsText = v;
-        ta.inputEl.rows = rowsForLines(v.split("\n").length, MIN_ROWS);
-      });
-      ta.inputEl.addClass("consensus-handoff-input");
-    });
-    new import_obsidian16.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Continue to literature research").setCta().onClick(() => this.choose("research"))
-    ).addButton((b) => b.setButtonText("Insert framework only").onClick(() => this.choose("insert")));
-  }
-  choose(action) {
-    const dimensions = parseDimensionLines(this.dimensionsText);
-    this.resolve({ action, dimensions: dimensions.length > 0 ? dimensions : this.framework.dimensions });
-    this.close();
-  }
-  resolve(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(choice);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
   }
 };
 
@@ -16002,118 +14969,6 @@ function explorationAdoptionRecord(question, choice) {
     beliefsAdded: choice.beliefs ? parseBeliefLines(choice.beliefs).map((b) => b.claim) : []
   };
 }
-
-// src/exploration-modal.ts
-var import_obsidian17 = require("obsidian");
-var ExplorationModal = class extends import_obsidian17.Modal {
-  constructor(app, originalQuestion, result, landing, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.beliefs = "";
-    this.landing = landing;
-    this.originalQuestion = originalQuestion;
-    this.result = result;
-    this.framing = originalQuestion;
-    this.selectedSeeds = new Set(result.searchTermSeeds);
-    this.onChoice = onChoice;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Explore the problem" });
-    contentEl.createEl("p", {
-      text: "Choose the framing to research and the search terms that widen the search. The rest is material to weigh.",
-      cls: "consensus-handoff-hint"
-    });
-    this.renderReadOnly(contentEl, "Implicit assumptions", this.result.assumptions);
-    this.renderReadOnly(contentEl, "Possible counter-assumptions", this.result.counterAssumptions);
-    this.renderReadOnly(contentEl, "Competing definitions", this.result.definitions);
-    this.renderReadOnly(contentEl, "Disciplines / theoretical traditions", this.result.lenses);
-    this.renderDirections(contentEl);
-    stackSetting(new import_obsidian17.Setting(contentEl)).setName("Research question (framing)").setDesc("Edit, or pick a reformulation below.").addTextArea((ta) => {
-      this.framingInput = ta;
-      ta.setValue(this.framing).onChange((v) => this.framing = v);
-      ta.inputEl.addClass("consensus-handoff-input");
-      this.resizeFramingInput = makeAutoGrowTextarea(ta.inputEl, 2);
-    });
-    if (this.result.questionVariants.length > 0) {
-      contentEl.createEl("p", { text: "Reformulations (click to use):", cls: "consensus-handoff-hint" });
-      for (const variant of this.result.questionVariants) {
-        new import_obsidian17.Setting(contentEl).setName(variant).addButton(
-          (b) => b.setButtonText("Use").onClick(() => {
-            var _a, _b;
-            this.framing = variant;
-            (_a = this.framingInput) == null ? void 0 : _a.setValue(variant);
-            (_b = this.resizeFramingInput) == null ? void 0 : _b.call(this);
-          })
-        );
-      }
-    }
-    if (this.result.searchTermSeeds.length > 0) {
-      contentEl.createEl("h3", { text: "Missed search terms (widen the search)" });
-      for (const seed of this.result.searchTermSeeds) {
-        new import_obsidian17.Setting(contentEl).setName(seed).addToggle(
-          (t2) => t2.setValue(this.selectedSeeds.has(seed)).onChange((on) => {
-            if (on) this.selectedSeeds.add(seed);
-            else this.selectedSeeds.delete(seed);
-          })
-        );
-      }
-    }
-    stackSetting(new import_obsidian17.Setting(contentEl)).setName("First beliefs (optional)").setDesc("What do you think now? Lands in the inserted block.").addTextArea((ta) => {
-      ta.setValue(this.beliefs).onChange((v) => this.beliefs = v);
-      ta.inputEl.addClass("consensus-handoff-input");
-      makeAutoGrowTextarea(ta.inputEl, 3);
-    });
-    const actions = new import_obsidian17.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Research with these choices").setCta().onClick(() => this.choose("research"))
-    );
-    if (this.landing === "cursor") {
-      actions.addButton((b) => b.setButtonText("Add to a new session note").onClick(() => this.choose("new-note")));
-    } else {
-      const label = this.landing === "session-note" ? "Add to session" : "Add to a new session in this project";
-      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("insert")));
-    }
-  }
-  renderReadOnly(parent, heading, items) {
-    if (items.length === 0) return;
-    parent.createEl("h3", { text: heading });
-    const ul = parent.createEl("ul");
-    for (const item of items) ul.createEl("li", { text: item });
-  }
-  /** Render the research directions (E44) with their facets — advisory; the writer chooses. */
-  renderDirections(parent) {
-    const dirs = this.result.researchDirections;
-    if (dirs.length === 0) return;
-    parent.createEl("h3", { text: "Promising research directions (you choose)" });
-    for (const d of dirs) {
-      parent.createEl("p", { text: d.title, cls: "consensus-handoff-definition" });
-      const ul = parent.createEl("ul");
-      const facet = (label, value) => {
-        if (value) ul.createEl("li", { text: `${label}: ${value}` });
-      };
-      facet("Theoretical basis", d.theoreticalBasis);
-      facet("Searchability", d.searchability);
-      facet("Chance of strong literature (estimate)", d.literatureStrength);
-      facet("Originality", d.originality);
-    }
-  }
-  choose(action) {
-    const framing = this.framing.trim() || this.originalQuestion;
-    const seeds = this.result.searchTermSeeds.filter((s) => this.selectedSeeds.has(s));
-    this.resolve({ action, framing, searchTermSeeds: seeds, beliefs: this.beliefs.trim() });
-    this.close();
-  }
-  resolve(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(choice);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
 
 // src/theory.ts
 var MAX_THEORY_LENSES = 6;
@@ -16265,432 +15120,6 @@ function theoryAdoptionRecord(result, choice) {
   return { chosenLenses };
 }
 
-// src/theory-modal.ts
-var import_obsidian18 = require("obsidian");
-var TheoryModal = class extends import_obsidian18.Modal {
-  constructor(app, result, landing, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.landing = landing;
-    this.result = result;
-    this.selected = /* @__PURE__ */ new Set();
-    this.onChoice = onChoice;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Theoretical lenses" });
-    contentEl.createEl("p", {
-      text: "Choose the lenses to continue searching with. The rest is material to weigh \u2014 you choose.",
-      cls: "consensus-handoff-hint"
-    });
-    if (this.result.lenses.length > 0) {
-      contentEl.createEl("h3", { text: "Lenses (select to search with)" });
-      for (const lens of this.result.lenses) {
-        new import_obsidian18.Setting(contentEl).setName(`${lens.name}${lens.tradition ? ` \u2014 ${lens.tradition}` : ""}`).setDesc(
-          [lens.why && `Why here: ${lens.why}`, lens.predicts && `Predicts: ${lens.predicts}`].filter(Boolean).join(" \xB7 ")
-        ).addToggle(
-          (t2) => t2.setValue(this.selected.has(lens.name)).onChange((on) => {
-            if (on) this.selected.add(lens.name);
-            else this.selected.delete(lens.name);
-          })
-        );
-      }
-    }
-    this.renderEliminated(contentEl);
-    this.renderReadOnly(contentEl, "Same mechanism, different name", this.result.sameMechanism);
-    this.renderReadOnly(contentEl, "Conspicuously absent", this.result.absent);
-    this.renderReadOnly(contentEl, "Competing explanations", this.result.competing);
-    this.renderReadOnly(contentEl, "Cross-domain connections", this.result.crossDomain);
-    const actions = new import_obsidian18.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Research with these lenses").setCta().onClick(() => this.choose("research"))
-    );
-    if (this.result.lenses.length >= 2) {
-      actions.addButton(
-        (b) => b.setButtonText("One session per lens").onClick(() => {
-          if (this.selected.size < 2) {
-            new import_obsidian18.Notice("Select at least two lenses to fan out \u2014 one lens fits a single session.");
-            return;
-          }
-          this.choose("fan-out");
-        })
-      );
-    }
-    if (this.landing === "cursor") {
-      actions.addButton((b) => b.setButtonText("Add to a new session note").onClick(() => this.choose("new-note")));
-    } else {
-      const label = this.landing === "session-note" ? "Add to session" : "Add to a new session in this project";
-      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("insert")));
-    }
-  }
-  renderEliminated(parent) {
-    if (this.result.eliminated.length === 0) return;
-    parent.createEl("h3", { text: "Tempting but explains little here" });
-    const ul = parent.createEl("ul");
-    for (const e of this.result.eliminated) ul.createEl("li", { text: `${e.name} \u2014 ${e.reason}` });
-  }
-  renderReadOnly(parent, heading, items) {
-    if (items.length === 0) return;
-    parent.createEl("h3", { text: heading });
-    const ul = parent.createEl("ul");
-    for (const item of items) ul.createEl("li", { text: item });
-  }
-  choose(action) {
-    const lenses = this.result.lenses.map((l) => l.name).filter((n) => this.selected.has(n));
-    this.resolve({ action, lenses });
-    this.close();
-  }
-  resolve(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(choice);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
-
-// src/record-rebuild.ts
-var locales = Object.values(ARTIFACT_STRINGS);
-function matchesLabel(text, labels) {
-  const t2 = text.trim().toLowerCase();
-  return labels.some((l) => l.toLowerCase() === t2);
-}
-var BASIS_LABELS = locales.map((s) => s.hypotheses.basisLabel);
-var TEST_LABELS = locales.map((s) => s.hypotheses.testLabel);
-function parseHypothesesSection(body) {
-  const section = extractSection(body, "hypotheses");
-  if (!section.trim()) return null;
-  const out = [];
-  for (const line of section.split("\n")) {
-    const top = /^-\s+\*\*(H\d+)\*\*\s+—\s+(.+)$/.exec(line.trim());
-    if (top) {
-      out.push({ id: top[1].toUpperCase(), text: top[2].trim(), basis: "", rationale: "" });
-      continue;
-    }
-    const sub = /^[-*]\s+\*(.+?):\*\s+(.+)$/.exec(line.trim());
-    if (!sub || out.length === 0) continue;
-    const last = out[out.length - 1];
-    if (matchesLabel(sub[1], BASIS_LABELS)) last.basis = sub[2].trim();
-    else if (matchesLabel(sub[1], TEST_LABELS)) last.rationale = sub[2].trim();
-  }
-  return out.length > 0 ? { hypotheses: out, adoptedAt: "" } : null;
-}
-var CLAIM_HEADINGS = locales.map((s) => s.argument.claims);
-var ASSUMPTION_HEADINGS = locales.map((s) => s.argument.assumptions);
-var EVIDENCE_HEADINGS = locales.map((s) => s.argument.evidence);
-var SUPPORTS_WORDS = locales.map((s) => s.argument.supports);
-var ATTACKS_WORDS = locales.map((s) => s.argument.attacks);
-var SOURCE_LABELS = locales.map((s) => s.argument.source);
-function splitNodeSource(text) {
-  const m = /^(.*?)\s+—\s+_([^:_]+):\s*([^_]+)_\s*$/.exec(text);
-  if (m && matchesLabel(m[2], SOURCE_LABELS)) return { text: m[1].trim(), source: m[3].trim() };
-  return { text: text.trim() };
-}
-function parseArgumentSection(body) {
-  const section = extractSection(body, "argument");
-  if (!section.trim()) return null;
-  const nodes = [];
-  const edges = [];
-  const evidence = [];
-  let kind = null;
-  let inEvidence = false;
-  for (const raw of section.split("\n")) {
-    const line = raw.trim();
-    const heading = /^\*(.+)\*$/.exec(line);
-    if (heading) {
-      if (matchesLabel(heading[1], CLAIM_HEADINGS)) kind = "claim", inEvidence = false;
-      else if (matchesLabel(heading[1], ASSUMPTION_HEADINGS)) kind = "assumption", inEvidence = false;
-      else if (matchesLabel(heading[1], EVIDENCE_HEADINGS)) kind = null, inEvidence = true;
-      continue;
-    }
-    const item = /^\d+\.\s+\[([CA]\d+)\]\s+(.+)$/.exec(line);
-    if (item && kind) {
-      const { text, source } = splitNodeSource(item[2]);
-      nodes.push({ id: item[1].toUpperCase(), text, kind, ...source ? { source } : {} });
-      continue;
-    }
-    const rel = /^-\s+\[([CAF]\d+)\]\s+(\S[^[]*?)\s+\[([CA]\d+)\](?::\s*(.+))?$/.exec(line);
-    if (!rel) continue;
-    const relKind = matchesLabel(rel[2], SUPPORTS_WORDS) ? "supports" : matchesLabel(rel[2], ATTACKS_WORDS) ? "attacks" : null;
-    if (!relKind) continue;
-    const from = rel[1].toUpperCase();
-    if (inEvidence && /^F\d+$/.test(from) && rel[4]) {
-      evidence.push({ id: from, text: rel[4].trim(), to: rel[3].toUpperCase(), kind: relKind, sourceKeys: [] });
-    } else if (!/^F\d+$/.test(from)) {
-      edges.push({ from, to: rel[3].toUpperCase(), kind: relKind });
-    }
-  }
-  if (nodes.length === 0) return null;
-  const known = new Set(nodes.map((n) => n.id));
-  return {
-    nodes,
-    edges: edges.filter((e) => known.has(e.from) && known.has(e.to)),
-    ...evidence.length > 0 ? { evidence: evidence.filter((ev) => known.has(ev.to)) } : {},
-    adoptedAt: ""
-  };
-}
-function parseSubquestionList(body) {
-  const section = extractSection(body, "subquestions");
-  if (!section.trim()) return [];
-  const out = [];
-  for (const line of section.split("\n")) {
-    const m = /^\s*\d+\.\s+(.+)$/.exec(line);
-    if (!m) continue;
-    const q = m[1].replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
-    if (q) out.push(q);
-  }
-  return out;
-}
-var STRENGTH_BY_WORD = new Map(
-  locales.flatMap(
-    (s) => Object.entries(s.synthesis.strengthLabels).map(
-      ([key, word]) => [word.toLowerCase(), key]
-    )
-  )
-);
-var EVIDENCE_PREFIXES = locales.map((s) => s.synthesis.evidenceInline.split("{strength}")[0].trim().toLowerCase());
-function parseFindingsFromSynthesis(body) {
-  const section = extractSection(body, "synthesis");
-  if (!section.trim()) return [];
-  const out = [];
-  for (const raw of section.split("\n")) {
-    const line = raw.trim();
-    const m = /^[-*]\s+(.+?)\s+—\s+\*([^*]+)\*(.*)$/.exec(line);
-    if (!m) continue;
-    const tag = m[2].trim().toLowerCase();
-    if (!EVIDENCE_PREFIXES.some((p) => tag.startsWith(p))) continue;
-    const afterPrefix = tag.slice(tag.indexOf(":") + 1).trim();
-    const strengthWord = afterPrefix.split(/[\s·]+/)[0];
-    const strength = STRENGTH_BY_WORD.get(strengthWord);
-    if (!strength) continue;
-    const claim = m[1].replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
-    if (!claim) continue;
-    const sourceKeys = [];
-    for (const doi of `${m[1]} ${m[3]}`.matchAll(/doi\.org\/([^\s)\]]+)/g)) {
-      const key = `doi:${decodeURIComponent(doi[1]).toLowerCase()}`;
-      if (!sourceKeys.includes(key)) sourceKeys.push(key);
-    }
-    out.push({ claim, strength, sourceKeys });
-  }
-  return out;
-}
-
-// src/belief.ts
-var SYSTEM7 = [
-  "You are a careful research assistant confronting the researcher's beliefs with new evidence.",
-  "You are given the researcher's current BELIEFS (numbered) and a SYNTHESIS of the literature.",
-  "For EACH belief, judge ONLY from the synthesis whether the evidence supports it, speaks against it,",
-  "or is neutral/insufficient. Do NOT decide for the researcher \u2014 you propose, they decide.",
-  'Return strict JSON: {"proposals":[{"belief":<the belief number>,"verdict":"ondersteunt|spreekt tegen|neutraal",',
-  '"reason":"one line, grounded in the synthesis (name what supports/contradicts it)"}]}.',
-  "Use 'neutraal' when the synthesis does not really address the belief \u2014 do not force a verdict.",
-  "Do NOT invent findings beyond the synthesis. Write the reason in the SAME language as the beliefs.",
-  "Respond with strict JSON only."
-].join(" ");
-function parseBeliefProposals(raw, beliefs, log) {
-  const payload = parseJsonObject(raw, "belief", log);
-  if (!payload) return [];
-  const list = payload.proposals;
-  if (!Array.isArray(list)) {
-    log == null ? void 0 : log("empty result \u2014 belief: no proposals array");
-    return [];
-  }
-  const out = [];
-  const seen = /* @__PURE__ */ new Set();
-  for (const entry of list) {
-    if (!entry || typeof entry !== "object") continue;
-    const e = entry;
-    const n = typeof e.belief === "number" ? e.belief : Number(e.belief);
-    if (!Number.isInteger(n) || n < 1 || n > beliefs.length || seen.has(n)) continue;
-    const v = typeof e.verdict === "string" ? e.verdict.toLowerCase().trim() : "";
-    const verdict = v === "ondersteunt" ? "ondersteunt" : v === "spreekt tegen" ? "spreekt tegen" : "neutraal";
-    const reason = typeof e.reason === "string" ? e.reason.trim() : "";
-    seen.add(n);
-    out.push({ claim: beliefs[n - 1].claim, verdict, reason });
-  }
-  return out;
-}
-async function confrontBeliefs(beliefs, synthesis, chat, log) {
-  if (beliefs.length === 0 || !synthesis.trim()) return [];
-  const numbered = beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n");
-  const user = `BELIEFS:
-${numbered}
-
-SYNTHESIS:
-${synthesis}`;
-  let raw;
-  try {
-    raw = await chat(
-      [
-        { role: "system", content: SYSTEM7 },
-        { role: "user", content: user }
-      ],
-      { json: true, temperature: 0.2 }
-    );
-  } catch (e) {
-    log == null ? void 0 : log("chat failure \u2014 belief", String(e));
-    return [];
-  }
-  return parseBeliefProposals(raw, beliefs, log);
-}
-
-// src/belief-modal.ts
-var import_obsidian19 = require("obsidian");
-function verdictToStatus(verdict) {
-  if (verdict === "ondersteunt") return "ondersteund";
-  if (verdict === "spreekt tegen") return "weersproken";
-  return null;
-}
-var VERDICT_LABEL = {
-  ondersteunt: "Supports",
-  "spreekt tegen": "Contradicts",
-  neutraal: "Neutral"
-};
-var BeliefModal = class extends import_obsidian19.Modal {
-  constructor(app, proposals, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.selected = /* @__PURE__ */ new Set();
-    this.proposals = proposals;
-    this.onChoice = onChoice;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Beliefs against the synthesis" });
-    contentEl.createEl("p", {
-      text: "The synthesis has been weighed against each belief. Tick what you want to adopt \u2014 nothing changes on its own. You hold the pen.",
-      cls: "consensus-handoff-hint"
-    });
-    const actionable = this.proposals.filter((p) => verdictToStatus(p.verdict));
-    const neutral = this.proposals.filter((p) => !verdictToStatus(p.verdict));
-    if (actionable.length > 0) {
-      contentEl.createEl("h3", { text: "Proposals (select to adopt)" });
-      for (const p of actionable) {
-        const status = verdictToStatus(p.verdict);
-        new import_obsidian19.Setting(contentEl).setName(`${VERDICT_LABEL[p.verdict]}: ${p.claim}`).setDesc([p.reason, status && `\u2192 status: ${status}`].filter(Boolean).join(" \xB7 ")).addToggle(
-          (t2) => t2.setValue(this.selected.has(p.claim)).onChange((on) => {
-            if (on) this.selected.add(p.claim);
-            else this.selected.delete(p.claim);
-          })
-        );
-      }
-    } else {
-      contentEl.createEl("p", { text: "No proposals to change a status." });
-    }
-    if (neutral.length > 0) {
-      contentEl.createEl("h3", { text: "Neutral \u2014 the synthesis doesn't touch this" });
-      const ul = contentEl.createEl("ul");
-      for (const p of neutral) ul.createEl("li", { text: `${p.claim}${p.reason ? ` \u2014 ${p.reason}` : ""}` });
-    }
-    new import_obsidian19.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Adopt selected").setCta().onClick(() => this.apply())
-    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.resolveAndClose(null)));
-  }
-  apply() {
-    const updates = [];
-    for (const p of this.proposals) {
-      if (!this.selected.has(p.claim)) continue;
-      const status = verdictToStatus(p.verdict);
-      if (status) updates.push({ claim: p.claim, status });
-    }
-    this.resolveAndClose(updates);
-  }
-  resolveAndClose(updates) {
-    this.resolve(updates);
-    this.close();
-  }
-  resolve(updates) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(updates);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
-
-// src/confirm-modal.ts
-var import_obsidian20 = require("obsidian");
-var ConfirmModal = class extends import_obsidian20.Modal {
-  constructor(app, title, message, labels, onChoice) {
-    super(app);
-    this.title = title;
-    this.message = message;
-    this.labels = labels;
-    this.onChoice = onChoice;
-    this.resolved = false;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: this.title });
-    for (const line of this.message.split("\n")) {
-      contentEl.createEl("p", { text: line });
-    }
-    new import_obsidian20.Setting(contentEl).addButton((b) => b.setButtonText(this.labels.confirmText).onClick(() => this.choose(true))).addButton((b) => b.setButtonText(this.labels.cancelText).onClick(() => this.choose(false)));
-  }
-  choose(confirmed) {
-    this.resolve(confirmed);
-    this.close();
-  }
-  resolve(confirmed) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(confirmed);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(false);
-  }
-};
-var OverwriteChoiceModal = class extends import_obsidian20.Modal {
-  constructor(app, title, message, onChoice, forkNote, omitAppend = false) {
-    super(app);
-    this.title = title;
-    this.message = message;
-    this.onChoice = onChoice;
-    this.forkNote = forkNote;
-    this.omitAppend = omitAppend;
-    this.resolved = false;
-  }
-  choose(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.close();
-    this.onChoice(choice);
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: this.title });
-    contentEl.createEl("p", { text: this.message });
-    if (this.forkNote) contentEl.createEl("p", { text: this.forkNote, cls: "consensus-review-hint" });
-    const buttons = new import_obsidian20.Setting(contentEl);
-    buttons.addButton((b) => b.setButtonText("Keep mine").onClick(() => this.choose("keep")));
-    if (this.forkNote) {
-      buttons.addButton((b) => b.setButtonText("Fork session").onClick(() => this.choose("fork")));
-    }
-    if (!this.omitAppend) {
-      buttons.addButton((b) => b.setButtonText("Append below").onClick(() => this.choose("append")));
-    }
-    buttons.addButton((b) => {
-      b.setButtonText("Replace").onClick(() => this.choose("replace"));
-      b.buttonEl.addClass("mod-warning");
-    });
-  }
-  onClose() {
-    this.contentEl.empty();
-    if (!this.resolved) {
-      this.resolved = true;
-      this.onChoice("keep");
-    }
-  }
-};
-
 // src/challenge.ts
 var CHALLENGE_DIMENSIONS = [
   "conceptueel",
@@ -16707,7 +15136,7 @@ var DIMENSION_HINTS = {
   empirisch: "What evidence is missing to make this hold?",
   praktisch: "Would a policymaker/practitioner pose the question this way?"
 };
-var SYSTEM8 = [
+var SYSTEM7 = [
   "You are a sharp, fair research supervisor challenging a research question \u2014 to strengthen it, not to win.",
   "Challenge the question along FIVE dimensions, each a different kind of pushback:",
   Object.entries(DIMENSION_HINTS).map(([d, h]) => `- ${d}: ${h}`).join(" "),
@@ -16764,7 +15193,7 @@ ${beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}` : "";
   try {
     raw = await chat(
       [
-        { role: "system", content: SYSTEM8 },
+        { role: "system", content: SYSTEM7 },
         { role: "user", content: user }
       ],
       // A little warmth helps the challenges span genuinely different angles.
@@ -16801,76 +15230,472 @@ function challengeAdoptionRecord(result, choice) {
   return { adopted };
 }
 
-// src/challenge-modal.ts
-var import_obsidian21 = require("obsidian");
-var DIMENSION_LABEL = {
-  conceptueel: "Conceptual",
-  methodologisch: "Methodological",
-  theoretisch: "Theoretical",
-  empirisch: "Empirical",
-  praktisch: "Practical"
-};
-var ChallengeModal = class extends import_obsidian21.Modal {
-  constructor(app, result, landing, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.selected = /* @__PURE__ */ new Set();
-    this.landing = landing;
-    this.result = result;
-    this.onChoice = onChoice;
+// src/belief.ts
+var SYSTEM8 = [
+  "You are a careful research assistant confronting the researcher's beliefs with new evidence.",
+  "You are given the researcher's current BELIEFS (numbered) and a SYNTHESIS of the literature.",
+  "For EACH belief, judge ONLY from the synthesis whether the evidence supports it, speaks against it,",
+  "or is neutral/insufficient. Do NOT decide for the researcher \u2014 you propose, they decide.",
+  'Return strict JSON: {"proposals":[{"belief":<the belief number>,"verdict":"ondersteunt|spreekt tegen|neutraal",',
+  '"reason":"one line, grounded in the synthesis (name what supports/contradicts it)"}]}.',
+  "Use 'neutraal' when the synthesis does not really address the belief \u2014 do not force a verdict.",
+  "Do NOT invent findings beyond the synthesis. Write the reason in the SAME language as the beliefs.",
+  "Respond with strict JSON only."
+].join(" ");
+function parseBeliefProposals(raw, beliefs, log) {
+  const payload = parseJsonObject(raw, "belief", log);
+  if (!payload) return [];
+  const list = payload.proposals;
+  if (!Array.isArray(list)) {
+    log == null ? void 0 : log("empty result \u2014 belief: no proposals array");
+    return [];
   }
-  onOpen() {
-    var _a;
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Challenge \u2014 push back on the framing" });
-    contentEl.createEl("p", {
-      text: "Five kinds of pushback. Tick the ones that land \u2014 I'll record those as beliefs to examine. You decide.",
-      cls: "consensus-handoff-hint"
+  const out = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const entry of list) {
+    if (!entry || typeof entry !== "object") continue;
+    const e = entry;
+    const n = typeof e.belief === "number" ? e.belief : Number(e.belief);
+    if (!Number.isInteger(n) || n < 1 || n > beliefs.length || seen.has(n)) continue;
+    const v = typeof e.verdict === "string" ? e.verdict.toLowerCase().trim() : "";
+    const verdict = v === "ondersteunt" ? "ondersteunt" : v === "spreekt tegen" ? "spreekt tegen" : "neutraal";
+    const reason = typeof e.reason === "string" ? e.reason.trim() : "";
+    seen.add(n);
+    out.push({ claim: beliefs[n - 1].claim, verdict, reason });
+  }
+  return out;
+}
+async function confrontBeliefs(beliefs, synthesis, chat, log) {
+  if (beliefs.length === 0 || !synthesis.trim()) return [];
+  const numbered = beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n");
+  const user = `BELIEFS:
+${numbered}
+
+SYNTHESIS:
+${synthesis}`;
+  let raw;
+  try {
+    raw = await chat(
+      [
+        { role: "system", content: SYSTEM8 },
+        { role: "user", content: user }
+      ],
+      { json: true, temperature: 0.2 }
+    );
+  } catch (e) {
+    log == null ? void 0 : log("chat failure \u2014 belief", String(e));
+    return [];
+  }
+  return parseBeliefProposals(raw, beliefs, log);
+}
+
+// src/thinking-flows.ts
+var ThinkingFlows = class {
+  constructor(deps) {
+    this.deps = deps;
+  }
+  // ── Exploration research assistant (E42) ──
+  /** Exploration research assistant (E42): prompt for a question, then explore it before searching. */
+  promptAndExplore(initialQuery) {
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Exploring the problem needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    this.deps.promptForQuestion({
+      seed: this.deps.promptSeed(initialQuery),
+      onSubmit: (submission) => void this.runExploreFlow(submission.query, submission.filters)
     });
-    for (const dim of CHALLENGE_DIMENSIONS) {
-      const items = this.result.challenges.filter((c) => c.dimension === dim);
-      if (items.length === 0) continue;
-      contentEl.createEl("h3", { text: (_a = DIMENSION_LABEL[dim]) != null ? _a : dim });
-      for (const c of items) this.renderChallenge(contentEl, c);
+  }
+  /**
+   * Run the Exploration research assistant (E42): explore the problem, let the writer pick a
+   * framing + search-term seeds, then either continue to the research pipeline with those choices
+   * or insert an exploration block. Falls back gracefully when nothing usable comes
+   * out (the writer can just run the research pipeline directly).
+   */
+  async runExploreFlow(rawQuestion, filters) {
+    const question = rawQuestion.trim();
+    if (!question) return;
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "explore",
+      loadingText: "Exploring the problem\u2026",
+      errorPrefix: "Exploration failed",
+      run: (log) => exploreProblem(question, this.deps.llmChatFn("exploration", log), log)
+    });
+    if (!step) return;
+    const { result } = step;
+    if (!result) {
+      this.deps.notify("Could not explore the problem \u2014 feel free to start research directly.", 6e3);
+      return;
     }
-    if (this.result.inversion) {
-      contentEl.createEl("h3", { text: "If your hypothesis is wrong\u2026" });
-      contentEl.createEl("p", { text: this.result.inversion });
+    const session = this.deps.activeSession();
+    const file = this.deps.activeNoteFile();
+    const hub = !session && file ? parseProjectHub(this.deps.fileFrontmatter(file)) : null;
+    const target = artefactLandingTarget(!!hub, !!session);
+    const projectName = this.deps.activeNoteProjectName(file);
+    this.deps.openExplorationModal(question, result, target, (choice) => {
+      if (!choice) return;
+      if (session && target === "session-note") {
+        void this.recordExplorationInSession(session.file, question, result, choice);
+      } else if (choice.action === "insert" || choice.action === "new-note") {
+        if (hub && file && target === "new-project-session") {
+          void this.recordExplorationAsNewProjectSession(file, hub, question, result, choice);
+        } else if (choice.action === "new-note") {
+          void (async () => {
+            const created = await this.deps.newSessionNearActiveNote(choice.framing || question);
+            if (!created) return;
+            this.deps.notify(`Exploration landed in a new session: "${created.basename}".`);
+            await this.recordExplorationInSession(created, question, result, choice);
+          })();
+        }
+      }
+      if (choice.action === "research") {
+        void this.deps.runResearchFlow(choice.framing, filters, { extraSearchTerms: choice.searchTermSeeds });
+      }
+    }, projectName);
+  }
+  /**
+   * Record the exploration artefact + chosen framing/seeds into the active research session (E46).
+   * The gate/write/logbook/record/Notice ritual lives in {@link ArtefactLanding.landArtefact}
+   * (AU_E134_S6); a "Keep" answer means none of this runs (no front-matter merge, no logbook,
+   * no Notice) — enforced there.
+   */
+  async recordExplorationInSession(file, question, result, choice) {
+    const chosen = choice.framing && choice.framing !== question ? choice.framing : question;
+    const alts = result.questionVariants.length;
+    await this.deps.artefactLanding.landArtefact({
+      file,
+      section: "exploration",
+      label: "exploration",
+      body: buildExplorationBody(result, choice),
+      beforeWrite: async () => {
+        const fields = { seeds: choice.searchTermSeeds };
+        if (choice.framing && choice.framing !== question) fields.framing = choice.framing;
+        await this.deps.sessionStore.setSessionFields(file, fields);
+        const newBeliefs = choice.beliefs ? parseBeliefLines(choice.beliefs) : [];
+        if (newBeliefs.length > 0) await this.deps.sessionStore.addBeliefs(file, newBeliefs);
+      },
+      log: {
+        step: t().headings.exploration,
+        summary: `${fmt(t().logbook.framingChosen, { framing: chosen })}${alts ? fmt(t().logbook.alternativesConsidered, { n: alts }) : ""}`
+      },
+      // AU_E89_S1 (export-pariteit): record the structured adoption alongside the proza section.
+      record: () => ({ adoptions: { exploration: explorationAdoptionRecord(question, choice) } }),
+      notice: "Exploration added to the session."
+    });
+  }
+  /**
+   * S1 (AU_E86_S1): an Explore run from a project HUB (no active session) that resolves to
+   * "insert only" lands in a NEW session note in the project's folder — not as an edit to the
+   * hub. Reuses the shared "create session in a hub's project" step ({@link
+   * AssistantContext.newSessionInHubProject}, AU_E87_S1) to create the note, then the SAME
+   * artefact write an existing session gets ({@link recordExplorationInSession}) for the
+   * `## Probleemverkenning` section + framing/seeds/beliefs front-matter — the only difference
+   * from the session-aware path is that the note is created first.
+   */
+  async recordExplorationAsNewProjectSession(hubFile, hub, question, result, choice) {
+    const created = await this.deps.newSessionInHubProject(hubFile, hub, question);
+    if (!created) return;
+    this.deps.notify(`Exploration landed in a new session: "${created.basename}".`);
+    await this.recordExplorationInSession(created, question, result, choice);
+  }
+  // ── Theory research assistant (E45) ──
+  /** Theory research assistant (E45): prompt for a question, then propose theoretical lenses. */
+  promptAndTheory(initialQuery) {
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Proposing theoretical lenses needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
     }
-    const actions = new import_obsidian21.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Record (+ selected as beliefs)").setCta().onClick(() => this.choose("record"))
-    );
-    if (this.landing === "cursor") {
-      actions.addButton((b) => b.setButtonText("Add to a new session note").onClick(() => this.choose("new-note")));
-    } else {
-      const label = this.landing === "session-note" ? "Add to session" : "Add to a new session in this project";
-      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("insert")));
+    this.deps.promptForQuestion({
+      seed: this.deps.promptSeed(initialQuery),
+      onSubmit: (submission) => void this.runTheoryFlow(submission.query, submission.filters)
+    });
+  }
+  /**
+   * Run the Theory research assistant (E45): propose theoretical lenses (incl. eliminative), let the
+   * writer pick which to carry forward, then either run the research pipeline with those lenses as extra
+   * search terms or insert a theory block. Falls back gracefully when nothing usable comes out.
+   */
+  async runTheoryFlow(rawQuestion, filters) {
+    const question = rawQuestion.trim();
+    if (!question) return;
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "theory",
+      loadingText: "Exploring theoretical lenses\u2026",
+      errorPrefix: "Theory lenses failed",
+      run: (log) => proposeTheory(question, this.deps.llmChatFn("theory", log), log)
+    });
+    if (!step) return;
+    const { result } = step;
+    if (!result) {
+      this.deps.notify("Could not propose theoretical lenses \u2014 feel free to start research directly.", 6e3);
+      return;
+    }
+    const session = this.deps.activeSession();
+    const file = this.deps.activeNoteFile();
+    const hub = !session && file ? parseProjectHub(this.deps.fileFrontmatter(file)) : null;
+    const target = artefactLandingTarget(!!hub, !!session);
+    const projectName = this.deps.activeNoteProjectName(file);
+    this.deps.openTheoryModal(result, target, (choice) => {
+      if (!choice) return;
+      if (choice.action === "fan-out") {
+        void this.createLensSessions(question, result, choice);
+        return;
+      }
+      if (session && target === "session-note") {
+        void this.recordTheoryInSession(session.file, result, choice);
+      } else if (choice.action === "insert" || choice.action === "new-note") {
+        if (hub && file && target === "new-project-session") {
+          void this.recordTheoryAsNewProjectSession(file, hub, question, result, choice);
+        } else if (choice.action === "new-note") {
+          void (async () => {
+            const created = await this.deps.newSessionNearActiveNote(question);
+            if (!created) return;
+            this.deps.notify(`Theoretical lenses landed in a new session: "${created.basename}".`);
+            await this.recordTheoryInSession(created, result, choice);
+          })();
+        }
+      }
+      if (choice.action === "research") {
+        void this.deps.runResearchFlow(question, filters, { extraSearchTerms: choice.lenses });
+      }
+    }, projectName);
+  }
+  /**
+   * AU_E108_S1 — one session per chosen lens: a single research run flattens several lenses
+   * into ONE framework (the framework phase is singular by design, E18), which is the opposite
+   * of the parallax idea. This creates a session note per chosen lens — each carrying the full
+   * Theory artefact with ITS lens as the chosen one (front-matter `lenses: [lens]` steers the
+   * framework phase there), a Context link back to the parent, and its own adoption record.
+   * Research is deliberately NOT auto-started (owner decision jul 2026): n pipelines in one go
+   * would be n× cost without control; the sidebar recommends the research step per note. The
+   * parent keeps the complete artefact (all lenses incl. eliminated) and a logbook event links
+   * the children; the hub contents section (AU_E98_S1) indexes them automatically.
+   */
+  async createLensSessions(question, result, choice) {
+    const chosen = result.lenses.filter((l) => choice.lenses.includes(l.name));
+    if (chosen.length < 2) return;
+    const parentSession = this.deps.activeSession();
+    const file = this.deps.activeNoteFile();
+    const folder = (file == null ? void 0 : file.parent) && file.parent.path !== "/" ? file.parent.path : "";
+    const fm = file ? this.deps.fileFrontmatter(file) : void 0;
+    const project = file ? resolveProject(file.path, fm) : void 0;
+    try {
+      if (parentSession) await this.recordTheoryInSession(parentSession.file, result, choice);
+      const links = [];
+      for (const lens of chosen) {
+        const created = await this.deps.createSessionNote(`${question} \u2014 ${lens.name}`, folder, project, {
+          ...parentSession ? { parent: parentSession.file, parentTopic: question } : {},
+          silent: true
+        });
+        if (!created) continue;
+        await this.recordTheoryInSession(created, result, { action: "insert", lenses: [lens.name] });
+        links.push(`[[${created.basename}]]`);
+      }
+      if (links.length === 0) return;
+      if (parentSession) {
+        await this.deps.sessionStore.logEvent(
+          parentSession.file,
+          t().headings.lenses,
+          fmt(t().logbook.lensSessionsCreated, { n: String(links.length), links: links.join(" \xB7 ") })
+        );
+      }
+      this.deps.notify(`Created ${links.length} lens session(s) \u2014 run the research step in each at your own pace.`);
+    } catch (e) {
+      this.deps.notifyError("Creating lens sessions", e);
     }
   }
-  renderChallenge(parent, c) {
-    new import_obsidian21.Setting(parent).setName(c.challenge).setDesc(c.action ? `Action: ${c.action}` : "").addToggle(
-      (t2) => t2.setValue(this.selected.has(c.challenge)).onChange((on) => {
-        if (on) this.selected.add(c.challenge);
-        else this.selected.delete(c.challenge);
-      })
-    );
+  /**
+   * S1 (AU_E87_S1): a Theory run from a project HUB (no active session) that resolves to
+   * "insert only" lands in a NEW session note in the project's folder, mirroring {@link
+   * recordExplorationAsNewProjectSession} via the shared `newSessionInHubProject` step.
+   */
+  async recordTheoryAsNewProjectSession(hubFile, hub, question, result, choice) {
+    const created = await this.deps.newSessionInHubProject(hubFile, hub, question);
+    if (!created) return;
+    this.deps.notify(`Theoretical lenses landed in a new session: "${created.basename}".`);
+    await this.recordTheoryInSession(created, result, choice);
   }
-  choose(action) {
-    const adopted = this.result.challenges.map((c) => c.challenge).filter((t2) => this.selected.has(t2));
-    this.resolve({ action, adopted });
-    this.close();
+  /**
+   * Record the lenses artefact + chosen lenses into the active research session (E46_S2).
+   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); a "Keep" answer
+   * writes/records nothing — enforced there.
+   */
+  async recordTheoryInSession(file, result, choice) {
+    await this.deps.artefactLanding.landArtefact({
+      file,
+      section: "lenses",
+      label: "theoretical lenses",
+      body: buildTheoryBody(result, choice),
+      beforeWrite: async () => {
+        if (choice.lenses.length > 0) await this.deps.sessionStore.setSessionFields(file, { lenses: choice.lenses });
+      },
+      log: {
+        step: t().headings.lenses,
+        summary: `${fmt(t().logbook.lensesChosen, { n: choice.lenses.length })}${result.eliminated.length ? fmt(t().logbook.lensesEliminated, { n: result.eliminated.length }) : ""}`
+      },
+      // AU_E89_S1 (export-pariteit): record the structured adoption alongside the proza section.
+      record: () => ({ adoptions: { theory: theoryAdoptionRecord(result, choice) } }),
+      notice: "Theoretical lenses added to the session."
+    });
   }
-  resolve(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(choice);
+  // ── Challenge research assistant (E49) ──
+  /** Challenge research assistant (E49): prompt for a question, then challenge its framing. */
+  promptAndChallenge(initialQuery) {
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Challenging the framing needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    this.deps.promptForQuestion({
+      seed: this.deps.promptSeed(initialQuery),
+      onSubmit: (submission) => void this.runChallengeFlow(submission.query)
+    });
   }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
+  /**
+   * Run the Challenge research assistant (E49): challenge the framing along five dimensions (sharper when
+   * it pushes against the session's beliefs), let the writer pick which cut, record the artefact
+   * and adopt the ticked challenges as open beliefs to examine. Falls back gracefully on failure.
+   */
+  async runChallengeFlow(rawQuestion) {
+    const question = rawQuestion.trim();
+    if (!question) return;
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "challenge",
+      loadingText: "Challenging the framing (five dimensions)\u2026",
+      errorPrefix: "Challenge failed",
+      run: (log) => {
+        var _a, _b;
+        const beliefs = (_b = (_a = this.deps.activeSession()) == null ? void 0 : _a.session.beliefs) != null ? _b : [];
+        return challengeFraming(question, beliefs, this.deps.llmChatFn("challenge", log), log);
+      }
+    });
+    if (!step) return;
+    const { result } = step;
+    if (!result) {
+      this.deps.notify("Could not challenge the framing \u2014 feel free to start research directly.", 6e3);
+      return;
+    }
+    const session = this.deps.activeSession();
+    const file = this.deps.activeNoteFile();
+    const hub = !session && file ? parseProjectHub(this.deps.fileFrontmatter(file)) : null;
+    const target = artefactLandingTarget(!!hub, !!session);
+    const projectName = this.deps.activeNoteProjectName(file);
+    this.deps.openChallengeModal(result, target, (choice) => {
+      if (!choice) return;
+      if (session && target === "session-note") {
+        void this.recordChallengeInSession(session.file, question, result, choice);
+      } else if (choice.action === "new-note") {
+        void (async () => {
+          const created = await this.deps.newSessionNearActiveNote(question);
+          if (!created) return;
+          this.deps.notify(`Challenge landed in a new session: "${created.basename}".`);
+          await this.recordChallengeInSession(created, question, result, choice);
+        })();
+      } else if (hub && file && target === "new-project-session") {
+        void this.recordChallengeAsNewProjectSession(file, hub, question, result, choice);
+      }
+    }, projectName);
+  }
+  /**
+   * S1 (AU_E87_S1): a Challenge run from a project HUB (no active session) lands in a NEW
+   * session note in the project's folder, mirroring {@link recordExplorationAsNewProjectSession}
+   * via the shared `newSessionInHubProject` step.
+   */
+  async recordChallengeAsNewProjectSession(hubFile, hub, question, result, choice) {
+    const created = await this.deps.newSessionInHubProject(hubFile, hub, question);
+    if (!created) return;
+    this.deps.notify(`Challenge landed in a new session: "${created.basename}".`);
+    await this.recordChallengeInSession(created, question, result, choice);
+  }
+  /**
+   * Record the challenge artefact + adopt the ticked challenges as open beliefs (E49).
+   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); a "Keep" answer
+   * writes/records nothing — enforced there.
+   */
+  async recordChallengeInSession(file, _question, result, choice) {
+    const adopted = choice.adopted.map((claim) => ({ claim, status: "open" }));
+    await this.deps.artefactLanding.landArtefact({
+      file,
+      section: "challenge",
+      label: "challenge",
+      body: buildChallengeBody(result),
+      afterWrite: async () => {
+        if (adopted.length > 0) await this.deps.sessionStore.addBeliefs(file, adopted);
+      },
+      log: {
+        step: t().headings.challenge,
+        summary: `${fmt(t().logbook.challengesSummary, { n: result.challenges.length })}${adopted.length ? fmt(t().logbook.challengesAdopted, { n: adopted.length }) : ""}`
+      },
+      // AU_E89_S1 (export-pariteit) + AU_E131_S2: the basedOn fingerprints are read AFTER
+      // the writes above, so the just-adopted beliefs count as the current basis.
+      record: async (noteBody) => ({
+        adoptions: { challenge: challengeAdoptionRecord(result, choice) },
+        basedOn: { challenge: upstreamFingerprints(await noteBody(), "challenge") }
+      }),
+      notice: adopted.length > 0 ? `Challenge added; recorded ${adopted.length} belief(s) to examine.` : "Challenge added to the session."
+    });
+  }
+  // ── Belief layer (E47) ──
+  /**
+   * Belief layer (E47, choice 2A — propose-only): confront the active session's beliefs with the
+   * latest synthesis. The model judges each belief (supports / contradicts / neutral); the writer
+   * ticks which proposals to apply. Nothing changes on its own — the researcher holds the pen.
+   */
+  async confrontBeliefsFlow() {
+    var _a, _b, _c;
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Confronting beliefs needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    const active = this.deps.activeSession();
+    if (!active) {
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then confront your beliefs.');
+      return;
+    }
+    const { file, session } = active;
+    if (session.beliefs.length === 0) {
+      this.deps.notify('No beliefs captured yet \u2014 capture some via "Explore the problem" first, then confront them.');
+      return;
+    }
+    const last = this.deps.lastResearch();
+    let synthesis = shouldPreferLastResearch((_a = last == null ? void 0 : last.notePath) != null ? _a : null, file.path) ? (_c = (_b = last == null ? void 0 : last.summary) == null ? void 0 : _b.trim()) != null ? _c : "" : "";
+    if (!synthesis) synthesis = extractSection(await this.deps.vault.read(file), "synthesis");
+    if (!synthesis) {
+      this.deps.notify('No synthesis yet \u2014 run "Evidence \xB7 run research" in this session first, then confront your beliefs.');
+      return;
+    }
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "confront beliefs",
+      loadingText: "Confronting your beliefs with the synthesis\u2026",
+      errorPrefix: "Confronting beliefs failed",
+      run: (log) => confrontBeliefs(session.beliefs, synthesis, this.deps.llmChatFn("belief", log), log)
+    });
+    if (!step) return;
+    const { result: proposals } = step;
+    if (proposals.length === 0) {
+      this.deps.notify("The synthesis yielded no proposals for your beliefs.", 6e3);
+      return;
+    }
+    this.deps.openBeliefModal(proposals, (updates) => {
+      if (!updates || updates.length === 0) return;
+      const beforeByClaim = new Map(session.beliefs.map((b) => {
+        var _a2;
+        return [b.claim.toLowerCase(), (_a2 = b.status) != null ? _a2 : "open"];
+      }));
+      const transitions = updates.map((u) => {
+        var _a2;
+        return { claim: u.claim, from: (_a2 = beforeByClaim.get(u.claim.toLowerCase())) != null ? _a2 : "open", to: u.status };
+      }).filter((tr) => tr.from !== tr.to);
+      void this.deps.sessionStore.applyBeliefs(file, updates).then(async () => {
+        const summary = appendBeliefTransitions(fmt(t().logbook.beliefsUpdated, { n: updates.length }), transitions);
+        await this.deps.sessionStore.logEvent(file, t().logbook.stepBeliefs, summary);
+        this.deps.notify(`Updated ${updates.length} belief(s).`);
+      });
+    });
   }
 };
+
+// src/design-flows.ts
+var import_obsidian13 = require("obsidian");
 
 // src/argument-structure.ts
 var MAX_ARGUMENT_CLAIMS = 8;
@@ -17033,90 +15858,6 @@ async function proposeArgumentStructure(context, chat, log) {
   }
   return parseArgumentStructure(raw, log);
 }
-
-// src/argument-modal.ts
-var import_obsidian22 = require("obsidian");
-var ArgumentModal = class extends import_obsidian22.Modal {
-  constructor(app, structure, onChoice, noteBody = "") {
-    super(app);
-    this.resolved = false;
-    this.structure = structure;
-    this.onChoice = onChoice;
-    this.noteBody = noteBody;
-    this.selected = new Set(structure.nodes.map((n) => n.id));
-  }
-  onOpen() {
-    var _a;
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Argument structure \u2014 map the reasoning" });
-    contentEl.createEl("p", {
-      text: "Proposed claims and assumptions. Untick what doesn't belong; relations follow automatically when both endpoints are adopted. You decide.",
-      cls: "consensus-handoff-hint"
-    });
-    this.renderGroup(contentEl, "claim", "Claims");
-    this.renderGroup(contentEl, "assumption", "Assumptions");
-    if (this.structure.edges.length > 0) {
-      contentEl.createEl("h3", { text: "Relations (read-only)" });
-      contentEl.createEl("p", {
-        text: "A relation is recorded only when both of its endpoints are adopted.",
-        cls: "consensus-handoff-hint"
-      });
-      const list = contentEl.createEl("ul");
-      for (const e of this.structure.edges) {
-        list.createEl("li", { text: `[${e.from}] ${e.kind === "supports" ? "supports" : "attacks"} [${e.to}]` });
-      }
-    }
-    const evidence = (_a = this.structure.evidence) != null ? _a : [];
-    if (evidence.length > 0) {
-      contentEl.createEl("h3", { text: "Evidence (follows its claim)" });
-      contentEl.createEl("p", {
-        text: "Findings from the synthesis, linked to the claim they bear on. An evidence link is recorded only when its claim is adopted.",
-        cls: "consensus-handoff-hint"
-      });
-      const list = contentEl.createEl("ul");
-      for (const ev of evidence) {
-        list.createEl("li", { text: `[${ev.id}] ${ev.kind === "supports" ? "supports" : "attacks"} [${ev.to}]: ${ev.text}` });
-      }
-    }
-    new import_obsidian22.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Adopt (selected elements)").setCta().onClick(() => this.adopt())
-    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
-  }
-  renderGroup(parent, kind, label) {
-    const items = this.structure.nodes.filter((n) => n.kind === kind);
-    if (items.length === 0) return;
-    parent.createEl("h3", { text: label });
-    for (const n of items) this.renderNode(parent, n);
-  }
-  renderNode(parent, node) {
-    const parts = [];
-    if (node.source) parts.push(`source: ${node.source}`);
-    if (this.noteBody && !verbatimInSource(node.text, this.noteBody)) {
-      parts.push("\u26A0 not found verbatim in the note \u2014 may be paraphrased or invented");
-    }
-    const setting = new import_obsidian22.Setting(parent).setName(`[${node.id}] ${node.text}`).addToggle(
-      (t2) => t2.setValue(this.selected.has(node.id)).onChange((on) => {
-        if (on) this.selected.add(node.id);
-        else this.selected.delete(node.id);
-      })
-    );
-    if (parts.length > 0) setting.setDesc(parts.join(" \xB7 "));
-  }
-  adopt() {
-    this.resolve(filterArgumentStructure(this.structure, this.selected));
-    this.close();
-  }
-  resolve(adopted) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(adopted);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
 
 // src/argument-canvas.ts
 var CANVAS_NODE_WIDTH = 320;
@@ -17399,182 +16140,6 @@ function relayoutArgumentCanvas(structure, labels, existing, hypotheses = null, 
   return buildArgumentCanvas(structure, labels, { nodes: userNodes, edges: existing.edges }, hypotheses, staleNote);
 }
 
-// src/hypothesis-modal.ts
-var import_obsidian23 = require("obsidian");
-var HypothesisModal = class extends import_obsidian23.Modal {
-  constructor(app, proposal, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.proposal = proposal;
-    this.selected = proposal.hypotheses.map(() => true);
-    this.onChoice = onChoice;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Proposed hypotheses" });
-    contentEl.createEl("p", {
-      text: "Falsifiable hypotheses derived from your argument map, beliefs and research questions. Adopt the ones worth testing \u2014 the set lands as its own section and record. You decide.",
-      cls: "consensus-handoff-hint"
-    });
-    this.proposal.hypotheses.forEach((h, i) => {
-      const desc = [h.basis ? `basis: ${h.basis}` : "", h.rationale].filter(Boolean).join(" \u2014 ");
-      new import_obsidian23.Setting(contentEl).setName(`${h.id} \u2014 ${h.text}`).setDesc(desc).addToggle((toggle) => toggle.setValue(this.selected[i]).onChange((v) => this.selected[i] = v));
-    });
-    new import_obsidian23.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Adopt hypotheses").setCta().onClick(() => {
-        const adopted = renumberHypotheses(this.proposal.hypotheses.filter((_, i) => this.selected[i]));
-        this.resolve(adopted.length > 0 ? { hypotheses: adopted, adoptedAt: "" } : null);
-        this.close();
-      })
-    );
-  }
-  resolve(choice) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(choice);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
-
-// src/instrument-search.ts
-var MAX_INSTRUMENT_RESULTS = 20;
-function buildScaleQueries(construct) {
-  const c = construct.replace(/\s+/g, " ").replace(/"/g, "'").trim();
-  if (!c) return [];
-  return [
-    `"${c}" validated scale`,
-    `"${c}" questionnaire validation psychometric properties`,
-    `"${c}" measurement instrument reliability validity`,
-    `"${c}" scale development validation`
-  ];
-}
-var INSTRUMENT_MARKERS = /\b(scale|questionnaire|inventory|instrument|psychometric|validation|validity|reliability|measure(?:ment|s)?|index)\b/i;
-function rankInstrumentPapers(papers, max = MAX_INSTRUMENT_RESULTS) {
-  var _a, _b;
-  const titleHits = [];
-  const abstractHits = [];
-  const rest = [];
-  for (const p of papers) {
-    if (INSTRUMENT_MARKERS.test((_a = p.title) != null ? _a : "")) titleHits.push(p);
-    else if (INSTRUMENT_MARKERS.test((_b = p.abstract) != null ? _b : "")) abstractHits.push(p);
-    else rest.push(p);
-  }
-  return [...titleHits, ...abstractHits, ...rest].slice(0, max);
-}
-
-// src/construct-modal.ts
-var import_obsidian24 = require("obsidian");
-var ConstructModal = class extends import_obsidian24.Modal {
-  constructor(app, initialConstruct, onSubmit) {
-    super(app);
-    this.submitted = false;
-    this.construct = initialConstruct;
-    this.onSubmit = onSubmit;
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Find validated scales" });
-    contentEl.createEl("p", {
-      text: 'Name the CONSTRUCT to measure \u2014 a concept, not a whole question (e.g. "perceived recovery", "social capital"). Parallax searches the measurement literature for validated scales and questionnaires.',
-      cls: "consensus-handoff-hint"
-    });
-    contentEl.createEl("label", { text: "Construct", cls: "consensus-search-label" });
-    const input = contentEl.createEl("input", { type: "text", cls: "consensus-search-input" });
-    input.value = this.construct;
-    input.placeholder = "e.g. perceived recovery";
-    input.addEventListener("input", () => this.construct = input.value);
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        this.submit();
-      }
-    });
-    if (!import_obsidian24.Platform.isMobile) window.setTimeout(() => input.focus(), 0);
-    new import_obsidian24.Setting(contentEl).addButton((b) => b.setButtonText("Search scales").setCta().onClick(() => this.submit()));
-  }
-  submit() {
-    const construct = this.construct.trim();
-    if (!construct) return;
-    this.resolve(construct);
-    this.close();
-  }
-  resolve(construct) {
-    if (this.submitted) return;
-    this.submitted = true;
-    this.onSubmit(construct);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
-
-// src/interview-modal.ts
-var import_obsidian25 = require("obsidian");
-var InterviewModal = class extends import_obsidian25.Modal {
-  constructor(app, guide, onChoice) {
-    super(app);
-    this.resolved = false;
-    this.guide = guide;
-    this.onChoice = onChoice;
-    this.selected = new Set(guide.questions.map((q) => q.id));
-  }
-  onOpen() {
-    const { contentEl } = this;
-    applyModalChrome(this);
-    contentEl.createEl("h2", { text: "Interview guide \u2014 design the conversation" });
-    contentEl.createEl("p", {
-      text: "Proposed interview questions, each with its provenance. Untick what doesn't belong; probes follow their question. You decide.",
-      cls: "consensus-handoff-hint"
-    });
-    if (this.guide.opening) {
-      contentEl.createEl("p", { text: `Opening: ${this.guide.opening}`, cls: "consensus-handoff-hint" });
-    }
-    for (const q of this.guide.questions) this.renderQuestion(contentEl, q);
-    new import_obsidian25.Setting(contentEl).addButton(
-      (b) => b.setButtonText("Adopt (selected questions)").setCta().onClick(() => this.adopt())
-    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
-  }
-  renderQuestion(parent, q) {
-    const chrome = {
-      subquestion: "sub-question",
-      gap: "evidence gap",
-      assumption: "assumption",
-      belief: "belief",
-      other: "other"
-    };
-    const provenance = `\u2190 ${chrome[q.source.kind]}${q.source.ref ? `: ${q.source.ref}` : ""}`;
-    new import_obsidian25.Setting(parent).setName(`[${q.id}] ${q.text}`).setDesc(provenance).addToggle(
-      (t2) => t2.setValue(this.selected.has(q.id)).onChange((on) => {
-        if (on) this.selected.add(q.id);
-        else this.selected.delete(q.id);
-      })
-    );
-    if (q.probes.length > 0) {
-      const list = parent.createEl("ul", { cls: "consensus-handoff-hint" });
-      for (const probe of q.probes) list.createEl("li", { text: probe });
-    }
-  }
-  adopt() {
-    this.resolve(filterInterviewGuide(this.guide, this.selected));
-    this.close();
-  }
-  resolve(adopted) {
-    if (this.resolved) return;
-    this.resolved = true;
-    this.onChoice(adopted);
-  }
-  onClose() {
-    this.contentEl.empty();
-    this.resolve(null);
-  }
-};
-
 // src/connections.ts
 var MAX_SHARED_SOURCE_LINKS = 10;
 function parseParentSessionLink(contextBody) {
@@ -17618,9 +16183,3466 @@ function buildConnectionsBody(inputs) {
   return lines2.length > 0 ? lines2.join("\n") : null;
 }
 
-// src/research-design-modal.ts
+// src/design-flows.ts
+var DesignFlows = class {
+  constructor(deps) {
+    this.deps = deps;
+  }
+  /** The graph store, read fresh — every flow below starts from the records on disk. */
+  async graphStore() {
+    return parseGraphStore(await this.deps.adapters.vaultStore().read(this.deps.adapters.graphStorePath()));
+  }
+  // ── Argument structure (AU_E103) ──
+  /**
+   * Map the argument (AU_E103, propose-only): make the session's logical structure explicit —
+   * claims, assumptions and the supports/attacks relations between them. The LLM reads the
+   * session content (question, synthesis, adopted challenges, beliefs) and PROPOSES a map; the
+   * researcher adopts per node in the `ArgumentModal`; adoption writes the `## Argument
+   * structure` section (E87 Replace/Keep respected), the graph-store record, and a logbook
+   * event. Mirrors the Challenge research assistant flow.
+   */
+  async mapArgumentFlow() {
+    var _a, _b;
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Mapping the argument needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    const active = this.deps.activeSession();
+    if (!active) {
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then map the argument.');
+      return;
+    }
+    const { file, session } = active;
+    const preState = await this.deps.sessionStore.sectionEditState(file, "argument");
+    const preMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "argument", "argument map", { offerFork: "argument" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.deps.artefactLanding.forkSessionFromRevision(file, "argument", "argument map");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
+    const body = await this.deps.vault.read(file);
+    const store = await this.graphStore();
+    const findings = (_b = (_a = recordForNote(store, file.path)) == null ? void 0 : _a.findings) != null ? _b : [];
+    const context = this.buildArgumentContext(session, body, findings);
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "argument",
+      loadingText: "Mapping the argument (claims, assumptions, relations)\u2026",
+      errorPrefix: "Argument mapping failed",
+      run: (log) => proposeArgumentStructure(context, this.deps.llmChatFn("argument", log), log)
+    });
+    if (!step) return;
+    const { result: raw } = step;
+    if (!raw) {
+      this.deps.notify("Could not map the argument \u2014 try again once the session holds more thinking to map.", 6e3);
+      return;
+    }
+    const result = resolveArgumentEvidence(raw, findings);
+    this.deps.openArgumentModal(
+      result,
+      (adopted) => {
+        if (!adopted || adopted.nodes.length === 0) return;
+        void this.recordArgumentInSession(file, adopted, preapproved);
+      },
+      body
+      // AU_E129_S9: lets the modal flag nodes that don't literally occur in the note
+    );
+  }
+  /**
+   * The session content the argument mapper reads (design §5): the question/framing, the
+   * beliefs, and the synthesis + adopted-challenge sections when present. Long sections are
+   * capped — the map needs the reasoning's shape, not every word of it.
+   */
+  buildArgumentContext(session, body, findings = []) {
+    const cap = (s) => s.length > 4e3 ? `${s.slice(0, 4e3)}\u2026` : s;
+    const parts = [`Research question: ${sessionTopic(session)}`];
+    if (session.beliefs.length > 0) {
+      parts.push(`Current beliefs:
+${session.beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`);
+    }
+    if (findings.length > 0) {
+      parts.push(`Findings (numbered):
+${findings.map((f, i) => `F${i + 1}: ${cap(f.claim).slice(0, 400)}`).join("\n")}`);
+    }
+    for (const id of ["synthesis", "challenge", "exploration"]) {
+      const section = extractSection(body, id);
+      if (section) parts.push(`Section "${id}":
+${cap(section)}`);
+    }
+    return parts.join("\n\n");
+  }
+  /**
+   * Record the adopted argument map (AU_E103): section + graph-store record + logbook event.
+   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); the preapproved
+   * gate answer is the AU_E131_S3 safety net — re-asks only if the section changed during the run.
+   */
+  async recordArgumentInSession(file, adopted, preapproved) {
+    const structure = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
+    await this.deps.artefactLanding.landArtefact({
+      file,
+      section: "argument",
+      label: "argument map",
+      ...preapproved ? { preapproved } : {},
+      body: buildArgumentBody(structure, t().argument),
+      log: {
+        step: t().logbook.stepArgument,
+        summary: fmt(t().logbook.argumentAdopted, { n: structure.nodes.length })
+      },
+      // Structured record next to the proza section (E68/E89 pattern). Latest map replaces
+      // the previous one as a whole (§3). AU_E131_S2: upstream basis alongside, for staleness.
+      record: async (noteBody) => ({
+        argumentStructure: structure,
+        basedOn: { argument: upstreamFingerprints(await noteBody(), "argument") }
+      }),
+      notice: `Argument map recorded (${structure.nodes.length} element(s)).`
+    });
+  }
+  /**
+   * Regenerate the `## Argument structure` section from the stored graph-store record (AU_E103)
+   * — no LLM call: the records are the source for projections (design §3), so a refresh is a
+   * deterministic re-render (e.g. after an i18n language switch, or to undo a hand-mangled
+   * Mermaid block). The E87 Replace/Keep respect applies exactly as on adoption.
+   */
+  async refreshArgumentMap() {
+    var _a;
+    const file = this.deps.activeNoteFile();
+    if (!file) {
+      this.deps.notify("Open a session note to refresh its argument map.");
+      return;
+    }
+    const store = await this.graphStore();
+    const structure = sanitizeArgumentStructure((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.argumentStructure);
+    if (!structure) {
+      this.deps.notify('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
+      return;
+    }
+    const writeMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "argument", "argument map");
+    if (!writeMode || writeMode === "fork") return;
+    await this.deps.artefactLanding.writeArtefact(file, "argument", buildArgumentBody(structure, t().argument), writeMode);
+    this.deps.notify("Argument map regenerated from the stored record.");
+  }
+  /**
+   * The session note the argument-canvas commands should act on: the active note, or — when the
+   * user is looking at a generated "<note> — argument.canvas" (the natural place to invoke
+   * re-layout, AU_E128_S1 nawerk) — the session note resolved from the canvas filename.
+   */
+  argumentCanvasSessionNote() {
+    const file = this.deps.activeNoteFile();
+    if (!file || file.extension !== "canvas") return file;
+    const notePath = sessionNotePathForArgumentCanvas(file.path);
+    if (!notePath) return null;
+    const note = this.deps.vault.getAbstractFileByPath((0, import_obsidian13.normalizePath)(notePath));
+    return note instanceof import_obsidian13.TFile ? note : null;
+  }
+  /**
+   * The canvas staleness banner text (AU_E131_S5), or null while the argument map's recorded
+   * basis still matches the note. Owner decision: staleness shows on the canvas too — "an
+   * easy place to inspect the project".
+   */
+  async argumentStaleNote(file, record) {
+    const stale = staleSections(await this.deps.vault.read(file), record == null ? void 0 : record.basedOn).find((e) => e.artefact === "argument");
+    if (!stale) return null;
+    return fmt(t().argument.staleBanner, { changed: stale.changed.map((c) => sectionHeading(c)).join(", ") });
+  }
+  /**
+   * Project the stored argument map onto a `.canvas` file next to the note (AU_E103_S3 — rung 2
+   * of the escalation ladder): same record lookup as {@link refreshArgumentMap}, no LLM call.
+   * The canvas is regenerated under the position-preserving strategy documented in
+   * `argument-canvas.ts` — the user's repositioning and own nodes/edges survive, so no
+   * ConfirmModal is needed; a Notice says what was kept.
+   */
+  async openArgumentCanvas() {
+    var _a;
+    const file = this.argumentCanvasSessionNote();
+    if (!file) {
+      this.deps.notify("Open a session note to project its argument map onto a Canvas.");
+      return;
+    }
+    const store = await this.graphStore();
+    const record = artefactRecordForNote(store, file.path);
+    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
+    if (!structure) {
+      this.deps.notify('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
+      return;
+    }
+    const hypotheses = (_a = sanitizeHypothesisSet(record == null ? void 0 : record.hypotheses)) != null ? _a : null;
+    const staleNote = await this.argumentStaleNote(file, record);
+    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
+    const path = (0, import_obsidian13.normalizePath)(`${folder}${file.basename}${ARGUMENT_CANVAS_SUFFIX}`);
+    try {
+      const existingFile = this.deps.vault.getAbstractFileByPath(path);
+      const existing = parseCanvas(existingFile instanceof import_obsidian13.TFile ? await this.deps.vault.read(existingFile) : null);
+      const canvas = buildArgumentCanvas(structure, { ...t().argument, hypotheses: t().headings.hypotheses, projection: fmt(t().argument.projection, { note: `[[${file.basename}]]` }) }, existing, hypotheses, staleNote);
+      const canvasFile = await this.deps.adapters.writeVaultFile(path, serializeCanvas(canvas));
+      await this.deps.openFile(canvasFile);
+      this.deps.notify(
+        existing ? "Canvas updated \u2014 your positions and own nodes were kept." : `Argument canvas created: "${path}".`
+      );
+    } catch (e) {
+      this.deps.notifyError(`Writing the argument canvas to "${path}"`, e);
+    }
+  }
+  /**
+   * Re-layout the argument canvas (AU_E128_S1, explicit action): rebuild the argument nodes on
+   * fresh connectivity-ordered grid positions, discarding their stored geometry — the conscious
+   * counterpart of {@link openArgumentCanvas}, whose regeneration deliberately never moves what
+   * the user arranged. User-added nodes and edges survive with their geometry.
+   */
+  async relayoutArgumentCanvasFlow() {
+    var _a;
+    const file = this.argumentCanvasSessionNote();
+    if (!file) {
+      this.deps.notify("Open a session note (or its argument canvas) to re-layout the argument canvas.");
+      return;
+    }
+    const store = await this.graphStore();
+    const record = artefactRecordForNote(store, file.path);
+    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
+    if (!structure) {
+      this.deps.notify('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
+      return;
+    }
+    const hypotheses = (_a = sanitizeHypothesisSet(record == null ? void 0 : record.hypotheses)) != null ? _a : null;
+    const staleNote = await this.argumentStaleNote(file, record);
+    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
+    const path = (0, import_obsidian13.normalizePath)(`${folder}${file.basename}${ARGUMENT_CANVAS_SUFFIX}`);
+    try {
+      const existingFile = this.deps.vault.getAbstractFileByPath(path);
+      const existing = parseCanvas(existingFile instanceof import_obsidian13.TFile ? await this.deps.vault.read(existingFile) : null);
+      const canvas = relayoutArgumentCanvas(structure, { ...t().argument, hypotheses: t().headings.hypotheses, projection: fmt(t().argument.projection, { note: `[[${file.basename}]]` }) }, existing, hypotheses, staleNote);
+      const canvasFile = await this.deps.adapters.writeVaultFile(path, serializeCanvas(canvas));
+      await this.deps.openFile(canvasFile);
+      this.deps.notify("Canvas re-laid out \u2014 argument nodes repositioned by connectivity; your own nodes were kept.");
+    } catch (e) {
+      this.deps.notifyError(`Re-laying out the argument canvas at "${path}"`, e);
+    }
+  }
+  // ── Interview guide (AU_E105) ──
+  /**
+   * Design the interview guide (AU_E105, propose-only): turn the session's open thinking into a
+   * topic guide in which every question carries its provenance — which sub-question, evidence
+   * gap, attacked assumption or belief it is meant to illuminate. The LLM reads the gathered
+   * context and PROPOSES a guide; the researcher adopts per question in the `InterviewModal`;
+   * adoption writes the `## Interview guide` section (E87 Replace/Keep respected), the
+   * graph-store record, and a logbook event. Mirrors the argument-structure flow.
+   */
+  async designInterviewGuideFlow() {
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Designing an interview guide needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    const active = this.deps.activeSession();
+    if (!active) {
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then design the interview guide.');
+      return;
+    }
+    const { file, session } = active;
+    const preState = await this.deps.sessionStore.sectionEditState(file, "interview");
+    const preMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "interview", "interview guide", { offerFork: "interview" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.deps.artefactLanding.forkSessionFromRevision(file, "interview", "interview guide");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
+    const body = await this.deps.vault.read(file);
+    const store = await this.graphStore();
+    const context = this.buildInterviewContext(
+      session,
+      body,
+      recordForNote(store, file.path),
+      artefactRecordForNote(store, file.path)
+    );
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "interview",
+      loadingText: "Designing the interview guide (questions, provenance, probes)\u2026",
+      errorPrefix: "Interview-guide design failed",
+      run: (log) => proposeInterviewGuide(context, this.deps.llmChatFn("interview", log), log)
+    });
+    if (!step) return;
+    const { result } = step;
+    if (!result) {
+      this.deps.notify("Could not design an interview guide \u2014 try again once the session holds more thinking to draw from.", 6e3);
+      return;
+    }
+    this.deps.openInterviewModal(result, (adopted) => {
+      if (!adopted || adopted.questions.length === 0) return;
+      void this.recordInterviewInSession(file, adopted, preapproved);
+    });
+  }
+  /**
+   * The session content the interview designer reads (design §5): the question/framing, the
+   * sub-questions and evidence gaps from the graph record, the beliefs, the ATTACKED assumptions
+   * from the stored argument map (`attacks`-edges → their assumption endpoints — the "hoe zit
+   * dat bij u?"-material), and the synthesis section. Long blocks are capped, like {@link
+   * buildArgumentContext} — the guide needs the gaps' shape, not every word around them.
+   */
+  buildInterviewContext(session, body, graphRecord, artefactRecord) {
+    var _a, _b;
+    const cap = (s) => s.length > 4e3 ? `${s.slice(0, 4e3)}\u2026` : s;
+    const parts = [`Research question: ${sessionTopic(session)}`];
+    const subQuestions = (_a = graphRecord == null ? void 0 : graphRecord.subQuestions) != null ? _a : [];
+    if (subQuestions.length > 0) {
+      parts.push(cap(`Sub-questions:
+${subQuestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}`));
+    }
+    const gaps = (_b = graphRecord == null ? void 0 : graphRecord.unanswered) != null ? _b : [];
+    if (gaps.length > 0) {
+      parts.push(cap(`Evidence gaps (unanswered with the current evidence):
+${gaps.map((u) => `- ${u.question} (${u.reason})`).join("\n")}`));
+    }
+    if (session.beliefs.length > 0) {
+      parts.push(cap(`Current beliefs:
+${session.beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`));
+    }
+    const structure = sanitizeArgumentStructure(artefactRecord == null ? void 0 : artefactRecord.argumentStructure);
+    if (structure) {
+      const attackedIds = /* @__PURE__ */ new Set();
+      for (const e of structure.edges) {
+        if (e.kind !== "attacks") continue;
+        attackedIds.add(e.from);
+        attackedIds.add(e.to);
+      }
+      const attacked = structure.nodes.filter((n) => n.kind === "assumption" && attackedIds.has(n.id));
+      if (attacked.length > 0) {
+        parts.push(cap(`Attacked assumptions (from the argument map):
+${attacked.map((n) => `- [${n.id}] ${n.text}`).join("\n")}`));
+      }
+    }
+    const synthesis = extractSection(body, "synthesis");
+    if (synthesis) parts.push(`Section "synthesis":
+${cap(synthesis)}`);
+    return parts.join("\n\n");
+  }
+  /**
+   * Record the adopted interview guide (AU_E105): section + graph-store record + logbook event.
+   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); the preapproved
+   * gate answer is the AU_E131_S3 safety net — re-asks only if the section changed during the run.
+   */
+  async recordInterviewInSession(file, adopted, preapproved) {
+    const guide = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
+    await this.deps.artefactLanding.landArtefact({
+      file,
+      section: "interview",
+      label: "interview guide",
+      ...preapproved ? { preapproved } : {},
+      body: buildInterviewBody(guide, t().interview),
+      log: {
+        step: t().logbook.stepInterview,
+        summary: fmt(t().logbook.interviewAdopted, { n: guide.questions.length })
+      },
+      // Structured record next to the proza section (E68/E89 pattern). Latest guide replaces
+      // the previous one as a whole (§3). AU_E131_S2: upstream basis alongside, for staleness.
+      record: async (noteBody) => ({
+        interviewGuide: guide,
+        basedOn: { interview: upstreamFingerprints(await noteBody(), "interview") }
+      }),
+      notice: `Interview guide recorded (${guide.questions.length} question(s)).`
+    });
+  }
+  /**
+   * Regenerate the `## Interview guide` section from the stored graph-store record (AU_E105) —
+   * no LLM call: the records are the source for projections (design §3), so a refresh is a
+   * deterministic re-render (e.g. after an i18n language switch). The E87 Replace/Keep respect
+   * applies exactly as on adoption.
+   */
+  async refreshInterviewGuide() {
+    var _a;
+    const file = this.deps.activeNoteFile();
+    if (!file) {
+      this.deps.notify("Open a session note to refresh its interview guide.");
+      return;
+    }
+    const store = await this.graphStore();
+    const guide = sanitizeInterviewGuide((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.interviewGuide);
+    if (!guide) {
+      this.deps.notify('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
+      return;
+    }
+    const writeMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "interview", "interview guide");
+    if (!writeMode || writeMode === "fork") return;
+    await this.deps.artefactLanding.writeArtefact(file, "interview", buildInterviewBody(guide, t().interview), writeMode);
+    this.deps.notify("Interview guide regenerated from the stored record.");
+  }
+  /**
+   * Write the stored interview guide as a PLAIN markdown fieldwork document next to the note
+   * (AU_E105, design §4 — koppelvlak-norm: usable on paper, a tablet or in another vault):
+   * same record lookup as {@link refreshInterviewGuide}, no LLM call, deterministic from the
+   * record. Create-or-overwrite via the same vault write pattern as {@link openArgumentCanvas},
+   * then the file is opened.
+   */
+  async exportInterviewGuide() {
+    var _a;
+    const file = this.deps.activeNoteFile();
+    if (!file) {
+      this.deps.notify("Open a session note to export its interview guide.");
+      return;
+    }
+    const store = await this.graphStore();
+    const guide = sanitizeInterviewGuide((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.interviewGuide);
+    if (!guide) {
+      this.deps.notify('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
+      return;
+    }
+    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
+    const path = (0, import_obsidian13.normalizePath)(`${folder}${file.basename} \u2014 interview guide.md`);
+    try {
+      const exportFile = await this.deps.adapters.writeVaultFile(path, buildFieldworkExport(guide, t().interview, file.basename));
+      await this.deps.openFile(exportFile);
+      this.deps.notify(`Fieldwork guide written: "${path}".`);
+    } catch (e) {
+      this.deps.notifyError(`Writing the fieldwork guide to "${path}"`, e);
+    }
+  }
+  // ── Hypotheses & the quantitative route (AU_E111) ──
+  /**
+   * Propose hypotheses (AU_E111_S1, propose-only): turn the argument map's claims/assumptions
+   * (E103) — plus the open beliefs and the method-fit-labelled research questions (E109) —
+   * into falsifiable hypotheses. The researcher adopts per hypothesis in the
+   * `HypothesisModal`; adoption writes the `## Hypotheses` section (E87 Replace/Keep
+   * respected), the graph-store record (latest set replaces the whole) and a logbook event.
+   * Mirrors the Argument research assistant flow.
+   */
+  async proposeHypothesesFlow() {
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Proposing hypotheses needs a configured LLM provider \u2014 set it in the plugin settings first.");
+      return;
+    }
+    const active = this.deps.activeSession();
+    if (!active) {
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then propose hypotheses.');
+      return;
+    }
+    const { file, session } = active;
+    const store = await this.graphStore();
+    const record = artefactRecordForNote(store, file.path);
+    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
+    if (!structure) {
+      this.deps.notify('No argument map yet \u2014 run "Design \xB7 argument map" first: hypotheses are derived from its claims and assumptions.');
+      return;
+    }
+    const preState = await this.deps.sessionStore.sectionEditState(file, "hypotheses");
+    const preMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "hypotheses", "hypotheses", { offerFork: "hypotheses" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.deps.artefactLanding.forkSessionFromRevision(file, "hypotheses", "hypotheses");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
+    const noteBody = await this.deps.vault.read(file);
+    const context = this.buildHypothesesContext(session, structure, record, noteBody);
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "hypotheses",
+      loadingText: "Deriving falsifiable hypotheses from the argument map\u2026",
+      errorPrefix: "Hypothesis proposal failed",
+      run: (log) => proposeHypotheses(context, this.deps.llmChatFn("design", log), log)
+    });
+    if (!step) return;
+    const { result } = step;
+    if (!result) {
+      this.deps.notify("Could not derive hypotheses \u2014 try again once the argument map holds more to test.", 6e3);
+      return;
+    }
+    this.deps.openHypothesisModal(result, (adopted) => {
+      if (!adopted) return;
+      void this.recordHypothesesInSession(file, adopted, preapproved);
+    });
+  }
+  /**
+   * The session content the hypotheses proposer reads (AU_E111_S1): the question, the full
+   * argument map (nodes + relations), the OPEN beliefs, and the agenda's new questions with
+   * their method fit — quantitative-labelled questions are exactly where hypotheses belong.
+   * Since AU_E130_S2 also the per-sub-question search EXPECTATIONS, parsed from the note
+   * body (source of truth): candidates to rework into falsifiable hypotheses where the
+   * argument map bears them out.
+   */
+  buildHypothesesContext(session, structure, record, noteBody = "") {
+    var _a, _b;
+    const parts = [`Research question: ${sessionTopic(session)}`];
+    parts.push(`Argument map nodes:
+${structure.nodes.map((n) => `${n.id} (${n.kind}): ${n.text}`).join("\n")}`);
+    if (structure.edges.length > 0) {
+      parts.push(`Argument map relations:
+${structure.edges.map((e) => `${e.from} ${e.kind} ${e.to}`).join("\n")}`);
+    }
+    const open = session.beliefs.filter((b) => {
+      var _a2;
+      return ((_a2 = b.status) != null ? _a2 : "open") === "open";
+    });
+    if (open.length > 0) parts.push(`Open beliefs:
+${open.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`);
+    const agenda = (_a = record == null ? void 0 : record.adoptions) == null ? void 0 : _a.agenda;
+    if (agenda && agenda.newQuestions.length > 0) {
+      const fits = new Map(((_b = agenda.methodFits) != null ? _b : []).map((f) => [f.question, f.method]));
+      const qs = agenda.newQuestions.map((q) => `- ${q}${fits.has(q) ? ` [method fit: ${fits.get(q)}]` : ""}`);
+      parts.push(`New research questions:
+${qs.join("\n")}`);
+    }
+    const expectations = parseSubquestionExpectations(noteBody);
+    if (expectations.length > 0) {
+      const lines2 = expectations.map((e) => `- ${e.query}
+  expectation: ${e.expectation}`);
+      parts.push(`Search expectations per sub-question (stated BEFORE the research ran):
+${lines2.join("\n")}`);
+    }
+    return parts.join("\n\n");
+  }
+  /**
+   * Record the adopted hypotheses (AU_E111_S1): section + graph-store record + logbook event.
+   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); the preapproved
+   * gate answer is the AU_E131_S3 safety net — re-asks only if the section changed during the run.
+   */
+  async recordHypothesesInSession(file, adopted, preapproved) {
+    const set = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
+    await this.deps.artefactLanding.landArtefact({
+      file,
+      section: "hypotheses",
+      label: "hypotheses",
+      ...preapproved ? { preapproved } : {},
+      body: buildHypothesesBody(set),
+      log: {
+        step: t().logbook.stepHypotheses,
+        summary: fmt(t().logbook.hypothesesAdopted, { n: set.hypotheses.length })
+      },
+      // Structured record next to the proza section (E68/E89 pattern). Latest set replaces
+      // the previous one as a whole. AU_E131_S2: upstream basis alongside, for staleness.
+      record: async (noteBody) => ({
+        hypotheses: set,
+        basedOn: { hypotheses: upstreamFingerprints(await noteBody(), "hypotheses") }
+      }),
+      notice: `Hypotheses recorded (${set.hypotheses.length}).`
+    });
+  }
+  /**
+   * Regenerate the `## Hypotheses` section from the stored graph-store record (AU_E111_S1) —
+   * no LLM call, same discipline as the argument/interview refreshes.
+   */
+  async refreshHypotheses() {
+    var _a;
+    const file = this.deps.activeNoteFile();
+    if (!file) {
+      this.deps.notify("Open a session note to refresh its hypotheses.");
+      return;
+    }
+    const store = await this.graphStore();
+    const set = sanitizeHypothesisSet((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.hypotheses);
+    if (!set) {
+      this.deps.notify('No hypotheses recorded for this note yet \u2014 run "Propose hypotheses" first.');
+      return;
+    }
+    const writeMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "hypotheses", "hypotheses");
+    if (!writeMode || writeMode === "fork") return;
+    await this.deps.artefactLanding.writeArtefact(file, "hypotheses", buildHypothesesBody(set), writeMode);
+    this.deps.notify("Hypotheses regenerated from the stored record.");
+  }
+  // ── Connections section (AU_E103_S4) ──
+  /**
+   * Materialise the relations Parallax knows as REAL wikilinks in a generated `## Connections`
+   * footer section (AU_E103_S4 — rung 3 of the escalation ladder), so the (local) graph view on
+   * a project folder shows the project's shape: the follow-up lineage (parsed from the
+   * `## Context` sections), the project hub, and the other notes sharing register sources.
+   * Scope "note" refreshes the active session note; "project" every session note of its
+   * project. Same E87 bewerkings-respect as the argument section (a hand-edited section asks
+   * Replace/Keep); notes with nothing to link are skipped. One logbook event on the active note
+   * summarises the whole run.
+   */
+  async refreshConnections(scope) {
+    var _a, _b;
+    const active = this.deps.activeSession();
+    if (!active) {
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then refresh its connections.');
+      return;
+    }
+    const { file, session } = active;
+    if (scope === "project" && !session.project) {
+      this.deps.notify("This note does not belong to a project \u2014 refresh its connections per note instead.");
+      return;
+    }
+    const memberFiles = [];
+    if (session.project) {
+      for (const f of this.deps.vault.getMarkdownFiles()) {
+        const s = parseSession(this.deps.fileFrontmatter(f));
+        if (s && sameProject(s.project, session.project)) memberFiles.push(f);
+      }
+    } else {
+      memberFiles.push(file);
+    }
+    const members = [];
+    for (const f of memberFiles) {
+      members.push({
+        path: f.path,
+        basename: f.basename,
+        contextBody: extractSection(await this.deps.vault.cachedRead(f), "context")
+      });
+    }
+    const hubBasename = (_b = (_a = this.deps.activeHubFile()) == null ? void 0 : _a.basename) != null ? _b : null;
+    const register = await this.deps.loadRegister();
+    const targets = scope === "note" ? members.filter((m) => m.path === file.path) : members;
+    let updated = 0;
+    let skipped = 0;
+    for (const m of targets) {
+      const body = buildConnectionsBody({
+        notePath: m.path,
+        noteBasename: m.basename,
+        contextBody: m.contextBody,
+        hubBasename,
+        members,
+        register
+      });
+      if (!body) {
+        skipped++;
+        continue;
+      }
+      const target = this.deps.vault.getAbstractFileByPath(m.path);
+      if (!(target instanceof import_obsidian13.TFile)) continue;
+      const writeMode = await this.deps.artefactLanding.confirmArtefactOverwrite(target, "connections", "connections");
+      if (!writeMode || writeMode === "fork") continue;
+      await this.deps.artefactLanding.writeArtefact(target, "connections", body, writeMode);
+      updated++;
+    }
+    if (updated === 0) {
+      this.deps.notify("No connections to write yet \u2014 sessions link up once they share sources, a hub or a follow-up.");
+      return;
+    }
+    await this.deps.sessionStore.logEvent(
+      file,
+      t().logbook.stepConnections,
+      fmt(t().logbook.connectionsRefreshed, { n: updated })
+    );
+    this.deps.notify(`Connections refreshed in ${updated} note(s)${skipped > 0 ? ` (${skipped} without connections skipped)` : ""}.`);
+  }
+  // ── Research Design research assistant (E50) ──
+  /**
+   * Research Design research assistant (E50): begin where the synthesis ends and propose a research agenda
+   * (gaps, limitations, new questions, fitting designs, data needs) from the session's synthesis
+   * and still-open beliefs. The agenda lands as `## Onderzoeksagenda` (which the methodological
+   * account picks up); a chosen new question can open a fresh session, closing the loop.
+   */
+  async generateResearchDesign() {
+    var _a, _b, _c;
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Proposing a research agenda needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    const active = this.deps.activeSession();
+    if (!active) {
+      this.deps.notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then propose the agenda.');
+      return;
+    }
+    const { file, session } = active;
+    const last = this.deps.lastResearch();
+    let synthesis = shouldPreferLastResearch((_a = last == null ? void 0 : last.notePath) != null ? _a : null, file.path) ? (_c = (_b = last == null ? void 0 : last.summary) == null ? void 0 : _b.trim()) != null ? _c : "" : "";
+    if (!synthesis) synthesis = extractSection(await this.deps.vault.read(file), "synthesis");
+    if (!synthesis) {
+      this.deps.notify('No synthesis yet \u2014 run "Evidence \xB7 run research" in this session first, then propose the agenda.');
+      return;
+    }
+    const preState = await this.deps.sessionStore.sectionEditState(file, "agenda");
+    const preMode = await this.deps.artefactLanding.confirmArtefactOverwrite(file, "agenda", "research agenda", { offerFork: "agenda" });
+    if (!preMode) return;
+    if (preMode === "fork") {
+      await this.deps.artefactLanding.forkSessionFromRevision(file, "agenda", "research agenda");
+      return;
+    }
+    const preapproved = { state: preState, mode: preMode };
+    const step = await this.deps.runAssistantStep({
+      flowLabel: "research design",
+      loadingText: "Deriving a research agenda from the synthesis\u2026",
+      errorPrefix: "Research agenda failed",
+      run: (log) => proposeResearchDesign(synthesis, session.beliefs, this.deps.llmChatFn("design", log), log)
+    });
+    if (!step) return;
+    const { result: agenda } = step;
+    if (!agenda) {
+      this.deps.notify("Could not derive a research agenda from the synthesis.", 6e3);
+      return;
+    }
+    this.deps.openResearchDesignModal(agenda, (choice) => {
+      if (!choice) return;
+      void (async () => {
+        const outcome = await this.deps.artefactLanding.landArtefact({
+          file,
+          section: "agenda",
+          label: "research agenda",
+          preapproved,
+          body: renderResearchAgenda(agenda),
+          log: {
+            step: t().headings.agenda,
+            summary: `${fmt(t().logbook.newQuestionsProposed, { n: agenda.newQuestions.length })}${choice.startSessionWith ? t().logbook.sessionStarted : ""}`
+          },
+          // AU_E89_S1 (export-pariteit) + AU_E131_S2: structured adoption + upstream basis.
+          record: async (noteBody) => ({
+            adoptions: { agenda: agendaAdoptionRecord(agenda, choice) },
+            basedOn: { agenda: upstreamFingerprints(await noteBody(), "agenda") }
+          }),
+          notice: "Research agenda added to the session."
+        });
+        if (outcome !== "landed") return;
+        if (choice.startSessionWith) this.deps.startFollowUpResearch(choice.startSessionWith, file, session);
+      })();
+    });
+  }
+};
+
+// src/evidence-flows.ts
+var import_obsidian14 = require("obsidian");
+
+// src/instrument-search.ts
+var MAX_INSTRUMENT_RESULTS = 20;
+function buildScaleQueries(construct) {
+  const c = construct.replace(/\s+/g, " ").replace(/"/g, "'").trim();
+  if (!c) return [];
+  return [
+    `"${c}" validated scale`,
+    `"${c}" questionnaire validation psychometric properties`,
+    `"${c}" measurement instrument reliability validity`,
+    `"${c}" scale development validation`
+  ];
+}
+var INSTRUMENT_MARKERS = /\b(scale|questionnaire|inventory|instrument|psychometric|validation|validity|reliability|measure(?:ment|s)?|index)\b/i;
+function rankInstrumentPapers(papers, max = MAX_INSTRUMENT_RESULTS) {
+  var _a, _b;
+  const titleHits = [];
+  const abstractHits = [];
+  const rest = [];
+  for (const p of papers) {
+    if (INSTRUMENT_MARKERS.test((_a = p.title) != null ? _a : "")) titleHits.push(p);
+    else if (INSTRUMENT_MARKERS.test((_b = p.abstract) != null ? _b : "")) abstractHits.push(p);
+    else rest.push(p);
+  }
+  return [...titleHits, ...abstractHits, ...rest].slice(0, max);
+}
+
+// src/references-section.ts
+function referenceKey(paper) {
+  if (paper.doi) return paper.doi.toLowerCase().replace(/^https?:\/\/doi\.org\//, "");
+  if (paper.url) return paper.url.toLowerCase();
+  return paper.title.toLowerCase().replace(/\s+/g, " ").trim();
+}
+function headingLineRegex(heading) {
+  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`^##\\s+${escaped}\\s*(?:<!--.*?-->\\s*)?$`, "im");
+}
+function appendReferencesSection(body, heading, entries, lead) {
+  const match = headingLineRegex(heading).exec(body);
+  let sectionStart = -1;
+  let sectionEnd = -1;
+  if (match) {
+    sectionStart = match.index + match[0].length;
+    const rest = body.slice(sectionStart);
+    const next2 = /^##\s/m.exec(rest);
+    sectionEnd = next2 ? sectionStart + next2.index : body.length;
+  }
+  const sectionText = match ? body.slice(sectionStart, sectionEnd).toLowerCase() : "";
+  const seen = /* @__PURE__ */ new Set();
+  const fresh = [];
+  let skipped = 0;
+  for (const entry of entries) {
+    const key = entry.key.toLowerCase();
+    if (!key || seen.has(key) || sectionText.includes(key)) {
+      skipped += 1;
+      continue;
+    }
+    seen.add(key);
+    fresh.push(entry);
+  }
+  if (fresh.length === 0) return { body, added: 0, skipped };
+  const blocks = (lead ? [lead] : []).concat(fresh.map((e) => e.block)).join("\n\n");
+  let next;
+  if (match) {
+    const before = body.slice(0, sectionEnd).replace(/\s+$/, "");
+    const after = body.slice(sectionEnd);
+    next = `${before}
+
+${blocks}
+${after ? "\n" + after : ""}`;
+  } else {
+    const base = body.replace(/\s+$/, "");
+    next = `${base ? base + "\n\n" : ""}## ${heading}
+
+${blocks}
+`;
+  }
+  return { body: next, added: fresh.length, skipped };
+}
+
+// src/bibtex-import.ts
+var NON_ENTRY_TYPES = /* @__PURE__ */ new Set(["comment", "preamble", "string"]);
+function parseBibtex(text) {
+  const entries = [];
+  let skipped = 0;
+  let i = 0;
+  while (i < text.length) {
+    const at = text.indexOf("@", i);
+    if (at === -1) break;
+    const parsed = parseEntryAt(text, at);
+    if (parsed.entry) {
+      entries.push(parsed.entry);
+    } else if (parsed.broken) {
+      skipped += 1;
+    }
+    i = Math.max(parsed.next, at + 1);
+  }
+  return { entries, skipped };
+}
+function parseEntryAt(text, at) {
+  let i = at + 1;
+  const typeMatch = /^[a-zA-Z]+/.exec(text.slice(i));
+  if (!typeMatch) return { next: i };
+  const entryType = typeMatch[0].toLowerCase();
+  i += typeMatch[0].length;
+  while (i < text.length && /\s/.test(text[i])) i += 1;
+  const open = text[i];
+  if (open !== "{" && open !== "(") {
+    return { next: i };
+  }
+  const close = open === "{" ? "}" : ")";
+  const bodyEnd = findBalancedEnd(text, i, open, close);
+  if (bodyEnd === -1) {
+    return { broken: !NON_ENTRY_TYPES.has(entryType), next: text.length };
+  }
+  const body = text.slice(i + 1, bodyEnd);
+  const next = bodyEnd + 1;
+  if (NON_ENTRY_TYPES.has(entryType)) return { next };
+  const comma = body.indexOf(",");
+  const citekey = (comma === -1 ? body : body.slice(0, comma)).trim();
+  if (!citekey || /[\s{}(),=\\"]/.test(citekey)) return { broken: true, next };
+  const fields = {};
+  if (comma !== -1) {
+    for (const [name, value] of parseFields(body.slice(comma + 1))) {
+      fields[name] = value;
+    }
+  }
+  return { entry: { entryType, citekey, fields }, next };
+}
+function findBalancedEnd(text, start, open, close) {
+  let depth = 0;
+  let inQuote = false;
+  for (let i = start; i < text.length; i += 1) {
+    const ch = text[i];
+    if (ch === '"' && open === "{" && depth === 1) inQuote = !inQuote;
+    if (inQuote) continue;
+    if (ch === open || ch === "{" && open === "(") depth += 1;
+    else if (ch === close || ch === "}" && open === "(") {
+      depth -= 1;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+function parseFields(body) {
+  const fields = [];
+  let i = 0;
+  while (i < body.length) {
+    while (i < body.length && /[\s,]/.test(body[i])) i += 1;
+    const nameMatch = /^[a-zA-Z][a-zA-Z0-9_-]*/.exec(body.slice(i));
+    if (!nameMatch) break;
+    const name = nameMatch[0].toLowerCase();
+    i += nameMatch[0].length;
+    while (i < body.length && /\s/.test(body[i])) i += 1;
+    if (body[i] !== "=") break;
+    i += 1;
+    const value = parseValue(body, i);
+    if (value === null) break;
+    fields.push([name, value.text]);
+    i = value.next;
+  }
+  return fields;
+}
+function parseValue(body, start) {
+  let i = start;
+  const parts = [];
+  for (; ; ) {
+    while (i < body.length && /\s/.test(body[i])) i += 1;
+    if (i >= body.length) break;
+    const ch = body[i];
+    if (ch === "{") {
+      const end = findBalancedEnd(body, i, "{", "}");
+      if (end === -1) return null;
+      parts.push(body.slice(i + 1, end));
+      i = end + 1;
+    } else if (ch === '"') {
+      const end = body.indexOf('"', i + 1);
+      if (end === -1) return null;
+      parts.push(body.slice(i + 1, end));
+      i = end + 1;
+    } else {
+      const bare = /^[^\s,#{}]+/.exec(body.slice(i));
+      if (!bare) return null;
+      parts.push(bare[0]);
+      i += bare[0].length;
+    }
+    while (i < body.length && /\s/.test(body[i])) i += 1;
+    if (body[i] === "#") {
+      i += 1;
+      continue;
+    }
+    break;
+  }
+  if (parts.length === 0) return null;
+  return { text: parts.join(""), next: i };
+}
+function cleanLatex(raw) {
+  return raw.replace(/\s+/g, " ").replace(/\\([&%$#_])/g, "$1").replace(/~/g, " ").replace(/---?/g, "\u2013").replace(/\\[a-zA-Z]+\s*/g, "").replace(/\\./g, "").replace(/[{}]/g, "").replace(/\s+/g, " ").trim();
+}
+function splitAuthors(raw) {
+  return raw.split(/\s+and\s+/i).map((part) => {
+    const name = cleanLatex(part);
+    const comma = name.indexOf(",");
+    if (comma === -1) return name;
+    const last = name.slice(0, comma).trim();
+    const first = name.slice(comma + 1).trim();
+    return first ? `${first} ${last}` : last;
+  }).filter((name) => name.length > 0);
+}
+function bibtexEntryToPaper(entry) {
+  var _a, _b, _c;
+  const f = entry.fields;
+  const title = f.title ? cleanLatex(f.title) : "";
+  if (!title) return null;
+  const yearSource = (_a = f.year) != null ? _a : f.date;
+  const yearMatch = yearSource ? /\d{4}/.exec(yearSource) : null;
+  const doi = f.doi ? cleanLatex(f.doi) : void 0;
+  const isbnRaw = f.isbn ? f.isbn.replace(/[^0-9Xx]/g, "") : "";
+  const journalRaw = (_c = (_b = f.journal) != null ? _b : f.journaltitle) != null ? _c : f.booktitle;
+  const url = f.url ? cleanLatex(f.url) : doi ? `https://doi.org/${doi.replace(/^https?:\/\/(dx\.)?doi\.org\//i, "")}` : "";
+  return {
+    title,
+    authors: f.author ? splitAuthors(f.author) : [],
+    year: yearMatch ? Number(yearMatch[0]) : void 0,
+    journal: journalRaw ? cleanLatex(journalRaw) : void 0,
+    doi,
+    isbn: isbnRaw.length > 0 ? isbnRaw : void 0,
+    url,
+    library: { citekey: entry.citekey }
+  };
+}
+function loadLibrary(text) {
+  const { entries: rawEntries, skipped: broken } = parseBibtex(text);
+  const byCitekey = /* @__PURE__ */ new Map();
+  let unusable = 0;
+  for (const entry of rawEntries) {
+    const paper = bibtexEntryToPaper(entry);
+    if (!paper) {
+      unusable += 1;
+      continue;
+    }
+    byCitekey.set(entry.citekey, { citekey: entry.citekey, paper });
+  }
+  return { entries: [...byCitekey.values()], skipped: broken + unusable };
+}
+
+// src/library-update.ts
+function inScope(record, scope) {
+  return record.occurrences.some(
+    (o) => scope.notes !== void 0 && scope.notes.has(o.note) || scope.project !== void 0 && o.project === scope.project
+  );
+}
+function findLibraryMatch(record, entries) {
+  if (record.citekey) {
+    const byCitekey = entries.find((e) => e.citekey === record.citekey);
+    if (byCitekey) return byCitekey;
+  }
+  return entries.find((e) => citationKey(e.paper) === record.key);
+}
+function fieldChanges(record, entry) {
+  var _a, _b, _c, _d, _e, _f;
+  const p = entry.paper;
+  const changes = [];
+  const push = (field2, from, to) => {
+    changes.push({ key: record.key, citekey: entry.citekey, title: record.title, field: field2, from, to });
+  };
+  if (!record.verified) {
+    if (p.title && p.title !== record.title) push("title", record.title, p.title);
+    const authors = p.authors.join(", ");
+    const recordAuthors = record.authors.join(", ");
+    if (p.authors.length > 0 && authors !== recordAuthors) push("authors", recordAuthors, authors);
+    if (p.year != null && p.year !== record.year) push("year", (_b = (_a = record.year) == null ? void 0 : _a.toString()) != null ? _b : "", String(p.year));
+    if (p.journal && p.journal !== record.journal) push("journal", (_c = record.journal) != null ? _c : "", p.journal);
+    if (p.url && p.url !== record.url) push("url", record.url, p.url);
+    const doi = normalizeDoi(p.doi);
+    if (doi && doi !== record.doi) push("doi", (_d = record.doi) != null ? _d : "", doi);
+    if (p.isbn && p.isbn !== record.isbn) push("isbn", (_e = record.isbn) != null ? _e : "", p.isbn);
+  }
+  if (record.citekey !== entry.citekey) push("citekey", (_f = record.citekey) != null ? _f : "", entry.citekey);
+  return changes;
+}
+function buildLibraryUpdatePlan(register, entries, scope) {
+  let matched = 0;
+  const changes = [];
+  for (const record of register.citations) {
+    if (!inScope(record, scope)) continue;
+    const entry = findLibraryMatch(record, entries);
+    if (!entry) continue;
+    matched += 1;
+    changes.push(...fieldChanges(record, entry));
+  }
+  return { matched, changes };
+}
+function applyLibraryUpdatePlan(register, plan) {
+  const touched = /* @__PURE__ */ new Set();
+  for (const change of plan.changes) {
+    const record = register.citations.find((r) => r.key === change.key);
+    if (!record) continue;
+    touched.add(record.key);
+    switch (change.field) {
+      case "title":
+        record.title = change.to;
+        break;
+      case "authors":
+        record.authors = change.to.split(", ").map((a) => a.trim()).filter((a) => a.length > 0);
+        break;
+      case "year":
+        record.year = change.to ? Number(change.to) : void 0;
+        break;
+      case "journal":
+        record.journal = change.to || void 0;
+        break;
+      case "url":
+        record.url = change.to;
+        break;
+      case "doi":
+        record.doi = change.to || void 0;
+        break;
+      case "isbn":
+        record.isbn = change.to || void 0;
+        break;
+      case "citekey":
+        record.citekey = change.to;
+        record.origin = "library";
+        break;
+    }
+  }
+  return touched.size;
+}
+function formatUpdatePreview(plan, cap = 12) {
+  const lines2 = plan.changes.slice(0, cap).map((c) => `\u2022 ${c.citekey} \u2014 ${c.field}: "${truncate(c.from, 40)}" \u2192 "${truncate(c.to, 40)}"`);
+  if (plan.changes.length > cap) lines2.push(`\u2026 and ${plan.changes.length - cap} more change(s)`);
+  return lines2.join("\n");
+}
+function truncate(text, max) {
+  return text.length > max ? `${text.slice(0, max - 1)}\u2026` : text;
+}
+
+// src/evidence-flows.ts
+var EvidenceFlows = class {
+  constructor(deps) {
+    this.deps = deps;
+  }
+  // ── Quick search (UC1) ──
+  async runSearch(query, filters) {
+    const provider = getProvider(this.deps.settings().provider);
+    const loading = this.deps.notifyPersistent(`Searching ${provider.label}\u2026`);
+    try {
+      const raw = await searchProviderWithRetry(this.deps.settings().provider, query, filters, this.deps.settings(), this.deps.http);
+      const result = { ...raw, papers: dedupeByTitleFingerprint(raw.papers) };
+      loading.hide();
+      if (result.papers.length === 0) {
+        this.deps.notify("No papers found for that question.");
+        return;
+      }
+      this.deps.openResultsModal(result, (papers, format, action) => this.handleResult(result, papers, format, action));
+    } catch (e) {
+      loading.hide();
+      this.deps.notifyError("Search", e);
+    }
+  }
+  /**
+   * Verify the selected papers, format them (with trust markers), then add or copy —
+   * and, on add, record them in the central register.
+   *
+   * AU_E114_S2: both actions carry ONLY the references (the question/summary/framework/
+   * sub-questions land in the session via the run itself, AU_E114_S1), each keeping its
+   * canonical [n] number. "Add" no longer pastes at the cursor: the references land in a
+   * `## References` section at the bottom of the note — created when missing, appended
+   * with dedupe (DOI/URL/title) when present.
+   *
+   * Public: the research pipeline's ResultsModal (wired in `main.ts`) lands here too.
+   */
+  async handleResult(result, papers, format, action) {
+    const loading = this.deps.notifyPersistent("Verifying references\u2026");
+    await this.verifyPapers(papers);
+    loading.hide();
+    const entries = formatReferenceEntries(result, papers, {
+      format,
+      insertQuestionHeading: this.deps.settings().insertQuestionHeading,
+      includeAbstract: this.deps.settings().includeAbstract,
+      literatureNotePattern: this.deps.settings().literatureNotePattern
+    });
+    if (action === "copy") {
+      await navigator.clipboard.writeText(joinReferenceBlocks(entries, format) + "\n");
+      this.deps.notify("References copied to clipboard.");
+      return;
+    }
+    const view = this.deps.activeMarkdownView();
+    const file = view == null ? void 0 : view.file;
+    if (!view || !file) {
+      this.deps.notify("Open a note to add the references to.");
+      return;
+    }
+    const heading = t().references.heading;
+    const lead = this.deps.settings().insertQuestionHeading && result.query ? `### ${result.query}` : void 0;
+    let added = 0;
+    let skipped = 0;
+    await this.deps.vault.process(file, (body) => {
+      const r = appendReferencesSection(
+        body,
+        heading,
+        entries.map((e) => ({ key: referenceKey(e.paper), block: e.block })),
+        lead
+      );
+      added = r.added;
+      skipped = r.skipped;
+      return r.body;
+    });
+    this.deps.notify(
+      added > 0 ? `${added} reference(s) added to "## ${heading}".${skipped > 0 ? ` ${skipped} already there.` : ""}` : "All selected references are already in the note."
+    );
+    if (added > 0 && this.deps.settings().registerEnabled) {
+      await this.recordInRegister(papers, view);
+    }
+  }
+  /** Run the identifier check on each paper, attaching its outcome in place. */
+  async verifyPapers(papers) {
+    for (const paper of papers) {
+      const res = await verifyIdentifier(paper, this.deps.http);
+      paper.verification = res.status;
+      if (res.doi) paper.doi = res.doi;
+      if (res.isbn) paper.isbn = res.isbn;
+    }
+  }
+  /** Upsert the inserted papers into the vault register and surface UC8 hints. */
+  async recordInRegister(papers, view) {
+    const file = view.file;
+    if (!file) return;
+    const frontmatter = this.deps.fileFrontmatter(file);
+    const project = resolveProject(file.path, frontmatter);
+    const store = this.deps.adapters.vaultStore();
+    try {
+      const register = await this.deps.adapters.loadRegisterGuarded(store, this.deps.settings().registerPath);
+      const { alreadyUsed } = recordPapers(register, papers, {
+        note: file.path,
+        project,
+        date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10)
+      });
+      await this.deps.adapters.backupBeforeOverwrite(store, this.deps.settings().registerPath);
+      await saveRegister(store, this.deps.settings().registerPath, register);
+      if (alreadyUsed.length > 0) {
+        this.deps.notify(formatAlreadyUsed(alreadyUsed), 8e3);
+      }
+    } catch (e) {
+      this.deps.notifyError("Updating the citation register", e);
+    }
+  }
+  // ── Validated scales (AU_E111_S2) ──
+  /**
+   * Find validated scales for a construct (AU_E111_S2): a fixed psychometric query fan-out
+   * through the SAME search machinery as the research pipeline (OpenAlex + Semantic Scholar, RRF-fused),
+   * ranked toward measurement literature, landing in the SAME ResultsModal → citation-register
+   * route as any search. No LLM call.
+   */
+  findValidatedScalesFlow() {
+    var _a, _b;
+    const prefill = sessionTopic((_b = (_a = this.deps.activeSession()) == null ? void 0 : _a.session) != null ? _b : null);
+    this.deps.openConstructModal(prefill, (construct) => {
+      if (!construct) return;
+      void (async () => {
+        const loading = this.deps.notifyPersistent(`Searching validated scales for "${construct}"\u2026`);
+        try {
+          const result = await fanOutSearch(buildScaleQueries(construct), ["openalex", "semanticscholar"], {}, this.deps.settings(), this.deps.http);
+          loading.hide();
+          const papers = rankInstrumentPapers(result.papers);
+          if (papers.length === 0) {
+            this.deps.notify(`No measurement literature found for "${construct}" \u2014 try a sharper construct name.`);
+            return;
+          }
+          const ranked = { ...result, query: construct, papers };
+          this.deps.openResultsModal(ranked, (chosen, format, action) => this.handleResult(ranked, chosen, format, action));
+        } catch (e) {
+          loading.hide();
+          this.deps.notifyError("Scales search", e);
+        }
+      })();
+    });
+  }
+  // ── Deepen a finding (E21) ──
+  /**
+   * Deepen the selected finding(s) from the last research (E21). Matches the
+   * selection to the structured synthesis, grounds each deepening in that
+   * finding's own sources (anchored on their DOI/ISBN via the kept synthesis,
+   * not the note's `[n]` ordering) and the original question, then inserts the
+   * deeper text below the selection.
+   */
+  async deepenSelection(editor) {
+    var _a, _b, _c;
+    if (!this.deps.llm.isConfigured()) {
+      this.deps.notify("Deepening a finding needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
+      return;
+    }
+    const last = this.deps.lastResearch();
+    if (!(last == null ? void 0 : last.synthesis) || last.synthesis.findings.length === 0) {
+      this.deps.notify('Run "Research a question" first \u2014 there are no structured findings to deepen yet.');
+      return;
+    }
+    const activeSessionNotePath = (_b = (_a = this.deps.activeSession()) == null ? void 0 : _a.file.path) != null ? _b : null;
+    if (!canDeepenFromLastResearch(last.notePath, activeSessionNotePath)) {
+      this.deps.notify("The last research belongs to another session \u2014 run research in this session first, then deepen.");
+      return;
+    }
+    const selection = editor.getSelection().trim();
+    if (!selection) {
+      this.deps.notify("Select the finding(s) you want to deepen.");
+      return;
+    }
+    const findings = matchFindings(selection, last.synthesis.findings);
+    if (findings.length === 0) {
+      this.deps.notify("No matching findings from the last research in the selection.");
+      return;
+    }
+    const loading = this.deps.notifyPersistent(`Deepening ${findings.length} finding(s)\u2026`);
+    const allSources = buildNumberedSources(last.papers);
+    const chat = this.deps.llmChatFn();
+    const fulltext = await this.deps.fetchOaFulltext(last.papers, (_c = last.synthesis.readingRecommendations) != null ? _c : []);
+    const items = [];
+    try {
+      for (const finding of findings) {
+        const raw = (await deepenFinding(last.query, finding, allSources, chat, { fulltext })).trim();
+        if (raw) {
+          const basis = renderSourceBasis(resolveSources(finding, last.papers), fulltext);
+          items.push({ finding, text: linkifyCitations(raw, last.papers) + basis });
+        }
+      }
+    } catch (e) {
+      loading.hide();
+      this.deps.notifyError("Deepening", e);
+      return;
+    }
+    loading.hide();
+    if (items.length === 0) {
+      this.deps.notify("Could not deepen the selected finding(s).");
+      return;
+    }
+    editor.replaceSelection(assembleDeepened(selection, items));
+    const fulltextSourceCount = Object.values(fulltext).filter((e) => e.text).length;
+    this.patchAbstractsDisclosureInEditor(editor, fulltextSourceCount);
+    this.deps.notify(`Inserted ${items.length} deepening(s).`);
+  }
+  /**
+   * Patch the "gebaseerd op abstracts" disclosure line already written earlier in the note
+   * (AU_E81_S2 AC2), once ≥1 of the just-fetched sources rests on full text. A plain line scan
+   * over the editor: the manual "Deepen selected finding(s)" command only replaces the
+   * SELECTION, not the whole note, so this is the one place still needing to reach a line
+   * written by an earlier "Research a question" run. A no-op when the count is 0 or the base
+   * line can't be found (e.g. reading tips were off for that run).
+   */
+  patchAbstractsDisclosureInEditor(editor, fulltextSourceCount) {
+    if (fulltextSourceCount <= 0) return;
+    for (let i = 0; i < editor.lineCount(); i++) {
+      const line = editor.getLine(i);
+      if (line.trim() === abstractsDisclosureBaseLine()) {
+        editor.replaceRange(abstractsDisclosureLine(fulltextSourceCount), { line: i, ch: 0 }, { line: i, ch: line.length });
+        return;
+      }
+    }
+  }
+  // ── The owner's `.bib` library (AU_E100_S2 / AU_E104) ──
+  /**
+   * Read the owner's `.bib` library (AU_E100_S2) — the import side of the file
+   * interface. Re-reads the file every call (the `.bib` stays the source of
+   * truth; no copy is kept), so a Better BibTeX auto-export is picked up by
+   * simply running this again. Read-only: the file is never written. The result
+   * is also cached on the plugin for flows that offer library sources.
+   */
+  async refreshLibrary() {
+    const path = this.deps.settings().libraryPath.trim();
+    if (!path) {
+      this.deps.notify("Set a .bib library path in the plugin settings first.");
+      return null;
+    }
+    const raw = await this.deps.adapters.vaultStore().read((0, import_obsidian14.normalizePath)(path));
+    if (raw === null) {
+      this.deps.notify(`Library file not found: ${path}`);
+      return null;
+    }
+    const result = loadLibrary(raw);
+    this.deps.setLibrary(result);
+    const skipped = result.skipped > 0 ? ` (${result.skipped} entr${result.skipped === 1 ? "y" : "ies"} skipped)` : "";
+    this.deps.notify(`Library: ${result.entries.length} sources read from ${path}${skipped}.`);
+    return result;
+  }
+  /**
+   * Read the `.bib` library without user-facing notices (shared by the picker
+   * and the update commands). Returns null when no path is set or the file is
+   * missing — callers decide how to tell the user.
+   */
+  async readLibraryQuiet() {
+    const path = this.deps.settings().libraryPath.trim();
+    if (!path) return null;
+    const raw = await this.deps.adapters.vaultStore().read((0, import_obsidian14.normalizePath)(path));
+    if (raw === null) return null;
+    const result = loadLibrary(raw);
+    this.deps.setLibrary(result);
+    return result;
+  }
+  /**
+   * Insert a citation from the owner's `.bib` library (AU_E104_S1): fuzzy-pick
+   * an entry, render it with the regular citation formatter and record it in
+   * the register — same route as a search insert, no network needed.
+   */
+  async insertCitationFromLibrary() {
+    var _a;
+    if (!this.deps.settings().libraryPath.trim()) {
+      this.deps.notify("Set a .bib library path in the plugin settings first.");
+      return;
+    }
+    const library = (_a = this.deps.library()) != null ? _a : await this.readLibraryQuiet();
+    if (!library) {
+      this.deps.notify(`Library file not found: ${this.deps.settings().libraryPath.trim()}`);
+      return;
+    }
+    if (library.entries.length === 0) {
+      this.deps.notify("Your .bib library has no usable entries.");
+      return;
+    }
+    this.deps.openLibraryPicker(library.entries, (entry) => {
+      void this.insertLibraryEntry(entry);
+    });
+  }
+  async insertLibraryEntry(entry) {
+    const view = this.deps.activeMarkdownView();
+    if (!view) {
+      this.deps.notify("Open a note to insert references into.");
+      return;
+    }
+    const paper = entry.paper;
+    const markdown = formatResult({ query: "", papers: [paper], raw: null }, [paper], {
+      format: this.deps.settings().defaultFormat,
+      insertQuestionHeading: false,
+      includeAbstract: this.deps.settings().includeAbstract,
+      literatureNotePattern: this.deps.settings().literatureNotePattern
+    });
+    view.editor.replaceSelection(markdown);
+    if (this.deps.settings().registerEnabled) await this.recordInRegister([paper], view);
+  }
+  /**
+   * Update register references from the `.bib` library (AU_E104_S2), scoped to
+   * the active note or its project. The library file is re-read (it stays the
+   * source of truth), the plan is shown before anything is written — no silent
+   * overwrites — and the result lands as a logbook event. Owner-confirmed
+   * (`verified`) records keep their fields.
+   */
+  async updateReferencesFromLibrary(scope) {
+    if (!this.deps.settings().libraryPath.trim()) {
+      this.deps.notify("Set a .bib library path in the plugin settings first.");
+      return;
+    }
+    const file = this.deps.activeNoteFile();
+    if (!file) {
+      this.deps.notify("Open a note first.");
+      return;
+    }
+    const library = await this.readLibraryQuiet();
+    if (!library) {
+      this.deps.notify(`Library file not found: ${this.deps.settings().libraryPath.trim()}`);
+      return;
+    }
+    let updateScope;
+    let scopeLabel;
+    if (scope === "note") {
+      updateScope = { notes: /* @__PURE__ */ new Set([file.path]) };
+      scopeLabel = file.basename;
+    } else {
+      const project = resolveProject(file.path, this.deps.fileFrontmatter(file));
+      if (!project) {
+        this.deps.notify("This note does not belong to a project.");
+        return;
+      }
+      updateScope = { project };
+      scopeLabel = project;
+    }
+    const store = this.deps.adapters.vaultStore();
+    const register = await this.deps.adapters.loadRegisterGuarded(store, this.deps.settings().registerPath);
+    const plan = buildLibraryUpdatePlan(register, library.entries, updateScope);
+    if (plan.matched === 0) {
+      this.deps.notify("No register references in this scope match your library.");
+      return;
+    }
+    if (plan.changes.length === 0) {
+      this.deps.notify(`Up to date: ${plan.matched} reference(s) already match your library.`);
+      return;
+    }
+    const confirmed = await this.deps.askConfirm(
+      `Update ${plan.changes.length} field(s) from your library?`,
+      `Scope: ${scopeLabel}
+${formatUpdatePreview(plan)}`,
+      "Update",
+      "Cancel"
+    );
+    if (!confirmed) return;
+    const touched = applyLibraryUpdatePlan(register, plan);
+    await this.deps.adapters.backupBeforeOverwrite(store, this.deps.settings().registerPath);
+    await saveRegister(store, this.deps.settings().registerPath, register);
+    await this.deps.sessionStore.logEvent(file, t().logbook.stepLibrary, fmt(t().logbook.libraryUpdated, { n: touched }));
+    this.deps.notify(`Updated ${touched} reference(s) from your library.`);
+  }
+};
+
+// src/commands.ts
+var import_obsidian16 = require("obsidian");
+
+// src/command-names.ts
+var COMMAND_NAMES = {
+  "open-workbench": "Open sidebar",
+  "research-question": "Evidence \xB7 run research",
+  "cancel-research": "Evidence \xB7 stop current run",
+  "explore-problem": "Explore \xB7 problem",
+  "set-framing": "Frame \xB7 framing",
+  "insert-scaffold": "Session \xB7 insert section (no AI)",
+  "start-research-session": "Question \xB7 start in this note (turn it into a session)",
+  "reorder-sections": "Session \xB7 reorder sections",
+  "start-research-project": "Project \xB7 start (folder + first question)",
+  "new-project-session": "Question \xB7 start in this project (new session note)",
+  "refresh-project-contents": "Project \xB7 refresh contents",
+  "export-quadro": "Export \xB7 Quadro (codebook / starter kit)",
+  "refresh-from-records": "Session \xB7 refresh section from records",
+  "connections-refresh": "Session \xB7 refresh connections (note / project)",
+  "library-update": "Library \xB7 update references (note / project)",
+  "clean-up-records": "Maintenance \xB7 clean up records",
+  "rebuild-records": "Maintenance \xB7 rebuild records from note",
+  "build-knowledge-graph-spike": "Maintenance \xB7 knowledge graph (spike)",
+  "theory-lenses": "Theory \xB7 lenses",
+  "challenge-framing": "Challenge \xB7 framing",
+  "map-argument": "Design \xB7 argument map",
+  "argument-open-canvas": "Design \xB7 argument canvas",
+  "argument-relayout-canvas": "Design \xB7 argument canvas re-layout",
+  "design-interview-guide": "Design \xB7 interview guide",
+  "interview-export": "Export \xB7 interview guide (fieldwork)",
+  "propose-hypotheses": "Design \xB7 hypotheses",
+  "find-validated-scales": "Design \xB7 validated scales",
+  "export-preregistration": "Export \xB7 pre-registration draft",
+  "resume-research": "Evidence \xB7 resume last research",
+  "confront-beliefs": "Evidence \xB7 confront beliefs",
+  "methodology-account": "Design \xB7 methodological account",
+  "research-agenda": "Design \xB7 research agenda",
+  "build-framework": "Frame \xB7 framework",
+  "deepen-finding": "Evidence \xB7 deepen finding",
+  "ask-research-question": "Evidence \xB7 quick search",
+  "register-bibliography-project": "Register \xB7 bibliography (this project)",
+  "register-bridge-papers": "Register \xB7 bridge papers",
+  "register-overview": "Register \xB7 authors & orphans",
+  "register-export-bibtex": "Register \xB7 export BibTeX",
+  "library-refresh": "Library \xB7 read .bib library",
+  "library-insert-citation": "Library \xB7 insert citation",
+  "export-session": "Export \xB7 session (portable)",
+  "export-project": "Export \xB7 project (portable)"
+};
+
+// src/workbench-view.ts
+var import_obsidian15 = require("obsidian");
+
+// src/evidence-gaps.ts
+function deriveEvidenceGaps(project, notes, sources, records) {
+  const graph = buildProjectGraph(project, notes, sources, records);
+  const gaps = detectGaps(graph);
+  const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+  const notesByBronId = new Map(sources.map((s) => [bronNodeId(s.key), s.notes]));
+  const toItem = (gap) => {
+    var _a, _b, _c, _d;
+    const note = (_b = gap.note) != null ? _b : (_a = notesByBronId.get(gap.nodeId)) == null ? void 0 : _a[0];
+    if (!note) return null;
+    return { text: (_d = (_c = nodeById.get(gap.nodeId)) == null ? void 0 : _c.label) != null ? _d : gap.message, note };
+  };
+  const unprovenFindings = [];
+  const subquestionsWithoutSources = [];
+  const sourcesWithoutFinding = [];
+  for (const gap of gaps) {
+    if (gap.type === "bevinding-zonder-bron") {
+      const item = toItem(gap);
+      if (item) unprovenFindings.push({ ...item, followUp: { text: item.text, sourcePath: item.note } });
+    } else if (gap.type === "vraag-zonder-bron") {
+      const item = toItem(gap);
+      if (item) subquestionsWithoutSources.push(item);
+    } else if (gap.type === "bron-zonder-bevinding") {
+      const item = toItem(gap);
+      if (item) sourcesWithoutFinding.push(item);
+    }
+  }
+  return { unprovenFindings, subquestionsWithoutSources, sourcesWithoutFinding };
+}
+
+// src/source-provenance.ts
+function occurrencesElsewhere(register, key, notePath) {
+  const record = register.citations.find((c) => c.key === key);
+  return record ? record.occurrences.filter((o) => o.note !== notePath).length : 0;
+}
+function deriveSourceProvenance(notePath, record, register) {
+  if (record) {
+    const sources2 = record.sources.map((meta) => ({
+      key: meta.key,
+      title: meta.title,
+      year: meta.year,
+      occurrencesElsewhere: occurrencesElsewhere(register, meta.key, notePath),
+      findings: record.findings.filter((f) => f.sourceKeys.includes(meta.key)).map((f) => ({ claim: f.claim, strength: f.strength }))
+    }));
+    return { hasRecord: true, sources: sources2 };
+  }
+  const sources = register.citations.filter((c) => c.occurrences.some((o) => o.note === notePath)).map((c) => ({
+    key: c.key,
+    title: c.title,
+    year: c.year,
+    occurrencesElsewhere: occurrencesElsewhere(register, c.key, notePath),
+    findings: []
+  }));
+  return { hasRecord: false, sources };
+}
+
+// src/workbench-view.ts
+var WORKBENCH_VIEW_TYPE = "consensus-research-workbench";
+var _WorkbenchView = class _WorkbenchView extends import_obsidian15.ItemView {
+  constructor(leaf, plugin) {
+    super(leaf);
+    /** Path the panel was last rendered for — guards against re-rendering on every focus change (E69). */
+    this.lastRenderedPath = null;
+    /** Stale artefacts of the rendered note (AU_E131_S5): section id → changed bases. */
+    this.staleArtefacts = /* @__PURE__ */ new Map();
+    /** Project member note paths from the last render (D10) — a change to one of these also matters. */
+    this.lastRenderedProjectMemberPaths = [];
+    /** Pending debounce timer for `metadataCache.on("changed")` (D10). */
+    this.pendingRerender = null;
+    this.plugin = plugin;
+  }
+  getViewType() {
+    return WORKBENCH_VIEW_TYPE;
+  }
+  getDisplayText() {
+    return "Parallax";
+  }
+  getIcon() {
+    return "flask-conical";
+  }
+  async onOpen() {
+    this.registerEvent(
+      this.app.workspace.on("active-leaf-change", () => {
+        var _a, _b;
+        if (((_b = (_a = this.plugin.activeNoteFile()) == null ? void 0 : _a.path) != null ? _b : null) !== this.lastRenderedPath) void this.render();
+      })
+    );
+    this.registerEvent(
+      this.app.metadataCache.on("changed", (file) => {
+        if (!shouldRerenderOnChange(file.path, this.lastRenderedPath, this.lastRenderedProjectMemberPaths)) return;
+        this.scheduleRerender();
+      })
+    );
+    await this.render();
+  }
+  /** Debounce re-renders ~300ms (D10) so a burst of cache-change events collapses into one render. */
+  scheduleRerender() {
+    if (this.pendingRerender !== null) window.clearTimeout(this.pendingRerender);
+    this.pendingRerender = window.setTimeout(() => {
+      this.pendingRerender = null;
+      void this.render();
+    }, 300);
+  }
+  /** Re-render on demand (E56): the plugin calls this when the live run phase changes. */
+  refresh() {
+    void this.render();
+  }
+  /** Run a plugin command by its short id (prefixed with the plugin id). */
+  run(commandId) {
+    this.app.commands.executeCommandById(`${this.plugin.manifest.id}:${commandId}`);
+  }
+  async render() {
+    var _a, _b, _c;
+    const root = this.contentEl;
+    root.empty();
+    root.createEl("h3", { text: "Parallax" });
+    const banner = formatRunPhase(this.plugin.runPhase);
+    if (banner) {
+      const bannerEl = root.createDiv({ cls: "consensus-workbench-running", attr: { "aria-live": "polite" } });
+      bannerEl.createSpan({ text: banner });
+      const stop = bannerEl.createEl("button", { text: "Stop", cls: "consensus-workbench-stop" });
+      stop.addEventListener("click", () => this.plugin.cancelResearch());
+    }
+    this.renderResume(root);
+    const file = this.plugin.activeNoteFile();
+    this.lastRenderedPath = (_a = file == null ? void 0 : file.path) != null ? _a : null;
+    if (!file) {
+      this.lastRenderedProjectMemberPaths = [];
+      this.staleArtefacts = /* @__PURE__ */ new Map();
+      this.renderEntry(root, { kind: "none" }, null);
+      const emptyState = deriveSessionState(null, "");
+      this.renderSteps(root, emptyState, recommendActions(emptyState));
+      return;
+    }
+    const fm = (_b = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _b.frontmatter;
+    const session = parseSession(fm);
+    const body = await this.app.vault.cachedRead(file);
+    this.staleArtefacts = session ? await this.plugin.staleArtefactsForNote(file, body) : /* @__PURE__ */ new Map();
+    const state = deriveSessionState(session, body);
+    const projectId = projectIdForNote(fm, file.path, file.basename);
+    const hub = projectId ? await this.plugin.hubObjectiveForWorkbench() : null;
+    const entry = {
+      kind: session ? "session" : parseProjectHub(fm) ? "hub" : projectId ? "plain-in-project" : "plain",
+      noteTitle: file.basename,
+      projectId: projectId || void 0,
+      objective: (hub == null ? void 0 : hub.objective) ? objectiveExcerpt(hub.objective) : void 0,
+      question: state.question,
+      framing: state.framing,
+      moveEligible: noteEligibleForProjectMove(fm, file.path)
+    };
+    this.renderEntry(root, entry, (_c = hub == null ? void 0 : hub.path) != null ? _c : null);
+    const recommended = recommendActions(state);
+    this.renderWorkflowStrip(root, state);
+    this.renderSessionPanel(root, state);
+    this.renderSteps(root, state, recommended);
+    this.renderArtifacts(root, session, body, file);
+    if (session) await this.renderSourceProvenance(root, file);
+    await this.renderProjectPanel(root, file);
+    this.renderWrapUp(root, state, { hasProject: !!projectId, recommended });
+    this.renderMoreActions(root);
+    this.renderTrace(root, body);
+  }
+  /**
+   * "Resume last research" (D5/E78) — shown only while a resumable cache exists, independent of
+   * which note is active (the cache is a plugin-level rescue, not tied to a single session).
+   */
+  renderResume(root) {
+    if (!this.plugin.hasResumeCache()) return;
+    const box = root.createDiv({ cls: "consensus-workbench-resume" });
+    new import_obsidian15.Setting(box).setName("Resume last research").setDesc("Re-run rerank + synthesis on the cached search \u2014 no re-fetching.").addButton((b) => {
+      b.setButtonText("Resume").setCta();
+      b.onClick(() => this.run("resume-research"));
+    });
+  }
+  /**
+   * The entry block — "step 0" (AU_E148_S1, voorstel §1/§3). Replaces the old onboarding block
+   * and takes over the two loose buttons from the project panel: one place, at the top of the
+   * panel, that says what this note is and offers at most one primary and one secondary action.
+   * The routing itself is pure ({@link entryActions}); this method only draws it.
+   *
+   * The objective is rendered here rather than as one of the panel's `lines` because it is a
+   * LINK: clicking it jumps to the hub's `## Doelstelling`, which is where a project objective is
+   * changed — the block links to the hub and never writes in it (voorstel §7).
+   */
+  renderEntry(root, entry, hubPath) {
+    const panel = entryActions(entry);
+    root.createEl("h4", { text: entry.kind === "session" ? "Question" : "Start" });
+    const box = root.createDiv({ cls: entry.kind === "none" ? "consensus-handoff-hint" : "consensus-workbench-session" });
+    if (entry.objective) {
+      const p = box.createEl("p");
+      p.createEl("strong", { text: "Objective: " });
+      if (hubPath) {
+        const link = p.createEl("a", { text: entry.objective, href: "#", cls: "consensus-workbench-artifact-link" });
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          void this.openFromSidebar(`${hubPath.replace(/\.md$/i, "")}#${sectionHeading("objective")}`, hubPath);
+        });
+      } else {
+        p.appendText(entry.objective);
+      }
+    }
+    for (const line of panel.lines) box.createEl("p", { text: line });
+    const buttons = box.createDiv({ cls: "consensus-workbench-card-buttons" });
+    const button = (action, primary) => {
+      const el = buttons.createEl("button", { text: action.label, cls: "consensus-workbench-action" });
+      if (primary) el.addClass("mod-cta");
+      el.addEventListener("click", () => this.run(action.commandId));
+    };
+    button(panel.primary, true);
+    if (panel.secondary) button(panel.secondary, false);
+    if (entry.kind === "none") {
+      const feedback = box.createEl("p", { cls: "consensus-onboarding-feedback" });
+      const feedbackLink = feedback.createEl("a", { text: "Feedback or a bug? Tell us on GitHub" });
+      feedbackLink.addEventListener("click", (evt) => {
+        evt.preventDefault();
+        window.open("https://github.com/maxonamission/obsidian-parallax/issues", "_blank");
+      });
+    }
+  }
+  /**
+   * Visual workflow strip (E55): Explore → Frame → Theory → Challenge → Evidence → Design —
+   * reordered (D4/E78) to match {@link recommendActions}' order, so this strip's "current" step
+   * and the "Next step" panel below always point at the same place.
+   */
+  renderWorkflowStrip(root, state) {
+    const strip = root.createDiv({ cls: "consensus-workbench-strip" });
+    const steps = workflowSteps(state);
+    steps.forEach((step, i) => {
+      if (i > 0) strip.createSpan({ cls: "consensus-workbench-strip-sep", text: "\u203A", attr: { "aria-hidden": "true" } });
+      const cls = ["consensus-workbench-step", `consensus-phase-${step.key}`];
+      if (step.done) cls.push("is-done");
+      if (step.current) cls.push("is-current");
+      const el = strip.createSpan({ cls: cls.join(" ") });
+      if (step.done) el.createSpan({ text: "\u2713 ", attr: { "aria-hidden": "true" } });
+      el.appendText(step.label);
+      el.setAttr("aria-label", `${step.done ? "Done: " : step.current ? "Current: " : ""}${step.label}`);
+    });
+  }
+  /**
+   * The compact session block (AU_E148_S5, voorstel §5): where you stand, right under the strip.
+   * The QUESTION is deliberately gone — it is the entry block's job now (AU_E148_S1), and
+   * repeating it here is what made this block push Steps below the fold on a phone. What is left
+   * is the state the strip cannot show: the framing sentence, the lenses, the open beliefs and
+   * the latest synthesis. Without a session there is no block at all: the entry block already
+   * says what this note is and how to turn it into one.
+   */
+  renderSessionPanel(root, s) {
+    var _a;
+    if (!s.isSession) return;
+    root.createEl("h4", { text: "Session" });
+    const dl = root.createDiv({ cls: "consensus-workbench-session" });
+    const row = (label, value) => {
+      if (!value) return;
+      const p = dl.createEl("p");
+      p.createEl("strong", { text: `${label}: ` });
+      p.appendText(value);
+    };
+    row("Framing", ((_a = s.framing) == null ? void 0 : _a.trim()) || "no framing yet");
+    row("Lenses", _WorkbenchView.lensSummary(s.lenses));
+    if (s.totalBeliefs > 0) row("Beliefs", `${s.openBeliefs} open of ${s.totalBeliefs}`);
+    row("Latest synthesis", s.synthesisSnippet);
+  }
+  /** Lenses on one line: the names while they stay short, a count once they don't (AU_E148_S5). */
+  static lensSummary(lenses) {
+    if (lenses.length === 0) return "";
+    const names = lenses.join(", ");
+    return names.length <= 60 ? names : `${lenses.length} lenses`;
+  }
+  /**
+   * "Sources & findings" (E83_S2) — per active session, a compact provenance block: per source a
+   * one-line summary (title, bridge-visibility elsewhere, finding count) expanding to its findings
+   * with grades. Findings click through to this note's Synthese section. Degraded (no E68 record
+   * for this note): shows what the citation register knows the note cites, with a hint that a
+   * fresh research run would record the provenance.
+   */
+  async renderSourceProvenance(root, file) {
+    const graphStore = await this.plugin.loadGraphStoreForWorkbench();
+    const register = await this.plugin.loadRegisterForWorkbench();
+    const provenance = deriveSourceProvenance(file.path, recordForNote(graphStore, file.path), register);
+    if (provenance.sources.length === 0) return;
+    const details = root.createEl("details", { cls: "consensus-workbench-more" });
+    details.createEl("summary", { text: `Sources & findings (${provenance.sources.length})` });
+    const wrap = details.createDiv({ cls: "consensus-workbench-session" });
+    if (!provenance.hasRecord) {
+      wrap.createEl("p", {
+        cls: "consensus-handoff-hint",
+        text: "No provenance recorded for this note yet \u2014 showing what the register knows. Run a fresh synthesis to record which finding rests on which source."
+      });
+    }
+    for (const src of provenance.sources) this.renderSourceProvenanceItem(wrap, file, provenance.hasRecord, src);
+  }
+  /** One source's compact line + expandable findings-with-grade list (E83_S2). */
+  renderSourceProvenanceItem(root, file, hasRecord, src) {
+    const srcDetails = root.createEl("details", { cls: "consensus-workbench-more" });
+    const yearText = src.year ? ` (${src.year})` : "";
+    srcDetails.createEl("summary", {
+      text: `${src.title}${yearText} \xB7 ${src.occurrencesElsewhere} elsewhere \xB7 ${src.findings.length} finding(s)`
+    });
+    if (src.findings.length === 0) {
+      srcDetails.createEl("p", {
+        text: hasRecord ? "No findings recorded for this source yet." : "Findings unknown \u2014 no graph record for this note."
+      });
+      return;
+    }
+    const ul = srcDetails.createEl("ul", { cls: "consensus-workbench-artifacts" });
+    for (const f of src.findings) {
+      const li = ul.createEl("li");
+      const link = li.createEl("a", { text: f.claim, href: "#", cls: "consensus-workbench-artifact-link" });
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        void this.openFromSidebar(`#${sectionHeading("synthesis")}`, file.path);
+      });
+      li.appendText(` \u2014 ${f.strength}`);
+    }
+  }
+  /**
+   * Project panel (E64) — shown when the active note is a project hub, a session that belongs to
+   * a project, or (AU_E146_S1) any other note that resolves to one via its `project:` field or
+   * its folder. Lists the project's sessions (each its own note) with a tiny state badge, and a
+   * button to add a new question. Membership is LEADING from the front-matter `project:` field;
+   * the folder is just where the notes happen to live.
+   */
+  async renderProjectPanel(root, file) {
+    var _a, _b;
+    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+    const projectId = projectIdForNote(fm, file.path, file.basename);
+    if (!projectId) {
+      this.lastRenderedProjectMemberPaths = [];
+      root.createEl("h4", { text: "Project" });
+      const box = root.createDiv({ cls: "consensus-workbench-session" });
+      box.createEl("p", { text: "This note doesn't belong to a project yet. A project = a folder with one session per question." });
+      return;
+    }
+    const notes = [];
+    for (const f of this.app.vault.getMarkdownFiles()) {
+      const s = parseSession((_b = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _b.frontmatter);
+      if (!s || s.project.toLowerCase() !== projectId.toLowerCase()) continue;
+      notes.push({ path: f.path, title: f.basename, session: s, body: await this.app.vault.cachedRead(f) });
+    }
+    const members = projectMembers(projectId, notes);
+    this.lastRenderedProjectMemberPaths = members.map((m) => m.path);
+    root.createEl("h4", { text: `Project: ${projectId}` });
+    const wrap = root.createDiv({ cls: "consensus-workbench-session" });
+    if (members.length === 0) {
+      wrap.createEl("p", { text: "No research questions in this project yet. Add the first one." });
+    } else {
+      const ul = wrap.createEl("ul", { cls: "consensus-workbench-artifacts" });
+      for (const m of members) {
+        const li = ul.createEl("li");
+        const badge = m.hasSynthesis ? "\u2713" : "\xB7";
+        const open = m.openBeliefs > 0 ? ` (${m.openBeliefs} open)` : "";
+        li.createSpan({
+          text: `${badge} `,
+          attr: { "aria-label": m.hasSynthesis ? "Has synthesis" : "No synthesis yet" }
+        });
+        const isActive = m.path === file.path;
+        if (isActive) {
+          li.createEl("strong", { text: m.title });
+        } else {
+          const link = li.createEl("a", { text: m.title, href: "#", cls: "consensus-workbench-artifact-link" });
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            void this.openFromSidebar(m.path, "");
+          });
+        }
+        li.appendText(open);
+      }
+    }
+    const refresh = wrap.createEl("p", { cls: "consensus-workbench-refresh-contents" });
+    const refreshLink = refresh.createEl("a", { text: "Refresh contents", cls: "consensus-workbench-artifact-link" });
+    refreshLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.run("refresh-project-contents");
+      this.scheduleRerender();
+    });
+    const hypotheses = projectHypotheses(projectId, notes);
+    if (hypotheses.length > 0) {
+      root.createEl("h4", { text: "Open hypotheses & follow-up directions" });
+      const list = root.createDiv({ cls: "consensus-workbench-session" });
+      for (const h of hypotheses) {
+        const kindLabel = h.kind === "overtuiging" ? "belief" : "follow-up direction";
+        const setting = new import_obsidian15.Setting(list).setName(h.text).setDesc(`${kindLabel} \xB7 from "${h.sourceTitle}"`);
+        setting.addButton((b) => {
+          b.setButtonText("Research this");
+          b.onClick(() => void this.plugin.startHypothesisFollowUp(h.text, h.sourcePath));
+        });
+      }
+    }
+    const memberPaths = new Set(notes.map((n) => n.path));
+    const register = await this.plugin.loadRegisterForWorkbench();
+    const sources = [];
+    for (const c of register.citations) {
+      const inProject = c.occurrences.filter((o) => memberPaths.has(o.note)).map((o) => o.note);
+      if (inProject.length > 0) sources.push({ key: c.key, title: c.title, year: c.year, notes: inProject });
+    }
+    const graphStore = await this.plugin.loadGraphStoreForWorkbench();
+    const records = graphStore.sessions.filter((r) => memberPaths.has(r.note));
+    this.renderEvidenceGaps(root, deriveEvidenceGaps(projectId, notes, sources, records));
+  }
+  /** "Evidence gaps" (E83_S1) — three collapsible worklists, each item click-through + (for an unproven finding) a "Research this" follow-up (E66 pattern). */
+  renderEvidenceGaps(root, gaps) {
+    const total = gaps.unprovenFindings.length + gaps.subquestionsWithoutSources.length + gaps.sourcesWithoutFinding.length;
+    if (total === 0) return;
+    root.createEl("h4", { text: "Evidence gaps" });
+    root.createEl("p", {
+      cls: "consensus-workbench-card-desc",
+      text: 'Where the evidence across this project is thin. Unproven findings have no source behind them ("Research this" starts a run on that gap); sub-questions without sources found nothing; sources without a finding were retrieved but never used. Each item links to its synthesis.'
+    });
+    this.renderGapGroup(root, "Unproven findings", gaps.unprovenFindings, true, "Findings the graph records without a supporting source");
+    this.renderGapGroup(root, "Sub-questions without sources", gaps.subquestionsWithoutSources, false, "Sub-questions the search returned nothing for");
+    this.renderGapGroup(root, "Sources without a finding", gaps.sourcesWithoutFinding, false, "Retrieved sources no finding rests on; candidates for a deepen or a re-run");
+  }
+  /** One collapsible gap-category group; `withFollowUp` mirrors the E66 "Research this" open-hypotheses pattern. */
+  renderGapGroup(root, label, items, withFollowUp, hint) {
+    if (items.length === 0) return;
+    const details = root.createEl("details", { cls: "consensus-workbench-more" });
+    details.createEl("summary", { text: `${label} (${items.length})` });
+    const wrap = details.createDiv({ cls: "consensus-workbench-session" });
+    if (hint) wrap.createEl("p", { cls: "consensus-workbench-card-desc", text: hint });
+    for (const item of items) {
+      if (withFollowUp && item.followUp) {
+        const followUp = item.followUp;
+        const setting = new import_obsidian15.Setting(wrap).setName(item.text).setDesc(`From "${this.noteTitle(item.note)}"`);
+        setting.addButton((b) => {
+          b.setButtonText("Research this");
+          b.onClick(() => void this.plugin.startHypothesisFollowUp(followUp.text, followUp.sourcePath));
+        });
+      } else {
+        const p = wrap.createEl("p");
+        const link = p.createEl("a", { text: item.text, href: "#", cls: "consensus-workbench-artifact-link" });
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          void this.openFromSidebar(`#${sectionHeading("synthesis")}`, item.note);
+        });
+        p.appendText(` \u2014 "${this.noteTitle(item.note)}"`);
+      }
+    }
+  }
+  /** Vault-relative path → its basename without the `.md` extension, for a compact "from ..." label. */
+  noteTitle(path) {
+    var _a;
+    const base = (_a = path.split("/").pop()) != null ? _a : path;
+    return base.replace(/\.md$/i, "");
+  }
+  renderSteps(root, state, recommended) {
+    root.createEl("h4", { text: "Steps" });
+    const wrap = root.createDiv({ cls: "consensus-workbench-steps" });
+    let lastStep = null;
+    for (const a of stepActions(state, recommended)) {
+      if (a.step !== lastStep) {
+        wrap.createDiv({ text: _WorkbenchView.STEP_LABEL[a.step], cls: "consensus-workbench-step-group" });
+        lastStep = a.step;
+      }
+      this.renderStepCard(wrap, a);
+    }
+  }
+  /**
+   * The "Wrap up" block (AU_E148_S2, voorstel §4): the methodological account, the portable
+   * exports and the project bibliography. Same card style as Steps — minus "Add section", which
+   * falls out by itself because none of these writes a scaffoldable section. Renders nothing
+   * when neither a session nor a project applies.
+   */
+  renderWrapUp(root, state, opts) {
+    const actions = wrapUpActions(state, opts);
+    if (actions.length === 0) return;
+    root.createEl("h4", { text: "Wrap up" });
+    const wrap = root.createDiv({ cls: "consensus-workbench-steps" });
+    for (const a of actions) this.renderStepCard(wrap, a);
+  }
+  /** Short action verb for a card's main button ("Ask AI" for anything LLM-gated). */
+  static mainButtonLabel(a) {
+    if (a.buttonLabel) return a.buttonLabel;
+    if (a.scaffoldSection || a.requires === "ai") return "Ask AI";
+    switch (a.commandId) {
+      case "start-research-session":
+        return "Start";
+      case "research-question":
+        return "Run research";
+      case "methodology-account":
+        return "Generate";
+      case "ask-research-question":
+        return "Search";
+      case "register-export-bibtex":
+      case "export-session":
+      case "export-project":
+      case "export-quadro":
+      case "export-preregistration":
+      case "interview-export":
+        return "Export";
+      case "resume-research":
+        return "Resume";
+      case "register-bibliography-project":
+      case "register-bridge-papers":
+      case "register-overview":
+        return "Open";
+      default:
+        return a.label;
+    }
+  }
+  /**
+   * One step as a compact card (AU_E121_S2, owner design iteration): title, full-width
+   * description, then a button row — "Add section" (self-write scaffold, no AI) next to
+   * "Ask AI". Replaces the old button-with-side-description row, which crammed the pencil
+   * button, badge and description into one line on mobile. No "Requires AI" badge here —
+   * the split into Add section / Ask AI makes the AI-ness explicit per button.
+   */
+  renderStepCard(wrap, a) {
+    const card = wrap.createDiv({ cls: "consensus-workbench-card" });
+    card.createDiv({ cls: "consensus-workbench-card-title", text: a.label });
+    card.createDiv({ cls: "consensus-workbench-card-desc", text: a.description });
+    const changed = a.scaffoldSection ? this.staleArtefacts.get(a.scaffoldSection) : void 0;
+    if (changed) {
+      card.createDiv({
+        cls: "consensus-workbench-card-desc consensus-workbench-stale",
+        text: `\u26A0 Basis changed since adoption (${changed.map((c) => sectionHeading(c)).join(", ")}) \u2014 re-run this step to refresh the section.`
+      });
+    }
+    const buttons = card.createDiv({ cls: "consensus-workbench-card-buttons" });
+    if (a.scaffoldSection) {
+      const section = a.scaffoldSection;
+      const add = buttons.createEl("button", { text: "Add section", cls: "consensus-workbench-action" });
+      const addLabel = "Insert the section to write yourself \u2014 no AI";
+      add.setAttr("aria-label", addLabel);
+      add.setAttr("title", addLabel);
+      if (a.requires === "ai" && !this.plugin.llm.isConfigured()) add.addClass("mod-cta");
+      add.addEventListener("click", () => void this.plugin.insertScaffold(section));
+    }
+    const main = buttons.createEl("button", { text: _WorkbenchView.mainButtonLabel(a), cls: "consensus-workbench-action" });
+    if (a.requires === "ai") main.setAttr("title", "Runs the AI research assistant \u2014 needs a configured provider");
+    if (a.recommended === "primary") {
+      main.addClass("mod-cta");
+      main.setAttr("aria-label", "Recommended next step");
+    } else if (a.recommended === "alternative") {
+      main.addClass("consensus-workbench-action-alt");
+      main.setAttr("aria-label", "Alternative next step");
+    }
+    main.addEventListener("click", () => this.run(a.commandId));
+  }
+  /**
+   * Collapsed "More" group (D5/E78) under the Steps list — the secondary/rescue commands that were
+   * previously palette-only (framework-only, cross-sector, deepen, register slices, quick search).
+   * A native `<details>` keeps this cheap: collapsed by default so it doesn't compete with the
+   * primary workflow, one click away when needed. Same row layout as Steps (AU_E94_S1).
+   */
+  renderMoreActions(root) {
+    var _a;
+    const details = root.createEl("details", { cls: "consensus-workbench-more" });
+    details.createEl("summary", { text: "More" });
+    const wrap = details.createDiv({ cls: "consensus-workbench-steps" });
+    let lastGroup = null;
+    for (const a of moreActions()) {
+      const group = a.step ? _WorkbenchView.STEP_LABEL[a.step] : (_a = a.group) != null ? _a : "Register & exports";
+      if (group !== lastGroup) {
+        wrap.createDiv({ text: group, cls: "consensus-workbench-step-group" });
+        lastGroup = group;
+      }
+      this.renderStepCard(wrap, a);
+    }
+  }
+  /**
+   * Artefacts — the note's section outline; every row is click-to-jump to its `##` section
+   * (E55). Since AU_E146_S2 the list follows the canonical order and holds every section the
+   * note actually has, so nothing in a seventeen-section note is unreachable. Nothing here
+   * knows the sections by name: whatever {@link listArtifacts} returns is rendered.
+   */
+  renderArtifacts(root, session, body, file) {
+    var _a;
+    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+    const artifacts = listArtifacts(session, body, { isHub: parseProjectHub(fm) !== null });
+    if (artifacts.length === 0) return;
+    root.createEl("h4", { text: "Artifacts" });
+    const ul = root.createEl("ul", { cls: "consensus-workbench-artifacts" });
+    for (const a of artifacts) {
+      const li = ul.createEl("li", { cls: a.phase ? `consensus-phase-${a.phase} consensus-workbench-artifact-row` : "" });
+      li.createSpan({ text: `${a.present ? "\u2713" : "\xB7"} `, attr: { "aria-label": a.present ? "Present" : "Not present yet" } });
+      if (a.navigable) {
+        const link = li.createEl("a", { text: a.label, href: "#", cls: "consensus-workbench-artifact-link" });
+        link.addEventListener("click", (e) => {
+          e.preventDefault();
+          void this.openFromSidebar(`#${a.heading}`, file.path);
+        });
+      } else {
+        li.appendText(a.label);
+      }
+    }
+  }
+  /**
+   * Follow a link from this sidebar into the main area (AU_E145_S1).
+   *
+   * `openLinkText(…, false)` opens in the ACTIVE leaf, and on mobile the active leaf is this
+   * sidebar — you just tapped in it. The note then opened into the panel that was closing, so the
+   * tap read as "the link goes nowhere". Obsidian names this exact case in its API docs for
+   * `getMostRecentLeaf`: *"Useful for interacting with the leaf in the root split while a sidebar
+   * leaf might be active."*
+   *
+   * So: make a main-area leaf active first, then hand the link to Obsidian as before. Deliberately
+   * NOT `openFile(file, { eState: { subpath } })` — that would mean resolving the subpath
+   * ourselves, while `openLinkText` already does it and stays the one path that knows how.
+   *
+   * Every link in this view goes through here; there were four call sites and all four had it.
+   * A heading that no longer matches (the section lookup is marker-first, the anchor is the
+   * current localised name) now degrades to "opens the note without scrolling" rather than to
+   * nothing at all.
+   *
+   * The mechanism itself lives in {@link followLinkIntoMainArea} since AU_E146_S2, so the
+   * artefact landing reveals its new section through exactly this path instead of a second one.
+   */
+  async openFromSidebar(linktext, sourcePath) {
+    await followLinkIntoMainArea(this.app, linktext, sourcePath);
+  }
+  /** Log / trace — the most recent decision-trail entries from the ## Logboek. */
+  renderTrace(root, body) {
+    const lines2 = recentLog(body, 6);
+    if (lines2.length === 0) return;
+    root.createEl("h4", { text: "Logbook (latest steps)" });
+    const ul = root.createEl("ul", { cls: "consensus-workbench-trace" });
+    for (const line of lines2) ul.createEl("li", { text: line.replace(/^- /, "") });
+  }
+  async onClose() {
+    if (this.pendingRerender !== null) window.clearTimeout(this.pendingRerender);
+    this.contentEl.empty();
+  }
+};
+/**
+ * The integral "Steps" list (AU_E94_S1, supersedes the separate "Next step" + "All steps"
+ * sections): every workflow action as a row — button + one-line explanation — grouped under
+ * small step labels in the same order as the workflow strip above. The live recommendation is
+ * folded in: its row carries the CTA styling (and the alternative a subtle outline) plus the
+ * contextual why-text, so "what should I do next" and "what can I do" are one list.
+ */
+_WorkbenchView.STEP_LABEL = {
+  explore: "Explore",
+  frame: "Frame",
+  theory: "Theory",
+  challenge: "Challenge",
+  evidence: "Evidence",
+  design: "Design"
+};
+var WorkbenchView = _WorkbenchView;
+async function revealWorkbench(plugin) {
+  var _a;
+  const { workspace } = plugin.app;
+  const leaf = (_a = workspace.getLeavesOfType(WORKBENCH_VIEW_TYPE)[0]) != null ? _a : workspace.getRightLeaf(false);
+  await (leaf == null ? void 0 : leaf.setViewState({ type: WORKBENCH_VIEW_TYPE, active: true }));
+}
+async function openFileInMainArea(app, file) {
+  var _a;
+  const { workspace } = app;
+  const target = (_a = workspace.getMostRecentLeaf()) != null ? _a : workspace.getLeaf(true);
+  await target.openFile(file);
+  workspace.setActiveLeaf(target, { focus: true });
+}
+async function followLinkIntoMainArea(app, linktext, sourcePath) {
+  const { workspace } = app;
+  const target = workspace.getMostRecentLeaf();
+  if (target) workspace.setActiveLeaf(target, { focus: true });
+  await workspace.openLinkText(linktext, sourcePath, false);
+}
+async function revealSectionInMainArea(app, path, heading) {
+  var _a;
+  if (((_a = app.workspace.getActiveFile()) == null ? void 0 : _a.path) !== path) return;
+  await followLinkIntoMainArea(app, `#${heading}`, path);
+}
+
+// src/commands.ts
+var VariantPickModal = class extends import_obsidian16.FuzzySuggestModal {
+  constructor(app, items) {
+    super(app);
+    this.items = items;
+  }
+  getItems() {
+    return this.items;
+  }
+  getItemText(item) {
+    return item.label;
+  }
+  onChooseItem(item) {
+    item.run();
+  }
+};
+function registerCommands(plugin) {
+  plugin.addCommand({
+    id: "open-workbench",
+    name: COMMAND_NAMES["open-workbench"],
+    icon: "flask-conical",
+    callback: () => void revealWorkbench(plugin)
+  });
+  plugin.addCommand({
+    id: "research-question",
+    name: COMMAND_NAMES["research-question"],
+    icon: "sparkles",
+    callback: () => plugin.promptAndResearch("")
+  });
+  plugin.addCommand({
+    id: "cancel-research",
+    name: COMMAND_NAMES["cancel-research"],
+    icon: "square",
+    callback: () => plugin.cancelResearch()
+  });
+  plugin.addCommand({
+    id: "insert-scaffold",
+    name: COMMAND_NAMES["insert-scaffold"],
+    icon: "pencil-line",
+    callback: () => void plugin.insertScaffold()
+  });
+  plugin.addCommand({
+    id: "explore-problem",
+    name: COMMAND_NAMES["explore-problem"],
+    icon: "compass",
+    callback: () => plugin.promptAndExplore("")
+  });
+  plugin.addCommand({
+    id: "set-framing",
+    name: COMMAND_NAMES["set-framing"],
+    icon: "crosshair",
+    checkCallback: (checking) => {
+      if (!plugin.canSetFraming()) return false;
+      if (!checking) plugin.setFraming();
+      return true;
+    }
+  });
+  plugin.addCommand({
+    id: "start-research-session",
+    name: COMMAND_NAMES["start-research-session"],
+    icon: "notebook-pen",
+    checkCallback: (checking) => {
+      if (!plugin.canStartResearchSession()) return false;
+      if (!checking) plugin.startResearchSession();
+      return true;
+    }
+  });
+  plugin.addCommand({
+    id: "reorder-sections",
+    name: COMMAND_NAMES["reorder-sections"],
+    icon: "arrow-down-up",
+    callback: () => void plugin.reorderSections()
+  });
+  plugin.addCommand({
+    id: "start-research-project",
+    name: COMMAND_NAMES["start-research-project"],
+    icon: "folder-plus",
+    callback: () => plugin.startResearchProject()
+  });
+  plugin.addCommand({
+    id: "new-project-session",
+    name: COMMAND_NAMES["new-project-session"],
+    icon: "file-plus",
+    checkCallback: (checking) => {
+      if (!plugin.canStartProjectSession()) return false;
+      if (!checking) plugin.newProjectSession();
+      return true;
+    }
+  });
+  plugin.addCommand({
+    id: "refresh-project-contents",
+    name: COMMAND_NAMES["refresh-project-contents"],
+    icon: "list-tree",
+    callback: () => void plugin.refreshProjectContents()
+  });
+  plugin.addCommand({
+    id: "export-quadro",
+    name: COMMAND_NAMES["export-quadro"],
+    icon: "book-open-check",
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "Codebook (from lenses)", run: () => void plugin.exportQuadroCodebook() },
+      { label: "Starter kit", run: () => void plugin.exportQuadroStarterKit() }
+    ]).open()
+  });
+  plugin.addCommand({
+    id: "clean-up-records",
+    name: COMMAND_NAMES["clean-up-records"],
+    icon: "eraser",
+    callback: () => void plugin.runRecordCleanup()
+  });
+  plugin.addCommand({
+    id: "rebuild-records",
+    name: COMMAND_NAMES["rebuild-records"],
+    icon: "history",
+    callback: () => void plugin.rebuildRecordsFromNote()
+  });
+  if (plugin.settings.debugLogging) {
+    plugin.addCommand({
+      id: "build-knowledge-graph-spike",
+      name: COMMAND_NAMES["build-knowledge-graph-spike"],
+      icon: "git-fork",
+      callback: () => void plugin.buildKnowledgeGraphSpike()
+    });
+  }
+  plugin.addCommand({
+    id: "theory-lenses",
+    name: COMMAND_NAMES["theory-lenses"],
+    icon: "glasses",
+    callback: () => plugin.promptAndTheory("")
+  });
+  plugin.addCommand({
+    id: "challenge-framing",
+    name: COMMAND_NAMES["challenge-framing"],
+    icon: "swords",
+    callback: () => plugin.promptAndChallenge("")
+  });
+  plugin.addCommand({
+    id: "map-argument",
+    name: COMMAND_NAMES["map-argument"],
+    icon: "network",
+    callback: () => void plugin.mapArgumentFlow()
+  });
+  plugin.addCommand({
+    id: "refresh-from-records",
+    name: COMMAND_NAMES["refresh-from-records"],
+    icon: "refresh-cw",
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "Argument map", run: () => void plugin.refreshArgumentMap() },
+      { label: "Interview guide", run: () => void plugin.refreshInterviewGuide() },
+      { label: "Hypotheses", run: () => void plugin.refreshHypotheses() }
+    ]).open()
+  });
+  plugin.addCommand({
+    id: "argument-open-canvas",
+    name: COMMAND_NAMES["argument-open-canvas"],
+    icon: "layout-dashboard",
+    callback: () => void plugin.openArgumentCanvas()
+  });
+  plugin.addCommand({
+    id: "argument-relayout-canvas",
+    name: COMMAND_NAMES["argument-relayout-canvas"],
+    icon: "layout-grid",
+    callback: () => void plugin.relayoutArgumentCanvasFlow()
+  });
+  plugin.addCommand({
+    id: "design-interview-guide",
+    name: COMMAND_NAMES["design-interview-guide"],
+    icon: "mic",
+    callback: () => void plugin.designInterviewGuideFlow()
+  });
+  plugin.addCommand({
+    id: "interview-export",
+    name: COMMAND_NAMES["interview-export"],
+    icon: "file-down",
+    callback: () => void plugin.exportInterviewGuide()
+  });
+  plugin.addCommand({
+    id: "propose-hypotheses",
+    name: COMMAND_NAMES["propose-hypotheses"],
+    icon: "flask-conical",
+    callback: () => void plugin.proposeHypothesesFlow()
+  });
+  plugin.addCommand({
+    id: "find-validated-scales",
+    name: COMMAND_NAMES["find-validated-scales"],
+    icon: "ruler",
+    callback: () => void plugin.findValidatedScalesFlow()
+  });
+  plugin.addCommand({
+    id: "export-preregistration",
+    name: COMMAND_NAMES["export-preregistration"],
+    icon: "file-down",
+    callback: () => void plugin.exportPreregistration()
+  });
+  plugin.addCommand({
+    id: "connections-refresh",
+    name: COMMAND_NAMES["connections-refresh"],
+    icon: "link",
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "This note", run: () => void plugin.refreshConnections("note") },
+      { label: "This project", run: () => void plugin.refreshConnections("project") }
+    ]).open()
+  });
+  plugin.addCommand({
+    id: "resume-research",
+    name: COMMAND_NAMES["resume-research"],
+    icon: "rotate-ccw",
+    callback: () => plugin.resumeResearch()
+  });
+  plugin.addCommand({
+    id: "confront-beliefs",
+    name: COMMAND_NAMES["confront-beliefs"],
+    icon: "scale",
+    callback: () => void plugin.confrontBeliefsFlow()
+  });
+  plugin.addCommand({
+    id: "methodology-account",
+    name: COMMAND_NAMES["methodology-account"],
+    icon: "scroll-text",
+    callback: () => void plugin.generateMethodologyAccount()
+  });
+  plugin.addCommand({
+    id: "research-agenda",
+    name: COMMAND_NAMES["research-agenda"],
+    icon: "telescope",
+    callback: () => void plugin.generateResearchDesign()
+  });
+  plugin.addCommand({
+    id: "build-framework",
+    name: COMMAND_NAMES["build-framework"],
+    icon: "library",
+    callback: () => plugin.promptAndResearch("", { frameworkOnly: true })
+  });
+  plugin.addCommand({
+    id: "deepen-finding",
+    name: COMMAND_NAMES["deepen-finding"],
+    icon: "list-tree",
+    editorCallback: (editor) => void plugin.deepenSelection(editor)
+  });
+  plugin.addCommand({
+    id: "ask-research-question",
+    name: COMMAND_NAMES["ask-research-question"],
+    icon: "search",
+    callback: () => plugin.promptAndSearch("")
+  });
+  plugin.addCommand({
+    id: "register-bibliography-project",
+    name: COMMAND_NAMES["register-bibliography-project"],
+    callback: () => void plugin.sliceBibliography()
+  });
+  plugin.addCommand({
+    id: "register-bridge-papers",
+    name: COMMAND_NAMES["register-bridge-papers"],
+    callback: () => void plugin.sliceBridgePapers()
+  });
+  plugin.addCommand({
+    id: "register-overview",
+    name: COMMAND_NAMES["register-overview"],
+    callback: () => void plugin.sliceOverview()
+  });
+  plugin.addCommand({
+    id: "register-export-bibtex",
+    name: COMMAND_NAMES["register-export-bibtex"],
+    callback: () => void plugin.sliceBibtex()
+  });
+  plugin.addCommand({
+    id: "library-refresh",
+    name: COMMAND_NAMES["library-refresh"],
+    callback: () => void plugin.refreshLibrary()
+  });
+  plugin.addCommand({
+    id: "library-insert-citation",
+    name: COMMAND_NAMES["library-insert-citation"],
+    callback: () => void plugin.insertCitationFromLibrary()
+  });
+  plugin.addCommand({
+    id: "library-update",
+    name: COMMAND_NAMES["library-update"],
+    callback: () => new VariantPickModal(plugin.app, [
+      { label: "This note", run: () => void plugin.updateReferencesFromLibrary("note") },
+      { label: "This project", run: () => void plugin.updateReferencesFromLibrary("project") }
+    ]).open()
+  });
+  plugin.addCommand({
+    id: "export-session",
+    name: COMMAND_NAMES["export-session"],
+    icon: "package",
+    callback: () => void plugin.exportSession()
+  });
+  plugin.addCommand({
+    id: "export-project",
+    name: COMMAND_NAMES["export-project"],
+    icon: "package-open",
+    callback: () => void plugin.exportProject()
+  });
+}
+function registerRibbons(plugin) {
+  plugin.addRibbonIcon("sparkles", "Parallax: run research (AI)", () => {
+    plugin.promptAndResearch("");
+  });
+  plugin.addRibbonIcon("flask-conical", "Parallax: open the workbench", () => {
+    void revealWorkbench(plugin);
+  });
+}
+
+// src/subquestion-review-modal.ts
+var import_obsidian17 = require("obsidian");
+function parseSubQuestionLines(text) {
+  const seen = /* @__PURE__ */ new Set();
+  const out = [];
+  for (const raw of text.split("\n")) {
+    const query = raw.trim().replace(/^\d+[.)]\s*/, "");
+    if (!query) continue;
+    const key = query.toLowerCase().replace(/\s+/g, " ");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ query });
+  }
+  return out;
+}
+function reconcileExpectations(edited, original) {
+  const norm = (q) => q.toLowerCase().replace(/\s+/g, " ").trim();
+  const expByQuery = new Map(original.map((s) => [norm(s.query), s.expectation]));
+  return edited.map((s) => {
+    const exp = expByQuery.get(norm(s.query));
+    return exp ? { query: s.query, expectation: exp } : s;
+  });
+}
+function collectSubQuestions(fieldValues, original) {
+  return reconcileExpectations(parseSubQuestionLines(fieldValues.join("\n")), original);
+}
+function buildSubQuestionsBlock(question, subs) {
+  const items = subs.map(
+    (s) => s.expectation ? `- ${s.query}
+	- *${t().decompose.expectationLabel}: ${s.expectation}*` : `- ${s.query}`
+  );
+  return `**${t().decompose.subQuestions}** \u2014 *${question}*
+
+${items.join("\n")}
+`;
+}
+var SubQuestionReviewModal = class extends import_obsidian17.Modal {
+  constructor(app, subs, framework, onSubmit) {
+    super(app);
+    this.resolved = false;
+    this.original = subs;
+    this.rows = subs.map((s) => ({ text: s.query, expectation: s.expectation }));
+    this.framework = framework;
+    this.onSubmit = onSubmit;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Review sub-questions" });
+    contentEl.createEl("p", {
+      text: "Each field holds one sub-question \u2014 edit freely, remove what doesn't help, add your own. Or put them in the note to sharpen them there first.",
+      cls: "consensus-review-hint"
+    });
+    if (this.framework) {
+      const fw = contentEl.createEl("details", { cls: "consensus-review-framework" });
+      fw.createEl("summary", { text: `Theoretical framework \u2014 ${this.framework.construct}` });
+      if (this.framework.definition) fw.createEl("p", { text: this.framework.definition });
+      if (this.framework.dimensions.length > 0) {
+        const ul = fw.createEl("ul");
+        for (const d of this.framework.dimensions) ul.createEl("li", { text: d });
+      }
+    }
+    this.rowsEl = contentEl.createDiv();
+    this.renderRows(false);
+    if (!import_obsidian17.Platform.isMobile) {
+      window.setTimeout(() => {
+        var _a, _b;
+        return (_b = (_a = this.rowsEl) == null ? void 0 : _a.querySelector("textarea")) == null ? void 0 : _b.focus();
+      }, 0);
+    }
+    new import_obsidian17.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Add sub-question").onClick(() => {
+        this.rows.push({ text: "" });
+        this.renderRows(true);
+      })
+    );
+    new import_obsidian17.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Search these").setCta().onClick(() => this.submit("search"))
+    ).addButton(
+      (b) => b.setButtonText("Insert into note").setTooltip("Land the sub-questions at the bottom of the note to refine them there \u2014 stops this run.").onClick(() => this.submit("insert"))
+    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.cancel()));
+  }
+  /** (Re)render the editable rows; `focusLast` puts the cursor in a just-added field. */
+  renderRows(focusLast) {
+    const rowsEl = this.rowsEl;
+    if (!rowsEl) return;
+    rowsEl.empty();
+    this.rows.forEach((row, i) => {
+      const rowEl = rowsEl.createDiv({ cls: "consensus-subq-row" });
+      const ta = rowEl.createEl("textarea", { cls: "consensus-review-input" });
+      ta.value = row.text;
+      ta.addEventListener("input", () => row.text = ta.value);
+      makeAutoGrowTextarea(ta, 2);
+      new import_obsidian17.ExtraButtonComponent(rowEl).setIcon("x").setTooltip("Remove").onClick(() => {
+        this.rows.splice(i, 1);
+        this.renderRows(false);
+      });
+      if (row.expectation) {
+        rowsEl.createEl("p", {
+          text: `${t().decompose.expectationLabel}: ${row.expectation}`,
+          cls: "consensus-subq-hypothesis"
+        });
+      }
+      if (focusLast && i === this.rows.length - 1) window.setTimeout(() => ta.focus(), 0);
+    });
+  }
+  submit(action) {
+    const subs = collectSubQuestions(
+      this.rows.map((r) => r.text),
+      this.original
+    );
+    this.resolve(subs.length > 0 ? { action, subs } : null);
+    this.close();
+  }
+  cancel() {
+    this.resolve(null);
+    this.close();
+  }
+  resolve(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onSubmit(choice);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/framework-handoff-modal.ts
+var import_obsidian18 = require("obsidian");
+function parseDimensionLines(text) {
+  const seen = /* @__PURE__ */ new Set();
+  const out = [];
+  for (const raw of text.split("\n")) {
+    const dim = raw.trim().replace(/^[-*]\s*/, "").trim();
+    if (!dim) continue;
+    const key = dim.toLowerCase().replace(/\s+/g, " ");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(dim);
+  }
+  return out;
+}
+var FrameworkHandoffModal = class extends import_obsidian18.Modal {
+  constructor(app, framework, onChoice) {
+    super(app);
+    this.resolved = false;
+    this.framework = framework;
+    this.dimensionsText = framework.dimensions.join("\n");
+    this.onChoice = onChoice;
+  }
+  onOpen() {
+    var _a, _b;
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: `Theoretical framework \u2014 ${this.framework.construct}` });
+    if (this.framework.definition) {
+      contentEl.createEl("p", { text: this.framework.definition, cls: "consensus-handoff-definition" });
+    }
+    const count = (_b = (_a = this.framework.sources) == null ? void 0 : _a.length) != null ? _b : 0;
+    contentEl.createEl("p", {
+      text: `${count} seminal source(s). Edit the dimensions below, then continue to the literature research or just insert the framework.`,
+      cls: "consensus-handoff-hint"
+    });
+    stackSetting(new import_obsidian18.Setting(contentEl)).setName("Dimensions (steer the sub-questions)").setDesc("One analytical dimension per line.").addTextArea((ta) => {
+      const MIN_ROWS = 4;
+      ta.inputEl.rows = rowsForLines(this.framework.dimensions.length, MIN_ROWS);
+      ta.setValue(this.dimensionsText).onChange((v) => {
+        this.dimensionsText = v;
+        ta.inputEl.rows = rowsForLines(v.split("\n").length, MIN_ROWS);
+      });
+      ta.inputEl.addClass("consensus-handoff-input");
+    });
+    new import_obsidian18.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Continue to literature research").setCta().onClick(() => this.choose("research"))
+    ).addButton((b) => b.setButtonText("Insert framework only").onClick(() => this.choose("insert")));
+  }
+  choose(action) {
+    const dimensions = parseDimensionLines(this.dimensionsText);
+    this.resolve({ action, dimensions: dimensions.length > 0 ? dimensions : this.framework.dimensions });
+    this.close();
+  }
+  resolve(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(choice);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/exploration-modal.ts
+var import_obsidian19 = require("obsidian");
+var ExplorationModal = class extends import_obsidian19.Modal {
+  constructor(app, originalQuestion, result, landing, onChoice, projectName) {
+    super(app);
+    this.resolved = false;
+    this.beliefs = "";
+    this.landing = landing;
+    this.projectName = projectName;
+    this.originalQuestion = originalQuestion;
+    this.result = result;
+    this.framing = originalQuestion;
+    this.selectedSeeds = new Set(result.searchTermSeeds);
+    this.onChoice = onChoice;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Explore the problem" });
+    contentEl.createEl("p", {
+      text: "Choose the framing to research and the search terms that widen the search. The rest is material to weigh.",
+      cls: "consensus-handoff-hint"
+    });
+    this.renderReadOnly(contentEl, "Implicit assumptions", this.result.assumptions);
+    this.renderReadOnly(contentEl, "Possible counter-assumptions", this.result.counterAssumptions);
+    this.renderReadOnly(contentEl, "Competing definitions", this.result.definitions);
+    this.renderReadOnly(contentEl, "Disciplines / theoretical traditions", this.result.lenses);
+    this.renderDirections(contentEl);
+    stackSetting(new import_obsidian19.Setting(contentEl)).setName("Research question (framing)").setDesc("Edit, or pick a reformulation below.").addTextArea((ta) => {
+      this.framingInput = ta;
+      ta.setValue(this.framing).onChange((v) => this.framing = v);
+      ta.inputEl.addClass("consensus-handoff-input");
+      this.resizeFramingInput = makeAutoGrowTextarea(ta.inputEl, 2);
+    });
+    if (this.result.questionVariants.length > 0) {
+      contentEl.createEl("p", { text: "Reformulations (click to use):", cls: "consensus-handoff-hint" });
+      for (const variant of this.result.questionVariants) {
+        new import_obsidian19.Setting(contentEl).setName(variant).addButton(
+          (b) => b.setButtonText("Use").onClick(() => {
+            var _a, _b;
+            this.framing = variant;
+            (_a = this.framingInput) == null ? void 0 : _a.setValue(variant);
+            (_b = this.resizeFramingInput) == null ? void 0 : _b.call(this);
+          })
+        );
+      }
+    }
+    if (this.result.searchTermSeeds.length > 0) {
+      contentEl.createEl("h3", { text: "Missed search terms (widen the search)" });
+      for (const seed of this.result.searchTermSeeds) {
+        new import_obsidian19.Setting(contentEl).setName(seed).addToggle(
+          (t2) => t2.setValue(this.selectedSeeds.has(seed)).onChange((on) => {
+            if (on) this.selectedSeeds.add(seed);
+            else this.selectedSeeds.delete(seed);
+          })
+        );
+      }
+    }
+    stackSetting(new import_obsidian19.Setting(contentEl)).setName("First beliefs (optional)").setDesc("What do you think now? Lands in the inserted block.").addTextArea((ta) => {
+      ta.setValue(this.beliefs).onChange((v) => this.beliefs = v);
+      ta.inputEl.addClass("consensus-handoff-input");
+      makeAutoGrowTextarea(ta.inputEl, 3);
+    });
+    const actions = new import_obsidian19.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Research with these choices").setCta().onClick(() => this.choose("research"))
+    );
+    const label = landingActionLabel(this.landing, this.projectName);
+    if (this.landing === "cursor") {
+      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("new-note")));
+    } else {
+      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("insert")));
+    }
+  }
+  renderReadOnly(parent, heading, items) {
+    if (items.length === 0) return;
+    parent.createEl("h3", { text: heading });
+    const ul = parent.createEl("ul");
+    for (const item of items) ul.createEl("li", { text: item });
+  }
+  /** Render the research directions (E44) with their facets — advisory; the writer chooses. */
+  renderDirections(parent) {
+    const dirs = this.result.researchDirections;
+    if (dirs.length === 0) return;
+    parent.createEl("h3", { text: "Promising research directions (you choose)" });
+    for (const d of dirs) {
+      parent.createEl("p", { text: d.title, cls: "consensus-handoff-definition" });
+      const ul = parent.createEl("ul");
+      const facet = (label, value) => {
+        if (value) ul.createEl("li", { text: `${label}: ${value}` });
+      };
+      facet("Theoretical basis", d.theoreticalBasis);
+      facet("Searchability", d.searchability);
+      facet("Chance of strong literature (estimate)", d.literatureStrength);
+      facet("Originality", d.originality);
+    }
+  }
+  choose(action) {
+    const framing = this.framing.trim() || this.originalQuestion;
+    const seeds = this.result.searchTermSeeds.filter((s) => this.selectedSeeds.has(s));
+    this.resolve({ action, framing, searchTermSeeds: seeds, beliefs: this.beliefs.trim() });
+    this.close();
+  }
+  resolve(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(choice);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/framing-modal.ts
+var import_obsidian20 = require("obsidian");
+var FramingModal = class extends import_obsidian20.Modal {
+  constructor(app, current, onSubmit) {
+    super(app);
+    this.submitted = false;
+    this.current = (current || "").trim();
+    this.value = this.current;
+    this.onSubmit = onSubmit;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: this.current ? "Change framing" : "Set framing" });
+    contentEl.createEl("p", {
+      text: "The one sentence the research assistants steer on: how you choose to frame the question. It seeds the search, the lenses and the synthesis \u2014 change it whenever your thinking moves.",
+      cls: "consensus-handoff-hint"
+    });
+    contentEl.createEl("label", { text: "Framing", cls: "consensus-search-label" });
+    const field2 = contentEl.createEl("textarea", { cls: "consensus-search-input" });
+    field2.placeholder = "e.g. Dropout between 16 and 20 as a mismatch between selection pressure and development pace";
+    if (this.current) field2.value = this.current;
+    field2.addEventListener("input", () => this.value = field2.value);
+    makeAutoGrowTextarea(field2, 3);
+    field2.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        this.submit();
+      }
+    });
+    new import_obsidian20.Setting(contentEl).addButton(
+      (b) => b.setButtonText(this.current ? "Change framing" : "Set framing").setCta().onClick(() => this.submit())
+    );
+    if (!import_obsidian20.Platform.isMobile)
+      window.setTimeout(() => {
+        field2.focus();
+        field2.select();
+      }, 0);
+  }
+  submit() {
+    this.submitted = true;
+    this.onSubmit(this.value);
+    this.close();
+  }
+  onClose() {
+    this.contentEl.empty();
+    if (!this.submitted) this.onSubmit(null);
+  }
+};
+
+// src/theory-modal.ts
+var import_obsidian21 = require("obsidian");
+var TheoryModal = class extends import_obsidian21.Modal {
+  constructor(app, result, landing, onChoice, projectName) {
+    super(app);
+    this.resolved = false;
+    this.landing = landing;
+    this.projectName = projectName;
+    this.result = result;
+    this.selected = /* @__PURE__ */ new Set();
+    this.onChoice = onChoice;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Theoretical lenses" });
+    contentEl.createEl("p", {
+      text: "Choose the lenses to continue searching with. The rest is material to weigh \u2014 you choose.",
+      cls: "consensus-handoff-hint"
+    });
+    if (this.result.lenses.length > 0) {
+      contentEl.createEl("h3", { text: "Lenses (select to search with)" });
+      for (const lens of this.result.lenses) {
+        new import_obsidian21.Setting(contentEl).setName(`${lens.name}${lens.tradition ? ` \u2014 ${lens.tradition}` : ""}`).setDesc(
+          [lens.why && `Why here: ${lens.why}`, lens.predicts && `Predicts: ${lens.predicts}`].filter(Boolean).join(" \xB7 ")
+        ).addToggle(
+          (t2) => t2.setValue(this.selected.has(lens.name)).onChange((on) => {
+            if (on) this.selected.add(lens.name);
+            else this.selected.delete(lens.name);
+          })
+        );
+      }
+    }
+    this.renderEliminated(contentEl);
+    this.renderReadOnly(contentEl, "Same mechanism, different name", this.result.sameMechanism);
+    this.renderReadOnly(contentEl, "Conspicuously absent", this.result.absent);
+    this.renderReadOnly(contentEl, "Competing explanations", this.result.competing);
+    this.renderReadOnly(contentEl, "Cross-domain connections", this.result.crossDomain);
+    const actions = new import_obsidian21.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Research with these lenses").setCta().onClick(() => this.choose("research"))
+    );
+    if (this.result.lenses.length >= 2) {
+      actions.addButton(
+        (b) => b.setButtonText("One session per lens").onClick(() => {
+          if (this.selected.size < 2) {
+            notify("Select at least two lenses to fan out \u2014 one lens fits a single session.");
+            return;
+          }
+          this.choose("fan-out");
+        })
+      );
+    }
+    const label = landingActionLabel(this.landing, this.projectName);
+    if (this.landing === "cursor") {
+      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("new-note")));
+    } else {
+      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("insert")));
+    }
+  }
+  renderEliminated(parent) {
+    if (this.result.eliminated.length === 0) return;
+    parent.createEl("h3", { text: "Tempting but explains little here" });
+    const ul = parent.createEl("ul");
+    for (const e of this.result.eliminated) ul.createEl("li", { text: `${e.name} \u2014 ${e.reason}` });
+  }
+  renderReadOnly(parent, heading, items) {
+    if (items.length === 0) return;
+    parent.createEl("h3", { text: heading });
+    const ul = parent.createEl("ul");
+    for (const item of items) ul.createEl("li", { text: item });
+  }
+  choose(action) {
+    const lenses = this.result.lenses.map((l) => l.name).filter((n) => this.selected.has(n));
+    this.resolve({ action, lenses });
+    this.close();
+  }
+  resolve(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(choice);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/record-rebuild.ts
+var locales = Object.values(ARTIFACT_STRINGS);
+function matchesLabel(text, labels) {
+  const t2 = text.trim().toLowerCase();
+  return labels.some((l) => l.toLowerCase() === t2);
+}
+var BASIS_LABELS = locales.map((s) => s.hypotheses.basisLabel);
+var TEST_LABELS = locales.map((s) => s.hypotheses.testLabel);
+function parseHypothesesSection(body) {
+  const section = extractSection(body, "hypotheses");
+  if (!section.trim()) return null;
+  const out = [];
+  for (const line of section.split("\n")) {
+    const top = /^-\s+\*\*(H\d+)\*\*\s+—\s+(.+)$/.exec(line.trim());
+    if (top) {
+      out.push({ id: top[1].toUpperCase(), text: top[2].trim(), basis: "", rationale: "" });
+      continue;
+    }
+    const sub = /^[-*]\s+\*(.+?):\*\s+(.+)$/.exec(line.trim());
+    if (!sub || out.length === 0) continue;
+    const last = out[out.length - 1];
+    if (matchesLabel(sub[1], BASIS_LABELS)) last.basis = sub[2].trim();
+    else if (matchesLabel(sub[1], TEST_LABELS)) last.rationale = sub[2].trim();
+  }
+  return out.length > 0 ? { hypotheses: out, adoptedAt: "" } : null;
+}
+var CLAIM_HEADINGS = locales.map((s) => s.argument.claims);
+var ASSUMPTION_HEADINGS = locales.map((s) => s.argument.assumptions);
+var EVIDENCE_HEADINGS = locales.map((s) => s.argument.evidence);
+var SUPPORTS_WORDS = locales.map((s) => s.argument.supports);
+var ATTACKS_WORDS = locales.map((s) => s.argument.attacks);
+var SOURCE_LABELS = locales.map((s) => s.argument.source);
+function splitNodeSource(text) {
+  const m = /^(.*?)\s+—\s+_([^:_]+):\s*([^_]+)_\s*$/.exec(text);
+  if (m && matchesLabel(m[2], SOURCE_LABELS)) return { text: m[1].trim(), source: m[3].trim() };
+  return { text: text.trim() };
+}
+function parseArgumentSection(body) {
+  const section = extractSection(body, "argument");
+  if (!section.trim()) return null;
+  const nodes = [];
+  const edges = [];
+  const evidence = [];
+  let kind = null;
+  let inEvidence = false;
+  for (const raw of section.split("\n")) {
+    const line = raw.trim();
+    const heading = /^\*(.+)\*$/.exec(line);
+    if (heading) {
+      if (matchesLabel(heading[1], CLAIM_HEADINGS)) kind = "claim", inEvidence = false;
+      else if (matchesLabel(heading[1], ASSUMPTION_HEADINGS)) kind = "assumption", inEvidence = false;
+      else if (matchesLabel(heading[1], EVIDENCE_HEADINGS)) kind = null, inEvidence = true;
+      continue;
+    }
+    const item = /^\d+\.\s+\[([CA]\d+)\]\s+(.+)$/.exec(line);
+    if (item && kind) {
+      const { text, source } = splitNodeSource(item[2]);
+      nodes.push({ id: item[1].toUpperCase(), text, kind, ...source ? { source } : {} });
+      continue;
+    }
+    const rel = /^-\s+\[([CAF]\d+)\]\s+(\S[^[]*?)\s+\[([CA]\d+)\](?::\s*(.+))?$/.exec(line);
+    if (!rel) continue;
+    const relKind = matchesLabel(rel[2], SUPPORTS_WORDS) ? "supports" : matchesLabel(rel[2], ATTACKS_WORDS) ? "attacks" : null;
+    if (!relKind) continue;
+    const from = rel[1].toUpperCase();
+    if (inEvidence && /^F\d+$/.test(from) && rel[4]) {
+      evidence.push({ id: from, text: rel[4].trim(), to: rel[3].toUpperCase(), kind: relKind, sourceKeys: [] });
+    } else if (!/^F\d+$/.test(from)) {
+      edges.push({ from, to: rel[3].toUpperCase(), kind: relKind });
+    }
+  }
+  if (nodes.length === 0) return null;
+  const known = new Set(nodes.map((n) => n.id));
+  return {
+    nodes,
+    edges: edges.filter((e) => known.has(e.from) && known.has(e.to)),
+    ...evidence.length > 0 ? { evidence: evidence.filter((ev) => known.has(ev.to)) } : {},
+    adoptedAt: ""
+  };
+}
+function parseSubquestionList(body) {
+  const section = extractSection(body, "subquestions");
+  if (!section.trim()) return [];
+  const out = [];
+  for (const line of section.split("\n")) {
+    const m = /^\s*\d+\.\s+(.+)$/.exec(line);
+    if (!m) continue;
+    const q = m[1].replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
+    if (q) out.push(q);
+  }
+  return out;
+}
+var STRENGTH_BY_WORD = new Map(
+  locales.flatMap(
+    (s) => Object.entries(s.synthesis.strengthLabels).map(
+      ([key, word]) => [word.toLowerCase(), key]
+    )
+  )
+);
+var EVIDENCE_PREFIXES = locales.map((s) => s.synthesis.evidenceInline.split("{strength}")[0].trim().toLowerCase());
+function parseFindingsFromSynthesis(body) {
+  const section = extractSection(body, "synthesis");
+  if (!section.trim()) return [];
+  const out = [];
+  for (const raw of section.split("\n")) {
+    const line = raw.trim();
+    const m = /^[-*]\s+(.+?)\s+—\s+\*([^*]+)\*(.*)$/.exec(line);
+    if (!m) continue;
+    const tag = m[2].trim().toLowerCase();
+    if (!EVIDENCE_PREFIXES.some((p) => tag.startsWith(p))) continue;
+    const afterPrefix = tag.slice(tag.indexOf(":") + 1).trim();
+    const strengthWord = afterPrefix.split(/[\s·]+/)[0];
+    const strength = STRENGTH_BY_WORD.get(strengthWord);
+    if (!strength) continue;
+    const claim = m[1].replace(/\[\\?\[\d+\\?\]\]\([^)]*\)/g, "").replace(/\\?\[\d+\\?\]/g, "").trim();
+    if (!claim) continue;
+    const sourceKeys = [];
+    for (const doi of `${m[1]} ${m[3]}`.matchAll(/doi\.org\/([^\s)\]]+)/g)) {
+      const key = `doi:${decodeURIComponent(doi[1]).toLowerCase()}`;
+      if (!sourceKeys.includes(key)) sourceKeys.push(key);
+    }
+    out.push({ claim, strength, sourceKeys });
+  }
+  return out;
+}
+
+// src/belief-modal.ts
+var import_obsidian22 = require("obsidian");
+function verdictToStatus(verdict) {
+  if (verdict === "ondersteunt") return "ondersteund";
+  if (verdict === "spreekt tegen") return "weersproken";
+  return null;
+}
+var VERDICT_LABEL = {
+  ondersteunt: "Supports",
+  "spreekt tegen": "Contradicts",
+  neutraal: "Neutral"
+};
+var BeliefModal = class extends import_obsidian22.Modal {
+  constructor(app, proposals, onChoice) {
+    super(app);
+    this.resolved = false;
+    this.selected = /* @__PURE__ */ new Set();
+    this.proposals = proposals;
+    this.onChoice = onChoice;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Beliefs against the synthesis" });
+    contentEl.createEl("p", {
+      text: "The synthesis has been weighed against each belief. Tick what you want to adopt \u2014 nothing changes on its own. You hold the pen.",
+      cls: "consensus-handoff-hint"
+    });
+    const actionable = this.proposals.filter((p) => verdictToStatus(p.verdict));
+    const neutral = this.proposals.filter((p) => !verdictToStatus(p.verdict));
+    if (actionable.length > 0) {
+      contentEl.createEl("h3", { text: "Proposals (select to adopt)" });
+      for (const p of actionable) {
+        const status = verdictToStatus(p.verdict);
+        new import_obsidian22.Setting(contentEl).setName(`${VERDICT_LABEL[p.verdict]}: ${p.claim}`).setDesc([p.reason, status && `\u2192 status: ${status}`].filter(Boolean).join(" \xB7 ")).addToggle(
+          (t2) => t2.setValue(this.selected.has(p.claim)).onChange((on) => {
+            if (on) this.selected.add(p.claim);
+            else this.selected.delete(p.claim);
+          })
+        );
+      }
+    } else {
+      contentEl.createEl("p", { text: "No proposals to change a status." });
+    }
+    if (neutral.length > 0) {
+      contentEl.createEl("h3", { text: "Neutral \u2014 the synthesis doesn't touch this" });
+      const ul = contentEl.createEl("ul");
+      for (const p of neutral) ul.createEl("li", { text: `${p.claim}${p.reason ? ` \u2014 ${p.reason}` : ""}` });
+    }
+    new import_obsidian22.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Adopt selected").setCta().onClick(() => this.apply())
+    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.resolveAndClose(null)));
+  }
+  apply() {
+    const updates = [];
+    for (const p of this.proposals) {
+      if (!this.selected.has(p.claim)) continue;
+      const status = verdictToStatus(p.verdict);
+      if (status) updates.push({ claim: p.claim, status });
+    }
+    this.resolveAndClose(updates);
+  }
+  resolveAndClose(updates) {
+    this.resolve(updates);
+    this.close();
+  }
+  resolve(updates) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(updates);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/confirm-modal.ts
+var import_obsidian23 = require("obsidian");
+var ConfirmModal = class extends import_obsidian23.Modal {
+  constructor(app, title, message, labels, onChoice) {
+    super(app);
+    this.title = title;
+    this.message = message;
+    this.labels = labels;
+    this.onChoice = onChoice;
+    this.resolved = false;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: this.title });
+    for (const line of this.message.split("\n")) {
+      contentEl.createEl("p", { text: line });
+    }
+    new import_obsidian23.Setting(contentEl).addButton((b) => b.setButtonText(this.labels.confirmText).onClick(() => this.choose(true))).addButton((b) => b.setButtonText(this.labels.cancelText).onClick(() => this.choose(false)));
+  }
+  choose(confirmed) {
+    this.resolve(confirmed);
+    this.close();
+  }
+  resolve(confirmed) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(confirmed);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(false);
+  }
+};
+var OverwriteChoiceModal = class extends import_obsidian23.Modal {
+  constructor(app, title, message, onChoice, forkNote, omitAppend = false) {
+    super(app);
+    this.title = title;
+    this.message = message;
+    this.onChoice = onChoice;
+    this.forkNote = forkNote;
+    this.omitAppend = omitAppend;
+    this.resolved = false;
+  }
+  choose(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.close();
+    this.onChoice(choice);
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: this.title });
+    contentEl.createEl("p", { text: this.message });
+    if (this.forkNote) contentEl.createEl("p", { text: this.forkNote, cls: "consensus-review-hint" });
+    const buttons = new import_obsidian23.Setting(contentEl);
+    buttons.addButton((b) => b.setButtonText("Keep mine").onClick(() => this.choose("keep")));
+    if (this.forkNote) {
+      buttons.addButton((b) => b.setButtonText("Fork session").onClick(() => this.choose("fork")));
+    }
+    if (!this.omitAppend) {
+      buttons.addButton((b) => b.setButtonText("Append below").onClick(() => this.choose("append")));
+    }
+    buttons.addButton((b) => {
+      b.setButtonText("Replace").onClick(() => this.choose("replace"));
+      b.buttonEl.addClass("mod-warning");
+    });
+  }
+  onClose() {
+    this.contentEl.empty();
+    if (!this.resolved) {
+      this.resolved = true;
+      this.onChoice("keep");
+    }
+  }
+};
+
+// src/challenge-modal.ts
+var import_obsidian24 = require("obsidian");
+var DIMENSION_LABEL = {
+  conceptueel: "Conceptual",
+  methodologisch: "Methodological",
+  theoretisch: "Theoretical",
+  empirisch: "Empirical",
+  praktisch: "Practical"
+};
+var ChallengeModal = class extends import_obsidian24.Modal {
+  constructor(app, result, landing, onChoice, projectName) {
+    super(app);
+    this.resolved = false;
+    this.selected = /* @__PURE__ */ new Set();
+    this.landing = landing;
+    this.projectName = projectName;
+    this.result = result;
+    this.onChoice = onChoice;
+  }
+  onOpen() {
+    var _a;
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Challenge \u2014 push back on the framing" });
+    contentEl.createEl("p", {
+      text: "Five kinds of pushback. Tick the ones that land \u2014 I'll record those as beliefs to examine. You decide.",
+      cls: "consensus-handoff-hint"
+    });
+    for (const dim of CHALLENGE_DIMENSIONS) {
+      const items = this.result.challenges.filter((c) => c.dimension === dim);
+      if (items.length === 0) continue;
+      contentEl.createEl("h3", { text: (_a = DIMENSION_LABEL[dim]) != null ? _a : dim });
+      for (const c of items) this.renderChallenge(contentEl, c);
+    }
+    if (this.result.inversion) {
+      contentEl.createEl("h3", { text: "If your hypothesis is wrong\u2026" });
+      contentEl.createEl("p", { text: this.result.inversion });
+    }
+    const actions = new import_obsidian24.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Record (+ selected as beliefs)").setCta().onClick(() => this.choose("record"))
+    );
+    const label = landingActionLabel(this.landing, this.projectName);
+    if (this.landing === "cursor") {
+      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("new-note")));
+    } else {
+      actions.addButton((b) => b.setButtonText(label).onClick(() => this.choose("insert")));
+    }
+  }
+  renderChallenge(parent, c) {
+    new import_obsidian24.Setting(parent).setName(c.challenge).setDesc(c.action ? `Action: ${c.action}` : "").addToggle(
+      (t2) => t2.setValue(this.selected.has(c.challenge)).onChange((on) => {
+        if (on) this.selected.add(c.challenge);
+        else this.selected.delete(c.challenge);
+      })
+    );
+  }
+  choose(action) {
+    const adopted = this.result.challenges.map((c) => c.challenge).filter((t2) => this.selected.has(t2));
+    this.resolve({ action, adopted });
+    this.close();
+  }
+  resolve(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(choice);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/argument-modal.ts
+var import_obsidian25 = require("obsidian");
+var ArgumentModal = class extends import_obsidian25.Modal {
+  constructor(app, structure, onChoice, noteBody = "") {
+    super(app);
+    this.resolved = false;
+    this.structure = structure;
+    this.onChoice = onChoice;
+    this.noteBody = noteBody;
+    this.selected = new Set(structure.nodes.map((n) => n.id));
+  }
+  onOpen() {
+    var _a;
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Argument structure \u2014 map the reasoning" });
+    contentEl.createEl("p", {
+      text: "Proposed claims and assumptions. Untick what doesn't belong; relations follow automatically when both endpoints are adopted. You decide.",
+      cls: "consensus-handoff-hint"
+    });
+    this.renderGroup(contentEl, "claim", "Claims");
+    this.renderGroup(contentEl, "assumption", "Assumptions");
+    if (this.structure.edges.length > 0) {
+      contentEl.createEl("h3", { text: "Relations (read-only)" });
+      contentEl.createEl("p", {
+        text: "A relation is recorded only when both of its endpoints are adopted.",
+        cls: "consensus-handoff-hint"
+      });
+      const list = contentEl.createEl("ul");
+      for (const e of this.structure.edges) {
+        list.createEl("li", { text: `[${e.from}] ${e.kind === "supports" ? "supports" : "attacks"} [${e.to}]` });
+      }
+    }
+    const evidence = (_a = this.structure.evidence) != null ? _a : [];
+    if (evidence.length > 0) {
+      contentEl.createEl("h3", { text: "Evidence (follows its claim)" });
+      contentEl.createEl("p", {
+        text: "Findings from the synthesis, linked to the claim they bear on. An evidence link is recorded only when its claim is adopted.",
+        cls: "consensus-handoff-hint"
+      });
+      const list = contentEl.createEl("ul");
+      for (const ev of evidence) {
+        list.createEl("li", { text: `[${ev.id}] ${ev.kind === "supports" ? "supports" : "attacks"} [${ev.to}]: ${ev.text}` });
+      }
+    }
+    new import_obsidian25.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Adopt (selected elements)").setCta().onClick(() => this.adopt())
+    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
+  }
+  renderGroup(parent, kind, label) {
+    const items = this.structure.nodes.filter((n) => n.kind === kind);
+    if (items.length === 0) return;
+    parent.createEl("h3", { text: label });
+    for (const n of items) this.renderNode(parent, n);
+  }
+  renderNode(parent, node) {
+    const parts = [];
+    if (node.source) parts.push(`source: ${node.source}`);
+    if (this.noteBody && !verbatimInSource(node.text, this.noteBody)) {
+      parts.push("\u26A0 not found verbatim in the note \u2014 may be paraphrased or invented");
+    }
+    const setting = new import_obsidian25.Setting(parent).setName(`[${node.id}] ${node.text}`).addToggle(
+      (t2) => t2.setValue(this.selected.has(node.id)).onChange((on) => {
+        if (on) this.selected.add(node.id);
+        else this.selected.delete(node.id);
+      })
+    );
+    if (parts.length > 0) setting.setDesc(parts.join(" \xB7 "));
+  }
+  adopt() {
+    this.resolve(filterArgumentStructure(this.structure, this.selected));
+    this.close();
+  }
+  resolve(adopted) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(adopted);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/hypothesis-modal.ts
 var import_obsidian26 = require("obsidian");
-var ResearchDesignModal = class extends import_obsidian26.Modal {
+var HypothesisModal = class extends import_obsidian26.Modal {
+  constructor(app, proposal, onChoice) {
+    super(app);
+    this.resolved = false;
+    this.proposal = proposal;
+    this.selected = proposal.hypotheses.map(() => true);
+    this.onChoice = onChoice;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Proposed hypotheses" });
+    contentEl.createEl("p", {
+      text: "Falsifiable hypotheses derived from your argument map, beliefs and research questions. Adopt the ones worth testing \u2014 the set lands as its own section and record. You decide.",
+      cls: "consensus-handoff-hint"
+    });
+    this.proposal.hypotheses.forEach((h, i) => {
+      const desc = [h.basis ? `basis: ${h.basis}` : "", h.rationale].filter(Boolean).join(" \u2014 ");
+      new import_obsidian26.Setting(contentEl).setName(`${h.id} \u2014 ${h.text}`).setDesc(desc).addToggle((toggle) => toggle.setValue(this.selected[i]).onChange((v) => this.selected[i] = v));
+    });
+    new import_obsidian26.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Adopt hypotheses").setCta().onClick(() => {
+        const adopted = renumberHypotheses(this.proposal.hypotheses.filter((_, i) => this.selected[i]));
+        this.resolve(adopted.length > 0 ? { hypotheses: adopted, adoptedAt: "" } : null);
+        this.close();
+      })
+    );
+  }
+  resolve(choice) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(choice);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/construct-modal.ts
+var import_obsidian27 = require("obsidian");
+var ConstructModal = class extends import_obsidian27.Modal {
+  constructor(app, initialConstruct, onSubmit) {
+    super(app);
+    this.submitted = false;
+    this.construct = initialConstruct;
+    this.onSubmit = onSubmit;
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Find validated scales" });
+    contentEl.createEl("p", {
+      text: 'Name the CONSTRUCT to measure \u2014 a concept, not a whole question (e.g. "perceived recovery", "social capital"). Parallax searches the measurement literature for validated scales and questionnaires.',
+      cls: "consensus-handoff-hint"
+    });
+    contentEl.createEl("label", { text: "Construct", cls: "consensus-search-label" });
+    const input = contentEl.createEl("input", { type: "text", cls: "consensus-search-input" });
+    input.value = this.construct;
+    input.placeholder = "e.g. perceived recovery";
+    input.addEventListener("input", () => this.construct = input.value);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        this.submit();
+      }
+    });
+    if (!import_obsidian27.Platform.isMobile) window.setTimeout(() => input.focus(), 0);
+    new import_obsidian27.Setting(contentEl).addButton((b) => b.setButtonText("Search scales").setCta().onClick(() => this.submit()));
+  }
+  submit() {
+    const construct = this.construct.trim();
+    if (!construct) return;
+    this.resolve(construct);
+    this.close();
+  }
+  resolve(construct) {
+    if (this.submitted) return;
+    this.submitted = true;
+    this.onSubmit(construct);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/interview-modal.ts
+var import_obsidian28 = require("obsidian");
+var InterviewModal = class extends import_obsidian28.Modal {
+  constructor(app, guide, onChoice) {
+    super(app);
+    this.resolved = false;
+    this.guide = guide;
+    this.onChoice = onChoice;
+    this.selected = new Set(guide.questions.map((q) => q.id));
+  }
+  onOpen() {
+    const { contentEl } = this;
+    applyModalChrome(this);
+    contentEl.createEl("h2", { text: "Interview guide \u2014 design the conversation" });
+    contentEl.createEl("p", {
+      text: "Proposed interview questions, each with its provenance. Untick what doesn't belong; probes follow their question. You decide.",
+      cls: "consensus-handoff-hint"
+    });
+    if (this.guide.opening) {
+      contentEl.createEl("p", { text: `Opening: ${this.guide.opening}`, cls: "consensus-handoff-hint" });
+    }
+    for (const q of this.guide.questions) this.renderQuestion(contentEl, q);
+    new import_obsidian28.Setting(contentEl).addButton(
+      (b) => b.setButtonText("Adopt (selected questions)").setCta().onClick(() => this.adopt())
+    ).addButton((b) => b.setButtonText("Cancel").onClick(() => this.close()));
+  }
+  renderQuestion(parent, q) {
+    const chrome = {
+      subquestion: "sub-question",
+      gap: "evidence gap",
+      assumption: "assumption",
+      belief: "belief",
+      other: "other"
+    };
+    const provenance = `\u2190 ${chrome[q.source.kind]}${q.source.ref ? `: ${q.source.ref}` : ""}`;
+    new import_obsidian28.Setting(parent).setName(`[${q.id}] ${q.text}`).setDesc(provenance).addToggle(
+      (t2) => t2.setValue(this.selected.has(q.id)).onChange((on) => {
+        if (on) this.selected.add(q.id);
+        else this.selected.delete(q.id);
+      })
+    );
+    if (q.probes.length > 0) {
+      const list = parent.createEl("ul", { cls: "consensus-handoff-hint" });
+      for (const probe of q.probes) list.createEl("li", { text: probe });
+    }
+  }
+  adopt() {
+    this.resolve(filterInterviewGuide(this.guide, this.selected));
+    this.close();
+  }
+  resolve(adopted) {
+    if (this.resolved) return;
+    this.resolved = true;
+    this.onChoice(adopted);
+  }
+  onClose() {
+    this.contentEl.empty();
+    this.resolve(null);
+  }
+};
+
+// src/research-design-modal.ts
+var import_obsidian29 = require("obsidian");
+var ResearchDesignModal = class extends import_obsidian29.Modal {
   constructor(app, agenda, onChoice) {
     super(app);
     this.resolved = false;
@@ -17643,7 +19665,7 @@ var ResearchDesignModal = class extends import_obsidian26.Modal {
       const original = this.agenda.newQuestions.map((q) => ({ method: q.method, rationale: q.methodRationale }));
       this.agenda.newQuestions.forEach((q, i) => {
         var _a;
-        new import_obsidian26.Setting(contentEl).setName(q.question).setDesc((_a = q.methodRationale) != null ? _a : "").addDropdown((d) => {
+        new import_obsidian29.Setting(contentEl).setName(q.question).setDesc((_a = q.methodRationale) != null ? _a : "").addDropdown((d) => {
           var _a2;
           d.addOption("", "\u2014 no method fit \u2014");
           for (const m of ["qualitative", "quantitative", "mixed"]) d.addOption(m, methodFitLabel(m));
@@ -17653,7 +19675,7 @@ var ResearchDesignModal = class extends import_obsidian26.Modal {
           });
         });
       });
-      new import_obsidian26.Setting(contentEl).setName("Start new session with").setDesc("Optional \u2014 choose one question to open a fresh research session with.").addDropdown((d) => {
+      new import_obsidian29.Setting(contentEl).setName("Start new session with").setDesc("Optional \u2014 choose one question to open a fresh research session with.").addDropdown((d) => {
         var _a;
         d.addOption("", "\u2014 none \u2014");
         for (const { question: q } of this.agenda.newQuestions) d.addOption(q, q.length > 60 ? `${q.slice(0, 57)}\u2026` : q);
@@ -17666,7 +19688,7 @@ var ResearchDesignModal = class extends import_obsidian26.Modal {
       for (const d of this.agenda.designs) ul.createEl("li", { text: `${d.design}${d.rationale ? ` \u2014 ${d.rationale}` : ""}` });
     }
     this.renderList(contentEl, "Benodigde data / meetinstrumenten", this.agenda.data);
-    new import_obsidian26.Setting(contentEl).addButton(
+    new import_obsidian29.Setting(contentEl).addButton(
       (b) => b.setButtonText("Add agenda to session").setCta().onClick(() => this.choose("record"))
     );
   }
@@ -17693,7 +19715,7 @@ var ResearchDesignModal = class extends import_obsidian26.Modal {
   }
 };
 
-// src/types.ts
+// src/settings.ts
 var DEFAULT_SETTINGS = {
   provider: "openalex",
   artifactLanguage: "en",
@@ -17855,7 +19877,7 @@ function migrateLegacySettingFields(settings, rawLoaded) {
 }
 
 // src/main.ts
-var ParallaxPlugin = class extends import_obsidian27.Plugin {
+var ParallaxPlugin = class extends import_obsidian30.Plugin {
   constructor() {
     super(...arguments);
     /**
@@ -17887,7 +19909,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
      * response with usable `text`, not become a fake network error.
      */
     this.timedHttpRequest = withTimeout(async (options) => {
-      const response = await (0, import_obsidian27.requestUrl)({
+      const response = await (0, import_obsidian30.requestUrl)({
         url: options.url,
         method: options.method,
         headers: options.headers,
@@ -17953,7 +19975,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
    */
   beginFlow(label) {
     if (this.flowInFlight) {
-      new import_obsidian27.Notice(
+      notify(
         `Another Parallax action is still running (${this.flowInFlight}) \u2014 wait for it to finish.`,
         6e3
       );
@@ -17982,7 +20004,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   async runAssistantStep(opts) {
     if (!this.beginFlow(opts.flowLabel)) return null;
     const log = createLogger(this.settings.debugLogging);
-    const loading = new import_obsidian27.Notice(opts.loadingText, 0);
+    const loading = new import_obsidian30.Notice(opts.loadingText, 0);
     let result;
     try {
       result = await opts.run(log);
@@ -18017,8 +20039,10 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
         await this.app.workspace.getLeaf(true).openFile(file);
       },
       notify: (message, timeout) => {
-        new import_obsidian27.Notice(message, timeout);
+        notify(message, timeout);
       },
+      // AU_E146_S2: bring the freshly landed section into view (same mechanism as the sidebar links).
+      revealSection: (path, heading) => revealSectionInMainArea(this.app, path, heading),
       notifyError
     });
     this.exportFlows = new ExportFlows({
@@ -18030,7 +20054,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       activeNoteFile: () => this.activeNoteFile(),
       activeMarkdownFile: () => {
         var _a, _b;
-        return (_b = (_a = this.app.workspace.getActiveViewOfType(import_obsidian27.MarkdownView)) == null ? void 0 : _a.file) != null ? _b : null;
+        return (_b = (_a = this.app.workspace.getActiveViewOfType(import_obsidian30.MarkdownView)) == null ? void 0 : _a.file) != null ? _b : null;
       },
       fileFrontmatter: (file) => {
         var _a;
@@ -18043,10 +20067,92 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
         await this.app.workspace.getLeaf(true).openFile(file);
       },
       notify: (message, timeout) => {
-        new import_obsidian27.Notice(message, timeout);
+        notify(message, timeout);
       },
       notifyError
     });
+    const assistantContext = {
+      settings: () => this.settings,
+      llm: this.llm,
+      http: this.httpRequest,
+      llmChatFn: (step, log) => this.llmChatFn(step, log),
+      vault: this.app.vault,
+      sessionStore: this.sessionStore,
+      adapters: this.vaultAdapters,
+      artefactLanding: this.artefactLanding,
+      runAssistantStep: (opts) => this.runAssistantStep(opts),
+      activeSession: () => this.activeSession(),
+      activeNoteFile: () => this.activeNoteFile(),
+      activeMarkdownView: () => this.app.workspace.getActiveViewOfType(import_obsidian30.MarkdownView),
+      activeHubFile: () => this.resolveActiveHubFile(),
+      activeNoteProjectName: (file) => this.activeNoteProjectName(file),
+      fileFrontmatter: (file) => {
+        var _a;
+        return (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+      },
+      openFile: async (file) => {
+        await this.app.workspace.getLeaf(true).openFile(file);
+      },
+      createSessionNote: (question, folderPath, project, opts) => this.createSessionNote(question, folderPath, project, opts),
+      newSessionInHubProject: (hubFile, hub, question) => this.newSessionInHubProject(hubFile, hub, question),
+      newSessionNearActiveNote: (question) => this.newSessionNearActiveNote(question),
+      startFollowUpResearch: (question, parent, parentSession) => this.startFollowUpResearch(question, parent, parentSession),
+      runResearchFlow: (question, filters, opts) => this.runResearchFlow(question, filters, opts),
+      fetchOaFulltext: (papers, recommendations) => this.researchFlow.fetchOaFulltext(papers, recommendations),
+      lastResearch: () => this.lastResearch,
+      library: () => this.library,
+      setLibrary: (library) => {
+        this.library = library;
+      },
+      loadRegister: () => this.loadRegisterSafely(),
+      promptForQuestion: (opts) => this.promptForQuestion(opts),
+      promptSeed: (initialQuery) => this.promptSeed(initialQuery),
+      openExplorationModal: (question, result, landing, onChoice, projectName) => {
+        new ExplorationModal(this.app, question, result, landing, onChoice, projectName).open();
+      },
+      openTheoryModal: (result, landing, onChoice, projectName) => {
+        new TheoryModal(this.app, result, landing, onChoice, projectName).open();
+      },
+      openChallengeModal: (result, landing, onChoice, projectName) => {
+        new ChallengeModal(this.app, result, landing, onChoice, projectName).open();
+      },
+      openBeliefModal: (proposals, onChoice) => {
+        new BeliefModal(this.app, proposals, onChoice).open();
+      },
+      openArgumentModal: (structure, onChoice, noteBody) => {
+        new ArgumentModal(this.app, structure, onChoice, noteBody).open();
+      },
+      openInterviewModal: (guide, onChoice) => {
+        new InterviewModal(this.app, guide, onChoice).open();
+      },
+      openHypothesisModal: (proposal, onChoice) => {
+        new HypothesisModal(this.app, proposal, onChoice).open();
+      },
+      openResearchDesignModal: (agenda, onChoice) => {
+        new ResearchDesignModal(this.app, agenda, onChoice).open();
+      },
+      openConstructModal: (prefill, onSubmit) => {
+        new ConstructModal(this.app, prefill, onSubmit).open();
+      },
+      openLibraryPicker: (entries, onChoose) => {
+        new LibraryPickerModal(this.app, entries, onChoose).open();
+      },
+      openResultsModal: (result, onSubmit) => {
+        new ResultsModal(this.app, result, this.settings, onSubmit).open();
+      },
+      askConfirm: (title, message, confirmText, cancelText) => new Promise((resolve) => {
+        new ConfirmModal(this.app, title, message, { confirmText, cancelText }, resolve).open();
+      }),
+      notify: (message, timeout) => {
+        notify(message, timeout);
+      },
+      // eslint-disable-next-line no-restricted-syntax -- the flow hides the Notice itself (AU_E147_S3)
+      notifyPersistent: (message) => new import_obsidian30.Notice(message, 0),
+      notifyError
+    };
+    this.thinkingFlows = new ThinkingFlows(assistantContext);
+    this.designFlows = new DesignFlows(assistantContext);
+    this.evidenceFlows = new EvidenceFlows(assistantContext);
     this.researchFlow = new ResearchFlowController({
       settings: () => this.settings,
       llm: this.llm,
@@ -18087,11 +20193,12 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
           this.app,
           result,
           this.settings,
-          (papers, format, action) => this.handleResult(result, papers, format, action),
+          (papers, format, action) => this.evidenceFlows.handleResult(result, papers, format, action),
           opts
         ).open();
       },
-      notify: (message, timeout) => new import_obsidian27.Notice(message, timeout),
+      // eslint-disable-next-line no-restricted-syntax -- the flow controller mutates the Notice instance (AU_E147_S3)
+      notify: (message, timeout) => new import_obsidian30.Notice(message, timeout),
       notifyError
     });
     await this.loadSettings();
@@ -18109,7 +20216,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
     this.app.workspace.onLayoutReady(() => {
       this.registerEvent(
         this.app.vault.on("create", (file) => {
-          if (!(file instanceof import_obsidian27.TFile) || file.extension !== "md") return;
+          if (!(file instanceof import_obsidian30.TFile) || file.extension !== "md") return;
           const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
           void this.refreshHubContentsForFolder(folder);
         })
@@ -18133,7 +20240,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       this.settings = resolveSecretSettings(this.settings, store);
       if (changed) {
         await this.saveSettings();
-        new import_obsidian27.Notice(
+        notify(
           "Parallax moved your API keys into Obsidian's secret storage. They're now kept per device and no longer sync with your vault \u2014 enter each key once on every other device you use, and rotate any key that was previously synced.",
           12e3
         );
@@ -18176,11 +20283,11 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
    */
   cancelResearch() {
     if (!this.currentRunCancellation || this.currentRunCancellation.cancelled) {
-      new import_obsidian27.Notice("No research is running to stop.", 4e3);
+      notify("No research is running to stop.", 4e3);
       return;
     }
     this.currentRunCancellation.cancel();
-    new import_obsidian27.Notice("Stopping research\u2026", 3e3);
+    notify("Stopping research\u2026", 3e3);
   }
   /**
    * The shared "prompt → SearchModal → run flow" step (AU_E134_S6 — audit L9): resolve the
@@ -18210,13 +20317,13 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   promptAndSearch(initialQuery) {
     const provider = getProvider(this.settings.provider);
     if (provider.requiresApiKey && !this.settings.apiKey) {
-      new import_obsidian27.Notice(`Set your ${provider.label} API key in the plugin settings first.`);
+      notify(`Set your ${provider.label} API key in the plugin settings first.`);
       return;
     }
     this.promptForQuestion({
       seed: initialQuery || this.activeSelection(),
       supportsMedicalFilters: provider.supportsMedicalFilters,
-      onSubmit: (submission) => void this.runSearch(submission.query, submission.filters)
+      onSubmit: (submission) => void this.evidenceFlows.runSearch(submission.query, submission.filters)
     });
   }
   /**
@@ -18243,7 +20350,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
     var _a;
     if ((opts.frameworkOnly || opts.crossSectorForce) && !this.llm.isConfigured()) {
       const what = opts.frameworkOnly ? "Building a theoretical framework" : "Forcing cross-sector evidence";
-      new import_obsidian27.Notice(`${what} needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.`);
+      notify(`${what} needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.`);
       return;
     }
     const session = (_a = this.activeSession()) == null ? void 0 : _a.session;
@@ -18261,109 +20368,6 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
         });
       }
     });
-  }
-  /** Exploration research assistant (E42): prompt for a question, then explore it before searching. Public: called from {@link registerCommands}. */
-  promptAndExplore(initialQuery) {
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Exploring the problem needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    this.promptForQuestion({
-      seed: this.promptSeed(initialQuery),
-      onSubmit: (submission) => void this.runExploreFlow(submission.query, submission.filters)
-    });
-  }
-  /**
-   * Run the Exploration research assistant (E42): explore the problem, let the writer pick a
-   * framing + search-term seeds, then either continue to the research pipeline with those choices
-   * or insert an exploration block. Falls back gracefully when nothing usable comes
-   * out (the writer can just run the research pipeline directly).
-   */
-  async runExploreFlow(rawQuestion, filters) {
-    var _a;
-    const question = rawQuestion.trim();
-    if (!question) return;
-    const step = await this.runAssistantStep({
-      flowLabel: "explore",
-      loadingText: "Exploring the problem\u2026",
-      errorPrefix: "Exploration failed",
-      run: (log) => exploreProblem(question, this.llmChatFn("exploration", log), log)
-    });
-    if (!step) return;
-    const { result } = step;
-    if (!result) {
-      new import_obsidian27.Notice("Could not explore the problem \u2014 feel free to start research directly.", 6e3);
-      return;
-    }
-    const session = this.activeSession();
-    const file = this.activeNoteFile();
-    const hub = !session && file ? parseProjectHub((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter) : null;
-    const target = artefactLandingTarget(!!hub, !!session);
-    new ExplorationModal(this.app, question, result, target, (choice) => {
-      if (!choice) return;
-      if (session && target === "session-note") {
-        void this.recordExplorationInSession(session.file, question, result, choice);
-      } else if (choice.action === "insert" || choice.action === "new-note") {
-        if (hub && file && target === "new-project-session") {
-          void this.recordExplorationAsNewProjectSession(file, hub, question, result, choice);
-        } else if (choice.action === "new-note") {
-          void (async () => {
-            const created = await this.newSessionNearActiveNote(choice.framing || question);
-            if (!created) return;
-            new import_obsidian27.Notice(`Exploration landed in a new session: "${created.basename}".`);
-            await this.recordExplorationInSession(created, question, result, choice);
-          })();
-        }
-      }
-      if (choice.action === "research") {
-        void this.runResearchFlow(choice.framing, filters, { extraSearchTerms: choice.searchTermSeeds });
-      }
-    }).open();
-  }
-  /**
-   * Record the exploration artefact + chosen framing/seeds into the active research session (E46).
-   * The gate/write/logbook/record/Notice ritual lives in {@link ArtefactLanding.landArtefact}
-   * (AU_E134_S6); a "Keep" answer means none of this runs (no front-matter merge, no logbook,
-   * no Notice) — enforced there.
-   */
-  async recordExplorationInSession(file, question, result, choice) {
-    const chosen = choice.framing && choice.framing !== question ? choice.framing : question;
-    const alts = result.questionVariants.length;
-    await this.artefactLanding.landArtefact({
-      file,
-      section: "exploration",
-      label: "exploration",
-      body: buildExplorationBody(result, choice),
-      beforeWrite: async () => {
-        const fields = { seeds: choice.searchTermSeeds };
-        if (choice.framing && choice.framing !== question) fields.framing = choice.framing;
-        await this.sessionStore.setSessionFields(file, fields);
-        const newBeliefs = choice.beliefs ? parseBeliefLines(choice.beliefs) : [];
-        if (newBeliefs.length > 0) await this.sessionStore.addBeliefs(file, newBeliefs);
-      },
-      log: {
-        step: t().headings.exploration,
-        summary: `${fmt(t().logbook.framingChosen, { framing: chosen })}${alts ? fmt(t().logbook.alternativesConsidered, { n: alts }) : ""}`
-      },
-      // AU_E89_S1 (export-pariteit): record the structured adoption alongside the proza section.
-      record: () => ({ adoptions: { exploration: explorationAdoptionRecord(question, choice) } }),
-      notice: "Exploration added to the session."
-    });
-  }
-  /**
-   * S1 (AU_E86_S1): an Explore run from a project HUB (no active session) that resolves to
-   * "insert only" lands in a NEW session note in the project's folder — not as an edit to the
-   * hub. Reuses the shared "create session in a hub's project" step ({@link
-   * newSessionInHubProject}, AU_E87_S1) to create the note, then the SAME artefact write an
-   * existing session gets ({@link recordExplorationInSession}) for the `## Probleemverkenning`
-   * section + framing/seeds/beliefs front-matter — the only difference from the session-aware
-   * path is that the note is created first.
-   */
-  async recordExplorationAsNewProjectSession(hubFile, hub, question, result, choice) {
-    const created = await this.newSessionInHubProject(hubFile, hub, question);
-    if (!created) return;
-    new import_obsidian27.Notice(`Exploration landed in a new session: "${created.basename}".`);
-    await this.recordExplorationInSession(created, question, result, choice);
   }
   /**
    * The shared "create a fresh session note in a hub's project" step of the landing protocol's
@@ -18389,11 +20393,11 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   async insertScaffold(id) {
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian27.Notice("Open a note first \u2014 the section is inserted there.");
+      notify("Open a note first \u2014 the section is inserted there.");
       return;
     }
     if (!id) {
-      const picker = new class extends import_obsidian27.FuzzySuggestModal {
+      const picker = new class extends import_obsidian30.FuzzySuggestModal {
         constructor(app, onPick) {
           super(app);
           this.onPick = onPick;
@@ -18423,7 +20427,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       }
     }
     await this.sessionStore.writeSessionSection(file, id, buildScaffoldBody(id));
-    new import_obsidian27.Notice(`"${sectionHeading(id)}" inserted \u2014 write it in your own words and delete the hint.`);
+    notify(`"${sectionHeading(id)}" inserted \u2014 write it in your own words and delete the hint.`);
   }
   /**
    * Put the active note's existing sections in the canonical reading order (AU_E123_S2).
@@ -18433,7 +20437,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   async reorderSections() {
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian27.Notice("Open a note first \u2014 its sections are reordered there.");
+      notify("Open a note first \u2014 its sections are reordered there.");
       return;
     }
     let moved = 0;
@@ -18442,7 +20446,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       moved = result.moved;
       return result.body;
     });
-    new import_obsidian27.Notice(
+    notify(
       moved === 0 ? "Sections are already in the canonical order \u2014 nothing changed." : `Reordered ${moved} section${moved === 1 ? "" : "s"} into the canonical order.`
     );
   }
@@ -18456,23 +20460,23 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
    */
   activeNoteFile() {
     var _a, _b, _c;
-    return (_c = (_b = (_a = this.app.workspace.getActiveViewOfType(import_obsidian27.MarkdownView)) == null ? void 0 : _a.file) != null ? _b : this.app.workspace.getActiveFile()) != null ? _c : this.lastMarkdownFile;
+    return (_c = (_b = (_a = this.app.workspace.getActiveViewOfType(import_obsidian30.MarkdownView)) == null ? void 0 : _a.file) != null ? _b : this.app.workspace.getActiveFile()) != null ? _c : this.lastMarkdownFile;
   }
   /**
    * The current editor selection, trimmed — used to seed a research/explore prompt (E69, item 5).
    * Reads the active markdown view first; when a command is triggered from the SIDEBAR (so the
    * markdown view is no longer active) it falls back to the last-opened note's view, whose
-   * CodeMirror selection is still intact — so "select text → click Ask a question" works there too.
+   * CodeMirror selection is still intact — so "select text → click the research ribbon" works there too.
    */
   activeSelection() {
     var _a;
-    const active = this.app.workspace.getActiveViewOfType(import_obsidian27.MarkdownView);
+    const active = this.app.workspace.getActiveViewOfType(import_obsidian30.MarkdownView);
     const fromActive = (_a = active == null ? void 0 : active.editor) == null ? void 0 : _a.getSelection().trim();
     if (fromActive) return fromActive;
     if (this.lastMarkdownFile) {
       for (const leaf of this.app.workspace.getLeavesOfType("markdown")) {
         const view = leaf.view;
-        if (view instanceof import_obsidian27.MarkdownView && view.file === this.lastMarkdownFile) {
+        if (view instanceof import_obsidian30.MarkdownView && view.file === this.lastMarkdownFile) {
           const sel = view.editor.getSelection().trim();
           if (sel) return sel;
         }
@@ -18498,18 +20502,30 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
    * the project objective seed and the manual "refresh contents" command.
    */
   resolveActiveHubFile() {
-    var _a, _b, _c, _d;
+    var _a, _b;
     const file = this.activeNoteFile();
     if (!file) return null;
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
     if (parseProjectHub(fm)) return file;
-    const projectId = (_c = (_b = parseSession(fm)) == null ? void 0 : _b.project) != null ? _c : "";
+    const projectId = projectIdForNote(fm, file.path, file.basename);
     if (!projectId) return null;
     for (const f of this.app.vault.getMarkdownFiles()) {
-      const h = parseProjectHub((_d = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _d.frontmatter);
+      const h = parseProjectHub((_b = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _b.frontmatter);
       if (h && resolveProjectId(h, f.basename).toLowerCase() === projectId.toLowerCase()) return f;
     }
     return null;
+  }
+  /**
+   * The project `file` belongs to, for NAMING the landing in a research-assistant modal
+   * (AU_E146_S3, audit §3.3 U6): a new session note created next to a plain note lands in that
+   * note's project folder ({@link newSessionNearActiveNote}), so the button may as well say so.
+   * `undefined` when the note belongs to no project — the label then stays as it was.
+   */
+  activeNoteProjectName(file) {
+    var _a;
+    if (!file) return void 0;
+    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+    return projectIdForNote(fm, file.path, file.basename) || void 0;
   }
   /**
    * The active project's `## Doelstelling` (E71) — read from the project HUB (the active note when it
@@ -18517,10 +20533,21 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
    * placeholder. This is the project-level aim that can seed exploration and new questions.
    */
   async activeProjectObjective() {
+    var _a, _b;
+    return (_b = (_a = await this.hubObjectiveForWorkbench()) == null ? void 0 : _a.objective) != null ? _b : "";
+  }
+  /**
+   * The active project's hub + its `## Doelstelling` for the sidebar's entry block (AU_E148_S1):
+   * the same read {@link activeProjectObjective} does, plus the hub's PATH — the entry block shows
+   * the objective as a link to `#Doelstelling` on the hub, since that is where a project objective
+   * is changed (voorstel §1: no new command for it). `objective` is "" when the hub still carries
+   * the placeholder. Public: called from {@link WorkbenchView}.
+   */
+  async hubObjectiveForWorkbench() {
     const hubFile = this.resolveActiveHubFile();
-    if (!hubFile) return "";
+    if (!hubFile) return null;
     const objective = extractSection(await this.app.vault.cachedRead(hubFile), "objective").trim();
-    return objective === objectivePlaceholder() ? "" : objective;
+    return { path: hubFile.path, objective: objective === objectivePlaceholder() ? "" : objective };
   }
   // ── Hub Contents / index (AU_E98_S1) ──
   /**
@@ -18556,39 +20583,115 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   async refreshProjectContents() {
     const hubFile = this.resolveActiveHubFile();
     if (!hubFile) {
-      new import_obsidian27.Notice("Open a project hub or a session within a project first.");
+      notify("Open a project hub or a session within a project first.");
       return;
     }
     const folder = hubFile.parent && hubFile.parent.path !== "/" ? hubFile.parent.path : "";
     await this.writeHubContents(hubFile, folder);
-    new import_obsidian27.Notice("Project contents refreshed.");
+    notify("Project contents refreshed.");
   }
-  /** Mark the active note as a research session (front-matter), prompting for the question. Public: called from {@link registerCommands}. */
+  /**
+   * Mark the active note as a research session (front-matter), prompting for the question. Public:
+   * called from {@link registerCommands}.
+   *
+   * AU_E148_S1: this is ALSO "Edit question" in the sidebar's entry block. When the note already
+   * is a session the field is pre-filled with its CURRENT question (not the selection/title — you
+   * are editing what is there), and a changed question appends one logbook line, so the question's
+   * history stays reconstructable like every other decision (artefacten-architectuur §3, logbook =
+   * append-only). Same command id, same stamp; only the seed and the notice differ.
+   */
   startResearchSession() {
+    var _a, _b, _c;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian27.Notice("Open a note to use as the research session.");
+      notify("Open a note to use as the research session.");
       return;
     }
+    const current = (_c = (_b = parseSession((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter)) == null ? void 0 : _b.question.trim()) != null ? _c : "";
     new SearchModal(
       this.app,
-      this.activeSelection(),
+      current || this.activeSelection() || questionFromNoteTitle(file.basename),
       false,
       (submission) => {
         if (!submission) return;
         const question = submission.query.trim();
         if (!question) return;
-        void this.app.fileManager.processFrontMatter(file, (fm) => {
-          fm[SESSION_FLAG] = true;
-          fm.question = question;
-          if (!Array.isArray(fm.seeds)) fm.seeds = [];
-          if (!Array.isArray(fm.lenses)) fm.lenses = [];
-          if (!Array.isArray(fm.beliefs)) fm.beliefs = [];
-        }).then(() => new import_obsidian27.Notice("Research session started \u2014 the research assistants now write into this note.")).catch((e) => notifyError("Starting the session", e));
+        void this.sessionStore.stampSessionFrontMatter(file, question).then(async () => {
+          if (!current) {
+            notify("Research session started \u2014 the research assistants now write into this note.");
+            return;
+          }
+          if (question !== current) await this.sessionStore.logEvent(file, t().logbook.stepQuestion, fmt(t().logbook.questionChanged, { question }));
+          notify(question === current ? "Question unchanged." : "Question updated.");
+        }).catch((e) => notifyError("Starting the session", e));
       },
       void 0,
       this.searchRephrase()
     ).open();
+  }
+  /**
+   * Whether "Question · start in this note" applies to the active note (AU_E148_S4): a markdown
+   * note that is not a project HUB. A hub is the project's index and never becomes a session
+   * (voorstel §3); on a note that already IS a session the command stays available, because it
+   * doubles as "Edit question" (AU_E148_S1, same id). Public: called from {@link registerCommands}.
+   */
+  canStartResearchSession() {
+    var _a;
+    const file = this.activeNoteFile();
+    if (!file || file.extension !== "md") return false;
+    return !parseProjectHub((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter);
+  }
+  /**
+   * Whether "Question · start in this project" applies to the active note (AU_E148_S4): the note
+   * resolves to a project (hub, front-matter `project:` or the project folder). Exactly the
+   * precondition {@link newProjectSession} would otherwise report with a Notice.
+   * Public: called from {@link registerCommands}.
+   */
+  canStartProjectSession() {
+    var _a;
+    const file = this.activeNoteFile();
+    if (!file || file.extension !== "md") return false;
+    const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
+    return !!projectIdForNote(fm, file.path, file.basename);
+  }
+  /** Whether the active note is a research session (AU_E148_S4) — gates `set-framing`. Public: called from {@link registerCommands}. */
+  canSetFraming() {
+    return this.activeSession() !== null;
+  }
+  /**
+   * Set or change the session's framing WITHOUT an AI run (AU_E148_S3, voorstel §4). The framing
+   * is a human choice on a front-matter field (besluit B3), but an Explore run used to be the
+   * only way to put one there. Writes the same `framing:` field Explore writes (via
+   * {@link SessionStore.setSessionFields}) plus ONE logbook line.
+   *
+   * Spike outcome (AU_E148_S3): the "Chosen framing:" line inside `## Probleemverkenning` is NOT
+   * touched. That line is part of the exploration body {@link buildExplorationBody} renders in
+   * one piece, and the section is written wholesale through the overwrite gate — there is no
+   * mechanism for editing a single line inside an existing section, and inventing one would put
+   * a second carrier next to the field (against B3). So: field + logbook, always; the exploration
+   * section keeps the framing of the run that wrote it, and the logbook carries the change.
+   *
+   * Public: called from {@link registerCommands}.
+   */
+  setFraming() {
+    var _a;
+    const active = this.activeSession();
+    if (!active) {
+      notify("Open a research session to set its framing.");
+      return;
+    }
+    const { file, session } = active;
+    const current = (_a = session.framing) != null ? _a : "";
+    new FramingModal(this.app, current, (submitted) => {
+      if (submitted === null) return;
+      const outcome = framingSubmission(current, submitted);
+      if (outcome.kind !== "set") {
+        if (outcome.kind === "unchanged") notify("Framing unchanged.");
+        return;
+      }
+      const framing = outcome.framing;
+      void this.sessionStore.setSessionFields(file, { framing }).then(() => this.sessionStore.logEvent(file, t().logbook.stepFraming, fmt(t().logbook.framingSet, { framing }))).then(() => notify(current ? "Framing updated." : "Framing set.")).catch((e) => notifyError("Setting the framing", e));
+    }).open();
   }
   /** The active note + its parsed session, iff it is a research session — else null. */
   activeSession() {
@@ -18598,63 +20701,90 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
     const session = parseSession((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter);
     return session ? { file, session } : null;
   }
-  // ── Belief layer (E47) ──
-  /**
-   * Belief layer (E47, choice 2A — propose-only): confront the active session's beliefs with the
-   * latest synthesis. The model judges each belief (supports / contradicts / neutral); the writer
-   * ticks which proposals to apply. Nothing changes on its own — the researcher holds the pen.
-   * Public: called from {@link registerCommands}.
-   */
+  // ── Assistant-flow facades (AU_E147_S5) ──
+  //
+  // The flows themselves live in {@link ThinkingFlows}, {@link DesignFlows} and
+  // {@link EvidenceFlows}; what stays here is one thin line per command so the command ids,
+  // names and call sites in `commands.ts`/`workbench-view.ts` are untouched.
+  /** E42 — explore the problem; see {@link ThinkingFlows.promptAndExplore}. Public: called from {@link registerCommands}. */
+  promptAndExplore(initialQuery) {
+    this.thinkingFlows.promptAndExplore(initialQuery);
+  }
+  /** E45 — theoretical lenses; see {@link ThinkingFlows.promptAndTheory}. Public: called from {@link registerCommands}. */
+  promptAndTheory(initialQuery) {
+    this.thinkingFlows.promptAndTheory(initialQuery);
+  }
+  /** E49 — challenge the framing; see {@link ThinkingFlows.promptAndChallenge}. Public: called from {@link registerCommands}. */
+  promptAndChallenge(initialQuery) {
+    this.thinkingFlows.promptAndChallenge(initialQuery);
+  }
+  /** E47 — confront beliefs; see {@link ThinkingFlows.confrontBeliefsFlow}. Public: called from {@link registerCommands}. */
   async confrontBeliefsFlow() {
-    var _a, _b, _c, _d, _e;
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Confronting beliefs needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    const active = this.activeSession();
-    if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then confront your beliefs.');
-      return;
-    }
-    const { file, session } = active;
-    if (session.beliefs.length === 0) {
-      new import_obsidian27.Notice('No beliefs captured yet \u2014 capture some via "Explore the problem" first, then confront them.');
-      return;
-    }
-    let synthesis = shouldPreferLastResearch((_b = (_a = this.lastResearch) == null ? void 0 : _a.notePath) != null ? _b : null, file.path) ? (_e = (_d = (_c = this.lastResearch) == null ? void 0 : _c.summary) == null ? void 0 : _d.trim()) != null ? _e : "" : "";
-    if (!synthesis) synthesis = extractSection(await this.app.vault.read(file), "synthesis");
-    if (!synthesis) {
-      new import_obsidian27.Notice('No synthesis yet \u2014 run "Evidence \xB7 ask a question" in this session first, then confront your beliefs.');
-      return;
-    }
-    const step = await this.runAssistantStep({
-      flowLabel: "confront beliefs",
-      loadingText: "Confronting your beliefs with the synthesis\u2026",
-      errorPrefix: "Confronting beliefs failed",
-      run: (log) => confrontBeliefs(session.beliefs, synthesis, this.llmChatFn("belief", log), log)
-    });
-    if (!step) return;
-    const { result: proposals } = step;
-    if (proposals.length === 0) {
-      new import_obsidian27.Notice("The synthesis yielded no proposals for your beliefs.", 6e3);
-      return;
-    }
-    new BeliefModal(this.app, proposals, (updates) => {
-      if (!updates || updates.length === 0) return;
-      const beforeByClaim = new Map(session.beliefs.map((b) => {
-        var _a2;
-        return [b.claim.toLowerCase(), (_a2 = b.status) != null ? _a2 : "open"];
-      }));
-      const transitions = updates.map((u) => {
-        var _a2;
-        return { claim: u.claim, from: (_a2 = beforeByClaim.get(u.claim.toLowerCase())) != null ? _a2 : "open", to: u.status };
-      }).filter((t2) => t2.from !== t2.to);
-      void this.sessionStore.applyBeliefs(file, updates).then(async () => {
-        const summary = appendBeliefTransitions(fmt(t().logbook.beliefsUpdated, { n: updates.length }), transitions);
-        await this.sessionStore.logEvent(file, t().logbook.stepBeliefs, summary);
-        new import_obsidian27.Notice(`Updated ${updates.length} belief(s).`);
-      });
-    }).open();
+    await this.thinkingFlows.confrontBeliefsFlow();
+  }
+  /** AU_E103 — map the argument; see {@link DesignFlows.mapArgumentFlow}. Public: called from {@link registerCommands}. */
+  async mapArgumentFlow() {
+    await this.designFlows.mapArgumentFlow();
+  }
+  /** AU_E103 — re-render the argument section; see {@link DesignFlows.refreshArgumentMap}. Public: called from {@link registerCommands}. */
+  async refreshArgumentMap() {
+    await this.designFlows.refreshArgumentMap();
+  }
+  /** AU_E103_S3 — project the argument map onto a Canvas; see {@link DesignFlows.openArgumentCanvas}. Public: called from {@link registerCommands}. */
+  async openArgumentCanvas() {
+    await this.designFlows.openArgumentCanvas();
+  }
+  /** AU_E128_S1 — re-layout that Canvas; see {@link DesignFlows.relayoutArgumentCanvasFlow}. Public: called from {@link registerCommands}. */
+  async relayoutArgumentCanvasFlow() {
+    await this.designFlows.relayoutArgumentCanvasFlow();
+  }
+  /** AU_E105 — design the interview guide; see {@link DesignFlows.designInterviewGuideFlow}. Public: called from {@link registerCommands}. */
+  async designInterviewGuideFlow() {
+    await this.designFlows.designInterviewGuideFlow();
+  }
+  /** AU_E105 — re-render the guide section; see {@link DesignFlows.refreshInterviewGuide}. Public: called from {@link registerCommands}. */
+  async refreshInterviewGuide() {
+    await this.designFlows.refreshInterviewGuide();
+  }
+  /** AU_E105 — plain fieldwork export; see {@link DesignFlows.exportInterviewGuide}. Public: called from {@link registerCommands}. */
+  async exportInterviewGuide() {
+    await this.designFlows.exportInterviewGuide();
+  }
+  /** AU_E111_S1 — propose hypotheses; see {@link DesignFlows.proposeHypothesesFlow}. Public: called from {@link registerCommands}. */
+  async proposeHypothesesFlow() {
+    await this.designFlows.proposeHypothesesFlow();
+  }
+  /** AU_E111_S1 — re-render the hypotheses section; see {@link DesignFlows.refreshHypotheses}. Public: called from {@link registerCommands}. */
+  async refreshHypotheses() {
+    await this.designFlows.refreshHypotheses();
+  }
+  /** AU_E103_S4 — generated Connections section; see {@link DesignFlows.refreshConnections}. Public: called from {@link registerCommands}. */
+  async refreshConnections(scope) {
+    await this.designFlows.refreshConnections(scope);
+  }
+  /** E50 — research agenda; see {@link DesignFlows.generateResearchDesign}. Public: called from {@link registerCommands}. */
+  async generateResearchDesign() {
+    await this.designFlows.generateResearchDesign();
+  }
+  /** AU_E111_S2 — validated scales; see {@link EvidenceFlows.findValidatedScalesFlow}. Public: called from {@link registerCommands}. */
+  async findValidatedScalesFlow() {
+    this.evidenceFlows.findValidatedScalesFlow();
+  }
+  /** E21 — deepen the selected finding(s); see {@link EvidenceFlows.deepenSelection}. Public: called from {@link registerCommands}. */
+  async deepenSelection(editor) {
+    await this.evidenceFlows.deepenSelection(editor);
+  }
+  /** AU_E100_S2 — read the `.bib` library; see {@link EvidenceFlows.refreshLibrary}. Public: called from {@link registerCommands}. */
+  async refreshLibrary() {
+    return this.evidenceFlows.refreshLibrary();
+  }
+  /** AU_E104_S1 — insert a citation from the library; see {@link EvidenceFlows.insertCitationFromLibrary}. Public: called from {@link registerCommands}. */
+  async insertCitationFromLibrary() {
+    await this.evidenceFlows.insertCitationFromLibrary();
+  }
+  /** AU_E104_S2 — update register references from the library; see {@link EvidenceFlows.updateReferencesFromLibrary}. Public: called from {@link registerCommands}. */
+  async updateReferencesFromLibrary(scope) {
+    await this.evidenceFlows.updateReferencesFromLibrary(scope);
   }
   // ── Methodologische verantwoording (E48_S2) ──
   /**
@@ -18685,14 +20815,14 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       const settingsPath = QUADRO_CONVENTIONS.settingsPath;
       const dataJson = await adapter.exists(settingsPath) ? await adapter.read(settingsPath) : null;
       const folders = parseQuadroFolders(dataJson);
-      const progressPath = (0, import_obsidian27.normalizePath)(`${folders.analysis}/${QUADRO_CONVENTIONS.progressFileName}`);
+      const progressPath = (0, import_obsidian30.normalizePath)(`${folders.analysis}/${QUADRO_CONVENTIONS.progressFileName}`);
       const progress = await adapter.exists(progressPath) ? parseQuadroProgress(await adapter.read(progressPath)) : null;
       const codebook = codebookStatsFromPaths(
         folders.codes,
         this.app.vault.getMarkdownFiles().map((f) => f.path)
       );
-      const extractionsRoot = this.app.vault.getAbstractFileByPath((0, import_obsidian27.normalizePath)(folders.extractions));
-      const extractionTypes = extractionsRoot instanceof import_obsidian27.TFolder ? extractionsRoot.children.filter((c) => c instanceof import_obsidian27.TFolder).length : null;
+      const extractionsRoot = this.app.vault.getAbstractFileByPath((0, import_obsidian30.normalizePath)(folders.extractions));
+      const extractionTypes = extractionsRoot instanceof import_obsidian30.TFolder ? extractionsRoot.children.filter((c) => c instanceof import_obsidian30.TFolder).length : null;
       return renderQdaSection({
         root: folders.analysis,
         date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
@@ -18709,10 +20839,23 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
    * AU_E106_S1 — repoint both path-keyed stores after a rename/move. Handles single files and
    * whole folders with one prefix rule. Best-effort and silent: a store failure must never
    * slow down or block the rename itself (console.warn only, same policy as the graph writes).
+   *
+   * AU_E149_S1 — and rebuild the hub index of the folder(s) the rename touched. Obsidian
+   * rewrites wikilinks in ordinary notes itself, but the hub's `## Inhoudsopgave` is a
+   * GENERATED listing, so it has to be rebuilt rather than rewritten: after a rename it would
+   * otherwise keep the old basename (a dead link), after a move the note would stay listed in
+   * its old project. Which folders those are is pure ({@link foldersToReindexAfterRename}) and
+   * at most three, so a folder rename — which Obsidian may follow with events for its children
+   * — never causes more than a handful of (idempotent) index writes.
+   *
+   * DELETING a note stays deliberately without a hook, exactly as AU_E106_S2 decided for the
+   * record stores: a delete may be a sync glitch or an undo. The index is brought back in line
+   * on the next create/rename in that folder, or on demand with "Project · refresh contents"
+   * (reachable from the sidebar's Project block since AU_E149_S2).
    */
   async onVaultRename(file, oldPath) {
-    const isMarkdown = file instanceof import_obsidian27.TFile && file.extension === "md";
-    if (!isMarkdown && !(file instanceof import_obsidian27.TFolder)) return;
+    const isMarkdown = file instanceof import_obsidian30.TFile && file.extension === "md";
+    if (!isMarkdown && !(file instanceof import_obsidian30.TFolder)) return;
     try {
       const vaultStore = this.vaultAdapters.vaultStore();
       const graphPath = this.vaultAdapters.graphStorePath();
@@ -18726,6 +20869,13 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       }
     } catch (e) {
       console.warn("Parallax: could not repoint records after a rename", e);
+    }
+    for (const folder of foldersToReindexAfterRename(oldPath, file.path, file instanceof import_obsidian30.TFolder)) {
+      try {
+        await this.refreshHubContentsForFolder(folder);
+      } catch (e) {
+        console.warn("Parallax: could not refresh the hub index after a rename", e);
+      }
     }
   }
   /**
@@ -18743,20 +20893,20 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       const existing = new Set(this.app.vault.getMarkdownFiles().map((f) => f.path));
       const groups = scanOrphans(graph, register, existing);
       if (groups.length === 0) {
-        new import_obsidian27.Notice("No orphaned records \u2014 everything points at existing notes.");
+        notify("No orphaned records \u2014 everything points at existing notes.");
         return;
       }
       new RecordHygieneModal(this.app, groups, (selection) => {
         void (async () => {
           const result = applyPrune(graph, register, selection);
           if (result.removedGraphRecords + result.removedOccurrences === 0) {
-            new import_obsidian27.Notice("Nothing selected \u2014 no records were removed.");
+            notify("Nothing selected \u2014 no records were removed.");
             return;
           }
           await vaultStore.write(graphPath, serializeGraphStore(graph));
           await this.vaultAdapters.backupBeforeOverwrite(vaultStore, this.settings.registerPath);
           await saveRegister(vaultStore, this.settings.registerPath, register);
-          new import_obsidian27.Notice(
+          notify(
             `Cleaned up: ${result.removedGraphRecords} session record(s), ${result.removedOccurrences} dead reference entr${result.removedOccurrences === 1 ? "y" : "ies"}, ${result.removedReferences} fully orphaned reference(s) removed.`,
             8e3
           );
@@ -18767,52 +20917,6 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
     }
   }
   /**
-   * AU_E108_S1 — one session per chosen lens: a single research run flattens several lenses
-   * into ONE framework (the framework phase is singular by design, E18), which is the opposite
-   * of the parallax idea. This creates a session note per chosen lens — each carrying the full
-   * Theory artefact with ITS lens as the chosen one (front-matter `lenses: [lens]` steers the
-   * framework phase there), a Context link back to the parent, and its own adoption record.
-   * Research is deliberately NOT auto-started (owner decision jul 2026): n pipelines in one go
-   * would be n× cost without control; the sidebar recommends the research step per note. The
-   * parent keeps the complete artefact (all lenses incl. eliminated) and a logbook event links
-   * the children; the hub contents section (AU_E98_S1) indexes them automatically.
-   */
-  async createLensSessions(question, result, choice) {
-    var _a;
-    const chosen = result.lenses.filter((l) => choice.lenses.includes(l.name));
-    if (chosen.length < 2) return;
-    const parentSession = this.activeSession();
-    const file = this.activeNoteFile();
-    const folder = (file == null ? void 0 : file.parent) && file.parent.path !== "/" ? file.parent.path : "";
-    const fm = file ? (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter : void 0;
-    const project = file ? resolveProject(file.path, fm) : void 0;
-    try {
-      if (parentSession) await this.recordTheoryInSession(parentSession.file, result, choice);
-      const links = [];
-      for (const lens of chosen) {
-        const created = await this.createSessionNote(`${question} \u2014 ${lens.name}`, folder, project, {
-          ...parentSession ? { parent: parentSession.file, parentTopic: question } : {},
-          silent: true
-        });
-        if (!created) continue;
-        await this.recordTheoryInSession(created, result, { action: "insert", lenses: [lens.name] });
-        links.push(`[[${created.basename}]]`);
-      }
-      if (links.length === 0) return;
-      if (parentSession) {
-        await this.sessionStore.logEvent(
-          parentSession.file,
-          t().headings.lenses,
-          fmt(t().logbook.lensSessionsCreated, { n: String(links.length), links: links.join(" \xB7 ") })
-        );
-      }
-      new import_obsidian27.Notice(`Created ${links.length} lens session(s) \u2014 run the research step in each at your own pace.`);
-    } catch (e) {
-      notifyError("Creating lens sessions", e);
-    }
-  }
-  /**
-   * AU_E107_S1 — land a research assistant artefact from a session-less plain note in a NEW session note	/**
    * AU_E107_S1 — land a research assistant artefact from a session-less plain note in a NEW session note
    * in that note's folder (project-linked when the note lives in one): the recommended
    * alternative to the loose cursor block, mirroring the hub landing (E87).
@@ -18828,7 +20932,7 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
   async generateMethodologyAccount() {
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then generate the account.');
+      notify('No research session yet \u2014 run "Question \xB7 start in this note (turn it into a session)" first, then generate the account.');
       return;
     }
     const { file, session } = active;
@@ -18836,10 +20940,10 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
     const qda = await this.gatherQdaSection();
     const doc = assembleMethodologyAccount(session, body, `[[${file.basename}]]`, qda);
     const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
-    const targetPath = (0, import_obsidian27.normalizePath)(`${folder ? `${folder}/` : ""}${file.basename} \u2014 methodologische verantwoording.md`);
+    const targetPath = (0, import_obsidian30.normalizePath)(`${folder ? `${folder}/` : ""}${file.basename} \u2014 methodologische verantwoording.md`);
     try {
       const existing = this.app.vault.getAbstractFileByPath(targetPath);
-      if (existing instanceof import_obsidian27.TFile) await this.app.vault.modify(existing, doc);
+      if (existing instanceof import_obsidian30.TFile) await this.app.vault.modify(existing, doc);
       else {
         await this.app.vault.create(targetPath, doc);
         await this.refreshHubContentsForFolder(folder);
@@ -18849,257 +20953,9 @@ var ParallaxPlugin = class extends import_obsidian27.Plugin {
       return;
     }
     const written = this.app.vault.getAbstractFileByPath(targetPath);
-    if (written instanceof import_obsidian27.TFile) await this.app.workspace.getLeaf(true).openFile(written);
+    if (written instanceof import_obsidian30.TFile) await this.app.workspace.getLeaf(true).openFile(written);
     await this.sessionStore.logEvent(file, t().logbook.stepAccount, t().logbook.accountGenerated);
-    new import_obsidian27.Notice("Methodological account generated.");
-  }
-  // ── Challenge research assistant (E49) ──
-  /** Challenge research assistant (E49): prompt for a question, then challenge its framing. Public: called from {@link registerCommands}. */
-  promptAndChallenge(initialQuery) {
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Challenging the framing needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    this.promptForQuestion({
-      seed: this.promptSeed(initialQuery),
-      onSubmit: (submission) => void this.runChallengeFlow(submission.query)
-    });
-  }
-  /**
-   * Run the Challenge research assistant (E49): challenge the framing along five dimensions (sharper when
-   * it pushes against the session's beliefs), let the writer pick which cut, record the artefact
-   * and adopt the ticked challenges as open beliefs to examine. Falls back gracefully on failure.
-   */
-  async runChallengeFlow(rawQuestion) {
-    var _a;
-    const question = rawQuestion.trim();
-    if (!question) return;
-    const step = await this.runAssistantStep({
-      flowLabel: "challenge",
-      loadingText: "Challenging the framing (five dimensions)\u2026",
-      errorPrefix: "Challenge failed",
-      run: (log) => {
-        var _a2, _b;
-        const beliefs = (_b = (_a2 = this.activeSession()) == null ? void 0 : _a2.session.beliefs) != null ? _b : [];
-        return challengeFraming(question, beliefs, this.llmChatFn("challenge", log), log);
-      }
-    });
-    if (!step) return;
-    const { result } = step;
-    if (!result) {
-      new import_obsidian27.Notice("Could not challenge the framing \u2014 feel free to start research directly.", 6e3);
-      return;
-    }
-    const session = this.activeSession();
-    const file = this.activeNoteFile();
-    const hub = !session && file ? parseProjectHub((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter) : null;
-    const target = artefactLandingTarget(!!hub, !!session);
-    new ChallengeModal(this.app, result, target, (choice) => {
-      if (!choice) return;
-      if (session && target === "session-note") {
-        void this.recordChallengeInSession(session.file, question, result, choice);
-      } else if (choice.action === "new-note") {
-        void (async () => {
-          const created = await this.newSessionNearActiveNote(question);
-          if (!created) return;
-          new import_obsidian27.Notice(`Challenge landed in a new session: "${created.basename}".`);
-          await this.recordChallengeInSession(created, question, result, choice);
-        })();
-      } else if (hub && file && target === "new-project-session") {
-        void this.recordChallengeAsNewProjectSession(file, hub, question, result, choice);
-      }
-    }).open();
-  }
-  /**
-   * S1 (AU_E87_S1): a Challenge run from a project HUB (no active session) lands in a NEW
-   * session note in the project's folder, mirroring {@link recordExplorationAsNewProjectSession}
-   * via the shared {@link newSessionInHubProject} step.
-   */
-  async recordChallengeAsNewProjectSession(hubFile, hub, question, result, choice) {
-    const created = await this.newSessionInHubProject(hubFile, hub, question);
-    if (!created) return;
-    new import_obsidian27.Notice(`Challenge landed in a new session: "${created.basename}".`);
-    await this.recordChallengeInSession(created, question, result, choice);
-  }
-  /**
-   * Record the challenge artefact + adopt the ticked challenges as open beliefs (E49).
-   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); a "Keep" answer
-   * writes/records nothing — enforced there.
-   */
-  async recordChallengeInSession(file, _question, result, choice) {
-    const adopted = choice.adopted.map((claim) => ({ claim, status: "open" }));
-    await this.artefactLanding.landArtefact({
-      file,
-      section: "challenge",
-      label: "challenge",
-      body: buildChallengeBody(result),
-      afterWrite: async () => {
-        if (adopted.length > 0) await this.sessionStore.addBeliefs(file, adopted);
-      },
-      log: {
-        step: t().headings.challenge,
-        summary: `${fmt(t().logbook.challengesSummary, { n: result.challenges.length })}${adopted.length ? fmt(t().logbook.challengesAdopted, { n: adopted.length }) : ""}`
-      },
-      // AU_E89_S1 (export-pariteit) + AU_E131_S2: the basedOn fingerprints are read AFTER
-      // the writes above, so the just-adopted beliefs count as the current basis.
-      record: async (noteBody) => ({
-        adoptions: { challenge: challengeAdoptionRecord(result, choice) },
-        basedOn: { challenge: upstreamFingerprints(await noteBody(), "challenge") }
-      }),
-      notice: adopted.length > 0 ? `Challenge added; recorded ${adopted.length} belief(s) to examine.` : "Challenge added to the session."
-    });
-  }
-  // ── Argument structure (AU_E103) ──
-  /**
-   * Map the argument (AU_E103, propose-only): make the session's logical structure explicit —
-   * claims, assumptions and the supports/attacks relations between them. The LLM reads the
-   * session content (question, synthesis, adopted challenges, beliefs) and PROPOSES a map; the
-   * researcher adopts per node in the {@link ArgumentModal}; adoption writes the `## Argument
-   * structure` section (E87 Replace/Keep respected), the graph-store record, and a logbook
-   * event. Mirrors the Challenge research assistant flow. Public: called from {@link registerCommands}.
-   */
-  async mapArgumentFlow() {
-    var _a, _b;
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Mapping the argument needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    const active = this.activeSession();
-    if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then map the argument.');
-      return;
-    }
-    const { file, session } = active;
-    const preState = await this.sessionStore.sectionEditState(file, "argument");
-    const preMode = await this.artefactLanding.confirmArtefactOverwrite(file, "argument", "argument map", { offerFork: "argument" });
-    if (!preMode) return;
-    if (preMode === "fork") {
-      await this.artefactLanding.forkSessionFromRevision(file, "argument", "argument map");
-      return;
-    }
-    const preapproved = { state: preState, mode: preMode };
-    const body = await this.app.vault.read(file);
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const findings = (_b = (_a = recordForNote(store, file.path)) == null ? void 0 : _a.findings) != null ? _b : [];
-    const context = this.buildArgumentContext(session, body, findings);
-    const step = await this.runAssistantStep({
-      flowLabel: "argument",
-      loadingText: "Mapping the argument (claims, assumptions, relations)\u2026",
-      errorPrefix: "Argument mapping failed",
-      run: (log) => proposeArgumentStructure(context, this.llmChatFn("argument", log), log)
-    });
-    if (!step) return;
-    const { result: raw } = step;
-    if (!raw) {
-      new import_obsidian27.Notice("Could not map the argument \u2014 try again once the session holds more thinking to map.", 6e3);
-      return;
-    }
-    const result = resolveArgumentEvidence(raw, findings);
-    new ArgumentModal(
-      this.app,
-      result,
-      (adopted) => {
-        if (!adopted || adopted.nodes.length === 0) return;
-        void this.recordArgumentInSession(file, adopted, preapproved);
-      },
-      body
-      // AU_E129_S9: lets the modal flag nodes that don't literally occur in the note
-    ).open();
-  }
-  /**
-   * The session content the argument mapper reads (design §5): the question/framing, the
-   * beliefs, and the synthesis + adopted-challenge sections when present. Long sections are
-   * capped — the map needs the reasoning's shape, not every word of it.
-   */
-  buildArgumentContext(session, body, findings = []) {
-    const cap = (s) => s.length > 4e3 ? `${s.slice(0, 4e3)}\u2026` : s;
-    const parts = [`Research question: ${sessionTopic(session)}`];
-    if (session.beliefs.length > 0) {
-      parts.push(`Current beliefs:
-${session.beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`);
-    }
-    if (findings.length > 0) {
-      parts.push(`Findings (numbered):
-${findings.map((f, i) => `F${i + 1}: ${cap(f.claim).slice(0, 400)}`).join("\n")}`);
-    }
-    for (const id of ["synthesis", "challenge", "exploration"]) {
-      const section = extractSection(body, id);
-      if (section) parts.push(`Section "${id}":
-${cap(section)}`);
-    }
-    return parts.join("\n\n");
-  }
-  /**
-   * Record the adopted argument map (AU_E103): section + graph-store record + logbook event.
-   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); the preapproved
-   * gate answer is the AU_E131_S3 safety net — re-asks only if the section changed during the run.
-   */
-  async recordArgumentInSession(file, adopted, preapproved) {
-    const structure = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
-    await this.artefactLanding.landArtefact({
-      file,
-      section: "argument",
-      label: "argument map",
-      ...preapproved ? { preapproved } : {},
-      body: buildArgumentBody(structure, t().argument),
-      log: {
-        step: t().logbook.stepArgument,
-        summary: fmt(t().logbook.argumentAdopted, { n: structure.nodes.length })
-      },
-      // Structured record next to the proza section (E68/E89 pattern). Latest map replaces
-      // the previous one as a whole (§3). AU_E131_S2: upstream basis alongside, for staleness.
-      record: async (noteBody) => ({
-        argumentStructure: structure,
-        basedOn: { argument: upstreamFingerprints(await noteBody(), "argument") }
-      }),
-      notice: `Argument map recorded (${structure.nodes.length} element(s)).`
-    });
-  }
-  /**
-   * Regenerate the `## Argument structure` section from the stored graph-store record (AU_E103)
-   * — no LLM call: the records are the source for projections (design §3), so a refresh is a
-   * deterministic re-render (e.g. after an i18n language switch, or to undo a hand-mangled
-   * Mermaid block). The E87 Replace/Keep respect applies exactly as on adoption. Public: called
-   * from {@link registerCommands}.
-   */
-  async refreshArgumentMap() {
-    var _a;
-    const file = this.activeNoteFile();
-    if (!file) {
-      new import_obsidian27.Notice("Open a session note to refresh its argument map.");
-      return;
-    }
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const structure = sanitizeArgumentStructure((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.argumentStructure);
-    if (!structure) {
-      new import_obsidian27.Notice('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
-      return;
-    }
-    const writeMode = await this.artefactLanding.confirmArtefactOverwrite(file, "argument", "argument map");
-    if (!writeMode || writeMode === "fork") return;
-    await this.artefactLanding.writeArtefact(file, "argument", buildArgumentBody(structure, t().argument), writeMode);
-    new import_obsidian27.Notice("Argument map regenerated from the stored record.");
-  }
-  /**
-   * Project the stored argument map onto a `.canvas` file next to the note (AU_E103_S3 — rung 2
-   * of the escalation ladder): same record lookup as {@link refreshArgumentMap}, no LLM call.
-   * The canvas is regenerated under the position-preserving strategy documented in
-   * `argument-canvas.ts` — the user's repositioning and own nodes/edges survive, so no
-   * ConfirmModal is needed; a Notice says what was kept. Public: called from
-   * {@link registerCommands}.
-   */
-  /**
-   * The session note the argument-canvas commands should act on: the active note, or — when the
-   * user is looking at a generated "<note> — argument.canvas" (the natural place to invoke
-   * re-layout, AU_E128_S1 nawerk) — the session note resolved from the canvas filename.
-   */
-  argumentCanvasSessionNote() {
-    const file = this.activeNoteFile();
-    if (!file || file.extension !== "canvas") return file;
-    const notePath = sessionNotePathForArgumentCanvas(file.path);
-    if (!notePath) return null;
-    const note = this.app.vault.getAbstractFileByPath((0, import_obsidian27.normalizePath)(notePath));
-    return note instanceof import_obsidian27.TFile ? note : null;
+    notify("Methodological account generated.");
   }
   /**
    * Rebuild the structured store records FROM the active session note (AU_E133_S1) —
@@ -19118,7 +20974,7 @@ ${cap(section)}`);
   async rebuildRecordsFromNote() {
     const active = this.activeSession();
     if (!active) {
-      new import_obsidian27.Notice("Open a session note first \u2014 rebuilding reads this note's sections back into the records.");
+      notify("Open a session note first \u2014 rebuilding reads this note's sections back into the records.");
       return;
     }
     const { file, session } = active;
@@ -19156,12 +21012,12 @@ ${cap(section)}`);
       }
     }
     if (rebuilt.length === 0) {
-      new import_obsidian27.Notice(`Nothing to rebuild \u2014 no parseable argument, hypotheses or findings sections in this note.${skipped.length ? ` Skipped: ${skipped.join("; ")}.` : ""}`, 8e3);
+      notify(`Nothing to rebuild \u2014 no parseable argument, hypotheses or findings sections in this note.${skipped.length ? ` Skipped: ${skipped.join("; ")}.` : ""}`, 8e3);
       return;
     }
     await this.vaultAdapters.backupBeforeOverwrite(vaultStore, graphPath);
     await vaultStore.write(graphPath, serializeGraphStore(next));
-    new import_obsidian27.Notice(`Records rebuilt from the note: ${rebuilt.join(", ")}.${skipped.length ? ` Skipped: ${skipped.join("; ")}.` : ""}`, 8e3);
+    notify(`Records rebuilt from the note: ${rebuilt.join(", ")}.${skipped.length ? ` Skipped: ${skipped.join("; ")}.` : ""}`, 8e3);
   }
   /**
    * Which adopted artefacts of a note rest on a CHANGED basis (AU_E131_S5): section id →
@@ -19174,438 +21030,6 @@ ${cap(section)}`);
     return new Map(staleSections(body, record == null ? void 0 : record.basedOn).map((e) => [e.artefact, e.changed]));
   }
   /**
-   * The canvas staleness banner text (AU_E131_S5), or null while the argument map's recorded
-   * basis still matches the note. Owner decision: staleness shows on the canvas too — "an
-   * easy place to inspect the project".
-   */
-  async argumentStaleNote(file, record) {
-    const stale = staleSections(await this.app.vault.read(file), record == null ? void 0 : record.basedOn).find((e) => e.artefact === "argument");
-    if (!stale) return null;
-    return fmt(t().argument.staleBanner, { changed: stale.changed.map((c) => sectionHeading(c)).join(", ") });
-  }
-  async openArgumentCanvas() {
-    var _a;
-    const file = this.argumentCanvasSessionNote();
-    if (!file) {
-      new import_obsidian27.Notice("Open a session note to project its argument map onto a Canvas.");
-      return;
-    }
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const record = artefactRecordForNote(store, file.path);
-    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
-    if (!structure) {
-      new import_obsidian27.Notice('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
-      return;
-    }
-    const hypotheses = (_a = sanitizeHypothesisSet(record == null ? void 0 : record.hypotheses)) != null ? _a : null;
-    const staleNote = await this.argumentStaleNote(file, record);
-    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const path = (0, import_obsidian27.normalizePath)(`${folder}${file.basename}${ARGUMENT_CANVAS_SUFFIX}`);
-    try {
-      const existingFile = this.app.vault.getAbstractFileByPath(path);
-      const existing = parseCanvas(existingFile instanceof import_obsidian27.TFile ? await this.app.vault.read(existingFile) : null);
-      const canvas = buildArgumentCanvas(structure, { ...t().argument, hypotheses: t().headings.hypotheses, projection: fmt(t().argument.projection, { note: `[[${file.basename}]]` }) }, existing, hypotheses, staleNote);
-      const canvasFile = await this.vaultAdapters.writeVaultFile(path, serializeCanvas(canvas));
-      await this.app.workspace.getLeaf(true).openFile(canvasFile);
-      new import_obsidian27.Notice(
-        existing ? "Canvas updated \u2014 your positions and own nodes were kept." : `Argument canvas created: "${path}".`
-      );
-    } catch (e) {
-      notifyError(`Writing the argument canvas to "${path}"`, e);
-    }
-  }
-  /**
-   * Re-layout the argument canvas (AU_E128_S1, explicit action): rebuild the argument nodes on
-   * fresh connectivity-ordered grid positions, discarding their stored geometry — the conscious
-   * counterpart of {@link openArgumentCanvas}, whose regeneration deliberately never moves what
-   * the user arranged. User-added nodes and edges survive with their geometry. Public: called
-   * from {@link registerCommands}.
-   */
-  async relayoutArgumentCanvasFlow() {
-    var _a;
-    const file = this.argumentCanvasSessionNote();
-    if (!file) {
-      new import_obsidian27.Notice("Open a session note (or its argument canvas) to re-layout the argument canvas.");
-      return;
-    }
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const record = artefactRecordForNote(store, file.path);
-    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
-    if (!structure) {
-      new import_obsidian27.Notice('No argument map recorded for this note yet \u2014 run "Design \xB7 argument map" first.');
-      return;
-    }
-    const hypotheses = (_a = sanitizeHypothesisSet(record == null ? void 0 : record.hypotheses)) != null ? _a : null;
-    const staleNote = await this.argumentStaleNote(file, record);
-    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const path = (0, import_obsidian27.normalizePath)(`${folder}${file.basename}${ARGUMENT_CANVAS_SUFFIX}`);
-    try {
-      const existingFile = this.app.vault.getAbstractFileByPath(path);
-      const existing = parseCanvas(existingFile instanceof import_obsidian27.TFile ? await this.app.vault.read(existingFile) : null);
-      const canvas = relayoutArgumentCanvas(structure, { ...t().argument, hypotheses: t().headings.hypotheses, projection: fmt(t().argument.projection, { note: `[[${file.basename}]]` }) }, existing, hypotheses, staleNote);
-      const canvasFile = await this.vaultAdapters.writeVaultFile(path, serializeCanvas(canvas));
-      await this.app.workspace.getLeaf(true).openFile(canvasFile);
-      new import_obsidian27.Notice("Canvas re-laid out \u2014 argument nodes repositioned by connectivity; your own nodes were kept.");
-    } catch (e) {
-      notifyError(`Re-laying out the argument canvas at "${path}"`, e);
-    }
-  }
-  // ── Interview guide (AU_E105) ──
-  /**
-   * Design the interview guide (AU_E105, propose-only): turn the session's open thinking into a
-   * topic guide in which every question carries its provenance — which sub-question, evidence
-   * gap, attacked assumption or belief it is meant to illuminate. The LLM reads the gathered
-   * context and PROPOSES a guide; the researcher adopts per question in the {@link
-   * InterviewModal}; adoption writes the `## Interview guide` section (E87 Replace/Keep
-   * respected), the graph-store record, and a logbook event. Mirrors the argument-structure
-   * flow. Public: called from {@link registerCommands}.
-   */
-  async designInterviewGuideFlow() {
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Designing an interview guide needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    const active = this.activeSession();
-    if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then design the interview guide.');
-      return;
-    }
-    const { file, session } = active;
-    const preState = await this.sessionStore.sectionEditState(file, "interview");
-    const preMode = await this.artefactLanding.confirmArtefactOverwrite(file, "interview", "interview guide", { offerFork: "interview" });
-    if (!preMode) return;
-    if (preMode === "fork") {
-      await this.artefactLanding.forkSessionFromRevision(file, "interview", "interview guide");
-      return;
-    }
-    const preapproved = { state: preState, mode: preMode };
-    const body = await this.app.vault.read(file);
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const context = this.buildInterviewContext(
-      session,
-      body,
-      recordForNote(store, file.path),
-      artefactRecordForNote(store, file.path)
-    );
-    const step = await this.runAssistantStep({
-      flowLabel: "interview",
-      loadingText: "Designing the interview guide (questions, provenance, probes)\u2026",
-      errorPrefix: "Interview-guide design failed",
-      run: (log) => proposeInterviewGuide(context, this.llmChatFn("interview", log), log)
-    });
-    if (!step) return;
-    const { result } = step;
-    if (!result) {
-      new import_obsidian27.Notice("Could not design an interview guide \u2014 try again once the session holds more thinking to draw from.", 6e3);
-      return;
-    }
-    new InterviewModal(this.app, result, (adopted) => {
-      if (!adopted || adopted.questions.length === 0) return;
-      void this.recordInterviewInSession(file, adopted, preapproved);
-    }).open();
-  }
-  /**
-   * The session content the interview designer reads (design §5): the question/framing, the
-   * sub-questions and evidence gaps from the graph record, the beliefs, the ATTACKED assumptions
-   * from the stored argument map (`attacks`-edges → their assumption endpoints — the "hoe zit
-   * dat bij u?"-material), and the synthesis section. Long blocks are capped, like {@link
-   * buildArgumentContext} — the guide needs the gaps' shape, not every word around them.
-   */
-  buildInterviewContext(session, body, graphRecord, artefactRecord) {
-    var _a, _b;
-    const cap = (s) => s.length > 4e3 ? `${s.slice(0, 4e3)}\u2026` : s;
-    const parts = [`Research question: ${sessionTopic(session)}`];
-    const subQuestions = (_a = graphRecord == null ? void 0 : graphRecord.subQuestions) != null ? _a : [];
-    if (subQuestions.length > 0) {
-      parts.push(cap(`Sub-questions:
-${subQuestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}`));
-    }
-    const gaps = (_b = graphRecord == null ? void 0 : graphRecord.unanswered) != null ? _b : [];
-    if (gaps.length > 0) {
-      parts.push(cap(`Evidence gaps (unanswered with the current evidence):
-${gaps.map((u) => `- ${u.question} (${u.reason})`).join("\n")}`));
-    }
-    if (session.beliefs.length > 0) {
-      parts.push(cap(`Current beliefs:
-${session.beliefs.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`));
-    }
-    const structure = sanitizeArgumentStructure(artefactRecord == null ? void 0 : artefactRecord.argumentStructure);
-    if (structure) {
-      const attackedIds = /* @__PURE__ */ new Set();
-      for (const e of structure.edges) {
-        if (e.kind !== "attacks") continue;
-        attackedIds.add(e.from);
-        attackedIds.add(e.to);
-      }
-      const attacked = structure.nodes.filter((n) => n.kind === "assumption" && attackedIds.has(n.id));
-      if (attacked.length > 0) {
-        parts.push(cap(`Attacked assumptions (from the argument map):
-${attacked.map((n) => `- [${n.id}] ${n.text}`).join("\n")}`));
-      }
-    }
-    const synthesis = extractSection(body, "synthesis");
-    if (synthesis) parts.push(`Section "synthesis":
-${cap(synthesis)}`);
-    return parts.join("\n\n");
-  }
-  /**
-   * Record the adopted interview guide (AU_E105): section + graph-store record + logbook event.
-   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); the preapproved
-   * gate answer is the AU_E131_S3 safety net — re-asks only if the section changed during the run.
-   */
-  async recordInterviewInSession(file, adopted, preapproved) {
-    const guide = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
-    await this.artefactLanding.landArtefact({
-      file,
-      section: "interview",
-      label: "interview guide",
-      ...preapproved ? { preapproved } : {},
-      body: buildInterviewBody(guide, t().interview),
-      log: {
-        step: t().logbook.stepInterview,
-        summary: fmt(t().logbook.interviewAdopted, { n: guide.questions.length })
-      },
-      // Structured record next to the proza section (E68/E89 pattern). Latest guide replaces
-      // the previous one as a whole (§3). AU_E131_S2: upstream basis alongside, for staleness.
-      record: async (noteBody) => ({
-        interviewGuide: guide,
-        basedOn: { interview: upstreamFingerprints(await noteBody(), "interview") }
-      }),
-      notice: `Interview guide recorded (${guide.questions.length} question(s)).`
-    });
-  }
-  /**
-   * Regenerate the `## Interview guide` section from the stored graph-store record (AU_E105) —
-   * no LLM call: the records are the source for projections (design §3), so a refresh is a
-   * deterministic re-render (e.g. after an i18n language switch). The E87 Replace/Keep respect
-   * applies exactly as on adoption. Public: called from {@link registerCommands}.
-   */
-  async refreshInterviewGuide() {
-    var _a;
-    const file = this.activeNoteFile();
-    if (!file) {
-      new import_obsidian27.Notice("Open a session note to refresh its interview guide.");
-      return;
-    }
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const guide = sanitizeInterviewGuide((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.interviewGuide);
-    if (!guide) {
-      new import_obsidian27.Notice('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
-      return;
-    }
-    const writeMode = await this.artefactLanding.confirmArtefactOverwrite(file, "interview", "interview guide");
-    if (!writeMode || writeMode === "fork") return;
-    await this.artefactLanding.writeArtefact(file, "interview", buildInterviewBody(guide, t().interview), writeMode);
-    new import_obsidian27.Notice("Interview guide regenerated from the stored record.");
-  }
-  /**
-   * Write the stored interview guide as a PLAIN markdown fieldwork document next to the note
-   * (AU_E105, design §4 — koppelvlak-norm: usable on paper, a tablet or in another vault):
-   * same record lookup as {@link refreshInterviewGuide}, no LLM call, deterministic from the
-   * record. Create-or-overwrite via the same vault write pattern as {@link openArgumentCanvas},
-   * then the file is opened. Public: called from {@link registerCommands}.
-   */
-  async exportInterviewGuide() {
-    var _a;
-    const file = this.activeNoteFile();
-    if (!file) {
-      new import_obsidian27.Notice("Open a session note to export its interview guide.");
-      return;
-    }
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const guide = sanitizeInterviewGuide((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.interviewGuide);
-    if (!guide) {
-      new import_obsidian27.Notice('No interview guide recorded for this note yet \u2014 run "Design interview guide" first.');
-      return;
-    }
-    const folder = file.parent && file.parent.path !== "/" ? `${file.parent.path}/` : "";
-    const path = (0, import_obsidian27.normalizePath)(`${folder}${file.basename} \u2014 interview guide.md`);
-    try {
-      const exportFile = await this.vaultAdapters.writeVaultFile(path, buildFieldworkExport(guide, t().interview, file.basename));
-      await this.app.workspace.getLeaf(true).openFile(exportFile);
-      new import_obsidian27.Notice(`Fieldwork guide written: "${path}".`);
-    } catch (e) {
-      notifyError(`Writing the fieldwork guide to "${path}"`, e);
-    }
-  }
-  // ── Hypotheses & the quantitative route (AU_E111) ──
-  /**
-   * Propose hypotheses (AU_E111_S1, propose-only): turn the argument map's claims/assumptions
-   * (E103) — plus the open beliefs and the method-fit-labelled research questions (E109) —
-   * into falsifiable hypotheses. The researcher adopts per hypothesis in the
-   * {@link HypothesisModal}; adoption writes the `## Hypotheses` section (E87 Replace/Keep
-   * respected), the graph-store record (latest set replaces the whole) and a logbook event.
-   * Mirrors the Argument research assistant flow. Public: called from {@link registerCommands}.
-   */
-  async proposeHypothesesFlow() {
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Proposing hypotheses needs a configured LLM provider \u2014 set it in the plugin settings first.");
-      return;
-    }
-    const active = this.activeSession();
-    if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then propose hypotheses.');
-      return;
-    }
-    const { file, session } = active;
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const record = artefactRecordForNote(store, file.path);
-    const structure = sanitizeArgumentStructure(record == null ? void 0 : record.argumentStructure);
-    if (!structure) {
-      new import_obsidian27.Notice('No argument map yet \u2014 run "Design \xB7 argument map" first: hypotheses are derived from its claims and assumptions.');
-      return;
-    }
-    const preState = await this.sessionStore.sectionEditState(file, "hypotheses");
-    const preMode = await this.artefactLanding.confirmArtefactOverwrite(file, "hypotheses", "hypotheses", { offerFork: "hypotheses" });
-    if (!preMode) return;
-    if (preMode === "fork") {
-      await this.artefactLanding.forkSessionFromRevision(file, "hypotheses", "hypotheses");
-      return;
-    }
-    const preapproved = { state: preState, mode: preMode };
-    const noteBody = await this.app.vault.read(file);
-    const context = this.buildHypothesesContext(session, structure, record, noteBody);
-    const step = await this.runAssistantStep({
-      flowLabel: "hypotheses",
-      loadingText: "Deriving falsifiable hypotheses from the argument map\u2026",
-      errorPrefix: "Hypothesis proposal failed",
-      run: (log) => proposeHypotheses(context, this.llmChatFn("design", log), log)
-    });
-    if (!step) return;
-    const { result } = step;
-    if (!result) {
-      new import_obsidian27.Notice("Could not derive hypotheses \u2014 try again once the argument map holds more to test.", 6e3);
-      return;
-    }
-    new HypothesisModal(this.app, result, (adopted) => {
-      if (!adopted) return;
-      void this.recordHypothesesInSession(file, adopted, preapproved);
-    }).open();
-  }
-  /**
-   * The session content the hypotheses proposer reads (AU_E111_S1): the question, the full
-   * argument map (nodes + relations), the OPEN beliefs, and the agenda's new questions with
-   * their method fit — quantitative-labelled questions are exactly where hypotheses belong.
-   * Since AU_E130_S2 also the per-sub-question search EXPECTATIONS, parsed from the note
-   * body (source of truth): candidates to rework into falsifiable hypotheses where the
-   * argument map bears them out.
-   */
-  buildHypothesesContext(session, structure, record, noteBody = "") {
-    var _a, _b;
-    const parts = [`Research question: ${sessionTopic(session)}`];
-    parts.push(`Argument map nodes:
-${structure.nodes.map((n) => `${n.id} (${n.kind}): ${n.text}`).join("\n")}`);
-    if (structure.edges.length > 0) {
-      parts.push(`Argument map relations:
-${structure.edges.map((e) => `${e.from} ${e.kind} ${e.to}`).join("\n")}`);
-    }
-    const open = session.beliefs.filter((b) => {
-      var _a2;
-      return ((_a2 = b.status) != null ? _a2 : "open") === "open";
-    });
-    if (open.length > 0) parts.push(`Open beliefs:
-${open.map((b, i) => `${i + 1}. ${b.claim}`).join("\n")}`);
-    const agenda = (_a = record == null ? void 0 : record.adoptions) == null ? void 0 : _a.agenda;
-    if (agenda && agenda.newQuestions.length > 0) {
-      const fits = new Map(((_b = agenda.methodFits) != null ? _b : []).map((f) => [f.question, f.method]));
-      const qs = agenda.newQuestions.map((q) => `- ${q}${fits.has(q) ? ` [method fit: ${fits.get(q)}]` : ""}`);
-      parts.push(`New research questions:
-${qs.join("\n")}`);
-    }
-    const expectations = parseSubquestionExpectations(noteBody);
-    if (expectations.length > 0) {
-      const lines2 = expectations.map((e) => `- ${e.query}
-  expectation: ${e.expectation}`);
-      parts.push(`Search expectations per sub-question (stated BEFORE the research ran):
-${lines2.join("\n")}`);
-    }
-    return parts.join("\n\n");
-  }
-  /**
-   * Record the adopted hypotheses (AU_E111_S1): section + graph-store record + logbook event.
-   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); the preapproved
-   * gate answer is the AU_E131_S3 safety net — re-asks only if the section changed during the run.
-   */
-  async recordHypothesesInSession(file, adopted, preapproved) {
-    const set = { ...adopted, adoptedAt: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10) };
-    await this.artefactLanding.landArtefact({
-      file,
-      section: "hypotheses",
-      label: "hypotheses",
-      ...preapproved ? { preapproved } : {},
-      body: buildHypothesesBody(set),
-      log: {
-        step: t().logbook.stepHypotheses,
-        summary: fmt(t().logbook.hypothesesAdopted, { n: set.hypotheses.length })
-      },
-      // Structured record next to the proza section (E68/E89 pattern). Latest set replaces
-      // the previous one as a whole. AU_E131_S2: upstream basis alongside, for staleness.
-      record: async (noteBody) => ({
-        hypotheses: set,
-        basedOn: { hypotheses: upstreamFingerprints(await noteBody(), "hypotheses") }
-      }),
-      notice: `Hypotheses recorded (${set.hypotheses.length}).`
-    });
-  }
-  /**
-   * Regenerate the `## Hypotheses` section from the stored graph-store record (AU_E111_S1) —
-   * no LLM call, same discipline as the argument/interview refreshes. Public: called from
-   * {@link registerCommands}.
-   */
-  async refreshHypotheses() {
-    var _a;
-    const file = this.activeNoteFile();
-    if (!file) {
-      new import_obsidian27.Notice("Open a session note to refresh its hypotheses.");
-      return;
-    }
-    const store = parseGraphStore(await this.vaultAdapters.vaultStore().read(this.vaultAdapters.graphStorePath()));
-    const set = sanitizeHypothesisSet((_a = artefactRecordForNote(store, file.path)) == null ? void 0 : _a.hypotheses);
-    if (!set) {
-      new import_obsidian27.Notice('No hypotheses recorded for this note yet \u2014 run "Propose hypotheses" first.');
-      return;
-    }
-    const writeMode = await this.artefactLanding.confirmArtefactOverwrite(file, "hypotheses", "hypotheses");
-    if (!writeMode || writeMode === "fork") return;
-    await this.artefactLanding.writeArtefact(file, "hypotheses", buildHypothesesBody(set), writeMode);
-    new import_obsidian27.Notice("Hypotheses regenerated from the stored record.");
-  }
-  /**
-   * Find validated scales for a construct (AU_E111_S2): a fixed psychometric query fan-out
-   * through the SAME search machinery as the research pipeline (OpenAlex + Semantic Scholar, RRF-fused),
-   * ranked toward measurement literature, landing in the SAME ResultsModal → citation-register
-   * route as any search. No LLM call. Public: called from {@link registerCommands}.
-   */
-  async findValidatedScalesFlow() {
-    var _a, _b;
-    const prefill = sessionTopic((_b = (_a = this.activeSession()) == null ? void 0 : _a.session) != null ? _b : null);
-    new ConstructModal(this.app, prefill, (construct) => {
-      if (!construct) return;
-      void (async () => {
-        const loading = new import_obsidian27.Notice(`Searching validated scales for "${construct}"\u2026`, 0);
-        try {
-          const result = await fanOutSearch(buildScaleQueries(construct), ["openalex", "semanticscholar"], {}, this.settings, this.httpRequest);
-          loading.hide();
-          const papers = rankInstrumentPapers(result.papers);
-          if (papers.length === 0) {
-            new import_obsidian27.Notice(`No measurement literature found for "${construct}" \u2014 try a sharper construct name.`);
-            return;
-          }
-          const ranked = { ...result, query: construct, papers };
-          new ResultsModal(
-            this.app,
-            ranked,
-            this.settings,
-            (chosen, format, action) => this.handleResult(ranked, chosen, format, action)
-          ).open();
-        } catch (e) {
-          loading.hide();
-          notifyError("Scales search", e);
-        }
-      })();
-    }).open();
-  }
-  /**
    * Export a pre-registration DRAFT (AU_E111_S3): deterministically assembled from what the
    * session already recorded — question/framing, the method-fit-labelled research questions,
    * the adopted hypotheses, and the agenda's designs and data needs — written next to the note
@@ -19616,153 +21040,6 @@ ${lines2.join("\n")}`);
    */
   async exportPreregistration() {
     await this.exportFlows.exportPreregistration();
-  }
-  // ── Connections section (AU_E103_S4) ──
-  /**
-   * Materialise the relations Parallax knows as REAL wikilinks in a generated `## Connections`
-   * footer section (AU_E103_S4 — rung 3 of the escalation ladder), so the (local) graph view on
-   * a project folder shows the project's shape: the follow-up lineage (parsed from the
-   * `## Context` sections), the project hub, and the other notes sharing register sources.
-   * Scope "note" refreshes the active session note; "project" every session note of its
-   * project. Same E87 bewerkings-respect as the argument section (a hand-edited section asks
-   * Replace/Keep); notes with nothing to link are skipped. One logbook event on the active note
-   * summarises the whole run. Public: called from {@link registerCommands}.
-   */
-  async refreshConnections(scope) {
-    var _a, _b, _c;
-    const active = this.activeSession();
-    if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then refresh its connections.');
-      return;
-    }
-    const { file, session } = active;
-    if (scope === "project" && !session.project) {
-      new import_obsidian27.Notice("This note does not belong to a project \u2014 refresh its connections per note instead.");
-      return;
-    }
-    const memberFiles = [];
-    if (session.project) {
-      for (const f of this.app.vault.getMarkdownFiles()) {
-        const s = parseSession((_a = this.app.metadataCache.getFileCache(f)) == null ? void 0 : _a.frontmatter);
-        if (s && sameProject(s.project, session.project)) memberFiles.push(f);
-      }
-    } else {
-      memberFiles.push(file);
-    }
-    const members = [];
-    for (const f of memberFiles) {
-      members.push({
-        path: f.path,
-        basename: f.basename,
-        contextBody: extractSection(await this.app.vault.cachedRead(f), "context")
-      });
-    }
-    const hubBasename = (_c = (_b = this.resolveActiveHubFile()) == null ? void 0 : _b.basename) != null ? _c : null;
-    const register = await this.loadRegisterSafely();
-    const targets = scope === "note" ? members.filter((m) => m.path === file.path) : members;
-    let updated = 0;
-    let skipped = 0;
-    for (const m of targets) {
-      const body = buildConnectionsBody({
-        notePath: m.path,
-        noteBasename: m.basename,
-        contextBody: m.contextBody,
-        hubBasename,
-        members,
-        register
-      });
-      if (!body) {
-        skipped++;
-        continue;
-      }
-      const target = this.app.vault.getAbstractFileByPath(m.path);
-      if (!(target instanceof import_obsidian27.TFile)) continue;
-      const writeMode = await this.artefactLanding.confirmArtefactOverwrite(target, "connections", "connections");
-      if (!writeMode || writeMode === "fork") continue;
-      await this.artefactLanding.writeArtefact(target, "connections", body, writeMode);
-      updated++;
-    }
-    if (updated === 0) {
-      new import_obsidian27.Notice("No connections to write yet \u2014 sessions link up once they share sources, a hub or a follow-up.");
-      return;
-    }
-    await this.sessionStore.logEvent(
-      file,
-      t().logbook.stepConnections,
-      fmt(t().logbook.connectionsRefreshed, { n: updated })
-    );
-    new import_obsidian27.Notice(`Connections refreshed in ${updated} note(s)${skipped > 0 ? ` (${skipped} without connections skipped)` : ""}.`);
-  }
-  // ── Research Design research assistant (E50) ──
-  /**
-   * Research Design research assistant (E50): begin where the synthesis ends and propose a research agenda
-   * (gaps, limitations, new questions, fitting designs, data needs) from the session's synthesis
-   * and still-open beliefs. The agenda lands as `## Onderzoeksagenda` (which the methodological
-   * account picks up); a chosen new question can open a fresh session, closing the loop.
-   * Public: called from {@link registerCommands}.
-   */
-  async generateResearchDesign() {
-    var _a, _b, _c, _d, _e;
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Proposing a research agenda needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    const active = this.activeSession();
-    if (!active) {
-      new import_obsidian27.Notice('No research session yet \u2014 run "Session \xB7 start research session" first, then propose the agenda.');
-      return;
-    }
-    const { file, session } = active;
-    let synthesis = shouldPreferLastResearch((_b = (_a = this.lastResearch) == null ? void 0 : _a.notePath) != null ? _b : null, file.path) ? (_e = (_d = (_c = this.lastResearch) == null ? void 0 : _c.summary) == null ? void 0 : _d.trim()) != null ? _e : "" : "";
-    if (!synthesis) synthesis = extractSection(await this.app.vault.read(file), "synthesis");
-    if (!synthesis) {
-      new import_obsidian27.Notice('No synthesis yet \u2014 run "Evidence \xB7 ask a question" in this session first, then propose the agenda.');
-      return;
-    }
-    const preState = await this.sessionStore.sectionEditState(file, "agenda");
-    const preMode = await this.artefactLanding.confirmArtefactOverwrite(file, "agenda", "research agenda", { offerFork: "agenda" });
-    if (!preMode) return;
-    if (preMode === "fork") {
-      await this.artefactLanding.forkSessionFromRevision(file, "agenda", "research agenda");
-      return;
-    }
-    const preapproved = { state: preState, mode: preMode };
-    const step = await this.runAssistantStep({
-      flowLabel: "research design",
-      loadingText: "Deriving a research agenda from the synthesis\u2026",
-      errorPrefix: "Research agenda failed",
-      run: (log) => proposeResearchDesign(synthesis, session.beliefs, this.llmChatFn("design", log), log)
-    });
-    if (!step) return;
-    const { result: agenda } = step;
-    if (!agenda) {
-      new import_obsidian27.Notice("Could not derive a research agenda from the synthesis.", 6e3);
-      return;
-    }
-    new ResearchDesignModal(this.app, agenda, (choice) => {
-      if (!choice) return;
-      void (async () => {
-        const outcome = await this.artefactLanding.landArtefact({
-          file,
-          section: "agenda",
-          label: "research agenda",
-          preapproved,
-          body: renderResearchAgenda(agenda),
-          log: {
-            step: t().headings.agenda,
-            summary: `${fmt(t().logbook.newQuestionsProposed, { n: agenda.newQuestions.length })}${choice.startSessionWith ? t().logbook.sessionStarted : ""}`
-          },
-          // AU_E89_S1 (export-pariteit) + AU_E131_S2: structured adoption + upstream basis.
-          record: async (noteBody) => ({
-            adoptions: { agenda: agendaAdoptionRecord(agenda, choice) },
-            basedOn: { agenda: upstreamFingerprints(await noteBody(), "agenda") }
-          }),
-          notice: "Research agenda added to the session."
-        });
-        if (outcome !== "landed") return;
-        if (choice.startSessionWith) this.startFollowUpResearch(choice.startSessionWith, file, session);
-      })();
-    }).open();
   }
   /**
    * Create a fresh research-session note seeded with `question` in `folderPath` (E50), optionally
@@ -19779,7 +21056,7 @@ ${lines2.join("\n")}`);
       const created = await this.sessionStore.createSessionNote(question, folderPath, project, opts);
       await this.refreshHubContentsForFolder(folderPath);
       await this.app.workspace.getLeaf(true).openFile(created);
-      if (!opts.silent) new import_obsidian27.Notice("New session created.");
+      if (!opts.silent) notify("New session created.");
       return created;
     } catch (e) {
       notifyError("Creating the new session", e);
@@ -19838,13 +21115,13 @@ ${lines2.join("\n")}`);
   async startHypothesisFollowUp(text, sourcePath) {
     var _a;
     const file = this.app.vault.getAbstractFileByPath(sourcePath);
-    if (!(file instanceof import_obsidian27.TFile)) {
-      new import_obsidian27.Notice("Could not find this hypothesis's source session.");
+    if (!(file instanceof import_obsidian30.TFile)) {
+      notify("Could not find this hypothesis's source session.");
       return;
     }
     const session = parseSession((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter);
     if (!session) {
-      new import_obsidian27.Notice("This hypothesis's source is no longer a research session.");
+      notify("This hypothesis's source is no longer a research session.");
       return;
     }
     this.startFollowUpResearch(text, file, session);
@@ -19856,10 +21133,11 @@ ${lines2.join("\n")}`);
     const file = this.activeNoteFile();
     const fm = file ? (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter : void 0;
     const moveEligible = !!file && file.extension === "md" && noteEligibleForProjectMove(fm, file.path);
-    const initialName = suggestProjectName(this.activeSelection(), (_b = file == null ? void 0 : file.basename) != null ? _b : null);
-    new ProjectModal(this.app, { moveEligible, initialName }, (submission) => {
+    const initialName = suggestProjectName((_b = file == null ? void 0 : file.basename) != null ? _b : null);
+    const initialQuestion = this.activeSelection();
+    new ProjectModal(this.app, { moveEligible, initialName, initialQuestion }, (submission) => {
       if (!submission) return;
-      void this.createProject(submission.name, submission.objective, submission.moveNote);
+      void this.createProject(submission.name, submission.objective, submission.moveNote, submission.question);
     }).open();
   }
   /**
@@ -19869,23 +21147,35 @@ ${lines2.join("\n")}`);
    * was started from into the new folder — the moved note stays open (not the hub), since it's
    * what the writer was actually working in.
    */
-  async createProject(name, objective = "", moveNote = false) {
-    const folder = (0, import_obsidian27.normalizePath)(safeFileName(name).trim() || "Project");
+  async createProject(name, objective = "", moveNote = false, question = "") {
+    var _a;
+    const folder = (0, import_obsidian30.normalizePath)(safeFileName(name).trim() || "Project");
     try {
       if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
-      const hubPath = (0, import_obsidian27.normalizePath)(`${folder}/${folder}${t().project.hubFileSuffix}.md`);
+      const hubPath = (0, import_obsidian30.normalizePath)(`${folder}/${folder}${t().project.hubFileSuffix}.md`);
       if (this.app.vault.getAbstractFileByPath(hubPath)) {
-        new import_obsidian27.Notice("This project already exists.");
+        notify("This project already exists.");
         return;
       }
       const hub = await this.app.vault.create(hubPath, renderProjectHub(name, objective));
       const moved = moveNote ? await this.moveNoteIntoProject(name, folder) : null;
+      if (moved) await this.sessionStore.stampSessionFrontMatter(moved, question, name);
+      const firstSession = !moved && question ? await this.sessionStore.createSessionNote(question, folder, name) : null;
       await this.writeHubContents(hub, folder);
-      await this.app.workspace.getLeaf(false).openFile(moved != null ? moved : hub);
-      new import_obsidian27.Notice(moved ? `Project "${name}" created \u2014 "${moved.basename}" moved in.` : `Project "${name}" created.`);
+      await openFileInMainArea(this.app, (_a = moved != null ? moved : firstSession) != null ? _a : hub);
+      notify(this.projectCreatedMessage(name, moved, firstSession));
     } catch (e) {
       notifyError("Creating the project", e);
     }
+  }
+  /**
+   * The Notice after a project was created (AU_E146_S1): it names what happened to the note you
+   * started from, so the "always a session" promise is visible instead of implied.
+   */
+  projectCreatedMessage(name, moved, firstSession) {
+    if (moved) return `Project "${name}" created \u2014 "${moved.basename}" moved in as its first research session.`;
+    if (firstSession) return `Project "${name}" created \u2014 first research session "${firstSession.basename}" started.`;
+    return `Project "${name}" created \u2014 add your first question with "Question \xB7 start in this project (new session note)".`;
   }
   /**
    * S2 (AU_E86_S2): move the ACTIVE note into the just-created project's `folder`, link-safe via
@@ -19901,9 +21191,9 @@ ${lines2.join("\n")}`);
     if (!file || file.extension !== "md") return null;
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
     if (!noteEligibleForProjectMove(fm, file.path)) return null;
-    const newPath = (0, import_obsidian27.normalizePath)(`${folder}/${file.name}`);
+    const newPath = (0, import_obsidian30.normalizePath)(`${folder}/${file.name}`);
     if (this.app.vault.getAbstractFileByPath(newPath)) {
-      new import_obsidian27.Notice(`A note named "${file.name}" already exists in "${projectName}" \u2014 kept "${file.basename}" where it was.`, 6e3);
+      notify(`A note named "${file.name}" already exists in "${projectName}" \u2014 kept "${file.basename}" where it was.`, 6e3);
       return null;
     }
     await this.sessionStore.moveNoteIntoProject(file, newPath, projectName);
@@ -19911,18 +21201,16 @@ ${lines2.join("\n")}`);
   }
   /** Add a new research question (session) to the active project (from its hub or a member note). Public: called from {@link registerCommands}. */
   newProjectSession() {
-    var _a, _b;
+    var _a;
     const file = this.activeNoteFile();
     if (!file) {
-      new import_obsidian27.Notice("Open a project note or a session within the project.");
+      notify("Open a project note or a session within the project.");
       return;
     }
     const fm = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
-    const hub = parseProjectHub(fm);
-    const session = parseSession(fm);
-    const projectId = hub ? resolveProjectId(hub, file.basename) : (_b = session == null ? void 0 : session.project) != null ? _b : "";
+    const projectId = projectIdForNote(fm, file.path, file.basename);
     if (!projectId) {
-      new import_obsidian27.Notice("This note doesn't belong to a project \u2014 start a research project first.");
+      notify("This note doesn't belong to a project \u2014 start a research project first.");
       return;
     }
     const folder = file.parent && file.parent.path !== "/" ? file.parent.path : "";
@@ -19941,101 +21229,6 @@ ${lines2.join("\n")}`);
         hint,
         this.searchRephrase()
       ).open();
-    });
-  }
-  /** Theory research assistant (E45): prompt for a question, then propose theoretical lenses. Public: called from {@link registerCommands}. */
-  promptAndTheory(initialQuery) {
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Proposing theoretical lenses needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    this.promptForQuestion({
-      seed: this.promptSeed(initialQuery),
-      onSubmit: (submission) => void this.runTheoryFlow(submission.query, submission.filters)
-    });
-  }
-  /**
-   * Run the Theory research assistant (E45): propose theoretical lenses (incl. eliminative), let the
-   * writer pick which to carry forward, then either run the research pipeline with those lenses as extra
-   * search terms or insert a theory block. Falls back gracefully when nothing usable comes out.
-   */
-  async runTheoryFlow(rawQuestion, filters) {
-    var _a;
-    const question = rawQuestion.trim();
-    if (!question) return;
-    const step = await this.runAssistantStep({
-      flowLabel: "theory",
-      loadingText: "Exploring theoretical lenses\u2026",
-      errorPrefix: "Theory lenses failed",
-      run: (log) => proposeTheory(question, this.llmChatFn("theory", log), log)
-    });
-    if (!step) return;
-    const { result } = step;
-    if (!result) {
-      new import_obsidian27.Notice("Could not propose theoretical lenses \u2014 feel free to start research directly.", 6e3);
-      return;
-    }
-    const session = this.activeSession();
-    const file = this.activeNoteFile();
-    const hub = !session && file ? parseProjectHub((_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter) : null;
-    const target = artefactLandingTarget(!!hub, !!session);
-    new TheoryModal(this.app, result, target, (choice) => {
-      if (!choice) return;
-      if (choice.action === "fan-out") {
-        void this.createLensSessions(question, result, choice);
-        return;
-      }
-      if (session && target === "session-note") {
-        void this.recordTheoryInSession(session.file, result, choice);
-      } else if (choice.action === "insert" || choice.action === "new-note") {
-        if (hub && file && target === "new-project-session") {
-          void this.recordTheoryAsNewProjectSession(file, hub, question, result, choice);
-        } else if (choice.action === "new-note") {
-          void (async () => {
-            const created = await this.newSessionNearActiveNote(question);
-            if (!created) return;
-            new import_obsidian27.Notice(`Theoretical lenses landed in a new session: "${created.basename}".`);
-            await this.recordTheoryInSession(created, result, choice);
-          })();
-        }
-      }
-      if (choice.action === "research") {
-        void this.runResearchFlow(question, filters, { extraSearchTerms: choice.lenses });
-      }
-    }).open();
-  }
-  /**
-   * S1 (AU_E87_S1): a Theory run from a project HUB (no active session) that resolves to
-   * "insert only" lands in a NEW session note in the project's folder, mirroring {@link
-   * recordExplorationAsNewProjectSession} via the shared {@link newSessionInHubProject} step.
-   */
-  async recordTheoryAsNewProjectSession(hubFile, hub, question, result, choice) {
-    const created = await this.newSessionInHubProject(hubFile, hub, question);
-    if (!created) return;
-    new import_obsidian27.Notice(`Theoretical lenses landed in a new session: "${created.basename}".`);
-    await this.recordTheoryInSession(created, result, choice);
-  }
-  /**
-   * Record the lenses artefact + chosen lenses into the active research session (E46_S2).
-   * The ritual lives in {@link ArtefactLanding.landArtefact} (AU_E134_S6); a "Keep" answer
-   * writes/records nothing — enforced there.
-   */
-  async recordTheoryInSession(file, result, choice) {
-    await this.artefactLanding.landArtefact({
-      file,
-      section: "lenses",
-      label: "theoretical lenses",
-      body: buildTheoryBody(result, choice),
-      beforeWrite: async () => {
-        if (choice.lenses.length > 0) await this.sessionStore.setSessionFields(file, { lenses: choice.lenses });
-      },
-      log: {
-        step: t().headings.lenses,
-        summary: `${fmt(t().logbook.lensesChosen, { n: choice.lenses.length })}${result.eliminated.length ? fmt(t().logbook.lensesEliminated, { n: result.eliminated.length }) : ""}`
-      },
-      // AU_E89_S1 (export-pariteit): record the structured adoption alongside the proza section.
-      record: () => ({ adoptions: { theory: theoryAdoptionRecord(result, choice) } }),
-      notice: "Theoretical lenses added to the session."
     });
   }
   /** Thin facade over the extracted controller (AU_E134_S7) — see {@link ResearchFlowController.run}. */
@@ -20073,95 +21266,16 @@ ${lines2.join("\n")}`);
    * BOTTOM of the active note — a predictable spot instead of the cursor (AU_E114_S3).
    */
   async insertSubQuestionsBlock(question, subs) {
-    const view = this.app.workspace.getActiveViewOfType(import_obsidian27.MarkdownView);
+    const view = this.app.workspace.getActiveViewOfType(import_obsidian30.MarkdownView);
     const file = view == null ? void 0 : view.file;
     if (!view || !file) {
-      new import_obsidian27.Notice("Open a note to land the sub-questions in.");
+      notify("Open a note to land the sub-questions in.");
       return;
     }
     await this.app.vault.process(file, (body) => `${body.replace(/\s+$/, "")}
 
 ${buildSubQuestionsBlock(question, subs)}`);
-    new import_obsidian27.Notice("Sub-questions added at the bottom of the note \u2014 refine them there, then start the research again.");
-  }
-  /**
-   * Deepen the selected finding(s) from the last research (E21). Matches the
-   * selection to the structured synthesis, grounds each deepening in that
-   * finding's own sources (anchored on their DOI/ISBN via the kept synthesis,
-   * not the note's `[n]` ordering) and the original question, then inserts the
-   * deeper text below the selection. Public: called from {@link registerCommands}.
-   */
-  async deepenSelection(editor) {
-    var _a, _b, _c;
-    if (!this.llm.isConfigured()) {
-      new import_obsidian27.Notice("Deepening a finding needs a configured LLM provider \u2014 set its API key (or URL) in the plugin settings first.");
-      return;
-    }
-    const last = this.lastResearch;
-    if (!(last == null ? void 0 : last.synthesis) || last.synthesis.findings.length === 0) {
-      new import_obsidian27.Notice('Run "Research a question" first \u2014 there are no structured findings to deepen yet.');
-      return;
-    }
-    const activeSessionNotePath = (_b = (_a = this.activeSession()) == null ? void 0 : _a.file.path) != null ? _b : null;
-    if (!canDeepenFromLastResearch(last.notePath, activeSessionNotePath)) {
-      new import_obsidian27.Notice("The last research belongs to another session \u2014 run research in this session first, then deepen.");
-      return;
-    }
-    const selection = editor.getSelection().trim();
-    if (!selection) {
-      new import_obsidian27.Notice("Select the finding(s) you want to deepen.");
-      return;
-    }
-    const findings = matchFindings(selection, last.synthesis.findings);
-    if (findings.length === 0) {
-      new import_obsidian27.Notice("No matching findings from the last research in the selection.");
-      return;
-    }
-    const loading = new import_obsidian27.Notice(`Deepening ${findings.length} finding(s)\u2026`, 0);
-    const allSources = buildNumberedSources(last.papers);
-    const chat = this.llmChatFn();
-    const fulltext = await this.researchFlow.fetchOaFulltext(last.papers, (_c = last.synthesis.readingRecommendations) != null ? _c : []);
-    const items = [];
-    try {
-      for (const finding of findings) {
-        const raw = (await deepenFinding(last.query, finding, allSources, chat, { fulltext })).trim();
-        if (raw) {
-          const basis = renderSourceBasis(resolveSources(finding, last.papers), fulltext);
-          items.push({ finding, text: linkifyCitations(raw, last.papers) + basis });
-        }
-      }
-    } catch (e) {
-      loading.hide();
-      notifyError("Deepening", e);
-      return;
-    }
-    loading.hide();
-    if (items.length === 0) {
-      new import_obsidian27.Notice("Could not deepen the selected finding(s).");
-      return;
-    }
-    editor.replaceSelection(assembleDeepened(selection, items));
-    const fulltextSourceCount = Object.values(fulltext).filter((e) => e.text).length;
-    this.patchAbstractsDisclosureInEditor(editor, fulltextSourceCount);
-    new import_obsidian27.Notice(`Inserted ${items.length} deepening(s).`);
-  }
-  /**
-   * Patch the "gebaseerd op abstracts" disclosure line already written earlier in the note
-   * (AU_E81_S2 AC2), once ≥1 of the just-fetched sources rests on full text. A plain line scan
-   * over the editor: the manual "Deepen selected finding(s)" command only replaces the
-   * SELECTION, not the whole note, so this is the one place still needing to reach a line
-   * written by an earlier "Research a question" run. A no-op when the count is 0 or the base
-   * line can't be found (e.g. reading tips were off for that run).
-   */
-  patchAbstractsDisclosureInEditor(editor, fulltextSourceCount) {
-    if (fulltextSourceCount <= 0) return;
-    for (let i = 0; i < editor.lineCount(); i++) {
-      const line = editor.getLine(i);
-      if (line.trim() === abstractsDisclosureBaseLine()) {
-        editor.replaceRange(abstractsDisclosureLine(fulltextSourceCount), { line: i, ch: 0 }, { line: i, ch: line.length });
-        return;
-      }
-    }
+    notify("Sub-questions added at the bottom of the note \u2014 refine them there, then start the research again.");
   }
   /**
    * A chat function bound to the active LLM provider (E53), routing the given step's model and
@@ -20181,118 +21295,10 @@ ${buildSubQuestionsBlock(question, subs)}`);
           reasoningEffort: resolveStepReasoning(this.settings, step),
           // AU_E110_S1: retry visibility for the research assistant flows (they show a single
           // persistent loading notice; without this a retry window looks frozen).
-          onRetry: (message) => new import_obsidian27.Notice(message, 4e3)
+          onRetry: (message) => notify(message, 4e3)
         }
       );
     };
-  }
-  async runSearch(query, filters) {
-    const provider = getProvider(this.settings.provider);
-    const loading = new import_obsidian27.Notice(`Searching ${provider.label}\u2026`, 0);
-    try {
-      const raw = await searchProviderWithRetry(this.settings.provider, query, filters, this.settings, this.httpRequest);
-      const result = { ...raw, papers: dedupeByTitleFingerprint(raw.papers) };
-      loading.hide();
-      if (result.papers.length === 0) {
-        new import_obsidian27.Notice("No papers found for that question.");
-        return;
-      }
-      new ResultsModal(
-        this.app,
-        result,
-        this.settings,
-        (papers, format, action) => this.handleResult(result, papers, format, action)
-      ).open();
-    } catch (e) {
-      loading.hide();
-      notifyError("Search", e);
-    }
-  }
-  /**
-   * Verify the selected papers, format them (with trust markers), then add or copy —
-   * and, on add, record them in the central register.
-   *
-   * AU_E114_S2: both actions carry ONLY the references (the question/summary/framework/
-   * sub-questions land in the session via the run itself, AU_E114_S1), each keeping its
-   * canonical [n] number. "Add" no longer pastes at the cursor: the references land in a
-   * `## References` section at the bottom of the note — created when missing, appended
-   * with dedupe (DOI/URL/title) when present.
-   */
-  async handleResult(result, papers, format, action) {
-    const loading = new import_obsidian27.Notice("Verifying references\u2026", 0);
-    await this.verifyPapers(papers);
-    loading.hide();
-    const entries = formatReferenceEntries(result, papers, {
-      format,
-      insertQuestionHeading: this.settings.insertQuestionHeading,
-      includeAbstract: this.settings.includeAbstract,
-      literatureNotePattern: this.settings.literatureNotePattern
-    });
-    if (action === "copy") {
-      await navigator.clipboard.writeText(joinReferenceBlocks(entries, format) + "\n");
-      new import_obsidian27.Notice("References copied to clipboard.");
-      return;
-    }
-    const view = this.app.workspace.getActiveViewOfType(import_obsidian27.MarkdownView);
-    const file = view == null ? void 0 : view.file;
-    if (!view || !file) {
-      new import_obsidian27.Notice("Open a note to add the references to.");
-      return;
-    }
-    const heading = t().references.heading;
-    const lead = this.settings.insertQuestionHeading && result.query ? `### ${result.query}` : void 0;
-    let added = 0;
-    let skipped = 0;
-    await this.app.vault.process(file, (body) => {
-      const r = appendReferencesSection(
-        body,
-        heading,
-        entries.map((e) => ({ key: referenceKey(e.paper), block: e.block })),
-        lead
-      );
-      added = r.added;
-      skipped = r.skipped;
-      return r.body;
-    });
-    new import_obsidian27.Notice(
-      added > 0 ? `${added} reference(s) added to "## ${heading}".${skipped > 0 ? ` ${skipped} already there.` : ""}` : "All selected references are already in the note."
-    );
-    if (added > 0 && this.settings.registerEnabled) {
-      await this.recordInRegister(papers, view);
-    }
-  }
-  /** Run the identifier check on each paper, attaching its outcome in place. */
-  async verifyPapers(papers) {
-    for (const paper of papers) {
-      const res = await verifyIdentifier(paper, this.httpRequest);
-      paper.verification = res.status;
-      if (res.doi) paper.doi = res.doi;
-      if (res.isbn) paper.isbn = res.isbn;
-    }
-  }
-  /** Upsert the inserted papers into the vault register and surface UC8 hints. */
-  async recordInRegister(papers, view) {
-    var _a;
-    const file = view.file;
-    if (!file) return;
-    const frontmatter = (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter;
-    const project = resolveProject(file.path, frontmatter);
-    const store = this.vaultAdapters.vaultStore();
-    try {
-      const register = await this.vaultAdapters.loadRegisterGuarded(store, this.settings.registerPath);
-      const { alreadyUsed } = recordPapers(register, papers, {
-        note: file.path,
-        project,
-        date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10)
-      });
-      await this.vaultAdapters.backupBeforeOverwrite(store, this.settings.registerPath);
-      await saveRegister(store, this.settings.registerPath, register);
-      if (alreadyUsed.length > 0) {
-        new import_obsidian27.Notice(formatAlreadyUsed(alreadyUsed), 8e3);
-      }
-    } catch (e) {
-      notifyError("Updating the citation register", e);
-    }
   }
   // ── Register slices (UC6/UC7/UC9) ──
   /** UC7 — bibliography for the active note's project; see {@link ExportFlows.sliceBibliography}. Public: called from {@link registerCommands}. */
@@ -20310,152 +21316,6 @@ ${buildSubQuestionsBlock(question, subs)}`);
   /** BibTeX export of the whole register (E2); see {@link ExportFlows.sliceBibtex}. Public: called from {@link registerCommands}. */
   async sliceBibtex() {
     await this.exportFlows.sliceBibtex();
-  }
-  /**
-   * Read the owner's `.bib` library (AU_E100_S2) — the import side of the file
-   * interface. Re-reads the file every call (the `.bib` stays the source of
-   * truth; no copy is kept), so a Better BibTeX auto-export is picked up by
-   * simply running this again. Read-only: the file is never written. Public:
-   * called from {@link registerCommands}; the result is also cached on the
-   * plugin for flows that offer library sources.
-   */
-  async refreshLibrary() {
-    const path = this.settings.libraryPath.trim();
-    if (!path) {
-      new import_obsidian27.Notice("Set a .bib library path in the plugin settings first.");
-      return null;
-    }
-    const raw = await this.vaultAdapters.vaultStore().read((0, import_obsidian27.normalizePath)(path));
-    if (raw === null) {
-      new import_obsidian27.Notice(`Library file not found: ${path}`);
-      return null;
-    }
-    const result = loadLibrary(raw);
-    this.library = result;
-    const skipped = result.skipped > 0 ? ` (${result.skipped} entr${result.skipped === 1 ? "y" : "ies"} skipped)` : "";
-    new import_obsidian27.Notice(`Library: ${result.entries.length} sources read from ${path}${skipped}.`);
-    return result;
-  }
-  /**
-   * Read the `.bib` library without user-facing notices (shared by the picker
-   * and the update commands). Returns null when no path is set or the file is
-   * missing — callers decide how to tell the user.
-   */
-  async readLibraryQuiet() {
-    const path = this.settings.libraryPath.trim();
-    if (!path) return null;
-    const raw = await this.vaultAdapters.vaultStore().read((0, import_obsidian27.normalizePath)(path));
-    if (raw === null) return null;
-    const result = loadLibrary(raw);
-    this.library = result;
-    return result;
-  }
-  /**
-   * Insert a citation from the owner's `.bib` library (AU_E104_S1): fuzzy-pick
-   * an entry, render it with the regular citation formatter and record it in
-   * the register — same route as a search insert, no network needed. Public:
-   * called from {@link registerCommands}.
-   */
-  async insertCitationFromLibrary() {
-    var _a;
-    if (!this.settings.libraryPath.trim()) {
-      new import_obsidian27.Notice("Set a .bib library path in the plugin settings first.");
-      return;
-    }
-    const library = (_a = this.library) != null ? _a : await this.readLibraryQuiet();
-    if (!library) {
-      new import_obsidian27.Notice(`Library file not found: ${this.settings.libraryPath.trim()}`);
-      return;
-    }
-    if (library.entries.length === 0) {
-      new import_obsidian27.Notice("Your .bib library has no usable entries.");
-      return;
-    }
-    new LibraryPickerModal(this.app, library.entries, (entry) => {
-      void this.insertLibraryEntry(entry);
-    }).open();
-  }
-  async insertLibraryEntry(entry) {
-    const view = this.app.workspace.getActiveViewOfType(import_obsidian27.MarkdownView);
-    if (!view) {
-      new import_obsidian27.Notice("Open a note to insert references into.");
-      return;
-    }
-    const paper = entry.paper;
-    const markdown = formatResult({ query: "", papers: [paper], raw: null }, [paper], {
-      format: this.settings.defaultFormat,
-      insertQuestionHeading: false,
-      includeAbstract: this.settings.includeAbstract,
-      literatureNotePattern: this.settings.literatureNotePattern
-    });
-    view.editor.replaceSelection(markdown);
-    if (this.settings.registerEnabled) await this.recordInRegister([paper], view);
-  }
-  /**
-   * Update register references from the `.bib` library (AU_E104_S2), scoped to
-   * the active note or its project. The library file is re-read (it stays the
-   * source of truth), the plan is shown before anything is written — no silent
-   * overwrites — and the result lands as a logbook event. Owner-confirmed
-   * (`verified`) records keep their fields. Public: called from
-   * {@link registerCommands}.
-   */
-  async updateReferencesFromLibrary(scope) {
-    var _a;
-    if (!this.settings.libraryPath.trim()) {
-      new import_obsidian27.Notice("Set a .bib library path in the plugin settings first.");
-      return;
-    }
-    const file = this.activeNoteFile();
-    if (!file) {
-      new import_obsidian27.Notice("Open a note first.");
-      return;
-    }
-    const library = await this.readLibraryQuiet();
-    if (!library) {
-      new import_obsidian27.Notice(`Library file not found: ${this.settings.libraryPath.trim()}`);
-      return;
-    }
-    let updateScope;
-    let scopeLabel;
-    if (scope === "note") {
-      updateScope = { notes: /* @__PURE__ */ new Set([file.path]) };
-      scopeLabel = file.basename;
-    } else {
-      const project = resolveProject(file.path, (_a = this.app.metadataCache.getFileCache(file)) == null ? void 0 : _a.frontmatter);
-      if (!project) {
-        new import_obsidian27.Notice("This note does not belong to a project.");
-        return;
-      }
-      updateScope = { project };
-      scopeLabel = project;
-    }
-    const store = this.vaultAdapters.vaultStore();
-    const register = await this.vaultAdapters.loadRegisterGuarded(store, this.settings.registerPath);
-    const plan = buildLibraryUpdatePlan(register, library.entries, updateScope);
-    if (plan.matched === 0) {
-      new import_obsidian27.Notice("No register references in this scope match your library.");
-      return;
-    }
-    if (plan.changes.length === 0) {
-      new import_obsidian27.Notice(`Up to date: ${plan.matched} reference(s) already match your library.`);
-      return;
-    }
-    const confirmed = await new Promise((resolve) => {
-      new ConfirmModal(
-        this.app,
-        `Update ${plan.changes.length} field(s) from your library?`,
-        `Scope: ${scopeLabel}
-${formatUpdatePreview(plan)}`,
-        { confirmText: "Update", cancelText: "Cancel" },
-        resolve
-      ).open();
-    });
-    if (!confirmed) return;
-    const touched = applyLibraryUpdatePlan(register, plan);
-    await this.vaultAdapters.backupBeforeOverwrite(store, this.settings.registerPath);
-    await saveRegister(store, this.settings.registerPath, register);
-    await this.sessionStore.logEvent(file, t().logbook.stepLibrary, fmt(t().logbook.libraryUpdated, { n: touched }));
-    new import_obsidian27.Notice(`Updated ${touched} reference(s) from your library.`);
   }
   async loadRegisterSafely() {
     return loadRegister(this.vaultAdapters.vaultStore(), this.settings.registerPath);

@@ -1,6 +1,6 @@
 # Parallax — Research Thinking
 
-**Think sharper before you search, weigh the evidence you find, and keep a trail of *why* you concluded what you concluded — in your own notes, in your own words.**
+**Sharpen your thinking before you search, weigh the evidence you find, and keep a trail of *why* you concluded what you concluded — in your own notes, in your own words.**
 
 You know the feeling: forty papers read, a conclusion reached — and six months later you can't reconstruct why you dismissed the alternative. Or worse: an AI summarised it all so smoothly that you're no longer sure the thinking was ever yours.
 

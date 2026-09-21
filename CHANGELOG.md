@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.33.1]
+
+**One sentence, said properly.** The opening line of the README and the forum post now reads *Sharpen your thinking before you search*; "think sharper" read as advertising copy rather than English. No change to the plugin itself beyond its version number.
+
+*What we would like to hear from you:* nothing new this time; the questions from 0.33.0 about the settings search and the Advanced page still stand. Tell us at [github.com/maxonamission/obsidian-parallax/issues](https://github.com/maxonamission/obsidian-parallax/issues).
+
 ## [0.33.0]
 
 **Requires Obsidian 1.13 or newer.** Parallax now uses Obsidian's rebuilt settings panel: every setting is declared to Obsidian rather than drawn by the plugin, so they show up in the settings search (type "embeddings" or "register" in the search field and you land on the row), and the panel behaves like every other tab. If you are on an older Obsidian, this update will not install; stay on 0.32.0 until you upgrade.

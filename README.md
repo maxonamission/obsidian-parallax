@@ -82,7 +82,7 @@ backend of ours.
 Manual: copy `main.js`, `manifest.json`, `styles.css` from the latest
 [release](../../releases) into `.obsidian/plugins/consensus-research/`.
 
-Works on desktop and mobile (Obsidian 1.5.0+).
+Works on desktop and mobile (Obsidian 1.13.0+).
 
 ## Settings that matter
 

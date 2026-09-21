@@ -389,50 +389,11 @@
 	color: var(--text-normal);
 }
 
-/* Accordion settings sections (AU_E117_S1; shared pattern:
-   codebase-standards/docs/obsidian-settings-patroon.md). */
-.consensus-settings-section {
-	border-top: 1px solid var(--background-modifier-border);
-}
-
-.consensus-settings-summary {
-	cursor: pointer;
-	padding: 0.6em 0;
-	font-weight: var(--font-semibold);
-}
-
-.consensus-settings-badge {
-	margin-left: 0.6em;
+/* Declarative settings tab (AU_E139_S2): the former section badge is now a status row per
+   group, shown only while its needs-attention predicate returns a reason. */
+.consensus-settings-attention .setting-item-name {
 	color: var(--text-warning);
 	font-size: var(--font-smaller);
-	font-weight: var(--font-normal);
-}
-
-/* Output-mode sub-group (AU_E119_S1): the two toggles governed by Public/Academic sit
-   indented under the mode dropdown; when the mode forces them on, dim them unmistakably
-   (Obsidian's setDisabled blocks interaction but barely dims). */
-.consensus-settings-subgroup {
-	margin-left: 1.2em;
-	padding-left: 0.8em;
-	border-left: 2px solid var(--background-modifier-border);
-}
-
-.consensus-settings-subgroup-forced {
-	opacity: 0.55;
-}
-
-/* "Uses AI"/"Uses embeddings" chips on settings rows (AU_E120_S2): subtle, next to the
-   setting name — marks options that only take effect when the AI pipeline runs. */
-.consensus-settings-chip {
-	margin-left: 0.5em;
-	padding: 0 0.45em;
-	border-radius: var(--radius-s);
-	background: var(--background-modifier-border);
-	color: var(--text-muted);
-	font-size: var(--font-smallest);
-	font-weight: var(--font-normal);
-	vertical-align: middle;
-	white-space: nowrap;
 }
 
 /* Step cards (AU_E121_S2): title, full-width description, then the Add section / Ask AI

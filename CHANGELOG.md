@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.33.0]
+
+**Requires Obsidian 1.13 or newer.** Parallax now uses Obsidian's rebuilt settings panel: every setting is declared to Obsidian rather than drawn by the plugin, so they show up in the settings search (type "embeddings" or "register" in the search field and you land on the row), and the panel behaves like every other tab. If you are on an older Obsidian, this update will not install; stay on 0.32.0 until you upgrade.
+
+**What changed on screen.** The collapsible sections are gone; the same six groups sit in the same order, with the advanced tuning on its own *Advanced* page (retrieval bounds, per-step model and reasoning overrides, the Consensus endpoint, debug logging and the feedback link). The warning badges that used to open a section now appear as a short warning line at the top of the group that needs you — a missing Consensus key, a provider without its key, a register without a path — and disappear when you fix it. The "Uses AI" chips became part of the group titles (*Pipeline phases (uses AI)*, *Synthesis (uses AI)*). Number fields now tell you inline when a value is out of range instead of silently ignoring it. The provider blocks, the embeddings rows and the forced-on toggles under Public/Academic behave as before; nothing you had configured is touched.
+
+*What we would like to hear from you:* does the settings search find what you look for, and is the Advanced page the right place for the tuning knobs, or do you miss something there that you used to see at a glance? Tell us at [github.com/maxonamission/obsidian-parallax/issues](https://github.com/maxonamission/obsidian-parallax/issues).
+
 ## [0.32.0]
 
 **Starting a project now starts your first question too.** Select the question in the note you are thinking in, run **Project · start**, and the dialog asks for the project name (suggested from the note's title), the objective, and — new — the research question, pre-filled with your selection. The note you started from becomes the project's first research session as it moves into the new folder, so the question you already wrote down is the one the assistants work on. Without a move, a first session note is created as soon as you give a question. Before this, the selection only ever became the folder name and the note itself stayed a plain note, which is also why the sidebar could greet a note it had just moved into a project with "this note doesn't belong to a project yet". That is fixed: a note inside a project folder is recognised as a member whatever its front-matter says.

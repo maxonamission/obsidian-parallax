@@ -980,7 +980,6 @@ var LLM_PROVIDERS = {
       name: "Mistral API key (embeddings)",
       desc: { text: "Get one at ", link: { text: "console.mistral.ai", href: "https://console.mistral.ai/" }, tail: SECRET_STORAGE_TAIL }
     },
-    embedBaseUrl: null,
     listModelsBlocker: (s) => s.mistralApiKey.trim() ? null : "Set a Mistral API key first.",
     attention: (s) => s.mistralApiKey.trim() ? null : "Mistral API key missing \u2014 runs fall back to search + fusion"
   },
@@ -1007,7 +1006,6 @@ var LLM_PROVIDERS = {
       name: "OpenAI API key (embeddings)",
       desc: { text: "Get one at ", link: { text: "platform.openai.com/api-keys", href: "https://platform.openai.com/api-keys" }, tail: SECRET_STORAGE_TAIL }
     },
-    embedBaseUrl: null,
     listModelsBlocker: (s) => s.openaiApiKey.trim() ? null : "Set an OpenAI API key first.",
     attention: (s) => s.openaiApiKey.trim() ? null : "OpenAI API key missing"
   },
@@ -1026,7 +1024,6 @@ var LLM_PROVIDERS = {
     // No embeddings API — the needs-attention hint below keeps the rerank degradation visible.
     embedModel: null,
     embedKeyRow: null,
-    embedBaseUrl: null,
     listModelsBlocker: (s) => s.anthropicApiKey.trim() ? null : "Set an Anthropic API key first.",
     attention: (s) => {
       if (!s.anthropicApiKey.trim()) return "Anthropic API key missing";
@@ -1057,7 +1054,6 @@ var LLM_PROVIDERS = {
       name: "Google API key (embeddings)",
       desc: { text: "Get one at ", link: { text: "aistudio.google.com/apikey", href: "https://aistudio.google.com/apikey" }, tail: SECRET_STORAGE_TAIL }
     },
-    embedBaseUrl: null,
     listModelsBlocker: (s) => s.googleApiKey.trim() ? null : "Set a Google API key first.",
     attention: (s) => s.googleApiKey.trim() ? null : "Google API key missing"
   },
@@ -1073,8 +1069,7 @@ var LLM_PROVIDERS = {
       name: "Base URL",
       desc: "Your local server's API root. On this desktop typically http://localhost:11434/v1 (Ollama) or http://localhost:1234/v1 (LM Studio). From a phone/tablet, use the machine's LAN address instead, e.g. http://192.168.1.20:11434/v1 \u2014 local is not desktop-only.",
       placeholder: "http://localhost:11434/v1",
-      fallback: "",
-      refreshesBadge: true
+      fallback: ""
     },
     keyRow: {
       name: "API key",
@@ -1090,14 +1085,6 @@ var LLM_PROVIDERS = {
       fromCatalog: false
     },
     embedKeyRow: null,
-    embedBaseUrl: {
-      field: "localBaseUrl",
-      name: "Base URL (embeddings)",
-      desc: "The local server's API root, e.g. http://localhost:11434/v1 \u2014 from mobile, use the machine's LAN address.",
-      placeholder: "http://localhost:11434/v1",
-      fallback: "",
-      refreshesBadge: true
-    },
     listModelsBlocker: (s) => s.localBaseUrl.trim() ? null : "Set the base URL first.",
     attention: (s) => {
       if (!s.localBaseUrl.trim()) return "Base URL missing";
@@ -1120,8 +1107,7 @@ var LLM_PROVIDERS = {
       name: "Base URL",
       desc: "The endpoint's API root, no trailing slash. Examples: https://api.openai.com/v1 (OpenAI), https://openrouter.ai/api/v1 (OpenRouter). For Ollama/LM Studio, prefer the Local provider above.",
       placeholder: "https://api.openai.com/v1",
-      fallback: "https://api.openai.com/v1",
-      refreshesBadge: false
+      fallback: "https://api.openai.com/v1"
     },
     keyRow: {
       name: "API key",
@@ -1137,14 +1123,6 @@ var LLM_PROVIDERS = {
       fromCatalog: false
     },
     embedKeyRow: null,
-    embedBaseUrl: {
-      field: "openaiCompatBaseUrl",
-      name: "Base URL (embeddings)",
-      desc: "The custom endpoint's API root; its optional API key is shared with the Custom chat config.",
-      placeholder: "https://api.openai.com/v1",
-      fallback: "https://api.openai.com/v1",
-      refreshesBadge: false
-    },
     listModelsBlocker: () => "The custom provider uses free-text model names.",
     attention: (s) => isOpenAiCompatConfigured(s) ? null : "Chat model missing"
   }
@@ -6866,6 +6844,78 @@ function citationRegisterAttention(settings) {
   return null;
 }
 
+// src/settings.ts
+var DEFAULT_SETTINGS = {
+  provider: "openalex",
+  artifactLanguage: "en",
+  openAlexMailto: "",
+  openAlexApiKey: "",
+  semanticScholarApiKey: "",
+  apiKey: "",
+  apiBaseUrl: "https://api.consensus.app/v1",
+  apiKeyHeader: "X-API-Key",
+  resultLimit: 20,
+  defaultFormat: "detailed",
+  insertQuestionHeading: true,
+  includeAbstract: true,
+  registerEnabled: true,
+  registerPath: ".consensus-research/citations.json",
+  libraryPath: "",
+  literatureNotePattern: "",
+  llmProvider: "mistral",
+  embedProvider: "",
+  mistralApiKey: "",
+  mistralChatModel: "mistral-small-latest",
+  mistralEmbedModel: "mistral-embed",
+  mistralModelCatalog: [],
+  openaiCompatBaseUrl: "https://api.openai.com/v1",
+  openaiCompatApiKey: "",
+  openaiCompatChatModel: "",
+  openaiCompatEmbedModel: "",
+  openaiApiKey: "",
+  openaiChatModel: "gpt-5-mini",
+  openaiEmbedModel: "text-embedding-3-small",
+  openaiModelCatalog: [],
+  anthropicApiKey: "",
+  anthropicChatModel: "claude-sonnet-4-5",
+  anthropicModelCatalog: [],
+  googleApiKey: "",
+  googleChatModel: "gemini-2.5-flash",
+  googleEmbedModel: "gemini-embedding-001",
+  googleModelCatalog: [],
+  localBaseUrl: "",
+  localApiKey: "",
+  localChatModel: "",
+  localEmbedModel: "",
+  localModelCatalog: [],
+  llmStepModels: {},
+  llmStepReasoning: {},
+  researchMaxResults: 20,
+  researchMinResults: 5,
+  researchKeepRatio: 0.5,
+  researchRelevanceKeep: 0.5,
+  researchFrameworkPhase: false,
+  researchCrossSector: true,
+  researchSubQuestionCheckpoint: false,
+  researchEvidenceWeighting: true,
+  researchClaimCalibration: true,
+  researchAutoDeepen: false,
+  researchReadingTips: true,
+  researchOutputMode: "balanced",
+  debugLogging: false,
+  // Secret-storage id references (AU_E139_S3) — empty until a key is stored; the paired
+  // `*ApiKey` values are resolved from `app.secretStorage` at load and never persisted.
+  apiKeySecretId: "",
+  openAlexApiKeySecretId: "",
+  semanticScholarApiKeySecretId: "",
+  mistralApiKeySecretId: "",
+  openaiApiKeySecretId: "",
+  anthropicApiKeySecretId: "",
+  googleApiKeySecretId: "",
+  localApiKeySecretId: "",
+  openaiCompatApiKeySecretId: ""
+};
+
 // src/secrets.ts
 var SECRET_FIELDS = [
   { valueField: "apiKey", idField: "apiKeySecretId", defaultId: "consensus-research-consensus-api" },
@@ -6932,6 +6982,9 @@ function stripSecretValues(settings) {
 }
 
 // src/settings-tab.ts
+function structuralSnapshot(s) {
+  return [s.llmProvider, s.embedProvider, s.researchOutputMode, JSON.stringify(s.llmStepModels)].join("\0");
+}
 function renderRowDesc(desc) {
   const link = desc.link;
   if (!link) return desc.text;
@@ -6941,34 +6994,705 @@ function renderRowDesc(desc) {
     if (desc.tail) f.appendText(desc.tail);
   });
 }
+var ATTENTION_ROW = { cls: "consensus-settings-attention" };
+function integerBetween(min, max) {
+  return (v) => Number.isInteger(v) && v >= min && v <= max ? void 0 : `Enter a whole number between ${min} and ${max}.`;
+}
+function asText(value) {
+  return typeof value === "string" ? value.trim() : "";
+}
+function fractionAboveZero(v) {
+  return Number.isFinite(v) && v > 0 && v <= 1 ? void 0 : "Enter a number above 0 and at most 1.";
+}
 var ParallaxSettingTab = class extends import_obsidian2.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
-    /** Session-scoped open/collapsed state: survives in-tab re-renders, reset in display(). */
-    this.openState = /* @__PURE__ */ new Map();
-    /** Rebuilt per render; lets predicate-input fields refresh badges without a re-render. */
-    this.badgeRefreshers = [];
     /**
      * Per-provider adapters for the UI (AU_E118_S1): unlike `plugin.llm` (which follows the
      * ACTIVE provider), this lets e.g. the embeddings-model row refresh the Mistral catalogue
      * while Anthropic is the chat provider.
      */
     this.providerRegistry = null;
+    /** Status rows currently on screen; re-read their reason on every {@link refreshDomState}. */
+    this.attentionRefreshers = [];
+    /** Re-entrancy guard for the "Move register & records" action (an action row cannot disable itself). */
+    this.moving = false;
+    /** Value stored when a text control is cleared, per field, from the descriptors (built once). */
+    this.clearedFallbacks = null;
     this.plugin = plugin;
   }
+  get settings() {
+    return this.plugin.settings;
+  }
+  // ---------------------------------------------------------------------------------------
+  // Value binding
+  // ---------------------------------------------------------------------------------------
+  getControlValue(key) {
+    const s = this.settings;
+    if ((key === "researchEvidenceWeighting" || key === "researchClaimCalibration") && this.outputModeForcesToggles()) {
+      return true;
+    }
+    return s[key];
+  }
+  async setControlValue(key, value) {
+    const before = structuralSnapshot(this.settings);
+    this.writeControl(key, value);
+    await this.plugin.saveSettings();
+    this.afterWrite(before);
+  }
+  /**
+   * The per-field normalisation the old `onChange` handlers applied, kept in one place so a
+   * declarative control cannot bypass it: trims, fallbacks for cleared fields, clamps.
+   */
+  writeControl(key, value) {
+    const s = this.settings;
+    switch (key) {
+      case "openAlexMailto":
+      case "libraryPath":
+      case "literatureNotePattern":
+      case "apiBaseUrl":
+      case "openaiCompatChatModel":
+        s[key] = asText(value);
+        return;
+      case "registerPath":
+        s[key] = asText(value) || DEFAULT_SETTINGS.registerPath;
+        return;
+      case "apiKeyHeader":
+        s[key] = asText(value) || DEFAULT_SETTINGS.apiKeyHeader;
+        return;
+      case "localBaseUrl":
+      case "openaiCompatBaseUrl":
+      case "openaiCompatEmbedModel":
+      case "localEmbedModel":
+      case "openaiEmbedModel":
+      case "googleEmbedModel":
+      case "mistralEmbedModel":
+        s[key] = asText(value) || this.clearedFallback(key);
+        return;
+      case "resultLimit":
+        s[key] = this.clampInt(value, 1, 20, this.settings.resultLimit);
+        return;
+      case "researchMaxResults":
+        s[key] = this.clampInt(value, 1, 60, this.settings.researchMaxResults);
+        return;
+      case "researchMinResults":
+        s[key] = this.clampInt(value, 1, 60, this.settings.researchMinResults);
+        return;
+      case "researchKeepRatio":
+      case "researchRelevanceKeep": {
+        const n = Number(value);
+        s[key] = Number.isFinite(n) && n > 0 && n <= 1 ? n : this.settings[key];
+        return;
+      }
+      case "artifactLanguage":
+        s[key] = value;
+        setArtifactLanguage(this.settings.artifactLanguage);
+        return;
+      default:
+        s[key] = value;
+    }
+  }
+  /** Whole number within [min, max]; an unparsable value keeps the current setting. */
+  clampInt(value, min, max, current) {
+    const n = Math.floor(Number(value));
+    if (!Number.isFinite(n)) return current;
+    return Math.min(Math.max(n, min), max);
+  }
+  /** The descriptor-declared fallback for a cleared base-URL or embedding-model field ("" when none). */
+  clearedFallback(field2) {
+    var _a;
+    if (!this.clearedFallbacks) {
+      this.clearedFallbacks = /* @__PURE__ */ new Map();
+      for (const id of LLM_PROVIDER_ORDER) {
+        const d = getLlmProvider(id);
+        if (d.baseUrl) this.clearedFallbacks.set(d.baseUrl.field, d.baseUrl.fallback);
+        if (d.embedModel) this.clearedFallbacks.set(d.embedModel.field, d.embedModel.fallback);
+      }
+    }
+    return (_a = this.clearedFallbacks.get(field2)) != null ? _a : "";
+  }
+  /**
+   * After any write: rebuild the definitions only when the rows themselves changed (provider
+   * switch, output mode, per-step overrides); otherwise re-evaluate the `visible`/`disabled`
+   * predicates and the status texts in place, which is what a keystroke needs.
+   */
+  afterWrite(before) {
+    if (structuralSnapshot(this.settings) !== before) this.update();
+    else this.refreshDomState();
+  }
+  /** Also refresh the status rows' reason text, which Obsidian's own pass does not know about. */
+  refreshDomState() {
+    super.refreshDomState();
+    for (const refresh of this.attentionRefreshers) refresh();
+  }
+  update() {
+    this.attentionRefreshers = [];
+    super.update();
+  }
+  outputModeForcesToggles() {
+    return this.settings.researchOutputMode !== "balanced";
+  }
+  // ---------------------------------------------------------------------------------------
+  // Definitions
+  // ---------------------------------------------------------------------------------------
+  getSettingDefinitions() {
+    return [
+      this.searchSourcesGroup(),
+      this.aiResearchGroup(),
+      this.pipelinePhasesGroup(),
+      this.synthesisGroup(),
+      this.outputLanguageGroup(),
+      this.citationRegisterGroup(),
+      this.advancedPage()
+    ];
+  }
+  /**
+   * The former section badge: a status row that only shows while the group's pure predicate
+   * returns a reason. `visible` handles show/hide; the reason text (it varies per provider) is
+   * re-read by {@link refreshDomState}, so a flipped reason never rebuilds the tab.
+   */
+  attentionRow(predicate) {
+    return {
+      name: "Needs attention",
+      searchable: false,
+      visible: () => predicate(this.settings) !== null,
+      render: (setting) => {
+        const refresh = () => {
+          var _a;
+          setting.setName(`\u26A0 ${(_a = predicate(this.settings)) != null ? _a : ""}`);
+        };
+        setting.setClass(ATTENTION_ROW.cls);
+        refresh();
+        this.attentionRefreshers.push(refresh);
+        return () => {
+          this.attentionRefreshers = this.attentionRefreshers.filter((r) => r !== refresh);
+        };
+      }
+    };
+  }
+  /** A secret-storage API-key row (AU_E139_S3) as a `render` definition. */
+  secretRow(name, desc, field2, visible) {
+    return {
+      name,
+      desc,
+      visible,
+      render: (setting) => this.addSecretComponent(setting, field2)
+    };
+  }
+  searchSourcesGroup() {
+    return {
+      type: "group",
+      heading: "Search sources",
+      items: [
+        this.attentionRow(searchSourcesAttention),
+        {
+          name: "Search provider",
+          desc: 'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 run research" command always combines OpenAlex + Semantic Scholar, regardless of this choice. OpenAlex and Semantic Scholar cost nothing and work without any setup; the contact e-mail and keys below only raise your daily allowance, they never change which provider runs. Consensus is the one paid source.',
+          control: {
+            type: "dropdown",
+            key: "provider",
+            options: Object.fromEntries(SEARCH_PROVIDER_ORDER.map((id) => [id, providerOptionLabel(id)]))
+          }
+        },
+        // OpenAlex contact e-mail and the Semantic Scholar key are shown always — both
+        // sources are used by "Evidence · run research", not only when selected above.
+        {
+          name: "Contact e-mail (OpenAlex)",
+          desc: `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Evidence \xB7 run research". Not sent anywhere else.`,
+          control: { type: "text", key: "openAlexMailto", placeholder: "you@example.com" }
+        },
+        this.secretRow(
+          "OpenAlex API key",
+          renderRowDesc({
+            text: "Optional \u2014 works without one, but the anonymous daily allowance is tiny (about ten searches); a free key raises it to roughly a thousand per day. Create one at ",
+            link: { text: "openalex.org/settings/api", href: "https://openalex.org/settings/api" },
+            tail: `${SECRET_STORAGE_TAIL} Sent only to OpenAlex.`
+          }),
+          SECRET_FIELD_BY_VALUE.openAlexApiKey
+        ),
+        this.secretRow(
+          "Semantic Scholar API key",
+          renderRowDesc({
+            text: 'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 run research". Request at ',
+            link: { text: "semanticscholar.org/product/api", href: "https://www.semanticscholar.org/product/api#api-key-form" },
+            tail: SECRET_STORAGE_TAIL
+          }),
+          SECRET_FIELD_BY_VALUE.semanticScholarApiKey
+        ),
+        this.secretRow(
+          "Consensus API key",
+          renderRowDesc({
+            text: "Only needed for the Consensus provider, which is a paid service \u2014 the other two sources need no key at all. Request access at ",
+            link: { text: "consensus.app/home/api", href: "https://consensus.app/home/api/" },
+            tail: SECRET_STORAGE_TAIL
+          }),
+          SECRET_FIELD_BY_VALUE.apiKey
+        )
+      ]
+    };
+  }
+  aiResearchGroup() {
+    const items = [
+      this.attentionRow(aiResearchAttention),
+      // LLM provider choice (AU_E77_S3 — E5; named providers AU_E118_S1): the seam behind
+      // "modelagnostisch". Each provider's own config rows follow, gated by `visible`.
+      {
+        name: "LLM provider",
+        desc: 'Which backend powers the AI research pipeline (decomposition, synthesis, deepening and the research assistants). "Local" targets an Ollama/LM Studio server; "Custom" any other OpenAI-compatible endpoint. Only the workbench steps tagged "Requires AI" use this configuration \u2014 search, the citation register, the library and exports work without it.',
+        control: {
+          type: "dropdown",
+          key: "llmProvider",
+          options: Object.fromEntries(LLM_PROVIDER_ORDER.map((id) => [id, getLlmProvider(id).label]))
+        }
+      }
+    ];
+    for (const id of LLM_PROVIDER_ORDER) items.push(...this.llmProviderConfigRows(getLlmProvider(id)));
+    items.push({
+      name: "Embeddings provider",
+      desc: 'Which provider computes the rerank embeddings for "Evidence \xB7 run research". "Same as LLM provider" follows the choice above. Anthropic has no embeddings API \u2014 with Anthropic as LLM provider, pick one here or the rerank falls back to the fusion order.',
+      control: {
+        type: "dropdown",
+        key: "embedProvider",
+        options: {
+          "": "Same as LLM provider",
+          ...Object.fromEntries(LLM_EMBED_PROVIDER_ORDER.map((id) => [id, getLlmProvider(id).label]))
+        }
+      }
+    });
+    for (const id of LLM_PROVIDER_ORDER) items.push(...this.embedProviderRows(id));
+    return { type: "group", heading: "AI research (multi-source)", items };
+  }
+  /**
+   * One provider's config rows from its descriptor: endpoint root (Local/Custom), API key,
+   * chat model — visible only while it is the active LLM provider.
+   */
+  llmProviderConfigRows(descriptor) {
+    const active = () => this.settings.llmProvider === descriptor.id;
+    const rows = [];
+    if (descriptor.baseUrl) rows.push(this.baseUrlRow(descriptor.baseUrl, () => active() || this.embedsForOther(descriptor.id)));
+    if (descriptor.keyRow && descriptor.apiKeyField) {
+      rows.push(this.keyRow(descriptor.keyRow, SECRET_FIELD_BY_VALUE[descriptor.apiKeyField], active));
+    }
+    const freeText = descriptor.freeTextChatModel;
+    if (freeText) {
+      rows.push({
+        name: "Chat model",
+        desc: freeText.desc,
+        visible: active,
+        control: { type: "text", key: descriptor.chatModelField, placeholder: freeText.placeholder }
+      });
+    } else {
+      rows.push({
+        name: "Chat model",
+        desc: "The default model for every AI research step; per-step overrides under Advanced. Use the refresh button to load your account's live model list, or type a model id.",
+        visible: active,
+        render: (setting) => this.chatModelRow(setting, descriptor.id)
+      });
+    }
+    return rows;
+  }
+  /**
+   * The rows for one provider in its embeddings role: minimal credentials when it is NOT the
+   * chat provider (they are on screen nowhere else, AU_E118 review), plus its embedding-model
+   * row whenever it is the effective embeddings provider.
+   */
+  embedProviderRows(id) {
+    const descriptor = getLlmProvider(id);
+    const effective = () => resolveEmbedProviderId(this.settings) === id;
+    const rows = [];
+    if (descriptor.embedKeyRow && descriptor.apiKeyField) {
+      rows.push(this.keyRow(descriptor.embedKeyRow, SECRET_FIELD_BY_VALUE[descriptor.apiKeyField], () => this.embedsForOther(id)));
+    }
+    const spec = descriptor.embedModel;
+    if (!spec) return rows;
+    if (spec.fromCatalog) {
+      rows.push({
+        name: "Embedding model",
+        desc: spec.desc,
+        visible: effective,
+        render: (setting) => this.embedModelRow(setting, id)
+      });
+    } else {
+      rows.push({
+        name: "Embedding model",
+        desc: spec.desc,
+        visible: effective,
+        control: { type: "text", key: spec.field, placeholder: spec.placeholder }
+      });
+    }
+    return rows;
+  }
+  /** Whether `id` computes the embeddings while another provider is the chat provider. */
+  embedsForOther(id) {
+    return resolveEmbedProviderId(this.settings) === id && this.settings.llmProvider !== id;
+  }
+  /** A descriptor-driven endpoint-root row (Local/Custom). */
+  baseUrlRow(spec, visible) {
+    return {
+      name: spec.name,
+      desc: spec.desc,
+      visible,
+      control: { type: "text", key: spec.field, placeholder: spec.placeholder }
+    };
+  }
+  /** A descriptor-driven secret-storage API-key row. */
+  keyRow(spec, field2, visible) {
+    return this.secretRow(spec.name, renderRowDesc(spec.desc), field2, visible);
+  }
+  pipelinePhasesGroup() {
+    return {
+      type: "group",
+      heading: "Pipeline phases (uses AI)",
+      items: [
+        {
+          name: "Theoretical framework phase",
+          desc: 'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Frame \xB7 framework" command runs this regardless of this toggle.',
+          control: { type: "toggle", key: "researchFrameworkPhase" }
+        },
+        {
+          name: "Review sub-questions before searching",
+          desc: "After the question is split into sub-questions (and the framework, if on), pause to edit, add or remove them before the literature search runs. Editing here keeps source attribution accurate. You can also land the sub-questions in the note first and restart the research after refining them there.",
+          control: { type: "toggle", key: "researchSubQuestionCheckpoint" }
+        },
+        {
+          name: "Cross-sector evidence",
+          desc: 'When the topic evidence is thin within its own domain, also search analogous sectors (e.g. healthcare, public administration, education) and offer the hits as clearly-labelled transfer evidence. Only fires on thin evidence; the "Force cross-sector evidence" toggle in the Ask window runs it regardless.',
+          control: { type: "toggle", key: "researchCrossSector" }
+        }
+      ]
+    };
+  }
+  synthesisGroup() {
+    const forced = () => this.outputModeForcesToggles();
+    return {
+      type: "group",
+      heading: "Synthesis (uses AI)",
+      items: [
+        {
+          name: "Output mode",
+          desc: 'Balanced follows the two toggles below ("Weight evidence by study design" and "Calibrate claims"). Public and Academic switch both on and add their own steering: Public = practical and decisive, with a concrete decision rule per finding; Academic = cautious review-paper nuance, with an open-questions section.',
+          control: {
+            type: "dropdown",
+            key: "researchOutputMode",
+            options: {
+              balanced: "Balanced (use toggles)",
+              public: "Public (practical, safe)",
+              academic: "Academic (nuance, follow-ups)"
+            }
+          }
+        },
+        {
+          name: "Both toggles are forced on by the Public/Academic output mode",
+          desc: "Their stored values are kept; switch back to Balanced to use them again.",
+          searchable: false,
+          visible: forced
+        },
+        {
+          name: "Weight evidence by study design",
+          desc: "Tag each source by study design (review/meta-analysis > RCT > small study) and steer the synthesis to weight by it \u2014 claims resting only on small studies are flagged as hypothesis-forming, and the basis is shown next to each finding. On by default.",
+          control: { type: "toggle", key: "researchEvidenceWeighting", disabled: forced }
+        },
+        {
+          name: "Calibrate claims",
+          desc: "Steer the synthesis to avoid over-stating: hedge absolute claims, surface moderators and context-dependence, and keep distinct outcomes apart. On by default.",
+          control: { type: "toggle", key: "researchClaimCalibration", disabled: forced }
+        },
+        {
+          name: "Auto-deepen findings",
+          desc: 'After the synthesis, automatically add a deepening under each finding (specific numbers, methods, mechanisms) drawing on \u2014 and citing \u2014 the whole bibliography. Off by default; adds one LLM call per finding (a run with 6 findings adds 6 calls). The "Evidence \xB7 deepen finding" command works regardless. The usage summary after each run reports the total tokens spent.',
+          control: { type: "toggle", key: "researchAutoDeepen" }
+        },
+        {
+          name: "Reading recommendations",
+          desc: 'Add an "Aanrader om volledig te lezen" section: a short, prioritised shortlist of which sources are most worth reading in full (and why). The full texts are often paywalled, so fetching them is a separate manual step. On by default.',
+          control: { type: "toggle", key: "researchReadingTips" }
+        }
+      ]
+    };
+  }
+  outputLanguageGroup() {
+    return {
+      type: "group",
+      heading: "Output & language",
+      items: [
+        {
+          name: "Artifact language",
+          desc: "Language of the section headings, labels and methodological account the plugin writes into your notes. AI-written text follows the language of your question instead. Existing notes keep working when you switch.",
+          control: {
+            type: "dropdown",
+            key: "artifactLanguage",
+            options: Object.fromEntries(ARTIFACT_LANGUAGES.map((lang) => [lang, ARTIFACT_LANGUAGE_LABELS[lang]]))
+          }
+        },
+        {
+          name: "Default format",
+          desc: "How references are rendered when inserted into a note.",
+          control: {
+            type: "dropdown",
+            key: "defaultFormat",
+            options: { detailed: "Detailed (with abstracts)", compact: "Compact list", bibliography: "Bibliography" }
+          }
+        },
+        {
+          name: "Insert question as heading",
+          desc: "Prepend the research question as an H3 above the references.",
+          control: { type: "toggle", key: "insertQuestionHeading" }
+        },
+        {
+          name: "Include abstracts",
+          desc: "Show the abstract under each paper in the detailed format.",
+          control: { type: "toggle", key: "includeAbstract" }
+        },
+        {
+          name: "Result limit",
+          desc: "How many papers to request (Consensus returns up to 20 per search).",
+          control: { type: "number", key: "resultLimit", min: 1, max: 20, step: 1, validate: integerBetween(1, 20) }
+        }
+      ]
+    };
+  }
+  citationRegisterGroup() {
+    return {
+      type: "group",
+      heading: "Citation register & library",
+      items: [
+        this.attentionRow(citationRegisterAttention),
+        {
+          name: "Keep a citation register",
+          desc: "Record every inserted reference in a central JSON file, so you can see which sources recur across notes and projects.",
+          control: { type: "toggle", key: "registerEnabled" }
+        },
+        {
+          name: "Register file",
+          desc: "Vault-relative path of the register JSON. The research records (research-graph.json) live in the same folder. \u26A0 Obsidian Sync does NOT sync hidden folders (names starting with a dot) \u2014 with the default .consensus-research/ location, the register and records stay per-device while your notes do sync. Pick a visible folder (e.g. Parallax/citations.json) and use the move action below to have them travel along.",
+          control: { type: "text", key: "registerPath", placeholder: DEFAULT_SETTINGS.registerPath }
+        },
+        // AU_E133_S2: one-click migration — moves the register + research records to the
+        // path configured above (folder created; existing targets are never overwritten).
+        {
+          name: "Move register & records to the configured folder",
+          desc: "Moves citations.json, research-graph.json and its backup from their current folder to the folder of the path configured above. Nothing is overwritten \u2014 a file that already exists at the target is skipped and reported.",
+          action: () => void this.moveStore()
+        },
+        {
+          name: "Library file (.bib)",
+          desc: 'Optional. Vault-relative path of your own BibTeX library \u2014 for example a Zotero Better BibTeX auto-export. Parallax only reads it (the file stays yours). Commands: "Library \xB7 insert citation" (fuzzy picker), "Library \xB7 update references (note / project)" (with a preview before anything changes) and "Library \xB7 read .bib library" (reload). Leave empty to turn this off.',
+          control: { type: "text", key: "libraryPath", placeholder: "references/library.bib" }
+        },
+        // AU_E141_S3 — links to the literature notes of whichever tool owns your library.
+        {
+          name: "Literature note links",
+          desc: "Optional. If another plugin keeps a note per reference (ZotLit, or any tool that writes one note per Zotero item), Parallax can link sources to those notes \u2014 so your library shows up in Obsidian's graph. Enter the naming pattern your template produces, with {{citekey}} where the key goes, for example @{{citekey}} or Literature/@{{citekey}}. Links only appear for sources that match your .bib library, and a note that does not exist is simply an unresolved link. Leave empty to turn this off.",
+          control: { type: "text", key: "literatureNotePattern", placeholder: "@{{citekey}}" }
+        }
+      ]
+    };
+  }
+  async moveStore() {
+    if (this.moving) return;
+    this.moving = true;
+    try {
+      const result = await this.plugin.migrateStoreTo(this.settings.registerPath);
+      notify(
+        result.moved.length > 0 ? `Moved: ${result.moved.join(", ")}.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}` : `Nothing to move.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}`,
+        8e3
+      );
+    } catch (e) {
+      notify(`Move failed: ${e instanceof Error ? e.message : String(e)}`, 8e3);
+    } finally {
+      this.moving = false;
+    }
+  }
+  // Advanced (former tier 3): retrieval tuning, per-step overrides, endpoint override,
+  // diagnostics — a sub-page with one group per former sub-heading (AU_E139_S1 decision).
+  advancedPage() {
+    return {
+      type: "page",
+      name: "Advanced",
+      desc: "Retrieval tuning, per-step model and reasoning overrides, the Consensus endpoint and diagnostics.",
+      items: [
+        {
+          type: "group",
+          heading: "Multi-source search: how many papers to keep",
+          items: [
+            {
+              name: "Max results",
+              desc: 'Upper bound on how many reranked papers "Evidence \xB7 run research" returns. The selection is weighted, so this is just the ceiling.',
+              control: { type: "number", key: "researchMaxResults", min: 1, max: 60, step: 1, validate: integerBetween(1, 60) }
+            },
+            {
+              name: "Min results",
+              desc: "Lower bound \u2014 always keep at least this many, even if scores are low.",
+              control: { type: "number", key: "researchMinResults", min: 1, max: 60, step: 1, validate: integerBetween(1, 60) }
+            },
+            {
+              name: "Keep ratio",
+              desc: "Weighted cutoff (0\u20131): keep papers scoring at least this fraction of the top result. Lower = more inclusive; clamped by min/max.",
+              control: { type: "number", key: "researchKeepRatio", min: 0, max: 1, step: "any", validate: fractionAboveZero }
+            },
+            {
+              name: "Relevance keep",
+              desc: "Uses embeddings. Topicality gate (0\u20131): keep this fraction of candidates ranked by semantic match to the question, dropping the least-on-topic tail before the weighted cutoff. Lower = stricter (less noise); 1 = off. Protected by the min bound.",
+              control: { type: "number", key: "researchRelevanceKeep", min: 0, max: 1, step: "any", validate: fractionAboveZero }
+            }
+          ]
+        },
+        this.stepModelGroup(),
+        this.stepReasoningGroup(),
+        {
+          type: "group",
+          heading: "Consensus endpoint",
+          items: [
+            {
+              name: "API base URL",
+              desc: "Override only if Consensus changes the endpoint or version.",
+              control: { type: "text", key: "apiBaseUrl", placeholder: DEFAULT_SETTINGS.apiBaseUrl }
+            },
+            {
+              name: "API key header",
+              desc: "Header used to send the key. Default: X-API-Key.",
+              control: { type: "text", key: "apiKeyHeader", placeholder: DEFAULT_SETTINGS.apiKeyHeader }
+            }
+          ]
+        },
+        {
+          type: "group",
+          heading: "Diagnostics",
+          items: [
+            {
+              name: "Debug logging",
+              desc: `Write a "Parallax debug" note with what "Evidence \xB7 run research" did: your question, sub-questions, search queries, per-source result counts, the model name and token usage per LLM call, and \u2014 on a failure \u2014 the error and a short preview (up to 200 characters) of the model's raw response. API keys are never included (redacted). Handy on mobile, where the dev console is out of reach \u2014 but the note lives in your vault like any other, so it syncs and can be shared; turn it off or delete the note once you're done debugging.`,
+              control: { type: "toggle", key: "debugLogging" }
+            },
+            // AU_E147_S1: feedback channel — no telemetry, so this link is the only
+            // in-plugin pointer to the issue tracker.
+            {
+              name: "Feedback or a bug?",
+              desc: "Report a problem or an idea on GitHub. No usage data is collected or sent automatically.",
+              action: () => {
+                window.open("https://github.com/maxonamission/obsidian-parallax/issues", "_blank");
+              }
+            }
+          ]
+        }
+      ]
+    };
+  }
+  /**
+   * Per-step overrides (AU_E77_S2 — C3), namespaced per provider since AU_E118_S1: model ids
+   * don't transfer between providers, so each provider keeps its own map. Empty/absent entry
+   * = the provider's global chat model (resolved by resolveStepModel). The rows read the
+   * ACTIVE provider's catalogue, so a provider switch rebuilds them (structural snapshot).
+   */
+  stepModelGroup() {
+    const steps = [
+      ["synthesis", "Model \u2014 synthesis", "The graded answer; the step most worth a stronger model. Enable reasoning below for a thinking pass."],
+      ["deepen", "Model \u2014 deepen", "Per-finding deepening. Strong helps, but it runs once per finding \u2014 mind the cost with auto-deepen on."],
+      ["decompose", "Model \u2014 decompose", "Splitting the question into sub-questions. A cheaper model is usually fine here."],
+      ["framework", "Model \u2014 framework", "The theoretical-framework phase (construct, definition, dimensions)."],
+      ["crosssector", "Model \u2014 cross-sector", "The analogous-sector transfer step. A cheaper model is usually fine here."]
+    ];
+    return {
+      type: "group",
+      heading: "Per-step model overrides",
+      items: [
+        {
+          name: "How overrides work",
+          desc: "Overrides apply to the ACTIVE LLM provider; switching provider switches to that provider's own overrides. Empty = the provider's global chat model.",
+          searchable: false
+        },
+        ...steps.map(
+          ([step, name, desc]) => ({
+            name,
+            desc,
+            render: (setting) => this.stepModelRow(setting, step)
+          })
+        )
+      ]
+    };
+  }
+  stepModelRow(setting, step) {
+    const provider = this.settings.llmProvider;
+    const catalog = llmCatalog(this.settings, provider);
+    const chatModels = catalog.filter((m) => m.chat).map((m) => m.id);
+    this.modelDropdown(
+      setting,
+      chatModels,
+      catalog,
+      () => {
+        var _a, _b;
+        return (_b = (_a = this.settings.llmStepModels[provider]) == null ? void 0 : _a[step]) != null ? _b : "";
+      },
+      (v) => {
+        var _a;
+        const map = { ...(_a = this.settings.llmStepModels[provider]) != null ? _a : {} };
+        if (v) map[step] = v;
+        else delete map[step];
+        this.settings.llmStepModels = { ...this.settings.llmStepModels, [provider]: map };
+      },
+      "(use global chat model)"
+    );
+  }
+  stepReasoningGroup() {
+    const steps = [
+      ["synthesis", "Reasoning \u2014 synthesis", "The graded answer; the step most likely to benefit from a thinking pass."],
+      ["deepen", "Reasoning \u2014 deepen", "Per-finding deepening. Can help faithfulness, but runs once per finding \u2014 mind the cost."],
+      ["decompose", "Reasoning \u2014 decompose", "Splitting into sub-questions \u2014 usually straightforward; off is normally fine."],
+      ["framework", "Reasoning \u2014 framework", "The theoretical-framework phase \u2014 off is normally fine."],
+      ["crosssector", "Reasoning \u2014 cross-sector", "The analogous-sector transfer step \u2014 off is normally fine."]
+    ];
+    return {
+      type: "group",
+      heading: "Per-step reasoning effort",
+      items: [
+        {
+          name: "How reasoning effort works",
+          desc: "Let a step think before answering. Off by default; it helps synthesis (and deepen) most and is usually wasted tokens on the straightforward steps. The thinking is dropped from the output. Each dropdown offers only the levels the step's model supports (AU_E118_S6); if a model still rejects a level at call time, the call falls back to the cheapest level it does support (shown in the debug log).",
+          searchable: false
+        },
+        ...steps.map(
+          ([step, name, desc]) => ({
+            name,
+            desc,
+            render: (setting) => this.stepReasoningRow(setting, step)
+          })
+        )
+      ]
+    };
+  }
+  stepReasoningRow(setting, step) {
+    const provider = this.settings.llmProvider;
+    const catalog = llmCatalog(this.settings, provider);
+    setting.addDropdown((d) => {
+      const model = resolveStepModel(this.settings, step);
+      const entry = catalog.find((m) => m.id === model);
+      const efforts = [...reasoningEffortsForModel(provider, model, entry == null ? void 0 : entry.reasoning, this.plugin.llm.capabilities.reasoningEfforts)];
+      const saved = this.settings.llmStepReasoning[step] || "off";
+      if (!efforts.includes(saved)) efforts.push(saved);
+      for (const e of efforts) d.addOption(e, e === "off" ? "off (no reasoning)" : e);
+      d.setValue(saved).onChange(async (v) => {
+        if (v && v !== "off") this.settings.llmStepReasoning[step] = v;
+        else delete this.settings.llmStepReasoning[step];
+        await this.plugin.saveSettings();
+      });
+    });
+  }
+  // ---------------------------------------------------------------------------------------
+  // Imperative rows: secrets and live model catalogues
+  // ---------------------------------------------------------------------------------------
   registryFor(provider) {
     var _a;
-    (_a = this.providerRegistry) != null ? _a : this.providerRegistry = createLlmProviderRegistry(() => this.plugin.settings, this.plugin.httpRequest);
+    (_a = this.providerRegistry) != null ? _a : this.providerRegistry = createLlmProviderRegistry(() => this.settings, this.plugin.httpRequest);
     return this.providerRegistry[provider];
   }
   /** Pre-flight guidance for a model-list refresh, or null when the fetch can be tried. */
   listModelsBlocker(provider) {
-    return getLlmProvider(provider).listModelsBlocker(this.plugin.settings);
+    return getLlmProvider(provider).listModelsBlocker(this.settings);
   }
   /** Shared refresh button for a provider's model catalogue (disabled while loading). */
   catalogRefreshButton(setting, provider) {
     setting.addExtraButton(
-      (b) => b.setIcon("refresh-cw").setTooltip(llmCatalog(this.plugin.settings, provider).length > 0 ? "Refresh model list" : "Load model list").onClick(async () => {
+      (b) => b.setIcon("refresh-cw").setTooltip(llmCatalog(this.settings, provider).length > 0 ? "Refresh model list" : "Load model list").onClick(async () => {
         const blocker = this.listModelsBlocker(provider);
         if (blocker) {
           notify(blocker);
@@ -6977,10 +7701,10 @@ var ParallaxSettingTab = class extends import_obsidian2.PluginSettingTab {
         b.setDisabled(true);
         try {
           const models = await this.registryFor(provider).listModels();
-          setLlmCatalog(this.plugin.settings, provider, models);
+          setLlmCatalog(this.settings, provider, models);
           await this.plugin.saveSettings();
           notify(`Loaded ${models.length} model(s).`);
-          this.render();
+          this.update();
         } catch (e) {
           notify(`Could not load models: ${String(e)}`);
           b.setDisabled(false);
@@ -6988,389 +7712,77 @@ var ParallaxSettingTab = class extends import_obsidian2.PluginSettingTab {
       })
     );
   }
-  display() {
-    this.openState.clear();
-    this.render();
-  }
-  /**
-   * Full (re)render of the tab. Extracted from `display()` so in-tab refreshes (provider
-   * switch, model-catalogue reload) can re-render without calling the deprecated-typed
-   * `display()` entrypoint — Obsidian itself still invokes `display()` when opening the tab.
-   */
-  render() {
-    const { containerEl } = this;
-    containerEl.empty();
-    this.badgeRefreshers = [];
-    const sections = [
-      {
-        id: "search-sources",
-        title: "Search sources",
-        tier: 1,
-        needsAttention: () => searchSourcesAttention(this.plugin.settings),
-        render: (body) => this.renderSearchSources(body)
-      },
-      {
-        id: "ai-research",
-        title: "AI research (multi-source)",
-        tier: 1,
-        needsAttention: () => aiResearchAttention(this.plugin.settings),
-        render: (body) => this.renderAiResearch(body)
-      },
-      { id: "pipeline-phases", title: "Pipeline phases", tier: 2, render: (body) => this.renderPipelinePhases(body) },
-      { id: "synthesis", title: "Synthesis", tier: 2, render: (body) => this.renderSynthesis(body) },
-      { id: "output-language", title: "Output & language", tier: 2, render: (body) => this.renderOutputLanguage(body) },
-      {
-        id: "citation-register",
-        title: "Citation register & library",
-        tier: 2,
-        needsAttention: () => citationRegisterAttention(this.plugin.settings),
-        render: (body) => this.renderCitationRegister(body)
-      },
-      { id: "advanced", title: "Advanced", tier: 3, render: (body) => this.renderAdvanced(body) }
-    ];
-    for (const section of sections) this.renderSection(containerEl, section);
-  }
-  /** Render one collapsible section per the shared settings-accordion pattern. */
-  renderSection(containerEl, section) {
-    var _a, _b, _c;
-    const details = containerEl.createEl("details", { cls: "consensus-settings-section" });
-    const reason = (_b = (_a = section.needsAttention) == null ? void 0 : _a.call(section)) != null ? _b : null;
-    details.open = (_c = this.openState.get(section.id)) != null ? _c : section.tier !== 3 && reason !== null;
-    const summary = details.createEl("summary", { cls: "consensus-settings-summary" });
-    summary.createSpan({ text: section.title });
-    const badge = summary.createSpan({ cls: "consensus-settings-badge" });
-    const refreshBadge = () => {
-      var _a2, _b2;
-      const r = (_b2 = (_a2 = section.needsAttention) == null ? void 0 : _a2.call(section)) != null ? _b2 : null;
-      badge.setText(r ? `\u26A0 ${r}` : "");
-      badge.hidden = r === null;
-    };
-    refreshBadge();
-    this.badgeRefreshers.push(refreshBadge);
-    summary.addEventListener("click", () => this.openState.set(section.id, !details.open));
-    section.render(details);
-  }
-  /** Recompute the summary badges; called from fields the needsAttention predicates read. */
-  refreshBadges() {
-    for (const refresh of this.badgeRefreshers) refresh();
-  }
-  /**
-   * Subtle "Uses AI" / "Uses embeddings" chip on a setting's name (AU_E120_S2): marks the
-   * options that only have effect when the AI pipeline (or the embeddings rerank) runs, so
-   * the AI-free promise of the rest of the tab is visible per row.
-   */
-  markUses(setting, kind) {
-    setting.nameEl.createSpan({
-      cls: "consensus-settings-chip",
-      text: kind === "ai" ? "Uses AI" : "Uses embeddings"
-    });
-  }
-  renderSearchSources(containerEl) {
-    new import_obsidian2.Setting(containerEl).setName("Search provider").setDesc(
-      'Provider for the single-source "Evidence \xB7 quick search" command. The "Evidence \xB7 run research" command always combines OpenAlex + Semantic Scholar, regardless of this choice. OpenAlex and Semantic Scholar cost nothing and work without any setup; the contact e-mail and keys below only raise your daily allowance, they never change which provider runs. Consensus is the one paid source.'
-    ).addDropdown((d) => {
-      for (const id of SEARCH_PROVIDER_ORDER) d.addOption(id, providerOptionLabel(id));
-      d.setValue(this.plugin.settings.provider).onChange(async (v) => {
-        this.plugin.settings.provider = v;
-        await this.plugin.saveSettings();
-        this.refreshBadges();
-      });
-    });
-    new import_obsidian2.Setting(containerEl).setName("Contact e-mail (OpenAlex)").setDesc(
-      `Optional. Opts into OpenAlex's faster "polite pool" and avoids rate limits \u2014 used by single-source OpenAlex and by "Evidence \xB7 run research". Not sent anywhere else.`
-    ).addText(
-      (t2) => t2.setPlaceholder("you@example.com").setValue(this.plugin.settings.openAlexMailto).onChange(async (v) => {
-        this.plugin.settings.openAlexMailto = v.trim();
-        await this.plugin.saveSettings();
-      })
-    );
-    this.addSecretComponent(
-      new import_obsidian2.Setting(containerEl).setName("OpenAlex API key").setDesc(
-        createFragment((f) => {
-          f.appendText(
-            "Optional \u2014 works without one, but the anonymous daily allowance is tiny (about ten searches); a free key raises it to roughly a thousand per day. Create one at "
-          );
-          f.createEl("a", {
-            text: "openalex.org/settings/api",
-            href: "https://openalex.org/settings/api"
-          });
-          f.appendText(
-            ". Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced. Sent only to OpenAlex."
-          );
-        })
-      ),
-      SECRET_FIELD_BY_VALUE.openAlexApiKey
-    );
-    this.addSecretComponent(
-      new import_obsidian2.Setting(containerEl).setName("Semantic Scholar API key").setDesc(
-        createFragment((f) => {
-          f.appendText(
-            'Optional \u2014 works without one, but a free key raises the rate limit. Used by single-source Semantic Scholar and by "Evidence \xB7 run research". Request at '
-          );
-          f.createEl("a", {
-            text: "semanticscholar.org/product/api",
-            href: "https://www.semanticscholar.org/product/api#api-key-form"
-          });
-          f.appendText(
-            ". Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
-          );
-        })
-      ),
-      SECRET_FIELD_BY_VALUE.semanticScholarApiKey
-    );
-    this.addSecretComponent(
-      new import_obsidian2.Setting(containerEl).setName("Consensus API key").setDesc(
-        createFragment((f) => {
-          f.appendText(
-            "Only needed for the Consensus provider, which is a paid service \u2014 the other two sources need no key at all. Request access at "
-          );
-          f.createEl("a", {
-            text: "consensus.app/home/api",
-            href: "https://consensus.app/home/api/"
-          });
-          f.appendText(
-            ". Kept in Obsidian\u2019s secret storage on this device, not in your vault, so it does not sync \u2014 enter it once per device, and rotate it if it was previously synced."
-          );
-        })
-      ),
-      SECRET_FIELD_BY_VALUE.apiKey
-    );
-  }
-  renderOutputLanguage(containerEl) {
-    new import_obsidian2.Setting(containerEl).setName("Artifact language").setDesc(
-      "Language of the section headings, labels and methodological account the plugin writes into your notes. AI-written text follows the language of your question instead. Existing notes keep working when you switch."
-    ).addDropdown((d) => {
-      for (const lang of ARTIFACT_LANGUAGES) d.addOption(lang, ARTIFACT_LANGUAGE_LABELS[lang]);
-      d.setValue(this.plugin.settings.artifactLanguage).onChange(async (v) => {
-        this.plugin.settings.artifactLanguage = v;
-        setArtifactLanguage(this.plugin.settings.artifactLanguage);
-        await this.plugin.saveSettings();
-      });
-    });
-    new import_obsidian2.Setting(containerEl).setName("Default format").setDesc("How references are rendered when inserted into a note.").addDropdown((d) => {
-      d.addOption("detailed", "Detailed (with abstracts)").addOption("compact", "Compact list").addOption("bibliography", "Bibliography").setValue(this.plugin.settings.defaultFormat).onChange(async (v) => {
-        this.plugin.settings.defaultFormat = v;
-        await this.plugin.saveSettings();
-      });
-    });
-    new import_obsidian2.Setting(containerEl).setName("Insert question as heading").setDesc("Prepend the research question as an H3 above the references.").addToggle(
-      (t2) => t2.setValue(this.plugin.settings.insertQuestionHeading).onChange(async (v) => {
-        this.plugin.settings.insertQuestionHeading = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Include abstracts").setDesc("Show the abstract under each paper in the detailed format.").addToggle(
-      (t2) => t2.setValue(this.plugin.settings.includeAbstract).onChange(async (v) => {
-        this.plugin.settings.includeAbstract = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Result limit").setDesc("How many papers to request (Consensus returns up to 20 per search).").addText(
-      (t2) => t2.setValue(String(this.plugin.settings.resultLimit)).onChange(async (v) => {
-        const n = Number(v);
-        if (!Number.isNaN(n) && n > 0) {
-          this.plugin.settings.resultLimit = Math.min(n, 20);
-          await this.plugin.saveSettings();
-        }
-      })
-    );
-  }
-  renderCitationRegister(containerEl) {
-    new import_obsidian2.Setting(containerEl).setName("Keep a citation register").setDesc(
-      "Record every inserted reference in a central JSON file, so you can see which sources recur across notes and projects."
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.registerEnabled).onChange(async (v) => {
-        this.plugin.settings.registerEnabled = v;
-        await this.plugin.saveSettings();
-        this.refreshBadges();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Register file").setDesc(
-      "Vault-relative path of the register JSON. The research records (research-graph.json) live in the same folder. \u26A0 Obsidian Sync does NOT sync hidden folders (names starting with a dot) \u2014 with the default .consensus-research/ location, the register and records stay per-device while your notes do sync. Pick a visible folder (e.g. Parallax/citations.json) and use the move action below to have them travel along."
-    ).addText(
-      (t2) => t2.setPlaceholder(".consensus-research/citations.json").setValue(this.plugin.settings.registerPath).onChange(async (v) => {
-        this.plugin.settings.registerPath = v.trim() || ".consensus-research/citations.json";
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Move register & records to the configured folder").setDesc(
-      "Moves citations.json, research-graph.json and its backup from their current folder to the folder of the path configured above. Nothing is overwritten \u2014 a file that already exists at the target is skipped and reported."
-    ).addButton(
-      (b) => b.setButtonText("Move now").onClick(async () => {
-        b.setDisabled(true);
-        try {
-          const result = await this.plugin.migrateStoreTo(this.plugin.settings.registerPath);
-          notify(
-            result.moved.length > 0 ? `Moved: ${result.moved.join(", ")}.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}` : `Nothing to move.${result.skipped.length ? ` Skipped: ${result.skipped.join(", ")}.` : ""}`,
-            8e3
-          );
-        } catch (e) {
-          notify(`Move failed: ${e instanceof Error ? e.message : String(e)}`, 8e3);
-        } finally {
-          b.setDisabled(false);
-        }
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Library file (.bib)").setDesc(
-      'Optional. Vault-relative path of your own BibTeX library \u2014 for example a Zotero Better BibTeX auto-export. Parallax only reads it (the file stays yours). Commands: "Library \xB7 insert citation" (fuzzy picker), "Library \xB7 update references (note / project)" (with a preview before anything changes) and "Library \xB7 read .bib library" (reload). Leave empty to turn this off.'
-    ).addText(
-      (t2) => t2.setPlaceholder("references/library.bib").setValue(this.plugin.settings.libraryPath).onChange(async (v) => {
-        this.plugin.settings.libraryPath = v.trim();
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Literature note links").setDesc(
-      "Optional. If another plugin keeps a note per reference (ZotLit, or any tool that writes one note per Zotero item), Parallax can link sources to those notes \u2014 so your library shows up in Obsidian's graph. Enter the naming pattern your template produces, with {{citekey}} where the key goes, for example @{{citekey}} or Literature/@{{citekey}}. Links only appear for sources that match your .bib library, and a note that does not exist is simply an unresolved link. Leave empty to turn this off."
-    ).addText(
-      (t2) => t2.setPlaceholder("@{{citekey}}").setValue(this.plugin.settings.literatureNotePattern).onChange(async (v) => {
-        this.plugin.settings.literatureNotePattern = v.trim();
-        await this.plugin.saveSettings();
-      })
-    );
-  }
-  renderAiResearch(containerEl) {
-    new import_obsidian2.Setting(containerEl).setName("LLM provider").setDesc(
-      'Which backend powers the AI research pipeline (decomposition, synthesis, deepening and the research assistants). "Local" targets an Ollama/LM Studio server; "Custom" any other OpenAI-compatible endpoint. Only the workbench steps tagged "Requires AI" use this configuration \u2014 search, the citation register, the library and exports work without it.'
-    ).addDropdown((d) => {
-      for (const id of LLM_PROVIDER_ORDER) d.addOption(id, getLlmProvider(id).label);
-      d.setValue(this.plugin.settings.llmProvider).onChange(async (v) => {
-        this.plugin.settings.llmProvider = v;
-        await this.plugin.saveSettings();
-        this.render();
-      });
-    });
-    this.renderLlmProviderConfig(containerEl, getLlmProvider(this.plugin.settings.llmProvider));
-    new import_obsidian2.Setting(containerEl).setName("Embeddings provider").setDesc(
-      'Which provider computes the rerank embeddings for "Evidence \xB7 run research". "Same as LLM provider" follows the choice above. Anthropic has no embeddings API \u2014 with Anthropic as LLM provider, pick one here or the rerank falls back to the fusion order.'
-    ).addDropdown((d) => {
-      d.addOption("", "Same as LLM provider");
-      for (const id of LLM_EMBED_PROVIDER_ORDER) d.addOption(id, getLlmProvider(id).label);
-      d.setValue(this.plugin.settings.embedProvider).onChange(async (v) => {
-        this.plugin.settings.embedProvider = v;
-        await this.plugin.saveSettings();
-        this.render();
-      });
-    });
-    const effectiveEmbed = resolveEmbedProviderId(this.plugin.settings);
-    if (effectiveEmbed !== this.plugin.settings.llmProvider) this.renderEmbedProviderConfig(containerEl, effectiveEmbed);
-    this.embedModelRow(containerEl, effectiveEmbed);
-  }
-  /** Minimal credential rows for an embeddings provider that is NOT the chat provider. */
-  renderEmbedProviderConfig(containerEl, provider) {
-    const descriptor = getLlmProvider(provider);
-    if (descriptor.embedBaseUrl) this.baseUrlRow(containerEl, descriptor.embedBaseUrl);
-    if (descriptor.embedKeyRow) this.keyRow(containerEl, descriptor.embedKeyRow, descriptor);
-  }
-  /**
-   * Render one provider's config rows from its descriptor: endpoint root (Local/Custom),
-   * API key, chat model — the catalogue dropdown + refresh button, or a free-text field for
-   * an endpoint without a live catalogue.
-   */
-  renderLlmProviderConfig(containerEl, descriptor) {
-    if (descriptor.baseUrl) this.baseUrlRow(containerEl, descriptor.baseUrl);
-    if (descriptor.keyRow) this.keyRow(containerEl, descriptor.keyRow, descriptor);
-    const freeText = descriptor.freeTextChatModel;
-    if (!freeText) {
-      this.chatModelRow(containerEl, descriptor.id);
-      return;
-    }
-    new import_obsidian2.Setting(containerEl).setName("Chat model").setDesc(freeText.desc).addText(
-      (t2) => t2.setPlaceholder(freeText.placeholder).setValue(llmChatModel(this.plugin.settings, descriptor.id)).onChange(async (v) => {
-        setLlmChatModel(this.plugin.settings, descriptor.id, v.trim());
-        await this.plugin.saveSettings();
-        this.refreshBadges();
-      })
-    );
-  }
-  /** A descriptor-driven endpoint-root row (Local/Custom, chat or embeddings variant). */
-  baseUrlRow(containerEl, spec) {
-    new import_obsidian2.Setting(containerEl).setName(spec.name).setDesc(spec.desc).addText(
-      (t2) => t2.setPlaceholder(spec.placeholder).setValue(this.plugin.settings[spec.field]).onChange(async (v) => {
-        this.plugin.settings[spec.field] = v.trim() || spec.fallback;
-        await this.plugin.saveSettings();
-        if (spec.refreshesBadge) this.refreshBadges();
-      })
-    );
-  }
-  /** A descriptor-driven secret-storage API-key row; no-op for a provider without a key. */
-  keyRow(containerEl, spec, descriptor) {
-    if (!descriptor.apiKeyField) return;
-    const setting = new import_obsidian2.Setting(containerEl).setName(spec.name).setDesc(renderRowDesc(spec.desc));
-    this.addSecretComponent(setting, SECRET_FIELD_BY_VALUE[descriptor.apiKeyField]);
-  }
   /**
    * Attach a `SecretComponent` (Obsidian 1.11.4) to `setting` for one registry key (AU_E139_S3):
    * it manages the value in `app.secretStorage` and hands back only the secret id, which we
    * persist in `field.idField`. `onChange` keeps the in-memory `field.valueField` resolved so
-   * every provider/gate/badge path keeps reading `settings.*ApiKey` unchanged, then saves and
-   * refreshes the summary badges (a changed key can flip a needs-attention predicate — harmless
-   * for the keys that drive no badge). Uses `this.app.secretStorage`, not `this.plugin.app`.
+   * every provider/gate/predicate path keeps reading `settings.*ApiKey` unchanged, then saves
+   * and lets {@link afterWrite} pick up a flipped needs-attention reason.
    */
   addSecretComponent(setting, field2) {
     setting.addComponent(
-      (el) => new import_obsidian2.SecretComponent(this.app, el).setValue(this.plugin.settings[field2.idField]).onChange(async (id) => {
-        this.plugin.settings[field2.idField] = id;
-        this.plugin.settings[field2.valueField] = readSecret(id, this.app.secretStorage);
+      (el) => new import_obsidian2.SecretComponent(this.app, el).setValue(this.settings[field2.idField]).onChange(async (id) => {
+        const before = structuralSnapshot(this.settings);
+        this.settings[field2.idField] = id;
+        this.settings[field2.valueField] = readSecret(id, this.app.secretStorage);
         await this.plugin.saveSettings();
-        this.refreshBadges();
+        this.afterWrite(before);
       })
     );
   }
   /**
-   * The provider's global chat-model dropdown + a provider-aware "refresh model list" button
-   * (AU_E118_S1: moved out of Advanced — the model choice is a core setting, not tuning).
+   * The provider's global chat-model row: the catalogue dropdown when a list is loaded, a
+   * free-text field otherwise (so the provider stays configurable when the list can't be
+   * fetched, e.g. a local server that is down), plus the "refresh model list" button.
    */
-  chatModelRow(containerEl, provider) {
-    const catalog = llmCatalog(this.plugin.settings, provider);
+  chatModelRow(setting, provider) {
+    const catalog = llmCatalog(this.settings, provider);
     const chatModels = catalog.filter((m) => m.chat).map((m) => m.id);
-    const setting = new import_obsidian2.Setting(containerEl).setName("Chat model").setDesc(
-      catalog.length > 0 ? `The default model for every AI research step; per-step overrides under Advanced. ${catalog.length} model(s) loaded (\xB7 reasoning = supports a thinking pass) \u2014 refresh to update.` : "The default model for every AI research step; per-step overrides under Advanced. Use the refresh button to load your account's live model list, or type a model id."
-    );
+    if (catalog.length > 0) {
+      setting.setDesc(
+        `The default model for every AI research step; per-step overrides under Advanced. ${catalog.length} model(s) loaded (\xB7 reasoning = supports a thinking pass) \u2014 refresh to update.`
+      );
+    }
     if (chatModels.length > 0) {
-      this.modelDropdown(setting, chatModels, catalog, () => llmChatModel(this.plugin.settings, provider), (v) => {
-        if (v) {
-          setLlmChatModel(this.plugin.settings, provider, v);
-          this.refreshBadges();
-        }
-      }, llmChatModel(this.plugin.settings, provider) ? null : "\u2014 pick a model \u2014");
+      this.modelDropdown(
+        setting,
+        chatModels,
+        catalog,
+        () => llmChatModel(this.settings, provider),
+        (v) => {
+          if (v) setLlmChatModel(this.settings, provider, v);
+        },
+        llmChatModel(this.settings, provider) ? null : "\u2014 pick a model \u2014"
+      );
     } else {
       setting.addText(
-        (t2) => t2.setPlaceholder("model id").setValue(llmChatModel(this.plugin.settings, provider)).onChange(async (v) => {
-          setLlmChatModel(this.plugin.settings, provider, v.trim());
+        (t2) => t2.setPlaceholder("model id").setValue(llmChatModel(this.settings, provider)).onChange(async (v) => {
+          const before = structuralSnapshot(this.settings);
+          setLlmChatModel(this.settings, provider, v.trim());
           await this.plugin.saveSettings();
-          this.refreshBadges();
+          this.afterWrite(before);
         })
       );
     }
     this.catalogRefreshButton(setting, provider);
   }
-  /** The embedding-model row for the EFFECTIVE embeddings provider (below its dropdown). */
-  embedModelRow(containerEl, provider) {
+  /** The catalogue-backed embedding-model row (Mistral), with its own refresh button. */
+  embedModelRow(setting, provider) {
     const spec = getLlmProvider(provider).embedModel;
     if (!spec) return;
-    const s = this.plugin.settings;
-    const setting = new import_obsidian2.Setting(containerEl).setName("Embedding model").setDesc(spec.desc);
-    if (spec.fromCatalog) {
-      const catalog = llmCatalog(s, provider);
-      this.modelDropdown(
-        setting,
-        catalog.map((m) => m.id),
-        catalog,
-        () => s[spec.field],
-        (v) => {
-          s[spec.field] = v || spec.fallback;
-        },
-        null
-      );
-      this.catalogRefreshButton(setting, provider);
-      return;
-    }
-    setting.addText(
-      (t2) => t2.setPlaceholder(spec.placeholder).setValue(s[spec.field]).onChange(async (v) => {
-        s[spec.field] = v.trim() || spec.fallback;
-        await this.plugin.saveSettings();
-      })
+    const s = this.settings;
+    const catalog = llmCatalog(s, provider);
+    this.modelDropdown(
+      setting,
+      catalog.map((m) => m.id),
+      catalog,
+      () => s[spec.field],
+      (v) => {
+        s[spec.field] = v || spec.fallback;
+      },
+      null
     );
+    this.catalogRefreshButton(setting, provider);
   }
   /** Shared model dropdown: catalogue candidates + the saved value kept visible (E37). */
   modelDropdown(setting, candidates, catalog, get, set, globalOption) {
@@ -7384,257 +7796,17 @@ var ParallaxSettingTab = class extends import_obsidian2.PluginSettingTab {
       const cur = get();
       if (cur && !ids.includes(cur)) ids.push(cur);
       if (ids.length === 0) {
-        const fallback = cur || globalChatModel(this.plugin.settings);
+        const fallback = cur || globalChatModel(this.settings);
         if (fallback) ids.push(fallback);
       }
       for (const id of ids) d.addOption(id, labelFor(id));
       d.setValue(cur).onChange(async (v) => {
+        const before = structuralSnapshot(this.settings);
         set(v);
         await this.plugin.saveSettings();
-        this.refreshBadges();
+        this.afterWrite(before);
       });
     });
-  }
-  // Pipeline phases — optional stages of the research process (in run order).
-  renderPipelinePhases(containerEl) {
-    new import_obsidian2.Setting(containerEl).setName("Theoretical framework phase").then((s) => this.markUses(s, "ai")).setDesc(
-      'Before the topic search, distil a short theoretical framework (central construct \u2192 working definition \u2192 dimensions from seminal sources) and let its dimensions steer the sub-questions. The "Frame \xB7 framework" command runs this regardless of this toggle.'
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.researchFrameworkPhase).onChange(async (v) => {
-        this.plugin.settings.researchFrameworkPhase = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Review sub-questions before searching").then((s) => this.markUses(s, "ai")).setDesc(
-      "After the question is split into sub-questions (and the framework, if on), pause to edit, add or remove them before the literature search runs. Editing here keeps source attribution accurate. You can also land the sub-questions in the note first and restart the research after refining them there."
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.researchSubQuestionCheckpoint).onChange(async (v) => {
-        this.plugin.settings.researchSubQuestionCheckpoint = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Cross-sector evidence").then((s) => this.markUses(s, "ai")).setDesc(
-      'When the topic evidence is thin within its own domain, also search analogous sectors (e.g. healthcare, public administration, education) and offer the hits as clearly-labelled transfer evidence. Only fires on thin evidence; the "Force cross-sector evidence" toggle in the Ask window runs it regardless.'
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.researchCrossSector).onChange(async (v) => {
-        this.plugin.settings.researchCrossSector = v;
-        await this.plugin.saveSettings();
-      })
-    );
-  }
-  // Synthesis quality — how the final answer is written.
-  renderSynthesis(containerEl) {
-    new import_obsidian2.Setting(containerEl).setName("Output mode").then((s) => this.markUses(s, "ai")).setDesc(
-      'Balanced follows the two grouped toggles below ("Weight evidence by study design" and "Calibrate claims"). Public and Academic switch both on and add their own steering: Public = practical and decisive, with a concrete decision rule per finding; Academic = cautious review-paper nuance, with an open-questions section.'
-    ).addDropdown(
-      (d) => d.addOption("balanced", "Balanced (use toggles)").addOption("public", "Public (practical, safe)").addOption("academic", "Academic (nuance, follow-ups)").setValue(this.plugin.settings.researchOutputMode).onChange(async (v) => {
-        this.plugin.settings.researchOutputMode = v;
-        await this.plugin.saveSettings();
-        this.render();
-      })
-    );
-    const modeForcesToggles = this.plugin.settings.researchOutputMode !== "balanced";
-    const forcedNote = modeForcesToggles ? " Forced on by the Public/Academic output mode." : "";
-    const governed = containerEl.createDiv({
-      cls: "consensus-settings-subgroup" + (modeForcesToggles ? " consensus-settings-subgroup-forced" : "")
-    });
-    new import_obsidian2.Setting(governed).setName("Weight evidence by study design").then((s) => this.markUses(s, "ai")).setDesc(
-      "Tag each source by study design (review/meta-analysis > RCT > small study) and steer the synthesis to weight by it \u2014 claims resting only on small studies are flagged as hypothesis-forming, and the basis is shown next to each finding. On by default." + forcedNote
-    ).addToggle(
-      (t2) => t2.setValue(modeForcesToggles ? true : this.plugin.settings.researchEvidenceWeighting).setDisabled(modeForcesToggles).onChange(async (v) => {
-        this.plugin.settings.researchEvidenceWeighting = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(governed).setName("Calibrate claims").then((s) => this.markUses(s, "ai")).setDesc(
-      "Steer the synthesis to avoid over-stating: hedge absolute claims, surface moderators and context-dependence, and keep distinct outcomes apart. On by default." + forcedNote
-    ).addToggle(
-      (t2) => t2.setValue(modeForcesToggles ? true : this.plugin.settings.researchClaimCalibration).setDisabled(modeForcesToggles).onChange(async (v) => {
-        this.plugin.settings.researchClaimCalibration = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Auto-deepen findings").then((s) => this.markUses(s, "ai")).setDesc(
-      'After the synthesis, automatically add a deepening under each finding (specific numbers, methods, mechanisms) drawing on \u2014 and citing \u2014 the whole bibliography. Off by default; adds one LLM call per finding (a run with 6 findings adds 6 calls). The "Evidence \xB7 deepen finding" command works regardless. The usage summary after each run reports the total tokens spent.'
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.researchAutoDeepen).onChange(async (v) => {
-        this.plugin.settings.researchAutoDeepen = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(containerEl).setName("Reading recommendations").then((s) => this.markUses(s, "ai")).setDesc(
-      'Add an "Aanrader om volledig te lezen" section: a short, prioritised shortlist of which sources are most worth reading in full (and why). The full texts are often paywalled, so fetching them is a separate manual step. On by default.'
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.researchReadingTips).onChange(async (v) => {
-        this.plugin.settings.researchReadingTips = v;
-        await this.plugin.saveSettings();
-      })
-    );
-  }
-  // Advanced: retrieval tuning, models, and endpoint overrides. The former standalone
-  // <details> element is absorbed into the shared accordion (tier 3: never auto-opens).
-  renderAdvanced(adv) {
-    new import_obsidian2.Setting(adv).setName("Multi-source search: how many papers to keep").setHeading();
-    new import_obsidian2.Setting(adv).setName("Max results").setDesc('Upper bound on how many reranked papers "Evidence \xB7 run research" returns. The selection is weighted, so this is just the ceiling.').addText(
-      (t2) => t2.setValue(String(this.plugin.settings.researchMaxResults)).onChange(async (v) => {
-        const n = Number(v);
-        if (!Number.isNaN(n) && n > 0) {
-          this.plugin.settings.researchMaxResults = Math.min(Math.floor(n), 60);
-          await this.plugin.saveSettings();
-        }
-      })
-    );
-    new import_obsidian2.Setting(adv).setName("Min results").setDesc("Lower bound \u2014 always keep at least this many, even if scores are low.").addText(
-      (t2) => t2.setValue(String(this.plugin.settings.researchMinResults)).onChange(async (v) => {
-        const n = Number(v);
-        if (!Number.isNaN(n) && n > 0) {
-          this.plugin.settings.researchMinResults = Math.min(Math.floor(n), 60);
-          await this.plugin.saveSettings();
-        }
-      })
-    );
-    new import_obsidian2.Setting(adv).setName("Keep ratio").setDesc("Weighted cutoff (0\u20131): keep papers scoring at least this fraction of the top result. Lower = more inclusive; clamped by min/max.").addText(
-      (t2) => t2.setValue(String(this.plugin.settings.researchKeepRatio)).onChange(async (v) => {
-        const n = Number(v);
-        if (!Number.isNaN(n) && n > 0 && n <= 1) {
-          this.plugin.settings.researchKeepRatio = n;
-          await this.plugin.saveSettings();
-        }
-      })
-    );
-    new import_obsidian2.Setting(adv).setName("Relevance keep").then((s) => this.markUses(s, "embeddings")).setDesc("Topicality gate (0\u20131): keep this fraction of candidates ranked by semantic match to the question, dropping the least-on-topic tail before the weighted cutoff. Lower = stricter (less noise); 1 = off. Protected by the min bound.").addText(
-      (t2) => t2.setValue(String(this.plugin.settings.researchRelevanceKeep)).onChange(async (v) => {
-        const n = Number(v);
-        if (!Number.isNaN(n) && n > 0 && n <= 1) {
-          this.plugin.settings.researchRelevanceKeep = n;
-          await this.plugin.saveSettings();
-        }
-      })
-    );
-    new import_obsidian2.Setting(adv).setName("Debug logging").setDesc(
-      `Write a "Parallax debug" note with what "Evidence \xB7 run research" did: your question, sub-questions, search queries, per-source result counts, the model name and token usage per LLM call, and \u2014 on a failure \u2014 the error and a short preview (up to 200 characters) of the model's raw response. API keys are never included (redacted). Handy on mobile, where the dev console is out of reach \u2014 but the note lives in your vault like any other, so it syncs and can be shared; turn it off or delete the note once you're done debugging.`
-    ).addToggle(
-      (t2) => t2.setValue(this.plugin.settings.debugLogging).onChange(async (v) => {
-        this.plugin.settings.debugLogging = v;
-        await this.plugin.saveSettings();
-      })
-    );
-    const provider = this.plugin.settings.llmProvider;
-    const catalog = llmCatalog(this.plugin.settings, provider);
-    const chatModels = catalog.filter((m) => m.chat).map((m) => m.id);
-    new import_obsidian2.Setting(adv).setName("Per-step model overrides").setHeading();
-    new import_obsidian2.Setting(adv).setDesc(
-      "Overrides apply to the ACTIVE LLM provider; switching provider switches to that provider's own overrides. Empty = the provider's global chat model."
-    );
-    const stepModel = (step, name, desc) => {
-      this.modelDropdown(
-        new import_obsidian2.Setting(adv).setName(name).setDesc(desc),
-        chatModels,
-        catalog,
-        () => {
-          var _a, _b;
-          return (_b = (_a = this.plugin.settings.llmStepModels[provider]) == null ? void 0 : _a[step]) != null ? _b : "";
-        },
-        (v) => {
-          var _a;
-          const map = { ...(_a = this.plugin.settings.llmStepModels[provider]) != null ? _a : {} };
-          if (v) map[step] = v;
-          else delete map[step];
-          this.plugin.settings.llmStepModels = { ...this.plugin.settings.llmStepModels, [provider]: map };
-        },
-        "(use global chat model)"
-      );
-    };
-    stepModel(
-      "synthesis",
-      "Model \u2014 synthesis",
-      "The graded answer; the step most worth a stronger model. Enable reasoning below for a thinking pass."
-    );
-    stepModel(
-      "deepen",
-      "Model \u2014 deepen",
-      "Per-finding deepening. Strong helps, but it runs once per finding \u2014 mind the cost with auto-deepen on."
-    );
-    stepModel(
-      "decompose",
-      "Model \u2014 decompose",
-      "Splitting the question into sub-questions. A cheaper model is usually fine here."
-    );
-    stepModel(
-      "framework",
-      "Model \u2014 framework",
-      "The theoretical-framework phase (construct, definition, dimensions)."
-    );
-    stepModel(
-      "crosssector",
-      "Model \u2014 cross-sector",
-      "The analogous-sector transfer step. A cheaper model is usually fine here."
-    );
-    new import_obsidian2.Setting(adv).setName("Per-step reasoning effort").setHeading();
-    new import_obsidian2.Setting(adv).setDesc(
-      "Let a step think before answering. Off by default; it helps synthesis (and deepen) most and is usually wasted tokens on the straightforward steps. The thinking is dropped from the output. Each dropdown offers only the levels the step's model supports (AU_E118_S6); if a model still rejects a level at call time, the call falls back to the cheapest level it does support (shown in the debug log)."
-    );
-    const stepReasoning = (step, name, desc) => {
-      new import_obsidian2.Setting(adv).setName(name).setDesc(desc).addDropdown((d) => {
-        const model = resolveStepModel(this.plugin.settings, step);
-        const entry = catalog.find((m) => m.id === model);
-        const efforts = [
-          ...reasoningEffortsForModel(provider, model, entry == null ? void 0 : entry.reasoning, this.plugin.llm.capabilities.reasoningEfforts)
-        ];
-        const saved = this.plugin.settings.llmStepReasoning[step] || "off";
-        if (!efforts.includes(saved)) efforts.push(saved);
-        for (const e of efforts) {
-          d.addOption(e, e === "off" ? "off (no reasoning)" : e);
-        }
-        d.setValue(saved).onChange(async (v) => {
-          if (v && v !== "off") this.plugin.settings.llmStepReasoning[step] = v;
-          else delete this.plugin.settings.llmStepReasoning[step];
-          await this.plugin.saveSettings();
-        });
-      });
-    };
-    stepReasoning(
-      "synthesis",
-      "Reasoning \u2014 synthesis",
-      "The graded answer; the step most likely to benefit from a thinking pass."
-    );
-    stepReasoning(
-      "deepen",
-      "Reasoning \u2014 deepen",
-      "Per-finding deepening. Can help faithfulness, but runs once per finding \u2014 mind the cost."
-    );
-    stepReasoning(
-      "decompose",
-      "Reasoning \u2014 decompose",
-      "Splitting into sub-questions \u2014 usually straightforward; off is normally fine."
-    );
-    stepReasoning(
-      "framework",
-      "Reasoning \u2014 framework",
-      "The theoretical-framework phase \u2014 off is normally fine."
-    );
-    stepReasoning(
-      "crosssector",
-      "Reasoning \u2014 cross-sector",
-      "The analogous-sector transfer step \u2014 off is normally fine."
-    );
-    new import_obsidian2.Setting(adv).setName("API base URL").setDesc("Override only if Consensus changes the endpoint or version.").addText(
-      (t2) => t2.setValue(this.plugin.settings.apiBaseUrl).onChange(async (v) => {
-        this.plugin.settings.apiBaseUrl = v.trim();
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(adv).setName("API key header").setDesc("Header used to send the key. Default: X-API-Key.").addText(
-      (t2) => t2.setValue(this.plugin.settings.apiKeyHeader).onChange(async (v) => {
-        this.plugin.settings.apiKeyHeader = v.trim() || "X-API-Key";
-        await this.plugin.saveSettings();
-      })
-    );
-    new import_obsidian2.Setting(adv).setName("Feedback or a bug?").setDesc("Report a problem or an idea on GitHub. No usage data is collected or sent automatically.").addButton(
-      (b) => b.setButtonText("Open issues").onClick(() => {
-        window.open("https://github.com/maxonamission/obsidian-parallax/issues", "_blank");
-      })
-    );
   }
 };
 
@@ -9192,8 +9364,11 @@ var ResultsModal = class extends import_obsidian6.Modal {
 var QUADRO_CONVENTIONS = {
   pluginVersion: "1.29.0",
   verifiedOn: "2026-07-05",
-  /** Quadro's settings file inside a vault; carries the configured folder names. */
-  settingsPath: ".obsidian/plugins/quadro/data.json",
+  /**
+   * Quadro's settings file, relative to the vault's config folder (`app.vault.configDir`, which
+   * is `.obsidian` by default but user-configurable); carries the configured folder names.
+   */
+  settingsPathInConfigDir: "plugins/quadro/data.json",
   defaultCodesFolder: "Codes",
   defaultExtractionsFolder: "Extractions",
   defaultAnalysisFolder: "Analysis",
@@ -19102,9 +19277,16 @@ function parseArgumentSection(body) {
     const line = raw.trim();
     const heading = /^\*(.+)\*$/.exec(line);
     if (heading) {
-      if (matchesLabel(heading[1], CLAIM_HEADINGS)) kind = "claim", inEvidence = false;
-      else if (matchesLabel(heading[1], ASSUMPTION_HEADINGS)) kind = "assumption", inEvidence = false;
-      else if (matchesLabel(heading[1], EVIDENCE_HEADINGS)) kind = null, inEvidence = true;
+      if (matchesLabel(heading[1], CLAIM_HEADINGS)) {
+        kind = "claim";
+        inEvidence = false;
+      } else if (matchesLabel(heading[1], ASSUMPTION_HEADINGS)) {
+        kind = "assumption";
+        inEvidence = false;
+      } else if (matchesLabel(heading[1], EVIDENCE_HEADINGS)) {
+        kind = null;
+        inEvidence = true;
+      }
       continue;
     }
     const item = /^\d+\.\s+\[([CA]\d+)\]\s+(.+)$/.exec(line);
@@ -19713,78 +19895,6 @@ var ResearchDesignModal = class extends import_obsidian29.Modal {
     this.contentEl.empty();
     this.resolve(null);
   }
-};
-
-// src/settings.ts
-var DEFAULT_SETTINGS = {
-  provider: "openalex",
-  artifactLanguage: "en",
-  openAlexMailto: "",
-  openAlexApiKey: "",
-  semanticScholarApiKey: "",
-  apiKey: "",
-  apiBaseUrl: "https://api.consensus.app/v1",
-  apiKeyHeader: "X-API-Key",
-  resultLimit: 20,
-  defaultFormat: "detailed",
-  insertQuestionHeading: true,
-  includeAbstract: true,
-  registerEnabled: true,
-  registerPath: ".consensus-research/citations.json",
-  libraryPath: "",
-  literatureNotePattern: "",
-  llmProvider: "mistral",
-  embedProvider: "",
-  mistralApiKey: "",
-  mistralChatModel: "mistral-small-latest",
-  mistralEmbedModel: "mistral-embed",
-  mistralModelCatalog: [],
-  openaiCompatBaseUrl: "https://api.openai.com/v1",
-  openaiCompatApiKey: "",
-  openaiCompatChatModel: "",
-  openaiCompatEmbedModel: "",
-  openaiApiKey: "",
-  openaiChatModel: "gpt-5-mini",
-  openaiEmbedModel: "text-embedding-3-small",
-  openaiModelCatalog: [],
-  anthropicApiKey: "",
-  anthropicChatModel: "claude-sonnet-4-5",
-  anthropicModelCatalog: [],
-  googleApiKey: "",
-  googleChatModel: "gemini-2.5-flash",
-  googleEmbedModel: "gemini-embedding-001",
-  googleModelCatalog: [],
-  localBaseUrl: "",
-  localApiKey: "",
-  localChatModel: "",
-  localEmbedModel: "",
-  localModelCatalog: [],
-  llmStepModels: {},
-  llmStepReasoning: {},
-  researchMaxResults: 20,
-  researchMinResults: 5,
-  researchKeepRatio: 0.5,
-  researchRelevanceKeep: 0.5,
-  researchFrameworkPhase: false,
-  researchCrossSector: true,
-  researchSubQuestionCheckpoint: false,
-  researchEvidenceWeighting: true,
-  researchClaimCalibration: true,
-  researchAutoDeepen: false,
-  researchReadingTips: true,
-  researchOutputMode: "balanced",
-  debugLogging: false,
-  // Secret-storage id references (AU_E139_S3) — empty until a key is stored; the paired
-  // `*ApiKey` values are resolved from `app.secretStorage` at load and never persisted.
-  apiKeySecretId: "",
-  openAlexApiKeySecretId: "",
-  semanticScholarApiKeySecretId: "",
-  mistralApiKeySecretId: "",
-  openaiApiKeySecretId: "",
-  anthropicApiKeySecretId: "",
-  googleApiKeySecretId: "",
-  localApiKeySecretId: "",
-  openaiCompatApiKeySecretId: ""
 };
 
 // src/settings-migration.ts
@@ -20805,14 +20915,14 @@ var ParallaxPlugin = class extends import_obsidian30.Plugin {
   }
   /**
    * AU_E99_S3 — read Quadro's own registrations from THIS vault, tolerantly: folder names from
-   * `.obsidian/plugins/quadro/data.json` (defaults otherwise), progress.json from the analysis
+   * `<configDir>/plugins/quadro/data.json` (defaults otherwise), progress.json from the analysis
    * folder, codebook shape from the codes folder. Returns the rendered account-section body, or
    * null when this vault carries no Quadro traces (the account then stays byte-identical).
    */
   async gatherQdaSection() {
     try {
       const adapter = this.app.vault.adapter;
-      const settingsPath = QUADRO_CONVENTIONS.settingsPath;
+      const settingsPath = `${this.app.vault.configDir}/${QUADRO_CONVENTIONS.settingsPathInConfigDir}`;
       const dataJson = await adapter.exists(settingsPath) ? await adapter.read(settingsPath) : null;
       const folders = parseQuadroFolders(dataJson);
       const progressPath = (0, import_obsidian30.normalizePath)(`${folders.analysis}/${QUADRO_CONVENTIONS.progressFileName}`);
